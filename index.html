@@ -1,0 +1,1009 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Undrstanding</title>
+    <link rel="icon" type="image/svg+xml" href="assests/undrlogo.svg">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
+        /* Global Scrollbar */
+        ::-webkit-scrollbar {
+            width: 1px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #000;
+        }
+
+        :root {
+            --bg-color: #f7f7f7;
+            /* Very light grey, almost white */
+            --surface: #ffffff;
+            --text-main: #0a0a0a;
+            --text-muted: #666666;
+            --border: #e0e0e0;
+            /* Light crisp border */
+            --border-hover: #000000;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            -webkit-font-smoothing: antialiased;
+            line-height: 1.5;
+            /* Technical Grid Background (using lines, not gradients) */
+            background-image:
+                linear-gradient(to right, #e5e5e5 1px, transparent 1px),
+                linear-gradient(to bottom, #e5e5e5 1px, transparent 1px);
+            background-size: 60px 60px;
+        }
+
+        h1,
+        h2,
+        h3 {
+            letter-spacing: -0.04em;
+        }
+
+        .mono {
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        /* Card System */
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            position: relative;
+            transition: all 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        .card-header {
+            background-color: #fafafa;
+            border-bottom: 1px solid var(--border);
+            padding: 1.5rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .card-body {
+            padding: 2rem;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        /* The 'Active' Border Top */
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background-color: currentColor;
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.3s ease;
+            z-index: 10;
+        }
+
+        .card:hover {
+            border-color: var(--border-hover);
+            transform: translateY(-4px);
+        }
+
+        .card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .icon-box {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+
+
+        /* Search Styles */
+        .search-container {
+            position: relative;
+        }
+
+        .search-input {
+            width: 100%;
+            background: #ffffff;
+            border: 1px solid #000000;
+            padding: 0.5rem 0.75rem 0.5rem 2.25rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            color: var(--text-main);
+            transition: all 0.2s;
+            border-radius: 0;
+            box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.05);
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #000;
+            background: #fff;
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 0.75rem;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 14px;
+            height: 14px;
+            color: #000000;
+            pointer-events: none;
+        }
+
+        .search-results {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            left: 0;
+            margin-top: 4px;
+            background: #fff;
+            border: 1px solid #000;
+            max-height: 300px;
+            overflow-y: auto;
+            z-index: 50;
+            display: none;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+
+        .search-results::-webkit-scrollbar {
+            width: 1px;
+        }
+
+        .search-results::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .search-results::-webkit-scrollbar-thumb {
+            background: #000;
+        }
+
+        .search-results.active {
+            display: block;
+        }
+
+        .result-item {
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid #eee;
+            cursor: pointer;
+            transition: background 0.1s;
+        }
+
+        .result-item:last-child {
+            border-bottom: none;
+        }
+
+        .result-item:hover,
+        .result-item.selected {
+            background: #f4f4f4;
+        }
+
+        .result-series {
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+            display: block;
+            margin-bottom: 2px;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .result-title {
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: #000;
+        }
+
+        .result-context {
+            font-size: 0.75rem;
+            color: #666;
+            margin-top: 2px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .arrow-link {
+            display: inline-flex;
+            align-items: center;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-top: 2rem;
+            opacity: 0.6;
+            transition: opacity 0.2s, transform 0.2s;
+        }
+
+        .card:hover .arrow-link {
+            opacity: 1;
+            transform: translateX(4px);
+        }
+
+        /* Header Styling */
+        .hero-title {
+            font-size: clamp(3rem, 8vw, 6rem);
+            line-height: 0.9;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+        }
+
+        .hero-desc {
+            font-size: 1.125rem;
+            color: var(--text-muted);
+            max-w-xl;
+            font-weight: 300;
+        }
+
+        .grid-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            pointer-events: none;
+            z-index: -1;
+            /* Fading out the grid at the bottom */
+            mask-image: linear-gradient(to bottom, black 80%, transparent);
+            -webkit-mask-image: linear-gradient(to bottom, black 80%, transparent);
+        }
+
+        /* Liquid Bloom Transition */
+        #random-overlay {
+            position: fixed;
+            inset: 0;
+            background: #000;
+            z-index: 1000;
+            clip-path: circle(0% at center);
+            pointer-events: none;
+            transition: clip-path 0.8s cubic-bezier(0.77, 0, 0.175, 1);
+        }
+
+        #random-overlay.active {
+            clip-path: circle(150% at center);
+            pointer-events: auto;
+        }
+
+        /* Card Pulse/Warp on Click */
+        .random-card-pumping {
+            animation: cardWarp 0.4s ease-out;
+        }
+
+        @keyframes cardWarp {
+            0% {
+                transform: scale(1);
+                filter: blur(0px);
+            }
+
+            50% {
+                transform: scale(0.95) skew(1deg);
+                filter: blur(2px);
+            }
+
+            100% {
+                transform: scale(1.05);
+                filter: blur(0px);
+            }
+        }
+    </style>
+</head>
+
+<body class="min-h-screen flex flex-col pt-12 pb-12">
+
+    <!-- Header -->
+    <header class="max-w-6xl mx-auto px-6 w-full mb-20 md:mb-32">
+        <div class="border-b border-black pb-8">
+            <div class="flex flex-col md:flex-row md:items-end justify-between gap-6">
+                <div>
+                    <div class="flex items-center gap-2 mb-4">
+                        <div class="w-3 h-3 bg-black"></div>
+                        <span class="mono text-xs font-bold uppercase tracking-widest text-[#666]">Educational
+                            Repository</span>
+                    </div>
+                    <h1 class="hero-title">Undrstanding.</h1>
+                </div>
+                <div class="md:text-right pb-2 flex flex-col items-end gap-6">
+                    <p class="hero-desc">Interactive explorations of<br>technical architecture.</p>
+
+                    <!-- Search Input -->
+                    <div class="search-container w-full md:w-64">
+                        <svg class="search-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="square" stroke-linejoin="miter" stroke-width="2"
+                                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                        </svg>
+                        <input type="text" id="site-search" class="search-input" placeholder="Search topics..."
+                            autocomplete="off">
+                        <div id="search-results" class="search-results thin-scrollbar"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Content Grid -->
+    <main class="max-w-6xl mx-auto px-6 w-full flex-grow">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8">
+
+            <!-- 01: Algorithms (A) -->
+            <a href="content/algo.html" class="block group text-pink-600">
+                <article class="card">
+                    <div class="card-header">
+                        <span class="mono text-xs font-bold uppercase tracking-widest text-black/50">Series 01</span>
+                        <div class="icon-box text-black">
+                            <!-- Flowchart / Logic Gate Icon -->
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="3" y="3" width="6" height="6" rx="1" />
+                                <rect x="15" y="15" width="6" height="6" rx="1" />
+                                <path d="M6 9v3a2 2 0 0 0 2 2h8a2 2 0 0 1 2 2v-1" />
+                                <path d="M18 9h.01" />
+                                <path d="M6 18h.01" />
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div>
+                            <h3
+                                class="text-2xl text-black font-semibold mb-3 group-hover:text-pink-600 transition-colors">
+                                Algorithms</h3>
+                            <p class="text-sm text-gray-500 font-light leading-relaxed">
+                                Recipes for logic. Sorting, searching, and the fundamental steps of computation.
+                            </p>
+                        </div>
+                        <div class="arrow-link text-black font-mono">
+                            Compute <span class="ml-2">&rarr;</span>
+                        </div>
+                    </div>
+                </article>
+            </a>
+
+            <!-- 02: AI (A) -->
+            <a href="content/ai.html" class="block group text-indigo-600">
+                <article class="card">
+                    <div class="card-header">
+                        <span class="mono text-xs font-bold uppercase tracking-widest text-black/50">Series 02</span>
+                        <div class="icon-box text-black">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                <path
+                                    d="M12 4.5a2.5 2.5 0 0 0-4.96-.46 2.5 2.5 0 0 0-1.98 3 2.5 2.5 0 0 0-1.32 4.24 3 3 0 0 0 .34 5.58 2.5 2.5 0 0 0 2.96 3.08 2.5 2.5 0 0 0 4.96.44v-15.88Z" />
+                                <path
+                                    d="M12 4.5a2.5 2.5 0 0 1 4.96-.46 2.5 2.5 0 0 1 1.98 3 2.5 2.5 0 0 1 1.32 4.24 3 3 0 0 1-.34 5.58 2.5 2.5 0 0 1-2.96 3.08 2.5 2.5 0 0 1-4.96.44v-15.88Z" />
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div>
+                            <h3
+                                class="text-2xl text-black font-semibold mb-3 group-hover:text-indigo-600 transition-colors">
+                                Artificial Intelligence</h3>
+                            <p class="text-sm text-gray-500 font-light leading-relaxed">
+                                A functional deconstruction of synthetic cognition. From the Perceptron to Transformers.
+                            </p>
+                        </div>
+                        <div class="arrow-link text-black font-mono">
+                            Initialize <span class="ml-2">&rarr;</span>
+                        </div>
+                    </div>
+                </article>
+            </a>
+
+            <!-- 03: DataBase (D) -->
+            <a href="content/dbms.html" class="block group text-neutral-600">
+                <article class="card">
+                    <div class="card-header">
+                        <span class="mono text-xs font-bold uppercase tracking-widest text-black/50">Series 03</span>
+                        <div class="icon-box text-black">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M12 4c-4.418 0-8 1.79-8 4s3.582 4 8 4 8-1.79 8-4-3.582-4-8-4Z" />
+                                <path d="M4 8v8c0 2.21 3.582 4 8 4s8-1.79 8-4V8" />
+                                <path d="M4 12c0 2.21 3.582 4 8 4s8-1.79 8-4" />
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div>
+                            <h3
+                                class="text-2xl text-black font-semibold mb-3 group-hover:text-neutral-600 transition-colors">
+                                Database Systems</h3>
+                            <p class="text-sm text-gray-500 font-light leading-relaxed">
+                                Engines of information. ACID, indexing, scaling paradigms, and the physics of storage.
+                            </p>
+                        </div>
+                        <div class="arrow-link text-black font-mono">
+                            Query <span class="ml-2">&rarr;</span>
+                        </div>
+                    </div>
+                </article>
+            </a>
+
+            <!-- 04: Data Structures (D) -->
+            <a href="content/ds.html" class="block group text-green-700">
+                <article class="card">
+                    <div class="card-header">
+                        <span class="mono text-xs font-bold uppercase tracking-widest text-black/50">Series 04</span>
+                        <div class="icon-box text-black">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="9" y="3" width="6" height="6" rx="1" />
+                                <path d="M12 9v3" />
+                                <path d="M12 12H5v3" />
+                                <path d="M12 12h7v3" />
+                                <rect x="2" y="15" width="6" height="6" rx="1" />
+                                <rect x="16" y="15" width="6" height="6" rx="1" />
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div>
+                            <h3
+                                class="text-2xl text-black font-semibold mb-3 group-hover:text-green-700 transition-colors">
+                                Data Structures</h3>
+                            <p class="text-sm text-gray-500 font-light leading-relaxed">
+                                The physics of memory. Linear vs non-linear organization. Arrays, Trees, and Graphs.
+                            </p>
+                        </div>
+                        <div class="arrow-link text-black font-mono">
+                            Organize <span class="ml-2">&rarr;</span>
+                        </div>
+                    </div>
+                </article>
+            </a>
+
+            <!-- 05: OOPS (O) -->
+            <a href="content/oops.html" class="block group text-red-600">
+                <article class="card">
+                    <div class="card-header">
+                        <span class="mono text-xs font-bold uppercase tracking-widest text-black/50">Series 05</span>
+                        <div class="icon-box text-black">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="3" y="3" width="7" height="7" rx="1" />
+                                <rect x="14" y="3" width="7" height="7" rx="1" />
+                                <rect x="14" y="14" width="7" height="7" rx="1" />
+                                <rect x="3" y="14" width="7" height="7" rx="1" />
+                                <path d="M10 7h4" />
+                                <path d="M10 17h4" />
+                                <path d="M7 10v4" />
+                                <path d="M17 10v4" />
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div>
+                            <h3
+                                class="text-2xl text-black font-semibold mb-3 group-hover:text-red-600 transition-colors">
+                                Object Oriented Programming</h3>
+                            <p class="text-sm text-gray-500 font-light leading-relaxed">
+                                Blueprint of reality. Encapsulation, Polymorphism, and the art of Abstraction.
+                            </p>
+                        </div>
+                        <div class="arrow-link text-black font-mono">
+                            Abstract <span class="ml-2">&rarr;</span>
+                        </div>
+                    </div>
+                </article>
+            </a>
+
+            <!-- 06: Pigeonhole (P) -->
+            <a href="content/pigeon.html" class="block group text-blue-600">
+                <article class="card">
+                    <div class="card-header">
+                        <span class="mono text-xs font-bold uppercase tracking-widest text-black/50">Series 06</span>
+                        <div class="icon-box text-black">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="4" y="4" width="7" height="7" rx="1" />
+                                <rect x="4" y="15" width="7" height="7" rx="1" /> <!-- Box 1 -->
+                                <rect x="15" y="4" width="7" height="7" rx="1" />
+                                <rect x="15" y="15" width="7" height="7" rx="1" /> <!-- Box 2 (Overfilled) -->
+                                <circle cx="18.5" cy="18.5" r="1.5" fill="currentColor" />
+                                <circle cx="18.5" cy="16.5" r="1.5" fill="currentColor" />
+                                <circle cx="7.5" cy="18.5" r="1.5" fill="currentColor" />
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div>
+                            <h3
+                                class="text-2xl text-black font-semibold mb-3 group-hover:text-blue-600 transition-colors">
+                                Pigeonhole Principle</h3>
+                            <p class="text-sm text-gray-500 font-light leading-relaxed">
+                                The mathematics of limit. Why perfect compression is impossible and collisions
+                                inevitable.
+                            </p>
+                        </div>
+                        <div class="arrow-link text-black font-mono">
+                            Calculate <span class="ml-2">&rarr;</span>
+                        </div>
+                    </div>
+                </article>
+            </a>
+
+            <!-- 07: Design (D) -->
+            <a href="content/design.html" class="block group text-zinc-600">
+                <article class="card">
+                    <div class="card-header">
+                        <span class="mono text-xs font-bold uppercase tracking-widest text-black/50">Series 07</span>
+                        <div class="icon-box text-black">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+                                <line x1="3" y1="9" x2="21" y2="9" />
+                                <line x1="9" y1="21" x2="9" y2="9" />
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div>
+                            <h3
+                                class="text-2xl text-black font-semibold mb-3 group-hover:text-zinc-600 transition-colors">
+                                Principles of Design</h3>
+                            <p class="text-sm text-gray-500 font-light leading-relaxed">
+                                Less, but better. The ten commandments of good design by Dieter Rams.
+                            </p>
+                        </div>
+                        <div class="arrow-link text-black font-mono">
+                            Refine <span class="ml-2">&rarr;</span>
+                        </div>
+                    </div>
+                </article>
+            </a>
+
+            <!-- 08: Quantum (Q) -->
+            <a href="content/quanta.html" class="block group text-orange-600">
+                <article class="card">
+                    <div class="card-header">
+                        <span class="mono text-xs font-bold uppercase tracking-widest text-black/50">Series 08</span>
+                        <div class="icon-box text-black">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                <ellipse cx="12" cy="12" rx="10" ry="4" transform="rotate(45 12 12)" />
+                                <ellipse cx="12" cy="12" rx="10" ry="4" transform="rotate(-45 12 12)" />
+                                <circle cx="12" cy="12" r="2.5" fill="currentColor" />
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div>
+                            <h3
+                                class="text-2xl text-black font-semibold mb-3 group-hover:text-orange-600 transition-colors">
+                                Quantum Computing</h3>
+                            <p class="text-sm text-gray-500 font-light leading-relaxed">
+                                Physics of information. Qubits, superposition, and non-intuitive mechanics.
+                            </p>
+                        </div>
+                        <div class="arrow-link text-black font-mono">
+                            Observe <span class="ml-2">&rarr;</span>
+                        </div>
+                    </div>
+                </article>
+            </a>
+
+            <!-- 09: System Architecture (S) -->
+            <a href="content/system.html" class="block group text-amber-900">
+                <article class="card">
+                    <div class="card-header">
+                        <span class="mono text-xs font-bold uppercase tracking-widest text-black/50">Series 09</span>
+                        <div class="icon-box text-black">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="2" y="2" width="20" height="8" rx="2" ry="2" />
+                                <rect x="2" y="14" width="20" height="8" rx="2" ry="2" />
+                                <line x1="6" y1="6" x2="6.01" y2="6" />
+                                <line x1="6" y1="18" x2="6.01" y2="18" />
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div>
+                            <h3
+                                class="text-2xl text-black font-semibold mb-3 group-hover:text-amber-900 transition-colors">
+                                System Architecture</h3>
+                            <p class="text-sm text-gray-500 font-light leading-relaxed">
+                                Designing for scale. Load balancing, Caching, CAP Theorem, and Microservices.
+                            </p>
+                        </div>
+                        <div class="arrow-link text-black font-mono">
+                            Scale <span class="ml-2">&rarr;</span>
+                        </div>
+                    </div>
+                </article>
+            </a>
+
+            <!-- 10: Git (G) -->
+            <a href="content/git.html" class="block group text-orange-700">
+                <article class="card">
+                    <div class="card-header">
+                        <span class="mono text-xs font-bold uppercase tracking-widest text-black/50">Series 10</span>
+                        <div class="icon-box text-black">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="12" cy="18" r="3" />
+                                <circle cx="6" cy="6" r="3" />
+                                <circle cx="18" cy="6" r="3" />
+                                <path d="M18 9v1a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2V9" />
+                                <path d="M12 12v3" />
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div>
+                            <h3
+                                class="text-2xl text-black font-semibold mb-3 group-hover:text-orange-700 transition-colors">
+                                Version Control</h3>
+                            <p class="text-sm text-gray-500 font-light leading-relaxed">
+                                The Time Machine for Code. Git architecture, branching, and distributed systems.
+                            </p>
+                        </div>
+                        <div class="arrow-link text-black font-mono">
+                            Track <span class="ml-2">&rarr;</span>
+                        </div>
+                    </div>
+                </article>
+            </a>
+
+            <!-- Random / Mystery (Premium Liquid Transition) -->
+            <a href="#" id="random-card" onclick="event.preventDefault(); 
+                         this.classList.add('random-card-pumping');
+                         const overlay = document.getElementById('random-overlay');
+                         overlay.classList.add('active');
+                         const urls = ['content/ai.html', 'content/ds.html', 'content/oops.html', 'content/pigeon.html', 'content/quanta.html', 'content/algo.html', 'content/dbms.html', 'content/design.html', 'content/git.html', 'content/system.html'];
+                         const target = urls[Math.floor(Math.random() * urls.length)];
+                         setTimeout(() => { window.location.href = target; }, 800);"
+                class="block group relative overflow-hidden bg-black text-white hover:scale-[1.02] transition-all duration-500 shadow-xl hover:shadow-2xl">
+                <!-- Simple Noise Texture Overlay -->
+                <div class="absolute inset-0 opacity-10 pointer-events-none"
+                    style="background-image: url('data:image/svg+xml,%3Csvg viewBox=%220 0 200 200%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cfilter id=%22noise%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.65%22 numOctaves=%223%22 stitchTiles=%22stitch%22/%3E%3C/filter%3E%3Crect width=%22100%25%22 height=%22100%25%22 filter=%22url(%23noise)%22 opacity=%221%22/%3E%3C/svg%3E');">
+                </div>
+
+                <!-- Hover Gradient Blob -->
+                <div
+                    class="absolute -top-1/2 -left-1/2 w-[200%] h-[200%] bg-gradient-to-br from-indigo-500/20 via-purple-500/0 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 blur-3xl pointer-events-none">
+                </div>
+
+                <article
+                    class="card bg-transparent border-black h-full flex flex-col items-center justify-center py-16 relative z-10">
+                    <div
+                        class="icon-box text-white mb-8 scale-125 group-hover:scale-150 group-hover:rotate-12 transition-all duration-500 ease-out">
+                        <!-- Large Dice Icon -->
+                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="3" y="3" width="18" height="18" rx="4" ry="4" stroke-width="2" />
+                            <circle cx="8.5" cy="8.5" r="2" fill="currentColor" />
+                            <circle cx="15.5" cy="8.5" r="2" fill="currentColor" />
+                            <circle cx="8.5" cy="15.5" r="2" fill="currentColor" />
+                            <circle cx="15.5" cy="15.5" r="2" fill="currentColor" />
+                        </svg>
+                    </div>
+                    <h3
+                        class="text-4xl text-white font-bold font-mono tracking-[0.2em] uppercase group-hover:tracking-[0.3em] transition-all duration-500">
+                        Random
+                    </h3>
+                    <div class="h-0.5 w-0 bg-white group-hover:w-16 transition-all duration-500 mt-4 rounded-full">
+                    </div>
+                </article>
+            </a>
+
+        </div>
+    </main>
+
+    <footer class="max-w-6xl mx-auto px-6 w-full mt-24">
+        <div class="border-t border-gray-300 pt-8 flex justify-between items-center">
+            <span class="text-[10px] mono uppercase text-gray-400">Undrstanding</span>
+            <span class="text-[10px] mono uppercase text-gray-400">For Humans, From Humans</span>
+        </div>
+    </footer>
+
+    <!-- Search Logic -->
+    <script>
+        const searchIndex = [
+            // Series 01: Algorithms
+            { s: "ALGO", t: "Algorithms", u: "content/algo.html", k: "intro logic steps computation flowcharts recipes mechanics" },
+            { s: "ALGO", t: "Sorting Algorithms", u: "content/algo.html#sorting", k: "bubble sort quick merge selection insertion heapsort heap sort bogo sort random shuffle order efficiency complexity big o" },
+            { s: "ALGO", t: "Searching Algorithms", u: "content/algo.html#searching", k: "binary search linear find lookup divide conquer logarithmic" },
+            { s: "ALGO", t: "Recursion", u: "content/algo.html#recursion", k: "base case self-reference factorial fibonacci stack memory russian dolls" },
+            { s: "ALGO", t: "Backtracking (N-Queens)", u: "content/algo.html#backtracking", k: "n-queens maze solving trial error game theory constraints" },
+            { s: "ALGO", t: "Graph Traversal (BFS/DFS)", u: "content/algo.html#pathfinding", k: "bfs dfs nodes edges pathfinding shortest path maze queue stack" },
+            { s: "ALGO", t: "Dijkstra's Algorithm", u: "content/algo.html#pathfinding", k: "shortest path weighted graph uniform cost search pathfinding optimization queue" },
+            { s: "ALGO", t: "A* Search (A-Star)", u: "content/algo.html#pathfinding", k: "heuristic pathfinding euclidean distance shortest path optimization best first" },
+            { s: "ALGO", t: "Knapsack Problem (0/1)", u: "content/algo.html#knapsack", k: "optimization dynamic programming value capacity constraints packing" },
+            { s: "ALGO", t: "Traveling Salesman (TSP)", u: "content/algo.html#tsp", k: "optimization NP-hard shortest path route planning permutations factorial" },
+            { s: "ALGO", t: "Greedy Algorithms", u: "content/algo.html#greedy", k: "coin change optimization local global optimal interval scheduling" },
+            { s: "ALGO", t: "Huffman Coding", u: "content/algo.html#huffman", k: "compression lossless greedy prefix codes binary tree frequency" },
+            { s: "ALGO", t: "Dynamic Programming", u: "content/algo.html#dp", k: "optimization memoization overlapping subproblems caching fibonacci bottom up top down" },
+            // Series 02: AI
+            { s: "AI", t: "Artificial Intelligence", u: "content/ai.html", k: "intro history overview symbolism turing test ada lovelace" },
+            { s: "AI", t: "Taxonomy of Intelligence", u: "content/ai.html#taxonomy", k: "hierarchy machine learning deep learning nlp symbolic gofai" },
+            { s: "AI", t: "Evolution of Thought", u: "content/ai.html#history", k: "timeline history symbolic connectionist backpropagation alexnet transformer attention imagenet" },
+            { s: "AI", t: "Foundations of Thought", u: "content/ai.html#foundations", k: "turing test thinking humanly acting rationally rational agent laws of thought cognitive modeling immitation game" },
+            { s: "AI", t: "Inference Engines", u: "content/ai.html#chaining", k: "forward chaining backward chaining expert systems logic rules reasoning deduction" },
+            { s: "AI", t: "What is Machine Learning?", u: "content/ai.html#ml-intro", k: "ml definition supervised unsupervised semisupervised reinforcement learning patterns types" },
+            { s: "AI", t: "The Perceptron", u: "content/ai.html#neuron", k: "artificial neuron weights bias activation function rosenblatt linear classifier" },
+            { s: "AI", t: "Gradient Descent", u: "content/ai.html#gradient", k: "learning rate loss function optimization backpropagation calculus slope" },
+            { s: "AI", t: "Neural Networks", u: "content/ai.html#networks", k: "layers hidden deep learning architecture mlp feedforward" },
+            { s: "AI", t: "Computer Vision (CNN)", u: "content/ai.html#cnn", k: "convolutional filter kernel image processing pooling stride features" },
+            { s: "AI", t: "Vector Embeddings", u: "content/ai.html#embeddings", k: "nlp semantic meaning vectors word2vec cosine similarity latent space" },
+            { s: "AI", t: "Self-Attention", u: "content/ai.html#attention", k: "transformers attention mechanism context weighting tokens self-attention" },
+            { s: "AI", t: "Generative Text (LLMs)", u: "content/ai.html#gen-text", k: "large language models gpt training inference prediction engine tokens" },
+            { s: "AI", t: "Diffusion Models", u: "content/ai.html#diffusion", k: "image generation denoising stable diffusion midjourney dall-e latent space" },
+            { s: "AI", t: "Reinforcement Learning", u: "content/ai.html#rl", k: "agents rewards environment trial and error wumpus world" },
+            { s: "AI", t: "Artificial General Intelligence", u: "content/ai.html#agi", k: "agi general intelligence human-level ai theoretical strong ai asi super intelligence coffee test student test" },
+            { s: "AI", t: "The Alignment Problem", u: "content/ai.html#alignment", k: "alignment safety ethics reward hacking paperclip maximizer instrumental convergence" },
+            // Series 03: Database
+            { s: "DBMS", t: "Database Systems", u: "content/dbms.html", k: "intro engines sql nosql transactions memory storage internals" },
+            { s: "DBMS", t: "SQL Joins", u: "content/dbms.html#joins", k: "inner left right relations foreign key tables" },
+            { s: "DBMS", t: "Indexing (B-Tree)", u: "content/dbms.html#indexing", k: "b-tree search optimization performance full scan logarithmic" },
+            { s: "DBMS", t: "Normalization", u: "content/dbms.html#normalization", k: "1nf 2nf 3nf unf redundancy dependency structure" },
+            { s: "DBMS", t: "ACID Transactions", u: "content/dbms.html#acid", k: "atomicity consistency isolation durability wal commit rollback integrity" },
+            { s: "DBMS", t: "Concurrency Control", u: "content/dbms.html#locking", k: "locking x-lock row-level isolation levels" },
+            { s: "DBMS", t: "Architectures", u: "content/dbms.html#arch", k: "2-tier 3-tier client server web app" },
+            { s: "DBMS", t: "Sharding", u: "content/dbms.html#sharding", k: "horizontal scaling partition key cluster distribution" },
+            { s: "DBMS", t: "Replication", u: "content/dbms.html#replication", k: "master slave read replicas redundancy availability" },
+            { s: "DBMS", t: "CAP Theorem", u: "content/dbms.html#cap", k: "consistency availability partition tolerance distributed systems" },
+            // Series 04: Data Structures
+            { s: "DATA", t: "Data Structures", u: "content/ds.html", k: "intro organization memory container storage types" },
+            { s: "DATA", t: "Arrays", u: "content/ds.html#arrays", k: "linear contiguous memory access index random O(1)" },
+            { s: "DATA", t: "Strings", u: "content/ds.html#strings", k: "text sequence immutable array char characters words text processing" },
+            { s: "DATA", t: "Linked Lists", u: "content/ds.html#linked-lists", k: "nodes pointers dynamic memory traversal head tail singly doubly circular prev" },
+            { s: "DATA", t: "Stacks (LIFO)", u: "content/ds.html#stacks", k: "push pop recursion call stack undo depth first" },
+            { s: "DATA", t: "Queues (FIFO)", u: "content/ds.html#queues", k: "enqueue dequeue buffering processing breadth first line printer priority queue triage" },
+            { s: "DATA", t: "Binary Trees", u: "content/ds.html#trees", k: "hierarchical root nodes binary search bst leaves height depth traversal inorder preorder postorder" },
+            { s: "DATA", t: "Graphs", u: "content/ds.html#graphs", k: "network nodes edges connections bfs dfs social maps directed undirected weighted" },
+            { s: "DATA", t: "Hash Maps (Dictionaries)", u: "content/ds.html#hashmaps", k: "key value association collision buckets dictionary set lookup O(1) objects map" },
+            { s: "DATA", t: "Sets", u: "content/ds.html#sets", k: "unique distinct collection no duplicates mathematical set theory venn diagram" },
+            { s: "DATA", t: "Big O Notation", u: "content/ds.html#complexity", k: "analysis efficiency time complexity growth scaling asymptotic constant linear quadratic logarithmic" },
+            // Series 05: Pigeonhole Principle
+            { s: "PIGEON", t: "Pigeonhole Principle", u: "content/pigeon.html", k: "intro dirichlet box counting combinatorics finiteness overlap" },
+            // Series 05: Object Oriented (OOPS)
+            { s: "OOPS", t: "Object Oriented Programming", u: "content/oops.html", k: "class object instance blueprint factory" },
+            { s: "OOPS", t: "Constructors", u: "content/oops.html#constructors", k: "init new this copy constructor parameter attributes" },
+            { s: "OOPS", t: "Encapsulation", u: "content/oops.html#encapsulation", k: "private public protected access modifiers hiding security getter setter" },
+            { s: "OOPS", t: "Inheritance", u: "content/oops.html#inheritance", k: "parent child super extends relationships hierarchy reuse is-a" },
+            { s: "OOPS", t: "Polymorphism (Runtime)", u: "content/oops.html#polymorphism", k: "overriding dynamic binding interface abstract virtual methods" },
+            { s: "OOPS", t: "Polymorphism (Compile)", u: "content/oops.html#overloading", k: "overloading static binding signatures parameters" },
+            { s: "OOPS", t: "Interfaces", u: "content/oops.html#interfaces", k: "contracts implements abstract can-do loose coupling" },
+            { s: "OOPS", t: "Abstraction", u: "content/oops.html#abstraction", k: "complexity hiding simplicity layers implementation" },
+            { s: "OOPS", t: "The Final Trinity", u: "content/oops.html#final", k: "final finally finalize immutability constant try catch gc" },
+            { s: "OOPS", t: "Multi-Threading", u: "content/oops.html#threading", k: "concurrency parallel process thread background worker async" },
+            { s: "OOPS", t: "Static vs Instance", u: "content/oops.html#static", k: "shared memory class variables counters utility" },
+            { s: "OOPS", t: "Relationships", u: "content/oops.html#relationships", k: "association composition aggregation has-a part-of uml diamond" },
+            { s: "OOPS", t: "Garbage Collection", u: "content/oops.html#gc", k: "memory management heap stack sweep release" },
+
+            // Series 06: Pigeonhole Principle
+            { s: "PIGEON", t: "Visual Proof", u: "content/pigeon.html#definition", k: "basics holes pigeons demonstration container overflow" },
+            { s: "PIGEON", t: "Generalized Formula", u: "content/pigeon.html#generalized", k: "math ceiling function calculation average distribution" },
+            { s: "PIGEON", t: "Real World Examples", u: "content/pigeon.html#hair", k: "population proof hair london birthday problem paradox probability" },
+            { s: "PIGEON", t: "Geometry Proof", u: "content/pigeon.html#geometry", k: "points square distance spatial area subdivision packing" },
+            { s: "PIGEON", t: "Compression Limits", u: "content/pigeon.html#compression", k: "pied piper impossible limits data shannon entropy lossless" },
+
+            // Series 07: Principles of Design
+            { s: "DESIGN", t: "Principles of Good Design", u: "content/design.html", k: "dieter rams ten principles good design less but better" },
+            { s: "DESIGN", t: "Innovative Design", u: "content/design.html#p1", k: "innovative technology development progression" },
+            { s: "DESIGN", t: "Useful Product", u: "content/design.html#p2", k: "function utility criteria psychological aesthetic" },
+            { s: "DESIGN", t: "Aesthetic Design", u: "content/design.html#p3", k: "beauty well-being integral quality" },
+            { s: "DESIGN", t: "Understandable Product", u: "content/design.html#p4", k: "clarity self-explanatory structure intuition" },
+            { s: "DESIGN", t: "Unobtrusive Design", u: "content/design.html#p5", k: "neutral restrained tools decor" },
+            { s: "DESIGN", t: "Honest Design", u: "content/design.html#p6", k: "integrity promise value manipulation" },
+            { s: "DESIGN", t: "Long-lasting Design", u: "content/design.html#p7", k: "timeless fashion obsolescence durability" },
+            { s: "DESIGN", t: "Thorough Design", u: "content/design.html#p8", k: "precision care accuracy arbitrary respect" },
+            { s: "DESIGN", t: "Eco-friendly Design", u: "content/design.html#p9", k: "environment resources pollution sustainability" },
+            { s: "DESIGN", t: "Minimalist Design", u: "content/design.html#p10", k: "less but better simplicity essential purity" },
+
+            // Series 08: Quantum Computing
+            { s: "QUANTA", t: "Quantum Computing", u: "content/quanta.html", k: "intro physics mechanics subatomic weirdness probability" },
+            { s: "QUANTA", t: "Heisenberg Uncertainty", u: "content/quanta.html#heisenberg", k: "position momentum precision measurement limit observation" },
+            { s: "QUANTA", t: "Bit vs Qubit", u: "content/quanta.html#qubits", k: "bloch sphere binary superposition 0 and 1 simultaneous" },
+            { s: "QUANTA", t: "Superposition", u: "content/quanta.html#superposition", k: "wave function interference states amplitudes probability" },
+            { s: "QUANTA", t: "Measurement Collapse", u: "content/quanta.html#measurement", k: "observation schrodinger cat probability decoherence eigenstate" },
+            { s: "QUANTA", t: "Entanglement", u: "content/quanta.html#entanglement", k: "spooky action correlation bell pair non-locality einstein podolsky rosen" },
+            { s: "QUANTA", t: "No-Cloning Theorem", u: "content/quanta.html#no-cloning", k: "copy duplication security encryption cryptography theorem" },
+            { s: "QUANTA", t: "Quantum Tunneling", u: "content/quanta.html#tunneling", k: "barrier annealing optimization wave penetration energy activation" },
+            { s: "QUANTA", t: "Cooper Pairs", u: "content/quanta.html#cooper", k: "superconductivity electrons bcs theory phonon attraction resistance zero" },
+            { s: "QUANTA", t: "Josephson Junction", u: "content/quanta.html#josephson", k: "hardware superconducting anharmonicity transmon squid artificial atom" },
+
+            // Series 09: System Architecture
+            { s: "SYS", t: "System Architecture", u: "content/system.html", k: "system design scale architecture distributed reliability trade-offs high availability fault tolerance sharding replication cap theorem" },
+            { s: "SYS", t: "Monolith vs Microservices", u: "content/system.html#monolith", k: "structural patterns modular microservices decoupling independent scaling soa service oriented architecture api gateway bff monolithic" },
+            { s: "SYS", t: "Load Balancing", u: "content/system.html#loadbalancing", k: "traffic control distribution round robin least connections ip hash nginx haproxy l4 l7 load balancer horizontal scaling" },
+            { s: "SYS", t: "Caching Strategy", u: "content/system.html#caching", k: "speed latency redis memcached lru ttl write-through cache-aside read-through write-back eviction policies cdn content delivery network" },
+            { s: "SYS", t: "CAP Theorem", u: "content/system.html#principles", k: "consistency availability partition tolerance distributed systems trade-offs eventual consistency strong consistency pacelc theorem" },
+            { s: "SYS", t: "Event-Driven (EDA)", u: "content/system.html#eda", k: "asynchronous producers consumers events message queue decoupling kafka rabbitmq pub sub publish subscribe event sourcing cqrs" },
+            { s: "SYS", t: "Databases & Scaling", u: "content/system.html#databases", k: "sql nosql sharding replication vertical horizontal scaling acid base master slave leader follower consistent hashing" },
+            { s: "SYS", t: "Observability", u: "content/system.html#observability", k: "monitoring logging tracing metrics latency errors saturation traffic golden signals prometheus grafana elk stack distributed tracing jaeger" },
+
+            // Series 10: Version Control
+            { s: "GIT", t: "Version Control", u: "content/git.html", k: "git version control repository commit branch merge conflict stashing" },
+            { s: "GIT", t: "The Three States", u: "content/git.html#lifecycle", k: "modified staged committed snapshot lifecycle" },
+            { s: "GIT", t: "Branching", u: "content/git.html#branching", k: "branch checkout main feature parallel development" },
+            { s: "GIT", t: "Merge Conflicts", u: "content/git.html#conflicts", k: "resolution ours theirs both markers" },
+            { s: "GIT", t: "Cherry Pick & Rebase", u: "content/git.html#advanced-tools", k: "precision history rewrite linear base" },
+            { s: "GIT", t: "Remote (GitHub)", u: "content/git.html#remote", k: "cloud clone origin push pull distributed" },
+            { s: "GIT", t: "Deployment Guide", u: "content/git.html#deployment", k: "deployment guide git init remote push github workflow" },
+        ];
+
+
+
+        const input = document.getElementById('site-search');
+        const resultsBox = document.getElementById('search-results');
+        let selectedIndex = -1;
+
+        input.addEventListener('input', (e) => {
+            const query = e.target.value.toLowerCase();
+            selectedIndex = -1;
+
+            if (query.length < 2) {
+                resultsBox.classList.remove('active');
+                return;
+            }
+
+            const results = searchIndex.filter(item =>
+                item.t.toLowerCase().includes(query) ||
+                item.k.includes(query) ||
+                item.s.toLowerCase().includes(query)
+            );
+
+            if (results.length > 0) {
+                resultsBox.innerHTML = results.map((item, index) => `
+                    <div class="result-item" data-url="${item.u}" data-index="${index}">
+                        <span class="result-series">Series: ${item.s}</span>
+                        <div class="result-title">${item.t}</div>
+                        ${item.k.includes(query) ? `<div class="result-context">Matches: "${query}"</div>` : ''}
+                    </div>
+                `).join('');
+                resultsBox.classList.add('active');
+
+                // Add click listeners
+                document.querySelectorAll('.result-item').forEach(el => {
+                    el.addEventListener('click', () => {
+                        window.location.href = el.dataset.url;
+                    });
+                });
+            } else {
+                resultsBox.innerHTML = `<div class="p-3 text-xs text-gray-400 text-center">No results found.</div>`;
+                resultsBox.classList.add('active');
+            }
+        });
+
+        // Keyboard Navigation
+        input.addEventListener('keydown', (e) => {
+            const items = document.querySelectorAll('.result-item');
+            if (!items.length) return;
+
+            if (e.key === 'ArrowDown') {
+                e.preventDefault();
+                selectedIndex = Math.min(selectedIndex + 1, items.length - 1);
+                updateSelection(items);
+            } else if (e.key === 'ArrowUp') {
+                e.preventDefault();
+                selectedIndex = Math.max(selectedIndex - 1, 0);
+                updateSelection(items);
+            } else if (e.key === 'Enter') {
+                e.preventDefault();
+                if (selectedIndex >= 0) {
+                    window.location.href = items[selectedIndex].dataset.url;
+                }
+            } else if (e.key === 'Escape') {
+                resultsBox.classList.remove('active');
+                input.blur();
+            }
+        });
+
+        function updateSelection(items) {
+            items.forEach((item, idx) => {
+                if (idx === selectedIndex) {
+                    item.classList.add('selected');
+                    item.scrollIntoView({ block: 'nearest' });
+                } else {
+                    item.classList.remove('selected');
+                }
+            });
+        }
+
+        // Close on click outside
+        document.addEventListener('click', (e) => {
+            if (!document.querySelector('.search-container').contains(e.target)) {
+                resultsBox.classList.remove('active');
+            }
+        });
+
+        // Fix: Reset Overlay on Page Show (handles browser back button)
+        window.addEventListener('pageshow', (event) => {
+            const overlay = document.getElementById('random-overlay');
+            if (overlay) overlay.classList.remove('active');
+
+            const card = document.getElementById('random-card');
+            if (card) card.classList.remove('random-card-pumping');
+        });
+        // Desktop Recommendation Modal Logic
+        window.addEventListener('DOMContentLoaded', () => {
+            const isMobile = window.innerWidth < 768;
+            const hasSeenModal = sessionStorage.getItem('seenDesktopModal');
+
+            if (isMobile && !hasSeenModal) {
+                const modal = document.getElementById('desktop-modal');
+                const btn = document.getElementById('close-desktop-modal');
+
+                if (modal && btn) {
+                    // Show
+                    setTimeout(() => {
+                        modal.classList.remove('hidden');
+                        modal.style.display = 'flex';
+                        setTimeout(() => {
+                            modal.classList.remove('opacity-0');
+                            modal.querySelector('div').classList.remove('scale-95');
+                            modal.querySelector('div').classList.add('scale-100');
+                        }, 10);
+                    }, 1000);
+
+                    // Close
+                    btn.addEventListener('click', () => {
+                        modal.classList.add('opacity-0');
+                        modal.querySelector('div').classList.remove('scale-100');
+                        modal.querySelector('div').classList.add('scale-95');
+                        setTimeout(() => {
+                            modal.classList.add('hidden');
+                            modal.style.display = 'none';
+                        }, 300);
+                        sessionStorage.setItem('seenDesktopModal', 'true');
+                    });
+                }
+            }
+        });
+    </script>
+
+    <!-- Liquid Transition Overlay -->
+    <div id="random-overlay"></div>
+    <!-- Desktop Recommendation Modal -->
+    <div id="desktop-modal"
+        class="fixed inset-0 z-[2000] hidden flex-col items-center justify-center p-4 bg-black/50 backdrop-blur-sm transition-opacity duration-300 opacity-0">
+        <div
+            class="bg-white border border-black p-6 max-w-sm w-full shadow-2xl transform scale-95 transition-transform duration-300">
+            <div class="flex flex-col items-center text-center gap-4">
+                <div class="icon-box text-black">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+                        <line x1="8" y1="21" x2="16" y2="21"></line>
+                        <line x1="12" y1="17" x2="12" y2="21"></line>
+                    </svg>
+                </div>
+                <h3 class="font-bold text-lg font-mono uppercase tracking-tight">Desktop Recommended</h3>
+                <p class="text-sm text-gray-600 leading-relaxed">
+                    This repository features complex visualizations that are best experienced on a larger screen.
+                </p>
+                <button id="close-desktop-modal"
+                    class="w-full py-3 bg-black text-white font-mono text-xs uppercase tracking-widest hover:bg-gray-800 transition-colors">
+                    Continue Anyway
+                </button>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
