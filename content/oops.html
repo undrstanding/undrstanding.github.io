@@ -1,0 +1,2508 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OOPS</title>
+    <link rel="icon" type="image/svg+xml" href="../assests/undrlogo.svg">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Roboto+Mono:wght@400;500;700&display=swap');
+
+        /* Global Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #d4d4d4;
+            border-radius: 3px;
+        }
+
+        :root {
+            /* Rams Palette - OOPS Red Edition */
+            --bg-color: #f4f4f4;
+            --card-bg: #ffffff;
+            --text-main: #111111;
+            --text-muted: #737373;
+            /* Red Accent (Industrial Red) */
+            --accent: #b91c1c;
+            --accent-light: #fef2f2;
+            --border: #e5e5e5;
+            --line: #d4d4d4;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            -webkit-font-smoothing: antialiased;
+            line-height: 1.6;
+        }
+
+        h1,
+        h2,
+        h3,
+        h4,
+        h5 {
+            font-weight: 600;
+            letter-spacing: -0.02em;
+            color: var(--text-main);
+        }
+
+        p {
+            color: #404040;
+        }
+
+        .mono {
+            font-family: 'Roboto Mono', monospace;
+        }
+
+        /* Industrial Grid Layout */
+        .rams-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .rams-card:hover {
+            border-color: #a3a3a3;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
+        }
+
+        @media (min-width: 768px) {
+            .rams-card {
+                padding: 2.5rem;
+            }
+        }
+
+        .rams-label {
+            font-family: 'Inter', sans-serif;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+            /* Changed from accent to muted */
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        /* Technical Context Box */
+        .tech-box {
+            background-color: #f8fafc;
+            border-left: 3px solid var(--accent);
+            padding: 1rem;
+            font-size: 0.85rem;
+            color: #475569;
+            margin-bottom: 1.5rem;
+            border-radius: 0 2px 2px 0;
+        }
+
+        .tech-box strong {
+            color: #1e293b;
+            display: block;
+            margin-bottom: 0.25rem;
+        }
+
+        .code-snippet {
+            font-family: 'Roboto Mono', monospace;
+            background-color: #1e293b;
+            color: #e2e8f0;
+            padding: 0.75rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            overflow-x: auto;
+            margin-top: 0.5rem;
+        }
+
+        /* Controls */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.5rem 1.25rem;
+            font-size: 0.85rem;
+            font-weight: 500;
+            border-radius: 2px;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            white-space: nowrap;
+        }
+
+        .btn-primary {
+            background-color: var(--accent);
+            color: white;
+            border: 1px solid var(--accent);
+        }
+
+        .btn-primary:hover {
+            background-color: #991b1b;
+            box-shadow: 0 2px 4px rgba(185, 28, 28, 0.2);
+        }
+
+        .btn-secondary {
+            background-color: transparent;
+            color: var(--text-main);
+            border: 1px solid #a3a3a3;
+        }
+
+        .btn-secondary:hover {
+            background-color: #f0f0f0;
+            border-color: #555;
+        }
+
+        /* Navigation */
+        .nav-link {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            padding: 0.5rem 0;
+            display: block;
+            transition: color 0.2s;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            color: var(--text-main);
+            font-weight: 600;
+        }
+
+        .nav-link.active::before {
+            content: "• ";
+            color: var(--accent);
+        }
+
+        .divider {
+            height: 1px;
+            background-color: var(--border);
+            width: 100%;
+            margin: 3rem 0;
+        }
+
+        /* Animations */
+        .section-reveal {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+        }
+
+        .section-reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .node-appear {
+            animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+
+        @keyframes popIn {
+            from {
+                opacity: 0;
+                transform: scale(0.5) translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+
+        .shake {
+            animation: shake 0.5s cubic-bezier(.36, .07, .19, .97) both;
+        }
+
+        @keyframes shake {
+
+            10%,
+            90% {
+                transform: translate3d(-1px, 0, 0);
+            }
+
+            20%,
+            80% {
+                transform: translate3d(2px, 0, 0);
+            }
+
+            30%,
+            50%,
+            70% {
+                transform: translate3d(-4px, 0, 0);
+            }
+
+            40%,
+            60% {
+                transform: translate3d(4px, 0, 0);
+            }
+        }
+
+        .flow-particle {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background-color: var(--accent);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 50;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="flex min-h-screen flex-col lg:flex-row">
+
+        <!-- Mobile Header -->
+        <header
+            class="lg:hidden fixed top-0 w-full bg-[#f4f4f4] border-b border-[#e5e5e5] z-[100] px-6 py-4 flex justify-between items-center h-16">
+            <div>
+                <h1 class="text-sm font-bold tracking-wide uppercase text-black leading-tight">
+                    Object<br>Oriented</h1>
+            </div>
+            <button onclick="toggleMobileMenu()" class="text-black focus:outline-none p-2 rounded">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+            </button>
+        </header>
+
+        <!-- Mobile Menu Overlay -->
+        <div id="mobile-menu" class="fixed inset-0 bg-[#f4f4f4] z-[90] hidden flex-col pt-20 px-6 overflow-y-auto">
+            <nav class="flex flex-col">
+                <span class="text-[10px] text-gray-400 font-bold uppercase tracking-wider px-0 py-2">01. Basics</span>
+                <a href="#intro" class="mobile-nav-link" onclick="toggleMobileMenu()">Introduction</a>
+                <a href="#classes" class="mobile-nav-link" onclick="toggleMobileMenu()">Classes & Structs</a>
+                <a href="#constructors" class="mobile-nav-link" onclick="toggleMobileMenu()">Constructors &
+                    Destructors</a>
+
+                <span class="text-[10px] text-gray-400 font-bold uppercase tracking-wider px-0 py-2 mt-4">02.
+                    Pillars</span>
+                <a href="#encapsulation" class="mobile-nav-link" onclick="toggleMobileMenu()">Encapsulation</a>
+                <a href="#inheritance" class="mobile-nav-link" onclick="toggleMobileMenu()">Inheritance (Types)</a>
+                <a href="#polymorphism" class="mobile-nav-link" onclick="toggleMobileMenu()">Polymorphism</a>
+                <a href="#interfaces" class="mobile-nav-link" onclick="toggleMobileMenu()">Interfaces</a>
+                <a href="#abstraction" class="mobile-nav-link" onclick="toggleMobileMenu()">Abstraction</a>
+
+                <span class="text-[10px] text-gray-400 font-bold uppercase tracking-wider px-0 py-2 mt-4">03.
+                    Advanced</span>
+                <a href="#final" class="mobile-nav-link" onclick="toggleMobileMenu()">The Final Trinity</a>
+                <a href="#threading" class="mobile-nav-link" onclick="toggleMobileMenu()">Multi-Threading</a>
+                <a href="#static" class="mobile-nav-link" onclick="toggleMobileMenu()">Static Members</a>
+                <a href="#relationships" class="mobile-nav-link" onclick="toggleMobileMenu()">Relationships</a>
+                <a href="#gc" class="mobile-nav-link" onclick="toggleMobileMenu()">Garbage Collection</a>
+                <a href="#glossary" class="mobile-nav-link" onclick="toggleMobileMenu()">Glossary</a>
+
+                <span class="text-[10px] text-gray-400 font-bold uppercase tracking-wider px-0 py-2 mt-4">04.
+                    Assessment</span>
+                <a href="#quiz" class="mobile-nav-link border-b-0" onclick="toggleMobileMenu()">Knowledge Check</a>
+            </nav>
+        </div>
+
+        <!-- Sidebar (Desktop) -->
+        <aside
+            class="hidden lg:block w-64 fixed h-screen bg-[#f4f4f4] border-r border-[#e5e5e5] z-50 overflow-y-auto thin-scrollbar">
+            <div class="p-8 h-full flex flex-col justify-between">
+                <div>
+                    <a href="../index.html"
+                        class="inline-flex items-center gap-2 px-4 py-2 mb-8 text-[10px] font-mono uppercase tracking-wider text-gray-600 border border-gray-300 hover:bg-black hover:text-white hover:border-black transition-all duration-200">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                        </svg>
+                        Back to Home
+                    </a>
+                    <div class="mb-12">
+                        <h1 class="text-sm font-bold tracking-wide uppercase text-black">Object<br>Oriented</h1>
+                        <p class="text-[10px] text-gray-500 mt-1 uppercase tracking-wider">OOPS</p>
+                    </div>
+
+                    <nav class="space-y-1">
+                        <a href="#intro" class="nav-link font-medium text-black">Introduction</a>
+
+                        <div class="pt-4 pb-1 text-[10px] text-gray-400 font-bold uppercase tracking-wider">01. The
+                            Factory</div>
+                        <a href="#classes" class="nav-link">Classes & Structs</a>
+                        <a href="#constructors" class="nav-link">Constructors & Destructors</a>
+
+                        <div class="pt-4 pb-1 text-[10px] text-gray-400 font-bold uppercase tracking-wider">02. The
+                            Pillars</div>
+                        <a href="#encapsulation" class="nav-link">Encapsulation</a>
+                        <a href="#inheritance" class="nav-link">Inheritance hierarchy</a>
+                        <a href="#polymorphism" class="nav-link">Polymorphism</a>
+                        <a href="#interfaces" class="nav-link">Interfaces</a>
+                        <a href="#abstraction" class="nav-link">Abstraction</a>
+
+                        <div class="pt-4 pb-1 text-[10px] text-gray-400 font-bold uppercase tracking-wider">03. Advanced
+                            Concepts</div>
+                        <a href="#final" class="nav-link">The Final Trinity</a>
+                        <a href="#threading" class="nav-link">Multi-Threading</a>
+                        <a href="#static" class="nav-link">Static Members</a>
+                        <a href="#relationships" class="nav-link">Relationships</a>
+                        <a href="#gc" class="nav-link">Garbage Collection</a>
+                        <a href="#glossary" class="nav-link">Glossary</a>
+
+                        <div class="pt-4 pb-1 text-[10px] text-gray-400 font-bold uppercase tracking-wider">04.
+                            Assessment
+                        </div>
+                        <a href="#quiz" class="nav-link">Knowledge Check</a>
+                    </nav>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 lg:ml-64 bg-white w-full">
+            <div class="max-w-4xl mx-auto px-4 sm:px-8 py-24 lg:py-20">
+
+                <!-- Hero Section -->
+                <section id="intro" class="mb-16 md:mb-24">
+                    <h2 class="text-3xl md:text-5xl font-bold mb-6 text-black tracking-tight leading-tight">
+                        Modeling the <br>Real World
+                    </h2>
+                    <p class="text-base md:text-lg text-gray-600 max-w-2xl font-light leading-relaxed mb-6">
+                        Object-Oriented Programming (OOP) is a paradigm that organizes software design around
+                        <strong>data</strong> (attributes) and <strong>logic</strong> (methods), rather than just logic.
+                    </p>
+                    <div class="tech-box rounded-sm">
+                        <strong>Why use OOP?</strong>
+                        <ul class="list-disc list-outside ml-4 mt-2 space-y-1">
+                            <li><strong>Modularity:</strong> Code is easier to troubleshoot and maintain.</li>
+                            <li><strong>Reuse:</strong> Don't repeat yourself (DRY) via inheritance and composition.
+                            </li>
+                            <li><strong>Scalability:</strong> Easier to manage large systems by breaking them into
+                                object interactions.</li>
+                        </ul>
+                    </div>
+                </section>
+
+                <!-- Inline Quiz: Intro -->
+                <div id="quiz-oops-intro" class="mb-16 md:mb-24"></div>
+
+                <div class="divider hidden md:block"></div>
+
+                <!-- 01. Classes & Objects -->
+                <section id="classes" class="mb-20 md:mb-24">
+                    <span class="rams-label">01.a / The Blueprint</span>
+                    <h3 class="text-2xl font-bold mb-4">Classes & Objects</h3>
+                    <p class="text-sm text-gray-600 mb-6 max-w-xl">
+                        Think of a <strong>Class</strong> as an architectural blueprint. It describes what a house looks
+                        like but you can't live in it.
+                        An <strong>Object</strong> is the actual house built from that blueprint. This process is called
+                        <em>Instantiation</em>.
+                    </p>
+
+                    <div class="tech-box">
+                        <strong>Stack vs Heap Memory</strong>
+                        <div class="mb-2 mt-1">When you write <code>Car myCar = new Car();</code>:</div>
+                        <ul class="list-disc list-outside ml-4 space-y-1">
+                            <li><strong>Stack:</strong> Holds the reference variable <code>myCar</code> (fast, strictly
+                                ordered execution memory).</li>
+                            <li><strong>Heap:</strong> Holds the actual object instance (large, free-floating storage
+                                memory).</li>
+                        </ul>
+                    </div>
+
+                    <div class="rams-card">
+                        <div class="flex flex-col gap-8">
+                            <!-- Visual -->
+                            <div class="flex flex-col md:flex-row gap-8 items-stretch">
+                                <!-- The Blueprint -->
+                                <div
+                                    class="w-full md:w-1/3 border-2 border-dashed border-gray-300 p-6 bg-gray-50 relative rounded-sm flex flex-col justify-between">
+                                    <div
+                                        class="absolute -top-3 left-4 bg-gray-50 px-2 text-[10px] uppercase font-bold text-gray-400">
+                                        Class Definition</div>
+                                    <div class="font-mono text-xs text-gray-600">
+                                        <span class="text-purple-600">class</span> <span
+                                            class="text-yellow-600">Car</span> {<br>
+                                        &nbsp;&nbsp;<span class="text-blue-600">constructor</span>(color) {<br>
+                                        &nbsp;&nbsp;&nbsp;&nbsp;<span class="text-red-600">this</span>.color =
+                                        color;<br>
+                                        &nbsp;&nbsp;&nbsp;&nbsp;<span class="text-red-600">this</span>.id = rand();<br>
+                                        &nbsp;&nbsp;}<br>
+                                        <span class="opacity-50">&nbsp;&nbsp;// Destructor (conceptual)<br>
+                                            &nbsp;&nbsp;~Car() { cleanup(); }</span><br>
+                                        }
+                                    </div>
+                                    <div class="mt-4 text-[10px] text-gray-400 italic">
+                                        This code defines structure but takes up no memory until called.
+                                    </div>
+                                </div>
+
+                                <!-- The Factory Output -->
+                                <div
+                                    class="w-full md:w-2/3 bg-gray-50 border border-gray-100 p-4 relative min-h-[200px]">
+                                    <div class="absolute top-2 right-2 text-[10px] text-gray-300 font-bold uppercase">
+                                        Memory Heap</div>
+                                    <div class="flex flex-wrap gap-4" id="object-container">
+                                        <!-- JS populates -->
+                                        <div class="text-sm text-gray-400 w-full h-full flex items-center justify-center italic"
+                                            id="empty-state">
+                                            No instances created yet.
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Controls -->
+                            <div
+                                class="border-t border-gray-100 pt-6 flex flex-col sm:flex-row justify-between items-center gap-4">
+                                <div class="flex gap-2">
+                                    <button onclick="createObject('Red')" class="btn btn-primary text-xs">
+                                        <span>new Car('Red')</span>
+                                    </button>
+                                    <button onclick="createObject('Blue')" class="btn btn-secondary text-xs">
+                                        <span>new Car('Blue')</span>
+                                    </button>
+                                </div>
+                                <div class="text-right">
+                                    <div class="text-[10px] text-gray-400 uppercase tracking-wide mb-1">Status</div>
+                                    <div class="font-mono text-xs text-gray-600" id="class-status">Waiting for
+                                        instantiation...</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Classes vs Structures -->
+                    <div class="mt-12 bg-gray-50 p-6 border-l-4 border-gray-800">
+                        <h4 class="text-sm font-bold uppercase tracking-wide mb-4">Class vs Object vs Structure</h4>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-xs text-left">
+                                <thead class="border-b border-gray-300">
+                                    <tr>
+                                        <th class="py-2 text-gray-500 font-medium">Entity</th>
+                                        <th class="py-2 text-gray-500 font-medium">Nature</th>
+                                        <th class="py-2 text-gray-500 font-medium">Memory</th>
+                                        <th class="py-2 text-gray-500 font-medium">Analogy</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-gray-200">
+                                    <tr>
+                                        <td class="py-2 font-mono font-bold">Class</td>
+                                        <td class="py-2">Blueprint / Template</td>
+                                        <td class="py-2">None (Logical definition)</td>
+                                        <td class="py-2">The Architect's Drawing</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="py-2 font-mono font-bold">Object</td>
+                                        <td class="py-2">Instance / Entity</td>
+                                        <td class="py-2">Heap Allocation</td>
+                                        <td class="py-2">The Actual House</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="py-2 font-mono font-bold">Structure</td>
+                                        <td class="py-2">Lightweight Data Container</td>
+                                        <td class="py-2">Stack (Value Type)</td>
+                                        <td class="py-2">A Post-it Note</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <p class="text-[10px] text-gray-400 mt-2 italic">
+                            * Note: In C++, structs default to public access, classes to private. In C#, structs are
+                            value types (stack), classes are reference types (heap).
+                        </p>
+                    </div>
+                </section>
+
+                <!-- Inline Quiz: Classes -->
+                <div id="quiz-oops-classes" class="mb-20 md:mb-24"></div>
+
+                <!-- 01.b Constructors & Destructors -->
+                <section id="constructors" class="mb-20 md:mb-24">
+                    <span class="rams-label">01.b / Lifecycle</span>
+                    <h3 class="text-2xl font-bold mb-4">Constructors & Destructors</h3>
+                    <p class="text-sm text-gray-600 mb-6 max-w-xl">
+                        A <strong>Constructor</strong> breathes life into an object (Initialization). A
+                        <strong>Destructor</strong> takes it away (Clean-up).
+                        This cycle ensures resources (like file handles or network connections) are managed properly.
+                    </p>
+
+                    <div class="tech-box">
+                        <strong>The 'this' Keyword</strong>
+                        Inside a constructor, <code>this</code> refers to the specific instance currently being created.
+                        It prevents ambiguity between class attributes and parameters.
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+                        <div class="bg-gray-50 p-4 border border-gray-200 rounded-sm">
+                            <div class="font-bold text-xs uppercase mb-2 text-gray-500">Default</div>
+                            <div class="font-mono text-[10px] text-gray-600 mb-2">Robot() {<br>&nbsp;&nbsp;this.name =
+                                "Droid";<br>}</div>
+                            <p class="text-xs text-gray-500">Initializes object with hardcoded default values. No
+                                arguments required.</p>
+                        </div>
+                        <div class="bg-gray-50 p-4 border border-gray-200 rounded-sm">
+                            <div class="font-bold text-xs uppercase mb-2 text-gray-500">Parameterized</div>
+                            <div class="font-mono text-[10px] text-gray-600 mb-2">Robot(name) {<br>&nbsp;&nbsp;this.name
+                                = name;<br>}</div>
+                            <p class="text-xs text-gray-500">Initializes object with specific values passed as arguments
+                                during creation.</p>
+                        </div>
+                        <div class="bg-gray-50 p-4 border border-gray-200 rounded-sm">
+                            <div class="font-bold text-xs uppercase mb-2 text-gray-500">Copy</div>
+                            <div class="font-mono text-[10px] text-gray-600 mb-2">Robot(other)
+                                {<br>&nbsp;&nbsp;this.name = other.name;<br>}</div>
+                            <p class="text-xs text-gray-500">Creates a new object by copying the state of an existing
+                                object.</p>
+                        </div>
+                    </div>
+
+                    <div class="rams-card">
+                        <div class="flex flex-col gap-6">
+                            <div class="flex flex-wrap gap-4 min-h-[100px] items-center justify-center p-4 bg-gray-50 border border-gray-100 relative"
+                                id="constructor-container">
+                                <div class="absolute top-2 right-2 text-[10px] text-gray-300 font-bold uppercase">Object
+                                    Instances</div>
+                                <div class="text-sm text-gray-400 italic" id="constructor-empty">No robots built yet.
+                                </div>
+                            </div>
+
+                            <div
+                                class="border-t border-gray-100 pt-6 flex flex-col md:flex-row justify-center gap-4 items-center">
+                                <!-- Default -->
+                                <button onclick="buildDefault()" class="btn btn-secondary text-xs">
+                                    <span class="text-gray-500 mr-2">Default:</span> new Robot()
+                                </button>
+
+                                <!-- Param -->
+                                <div class="flex items-center gap-2 border-l border-r border-gray-200 px-4">
+                                    <span class="text-xs text-gray-500">Param:</span>
+                                    <input type="text" id="param-name" placeholder="Name..."
+                                        class="border border-gray-300 px-2 py-1 text-xs w-24 rounded-sm focus:border-red-500 focus:outline-none">
+                                    <button onclick="buildParam()" class="btn btn-primary text-xs">
+                                        Build
+                                    </button>
+                                </div>
+
+                                <!-- Copy -->
+                                <button onclick="buildCopy()"
+                                    class="btn btn-secondary text-xs disabled:opacity-50 disabled:cursor-not-allowed"
+                                    id="btn-copy" disabled>
+                                    <span class="text-gray-500 mr-2">Copy:</span> from Last
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Inline Quiz: Constructors -->
+                <div id="quiz-oops-constructors" class="mb-20 md:mb-24"></div>
+
+                <!-- 02. Encapsulation -->
+                <section id="encapsulation" class="mb-20 md:mb-24">
+                    <span class="rams-label">02 / Protection</span>
+                    <h3 class="text-2xl font-bold mb-4">Encapsulation</h3>
+                    <p class="text-sm text-gray-600 mb-6 max-w-xl">
+                        Encapsulation bundles data (variables) and methods (functions) together and restricts direct
+                        access to some of an object's components.
+                        This is the <strong>"Black Box"</strong> principle: you know what the object does, but not
+                        necessarily how it stores its data internally.
+                    </p>
+
+                    <div class="tech-box">
+                        <strong>Access Modifiers</strong>
+                        <ul class="list-disc list-outside ml-4 mt-1">
+                            <li><strong>Public:</strong> Accessible by everyone.</li>
+                            <li><strong>Private:</strong> Accessible only within the class itself.</li>
+                            <li><strong>Protected:</strong> Accessible by the class and its subclasses (Inheritance).
+                            </li>
+                        </ul>
+                    </div>
+
+                    <!-- Bank Vault Visual -->
+                    <div class="rams-card">
+                        <div class="flex flex-col gap-8 md:flex-row items-center justify-center">
+                            <!-- Vault -->
+                            <div class="w-48 h-48 bg-gray-800 rounded-xl relative flex items-center justify-center shadow-2xl border-4 border-gray-600 transition-all duration-300"
+                                id="vault-door">
+                                <div class="absolute inset-0 bg-gradient-to-br from-gray-700 to-gray-900 rounded-lg">
+                                </div>
+                                <!-- Lock -->
+                                <div
+                                    class="w-24 h-24 rounded-full border-4 border-gray-500 flex items-center justify-center bg-gray-300 relative z-10 shadow-inner">
+                                    <div class="text-2xl font-mono font-bold text-gray-700">$<span
+                                            id="vault-value">1000</span></div>
+                                </div>
+                                <!-- Status -->
+                                <div class="absolute -bottom-3 bg-black px-3 py-1 rounded border border-gray-700">
+                                    <span class="text-[10px] uppercase font-bold text-gray-400"
+                                        id="vault-status">LOCKED</span>
+                                </div>
+                            </div>
+
+                            <!-- Controls -->
+                            <div class="flex flex-col gap-4">
+                                <div class="group cursor-pointer p-3 border border-red-200 bg-red-50 rounded hover:bg-red-100 transition-colors"
+                                    onclick="tryDirectAccess()">
+                                    <div class="flex justify-between items-center mb-1 gap-4">
+                                        <span class="text-[10px] font-bold text-red-600 uppercase whitespace-nowrap">Bad
+                                            Practice</span>
+                                        <code class="text-xs text-red-800 text-right">obj.balance = 2000;</code>
+                                    </div>
+                                    <p class="text-[11px] text-red-700 opacity-80 group-hover:opacity-100">Direct
+                                        access
+                                        bypassing security.</p>
+                                </div>
+
+                                <div class="group cursor-pointer p-3 border border-green-200 bg-green-50 rounded hover:bg-green-100 transition-colors"
+                                    onclick="useMethod()">
+                                    <div class="flex justify-between items-center mb-1 gap-4">
+                                        <span
+                                            class="text-[10px] font-bold text-green-600 uppercase whitespace-nowrap">Good
+                                            Practice</span>
+                                        <code class="text-xs text-green-800 text-right">obj.deposit(100);</code>
+                                    </div>
+                                    <p class="text-[11px] text-green-700 opacity-80 group-hover:opacity-100">Use a
+                                        public
+                                        method to validate.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Security Log -->
+                        <div class="mt-6 bg-gray-900 rounded p-4 font-mono text-xs h-32 overflow-y-auto"
+                            id="security-log">
+                            <div class="text-gray-500 border-b border-gray-700 pb-1 mb-2">Security Audit Log</div>
+                            <div class="text-green-400">> System initialized.</div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Inline Quiz: Encapsulation -->
+                <div id="quiz-oops-encapsulation" class="mb-20 md:mb-24"></div>
+
+                <!-- 03. Inheritance -->
+                <section id="inheritance" class="mb-20 md:mb-24">
+                    <span class="rams-label">03 / Reusability</span>
+                    <h3 class="text-2xl font-bold mb-4">Inheritance</h3>
+                    <p class="text-sm text-gray-600 mb-6 max-w-xl">
+                        Inheritance allows a class (Child) to derive methods and properties from another class (Parent).
+                        It establishes an <strong>"Is-A"</strong> relationship (e.g., A Car <em>is a</em> Vehicle). This
+                        creates a hierarchy and reduces code duplication.
+                    </p>
+
+                    <div class="tech-box">
+                        <strong>The 'super' Keyword</strong>
+                        Used inside a child class to call the parent's constructor or methods. For example,
+                        <code>super()</code> initializes the parent part of the object before the child adds its own
+                        specific properties.
+                    </div>
+
+                    <!-- Inheritance Types Visuals -->
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+                        <!-- Single -->
+                        <div class="bg-gray-50 border border-gray-100 p-4 rounded-sm flex flex-col items-center">
+                            <h4 class="text-[10px] font-bold uppercase mb-4 text-gray-500">Single</h4>
+                            <div class="flex flex-col items-center gap-2">
+                                <div
+                                    class="w-12 h-8 border border-black bg-white flex items-center justify-center text-[9px] font-mono">
+                                    A</div>
+                                <div class="h-4 w-[1px] bg-black"></div>
+                                <div
+                                    class="w-12 h-8 border border-black bg-white flex items-center justify-center text-[9px] font-mono">
+                                    B</div>
+                            </div>
+                        </div>
+
+                        <!-- Multilevel -->
+                        <div class="bg-gray-50 border border-gray-100 p-4 rounded-sm flex flex-col items-center">
+                            <h4 class="text-[10px] font-bold uppercase mb-4 text-gray-500">Multilevel</h4>
+                            <div class="flex flex-col items-center gap-2">
+                                <div
+                                    class="w-12 h-8 border border-gray-400 bg-white flex items-center justify-center text-[9px] font-mono text-gray-400">
+                                    A</div>
+                                <div class="h-3 w-[1px] bg-gray-300"></div>
+                                <div
+                                    class="w-12 h-8 border border-black bg-white flex items-center justify-center text-[9px] font-mono">
+                                    B</div>
+                                <div class="h-3 w-[1px] bg-black"></div>
+                                <div
+                                    class="w-12 h-8 border border-black bg-white flex items-center justify-center text-[9px] font-mono">
+                                    C</div>
+                            </div>
+                        </div>
+
+                        <!-- Hierarchical -->
+                        <div class="bg-gray-50 border border-gray-100 p-4 rounded-sm flex flex-col items-center">
+                            <h4 class="text-[10px] font-bold uppercase mb-4 text-gray-500">Hierarchical</h4>
+                            <div class="flex flex-col items-center gap-2">
+                                <div
+                                    class="w-12 h-8 border border-black bg-white flex items-center justify-center text-[9px] font-mono">
+                                    A</div>
+                                <div class="flex w-16 justify-center relative h-4">
+                                    <div class="absolute top-0 h-[1px] w-full bg-black"></div>
+                                    <div class="absolute top-0 left-0 h-4 w-[1px] bg-black"></div>
+                                    <div class="absolute top-0 right-0 h-4 w-[1px] bg-black"></div>
+                                </div>
+                                <div class="flex gap-4">
+                                    <div
+                                        class="w-8 h-8 border border-black bg-white flex items-center justify-center text-[9px] font-mono">
+                                        B</div>
+                                    <div
+                                        class="w-8 h-8 border border-black bg-white flex items-center justify-center text-[9px] font-mono">
+                                        C</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Multiple (Diamond) -->
+                        <div
+                            class="bg-gray-50 border border-gray-100 p-4 rounded-sm flex flex-col items-center relative overflow-hidden group">
+                            <h4 class="text-[10px] font-bold uppercase mb-4 text-gray-500">Multiple</h4>
+                            <div class="flex flex-col items-center gap-1">
+                                <div class="flex gap-4 relative">
+                                    <div
+                                        class="w-8 h-8 border border-gray-400 bg-white flex items-center justify-center text-[9px] font-mono text-gray-400">
+                                        A</div>
+                                    <div
+                                        class="w-8 h-8 border border-gray-400 bg-white flex items-center justify-center text-[9px] font-mono text-gray-400">
+                                        B</div>
+                                </div>
+                                <div class="flex w-16 justify-center relative h-4">
+                                    <div class="absolute top-0 h-[1px] w-full bg-black"></div> <!-- Connector -->
+                                    <div class="absolute top-0 left-4 h-4 w-[1px] bg-black"></div>
+                                    <!-- Down to C -->
+                                </div>
+                                <div
+                                    class="w-12 h-8 border border-red-500 bg-red-50 flex items-center justify-center text-[9px] font-mono text-red-600 font-bold">
+                                    C</div>
+                            </div>
+                            <!-- Diamond Problem Tooltip -->
+                            <div
+                                class="absolute inset-0 bg-white/95 flex flex-col items-center justify-center p-2 opacity-0 group-hover:opacity-100 transition-opacity text-center">
+                                <div class="text-[9px] font-bold text-red-600 uppercase mb-1">The Diamond Problem
+                                </div>
+                                <p class="text-[8px] text-gray-500 leading-tight">If A and B both have
+                                    <code>run()</code>, which one does C inherit? Ambiguity!
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="rams-card">
+                        <div class="relative min-h-[400px] flex flex-col" id="inheritance-canvas">
+                            <!-- Tree Visual -->
+                            <div class="flex flex-col items-center gap-12 relative z-10 w-full overflow-x-auto pb-4">
+
+                                <!-- Parent -->
+                                <div class="w-56 p-4 border-2 border-gray-800 bg-white relative group transition-all duration-300 shadow-md"
+                                    id="parent-node">
+                                    <div
+                                        class="absolute -top-3 left-1/2 -translate-x-1/2 bg-gray-800 px-3 text-[10px] uppercase font-bold text-white tracking-widest">
+                                        Parent (SuperClass)</div>
+                                    <div class="text-center font-bold text-lg mb-3">Vehicle</div>
+                                    <div class="bg-gray-50 p-2 rounded border border-gray-100">
+                                        <div
+                                            class="text-[10px] text-gray-400 uppercase font-bold mb-1 border-b border-gray-200 pb-1">
+                                            Properties</div>
+                                        <div class="space-y-1 text-xs font-mono text-gray-600" id="parent-traits">
+                                            <div class="flex items-center gap-2">
+                                                <div class="w-1.5 h-1.5 rounded-full bg-gray-400"></div> speed
+                                            </div>
+                                            <div class="flex items-center gap-2">
+                                                <div class="w-1.5 h-1.5 rounded-full bg-gray-400"></div> engine
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Connector Lines (SVG) -->
+                                <svg class="absolute top-[120px] w-full h-20 pointer-events-none" style="z-index: -1;">
+                                    <!-- Main vertical -->
+                                    <line x1="50%" y1="0" x2="50%" y2="20" stroke="#d4d4d4" stroke-width="2" />
+                                    <!-- Horizontal branch -->
+                                    <line x1="30%" y1="20" x2="70%" y2="20" stroke="#d4d4d4" stroke-width="2" />
+                                    <!-- Left branch down -->
+                                    <line x1="30%" y1="20" x2="30%" y2="80" stroke="#d4d4d4" stroke-width="2" />
+                                    <!-- Right branch down -->
+                                    <line x1="70%" y1="20" x2="70%" y2="80" stroke="#d4d4d4" stroke-width="2" />
+                                </svg>
+
+                                <!-- Children -->
+                                <div class="flex justify-around w-full px-4">
+                                    <!-- Child 1 -->
+                                    <div class="w-40 p-3 border border-gray-300 bg-white relative shadow-sm"
+                                        id="child-car">
+                                        <div
+                                            class="absolute -top-2 left-1/2 -translate-x-1/2 bg-gray-100 px-2 text-[9px] uppercase font-bold text-gray-500">
+                                            Child (SubClass)</div>
+                                        <div class="text-center font-bold text-sm mb-2 mt-2">Car</div>
+                                        <div
+                                            class="space-y-1 text-[10px] font-mono text-gray-400 opacity-60 inherited-traits pl-2 border-l-2 border-gray-200">
+                                            <div>↳ speed</div>
+                                            <div>↳ engine</div>
+                                        </div>
+                                        <div
+                                            class="mt-2 pt-2 border-t border-gray-100 text-[10px] font-mono text-red-600 font-bold">
+                                            + trunk
+                                        </div>
+                                    </div>
+
+                                    <!-- Child 2 -->
+                                    <div class="w-40 p-3 border border-gray-300 bg-white relative shadow-sm"
+                                        id="child-bike">
+                                        <div
+                                            class="absolute -top-2 left-1/2 -translate-x-1/2 bg-gray-100 px-2 text-[9px] uppercase font-bold text-gray-500">
+                                            Child (SubClass)</div>
+                                        <div class="text-center font-bold text-sm mb-2 mt-2">Bike</div>
+                                        <div
+                                            class="space-y-1 text-[10px] font-mono text-gray-400 opacity-60 inherited-traits pl-2 border-l-2 border-gray-200">
+                                            <div>↳ speed</div>
+                                            <div>↳ engine</div>
+                                        </div>
+                                        <div
+                                            class="mt-2 pt-2 border-t border-gray-100 text-[10px] font-mono text-red-600 font-bold">
+                                            + kickstand
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Controls -->
+                            <div class="absolute top-4 right-4 flex flex-col gap-2 z-20 items-end">
+                                <button onclick="addTrait()" id="add-trait-btn"
+                                    class="btn btn-primary text-xs shadow-lg">
+                                    Inject 'GPS' to Parent
+                                </button>
+                                <button onclick="resetInheritance()"
+                                    class="btn btn-secondary text-xs bg-white text-gray-500 border-gray-300 hover:text-black">
+                                    Reset
+                                </button>
+                                <p class="text-[10px] text-gray-400 text-right max-w-[120px] mt-2">
+                                    Notice how adding to Parent automatically updates both Children.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Inline Quiz: Inheritance -->
+                <div id="quiz-oops-inheritance" class="mb-20 md:mb-24"></div>
+
+                <!-- 04.a Polymorphism (Overriding) -->
+                <section id="polymorphism" class="mb-20 md:mb-24">
+                    <span class="rams-label">04.a / Method Overriding</span>
+                    <h3 class="text-2xl font-bold mb-4">Runtime Polymorphism</h3>
+                    <p class="text-sm text-gray-600 mb-6 max-w-xl">
+                        <strong>Method Overriding</strong> allows a child class to provide a specific implementation of
+                        a method that is already provided by its parent.
+                        The method name `speak()` is the same, but the result differs based on the object type at
+                        runtime. This implies the object can <strong>take many forms</strong> (Poly-morphism).
+                    </p>
+
+                    <div class="tech-box">
+                        <strong>Late Binding</strong>
+                        This is also known as <em>Dynamic Binding</em>. The decision of exactly which method to run is
+                        deferred until the program is actually running (runtime), rather than when it's compiled.
+                    </div>
+
+                    <div class="rams-card">
+                        <!-- Code Context -->
+                        <div class="mb-6 bg-gray-900 rounded-sm p-4 font-mono text-xs text-gray-300 overflow-x-auto">
+                            <span class="text-purple-400">const</span> animals = [ <span class="text-yellow-400">new
+                                Dog()</span>, <span class="text-yellow-400">new Cat()</span>, <span
+                                class="text-yellow-400">new
+                                Duck()</span> ];<br><br>
+                            <span class="text-gray-500">// We call the SAME method on all of them:</span><br>
+                            animals.<span class="text-blue-400">forEach</span>(animal => {<br>
+                            &nbsp;&nbsp;animal.<span class="text-green-400 font-bold">speak()</span>; <span
+                                class="text-gray-500">//
+                                The execution morphs based on type</span><br>
+                            });
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-center">
+
+                            <!-- Dog -->
+                            <div class="p-4 border-2 border-transparent bg-gray-50 rounded-sm flex flex-col items-center transition-all duration-300 cursor-pointer hover:border-gray-300 hover:shadow-sm"
+                                id="card-dog" onclick="triggerIndividualPoly('dog')">
+                                <div class="text-4xl mb-3">🐕</div>
+                                <div class="font-bold text-sm mb-2">Dog Class</div>
+                                <div class="w-full bg-white border border-gray-200 p-2 rounded text-xs font-mono text-gray-400 h-16 flex items-center justify-center transition-all"
+                                    id="poly-dog">
+                                    Click Me
+                                </div>
+                            </div>
+
+                            <!-- Cat -->
+                            <div class="p-4 border-2 border-transparent bg-gray-50 rounded-sm flex flex-col items-center transition-all duration-300 cursor-pointer hover:border-gray-300 hover:shadow-sm"
+                                id="card-cat" onclick="triggerIndividualPoly('cat')">
+                                <div class="text-4xl mb-3">🐈</div>
+                                <div class="font-bold text-sm mb-2">Cat Class</div>
+                                <div class="w-full bg-white border border-gray-200 p-2 rounded text-xs font-mono text-gray-400 h-16 flex items-center justify-center transition-all"
+                                    id="poly-cat">
+                                    Click Me
+                                </div>
+                            </div>
+
+                            <!-- Duck -->
+                            <div class="p-4 border-2 border-transparent bg-gray-50 rounded-sm flex flex-col items-center transition-all duration-300 cursor-pointer hover:border-gray-300 hover:shadow-sm"
+                                id="card-duck" onclick="triggerIndividualPoly('duck')">
+                                <div class="text-4xl mb-3">🦆</div>
+                                <div class="font-bold text-sm mb-2">Duck Class</div>
+                                <div class="w-full bg-white border border-gray-200 p-2 rounded text-xs font-mono text-gray-400 h-16 flex items-center justify-center transition-all"
+                                    id="poly-duck">
+                                    Click Me
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <div class="mt-8 flex justify-center gap-4">
+                            <button onclick="triggerPolymorphism()" class="btn btn-primary w-full md:w-auto shadow-lg">
+                                Run Loop (All)
+                            </button>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Inline Quiz: Polymorphism -->
+                <div id="quiz-oops-polymorphism" class="mb-20 md:mb-24"></div>
+
+                <!-- 04.b Method Overloading -->
+                <section id="overloading" class="mb-20 md:mb-24">
+                    <span class="rams-label">04.b / Method Overloading</span>
+                    <h3 class="text-2xl font-bold mb-4">Compile-Time Polymorphism</h3>
+                    <p class="text-sm text-gray-600 mb-6 max-w-xl">
+                        <strong>Method Overloading</strong> happens when multiple methods share the same name but have
+                        different parameters (signatures).
+                        Think of a "Smart Printer" that knows how to handle text, numbers, or images differently, even
+                        though the command is always `print()`.
+                    </p>
+
+                    <div class="tech-box">
+                        <strong>Early Binding</strong>
+                        Also known as <em>Static Binding</em>. The compiler knows exactly which method to call before
+                        the program runs, simply by looking at the types of arguments you pass.
+                    </div>
+
+                    <div class="rams-card">
+                        <div class="flex flex-col gap-6">
+
+                            <!-- Processor Visual -->
+                            <div class="bg-gray-800 p-6 rounded-sm text-center relative overflow-hidden">
+                                <div class="text-xs uppercase font-bold text-gray-500 mb-2">Smart Processor</div>
+                                <div id="processor-screen"
+                                    class="font-mono text-lg text-green-400 h-12 flex items-center justify-center border border-gray-600 bg-gray-900 rounded">
+                                    Ready...
+                                </div>
+
+                                <!-- Code Logic Visual -->
+                                <div class="mt-4 text-left space-y-2 opacity-50 transition-opacity" id="overload-logic">
+                                    <div class="text-[10px] font-mono text-gray-400 border-l-2 border-transparent pl-2"
+                                        id="logic-int">
+                                        void process(int n) { return n * n; }
+                                    </div>
+                                    <div class="text-[10px] font-mono text-gray-400 border-l-2 border-transparent pl-2"
+                                        id="logic-string">
+                                        void process(String s) { return s.toUpperCase(); }
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Input Area -->
+                            <div class="flex flex-col gap-2">
+                                <div
+                                    class="flex flex-col md:flex-row gap-4 items-center justify-center bg-gray-50 p-4 rounded-sm border border-gray-100">
+                                    <div class="flex-1 w-full">
+                                        <input type="text" id="overload-input" placeholder="Type a number OR text..."
+                                            class="w-full p-2 border border-gray-300 rounded font-mono text-sm focus:border-red-600 focus:outline-none">
+                                    </div>
+                                    <button onclick="triggerOverload()" class="btn btn-secondary text-xs">
+                                        Call process(input)
+                                    </button>
+                                </div>
+                                <div class="flex justify-center gap-2">
+                                    <button onclick="setInput('5')"
+                                        class="text-[10px] text-gray-500 bg-gray-100 px-2 py-1 rounded hover:bg-gray-200">Test
+                                        "5"</button>
+                                    <button onclick="setInput('Hello')"
+                                        class="text-[10px] text-gray-500 bg-gray-100 px-2 py-1 rounded hover:bg-gray-200">Test
+                                        "Hello"</button>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Inline Quiz: Overloading -->
+                <div id="quiz-oops-overloading" class="mb-20 md:mb-24"></div>
+
+                <!-- 04.c Interfaces -->
+                <section id="interfaces" class="mb-20 md:mb-24">
+                    <span class="rams-label">04.c / Contracts</span>
+                    <h3 class="text-2xl font-bold mb-4">Interfaces</h3>
+                    <p class="text-sm text-gray-600 mb-6 max-w-xl">
+                        An <strong>Interface</strong> is a strict contract. It defines <em>what</em> a class must do,
+                        but not <em>how</em>.
+                        Unrelated classes (like a Bird and an Airplane) can implement the same `IFlyable` interface,
+                        ensuring they both have a `fly()` method.
+                    </p>
+
+                    <div class="tech-box">
+                        <strong>Interface Types</strong>
+                        <ul class="list-disc list-outside ml-4 mt-1">
+                            <li><strong>Normal:</strong> Contains methods declarations.</li>
+                            <li><strong>Marker:</strong> Empty interface, used to tag classes (e.g.,
+                                <code>Serializable</code>).
+                            </li>
+                            <li><strong>Functional:</strong> Contains exactly one abstract method (SAM), used in Lambda
+                                expressions.
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="rams-card">
+                        <div class="flex flex-col gap-8">
+                            <!-- Visual Context -->
+                            <div class="flex items-center gap-4 border-b border-gray-100 pb-4">
+                                <div
+                                    class="bg-blue-50 border border-blue-200 p-2 rounded text-xs font-mono text-blue-800">
+                                    interface IFlyable {<br>&nbsp;&nbsp;void fly();<br>}
+                                </div>
+                                <div class="h-[1px] flex-1 bg-gray-200"></div>
+                                <div class="text-[10px] text-gray-400 uppercase font-bold">Implements Contract</div>
+                            </div>
+
+                            <!-- Flying Objects -->
+                            <div
+                                class="flex justify-around items-end h-40 bg-blue-50/50 border-b border-gray-200 relative overflow-x-auto">
+                                <!-- Drone -->
+                                <div id="fly-drone"
+                                    class="flex flex-col items-center transition-all duration-500 transform translate-y-0">
+                                    <div class="text-3xl">🚁</div>
+                                    <div class="text-[10px] font-bold text-gray-600 mt-1">Drone</div>
+                                    <div id="fly-drone-status" class="text-[9px] font-mono text-gray-400">Idle</div>
+                                </div>
+
+                                <!-- Bird -->
+                                <div id="fly-bird"
+                                    class="flex flex-col items-center transition-all duration-500 transform translate-y-0">
+                                    <div class="text-3xl">🦅</div>
+                                    <div class="text-[10px] font-bold text-gray-600 mt-1">Bird</div>
+                                    <div id="fly-bird-status" class="text-[9px] font-mono text-gray-400">Idle</div>
+                                </div>
+
+                                <!-- Paper Plane -->
+                                <div id="fly-plane"
+                                    class="flex flex-col items-center transition-all duration-500 transform translate-y-0">
+                                    <div class="text-3xl">✈️</div>
+                                    <div class="text-[10px] font-bold text-gray-600 mt-1">Plane</div>
+                                    <div id="fly-plane-status" class="text-[9px] font-mono text-gray-400">Idle</div>
+                                </div>
+                            </div>
+
+                            <button onclick="triggerInterface()" class="btn btn-primary w-full text-xs">
+                                Execute Contract: IFlyable.fly()
+                            </button>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Inline Quiz: Interfaces -->
+                <div id="quiz-oops-interfaces" class="mb-20 md:mb-24"></div>
+
+                <!-- 05. Abstraction -->
+                <section id="abstraction" class="mb-20 md:mb-24">
+                    <span class="rams-label">05 / Simplicity</span>
+                    <h3 class="text-2xl font-bold mb-4">Abstraction</h3>
+                    <p class="text-sm text-gray-600 mb-6 max-w-xl">
+                        Abstraction means hiding complex implementation details and showing only the necessary features
+                        of an object.
+                        It reduces complexity and allows the user to interact with a system without knowing how it works
+                        internally.
+                    </p>
+
+                    <div class="tech-box">
+                        <strong>Abstract Class vs Interface</strong>
+                        <ul class="list-disc list-outside ml-4 mt-1">
+                            <li><strong>Abstract Class:</strong> Cannot be instantiated directly. Use for "is-a"
+                                relationships. Can have state (variables) and some implemented
+                                methods.</li>
+                            <li><strong>Interface:</strong> Pure contract, no state. Use for "can-do" capabilities.</li>
+                        </ul>
+                    </div>
+
+                    <div class="rams-card overflow-hidden relative border-2 border-gray-200">
+                        <!-- The Complex Interior (Hidden layer) -->
+                        <div class="absolute inset-0 bg-gray-900 z-0 p-6 overflow-hidden select-none"
+                            id="complex-layer">
+                            <div class="grid grid-cols-2 gap-4 opacity-30 font-mono text-[10px] text-green-500"
+                                style="filter: blur(1px);">
+                                <div>
+                                    void injectFuel(amount) {<br>
+                                    &nbsp;&nbsp;if (temp > 90) return;<br>
+                                    &nbsp;&nbsp;valves.open();<br>
+                                    }<br><br>
+                                    int calcTorque(rpm) {<br>
+                                    &nbsp;&nbsp;return rpm * 5252;<br>
+                                    }
+                                </div>
+                                <div>
+                                    0101010010101010<br>
+                                    ERROR_CHECK_SENSORS()<br>
+                                    matrix.transform3d()<br>
+                                    overflow_buffer_check<br>
+                                    ...
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- The Abstracted Interface -->
+                        <div class="relative z-10 flex flex-col items-center justify-center min-h-[250px] gap-8 backdrop-blur-sm bg-white/10 transition-all duration-500"
+                            id="interface-layer">
+
+                            <div
+                                class="bg-white/90 p-6 rounded-lg shadow-xl border border-gray-200 flex flex-col items-center">
+                                <div class="text-[10px] uppercase tracking-widest text-gray-500 mb-4 font-bold">Simple
+                                    Interface (Dashboard)</div>
+
+                                <div class="relative w-40 h-20 overflow-hidden mb-4">
+                                    <!-- Gauge Arc -->
+                                    <div
+                                        class="w-40 h-40 rounded-full border-[12px] border-gray-200 box-border absolute top-0 left-0">
+                                    </div>
+                                    <div class="w-40 h-40 rounded-full border-[12px] border-transparent border-t-red-600 box-border absolute top-0 left-0 transform rotate-[-45deg]"
+                                        style="clip-path: polygon(0 0, 100% 0, 100% 50%, 0 50%);"></div>
+
+                                    <!-- Needle -->
+                                    <div id="speedometer-needle"
+                                        class="w-1 h-16 bg-black absolute bottom-0 left-1/2 origin-bottom transform -translate-x-1/2 rotate-[-90deg] transition-transform duration-300 ease-out z-10">
+                                    </div>
+                                    <div
+                                        class="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2 w-4 h-4 bg-black rounded-full z-20">
+                                    </div>
+                                </div>
+
+                                <div class="font-mono text-2xl font-bold text-black"><span id="speed-display">0</span>
+                                    <span class="text-xs text-gray-400 font-normal">MPH</span>
+                                </div>
+                            </div>
+
+                            <div class="w-full max-w-xs bg-white/90 p-3 rounded shadow-sm border border-gray-200">
+                                <label class="text-[10px] uppercase font-bold text-gray-400 mb-2 block">Driver Input
+                                    (Pedal)</label>
+                                <input type="range" min="0" max="100" value="0"
+                                    class="w-full accent-red-600 cursor-pointer"
+                                    oninput="updateAbstraction(this.value)">
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Inline Quiz: Abstraction -->
+                <div id="quiz-oops-abstraction" class="mb-20 md:mb-24"></div>
+
+                <!-- 06. The Final Trinity -->
+                <section id="final" class="mb-20 md:mb-24">
+                    <span class="rams-label">06 / Immutability</span>
+                    <h3 class="text-2xl font-bold mb-4">The "Final" Trinity</h3>
+                    <p class="text-sm text-gray-600 mb-6 max-w-xl">
+                        Three keywords that look similar but have very different purposes.
+                    </p>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <!-- Final -->
+                        <div class="bg-gray-50 border-t-4 border-red-500 p-4 shadow-sm">
+                            <div class="font-mono text-sm font-bold mb-2">final</div>
+                            <p class="text-xs text-gray-500 mb-2">The Restrictor.</p>
+                            <ul class="list-disc list-outside ml-4 text-[10px] text-gray-600 space-y-1">
+                                <li><strong>Variable:</strong> Cannot change value (Constant).</li>
+                                <li><strong>Method:</strong> Cannot be overridden overriding.</li>
+                                <li><strong>Class:</strong> Cannot be inherited.</li>
+                            </ul>
+                        </div>
+
+                        <!-- Finally -->
+                        <div class="bg-gray-50 border-t-4 border-blue-500 p-4 shadow-sm">
+                            <div class="font-mono text-sm font-bold mb-2">finally</div>
+                            <p class="text-xs text-gray-500 mb-2">The Cleaner.</p>
+                            <div class="text-[10px] text-gray-600">
+                                A block used in Exception Handling (`try-catch`). It <strong>ALWAYS</strong> executes,
+                                regardless of
+                                whether an exception occurred or not.
+                                Used for closing files/db connections.
+                            </div>
+                        </div>
+
+                        <!-- Finalize -->
+                        <div class="bg-gray-50 border-t-4 border-gray-500 p-4 shadow-sm">
+                            <div class="font-mono text-sm font-bold mb-2">finalize()</div>
+                            <p class="text-xs text-gray-500 mb-2">The Undertaker.</p>
+                            <div class="text-[10px] text-gray-600">
+                                A method called by the Garbage Collector before an object is destroyed.
+                                *Note: It is deprecated in modern Java (9+) due to unreliability.
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Inline Quiz: Final -->
+                <div id="quiz-oops-final" class="mb-20 md:mb-24"></div>
+
+                <!-- 07. Multi-Threading -->
+                <section id="threading" class="mb-20 md:mb-24">
+                    <span class="rams-label">07 / Concurrency</span>
+                    <h3 class="text-2xl font-bold mb-4">Multi-Threading</h3>
+                    <p class="text-sm text-gray-600 mb-6 max-w-xl">
+                        A <strong>Thread</strong> is a unit of execution. The <strong>Main Thread</strong> handles the
+                        UI.
+                        If you do heavy work on the Main Thread, the app <strong>freezes</strong>.
+                        Multi-threading moves heavy work to a <strong>Background Thread</strong>, keeping the UI
+                        responsive.
+                    </p>
+
+                    <div class="rams-card">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+
+                            <!-- Visualizer: UI Heartbeat -->
+                            <div
+                                class="border border-gray-200 bg-gray-50 rounded p-6 flex flex-col items-center justify-center min-h-[200px]">
+                                <div class="text-xs font-bold uppercase text-gray-400 mb-4">Main UI Thread</div>
+
+                                <!-- The Gear (Heartbeat) - JS Driven -->
+                                <div id="ui-gear"
+                                    class="w-16 h-16 border-4 border-gray-800 border-t-red-500 rounded-full mb-4"></div>
+
+                                <div class="w-full px-4">
+                                    <input type="text" id="lag-test-input" placeholder="Type here to test..."
+                                        class="w-full text-[10px] border border-gray-300 rounded px-2 py-1 focus:outline-none focus:border-blue-500 text-center">
+                                </div>
+
+                                <div class="mt-4 text-center">
+                                    <div class="text-[10px] text-gray-400">UI Status</div>
+                                    <div id="ui-status" class="font-mono text-sm font-bold text-green-600">✅ RESPONSIVE
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Controls -->
+                            <div class="flex flex-col gap-4">
+                                <!-- Blocking Task -->
+                                <div class="p-4 border border-red-200 bg-red-50 rounded">
+                                    <div class="flex justify-between items-center mb-2">
+                                        <span class="text-red-700 font-bold text-xs uppercase">Single Threaded</span>
+                                        <span class="text-[10px] bg-red-200 text-red-800 px-1 rounded">BAD</span>
+                                    </div>
+                                    <p class="text-[10px] text-red-800 mb-3 opacity-80">
+                                        Runs a heavy loop on the Main Thread.
+                                        <strong>Observe the gear stop spinning.</strong>
+                                    </p>
+                                    <button onclick="runBlockingTask()" id="btn-blocking"
+                                        class="btn btn-secondary w-full text-xs border-red-300 text-red-700 hover:bg-red-100">
+                                        Freeze UI (3s)
+                                    </button>
+                                </div>
+
+                                <!-- Async Task -->
+                                <div class="p-4 border border-blue-200 bg-blue-50 rounded">
+                                    <div class="flex justify-between items-center mb-2">
+                                        <span class="text-blue-700 font-bold text-xs uppercase">Multi-Threaded</span>
+                                        <span class="text-[10px] bg-blue-200 text-blue-800 px-1 rounded">GOOD</span>
+                                    </div>
+                                    <p class="text-[10px] text-blue-800 mb-3 opacity-80">
+                                        Runs task in background (simulated).
+                                        <strong>The gear keeps spinning.</strong>
+                                    </p>
+                                    <button onclick="runAsyncTask()" id="btn-async"
+                                        class="btn btn-primary w-full text-xs">
+                                        Run Background Task
+                                    </button>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <!-- Task Log -->
+                        <div class="mt-6 border-t border-gray-100 pt-4">
+                            <div class="flex justify-between items-center mb-2">
+                                <span class="text-[10px] font-bold text-gray-400 uppercase">Worker Terminal</span>
+                                <span id="task-progress"
+                                    class="text-[10px] font-mono text-blue-600 font-bold">Idle</span>
+                            </div>
+                            <div class="h-1 bg-gray-100 rounded-full overflow-hidden">
+                                <div id="task-bar" class="h-full bg-blue-500 w-0 transition-all duration-100"></div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Inline Quiz: Threading -->
+                <div id="quiz-oops-threading" class="mb-20 md:mb-24"></div>
+
+                <!-- 08. Static Members -->
+                <section id="static" class="mb-20 md:mb-24">
+                    <span class="rams-label">08 / Shared Memory</span>
+                    <h3 class="text-2xl font-bold mb-4">Static Members</h3>
+                    <p class="text-sm text-gray-600 mb-6 max-w-xl">
+                        <strong>Static</strong> members belong to the <em>Class</em> itself, not any individual object.
+                        They represent shared memory, like a wall clock in a classroom (shared by all students) vs a
+                        wristwatch (owned by one).
+                    </p>
+
+                    <div class="tech-box">
+                        <strong>Memory Efficiency</strong>
+                        Static variables are initialized only once in memory at the start of execution. They are useful
+                        for counters, constants, or utility functions that don't need object state. Note: Static methods
+                        cannot access <code>this</code>.
+                    </div>
+
+                    <div class="rams-card">
+                        <div class="flex flex-col gap-6">
+
+                            <!-- The Class Context (Shared) -->
+                            <div
+                                class="bg-gray-900 p-4 rounded-sm flex flex-col sm:flex-row gap-4 items-center justify-between border-l-4 border-red-600">
+                                <div>
+                                    <div class="text-[10px] uppercase font-bold text-gray-400">Class Memory (Static)
+                                    </div>
+                                    <div class="text-white font-mono text-sm">Robot.count</div>
+                                </div>
+                                <div class="text-3xl font-mono font-bold text-white" id="static-counter">0</div>
+                            </div>
+
+                            <!-- The Object Context (Instances) -->
+                            <div class="bg-gray-50 border border-gray-100 p-4 min-h-[150px]">
+                                <div class="text-[10px] uppercase font-bold text-gray-400 mb-2">Instance Memory (Heap)
+                                </div>
+                                <div class="flex flex-wrap gap-3" id="static-instances">
+                                    <!-- Robots go here -->
+                                </div>
+                            </div>
+
+                            <!-- Controls -->
+                            <div class="flex justify-between items-center">
+                                <button onclick="createRobot()" class="btn btn-primary text-xs">
+                                    new Robot()
+                                </button>
+                                <button onclick="resetStatic()" class="btn btn-secondary text-xs">
+                                    Reset Memory
+                                </button>
+                            </div>
+
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Inline Quiz: Static -->
+                <div id="quiz-oops-static" class="mb-20 md:mb-24"></div>
+
+                <!-- 07. Relationships -->
+                <section id="relationships" class="mb-20 md:mb-24">
+                    <span class="rams-label">09 / Relationships</span>
+                    <h3 class="text-2xl font-bold mb-4">Association vs Composition</h3>
+                    <p class="text-sm text-gray-600 mb-6 max-w-xl">
+                        Not all relationships are equal.
+                        <strong>Composition</strong> (Part-of) means if the parent dies, the child dies (House + Room).
+                        <strong>Aggregation/Association</strong> (Has-a) means the child survives (Library + Book).
+                    </p>
+
+                    <div class="tech-box">
+                        <strong>UML Representation</strong>
+                        <ul class="list-disc list-outside ml-4 mt-1">
+                            <li><strong>Composition:</strong> Solid/Filled Diamond (♦). Strong lifecycle dependency (The
+                                "Part-of" relationship).
+                            </li>
+                            <li><strong>Aggregation:</strong> Hollow/Empty Diamond (♢). Weak lifecycle dependency (The
+                                "Has-a" relationship).</li>
+                        </ul>
+                    </div>
+
+                    <div class="rams-card">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+
+                            <!-- Composition Column -->
+                            <div class="border border-gray-200 p-4 bg-gray-50 flex flex-col gap-4">
+                                <div class="text-xs font-bold uppercase text-red-600 border-b border-gray-200 pb-2">
+                                    Composition (Strong)</div>
+                                <div class="flex-1 flex items-center justify-center relative" id="comp-container">
+                                    <div class="w-32 h-32 bg-white border-2 border-gray-800 flex flex-col items-center justify-center shadow-lg transition-all duration-500 relative"
+                                        id="comp-house">
+                                        <span class="text-xs font-bold mb-2">House</span>
+                                        <div
+                                            class="w-16 h-16 bg-red-100 border border-red-300 flex items-center justify-center text-[10px] text-red-800">
+                                            Room
+                                        </div>
+                                    </div>
+                                    <div id="comp-rubble" class="hidden absolute text-4xl">💥</div>
+                                </div>
+                                <button onclick="toggleHouse()" id="btn-house"
+                                    class="btn btn-secondary text-xs text-red-600 border-red-200 hover:bg-red-50">
+                                    Destroy House
+                                </button>
+                                <p class="text-[10px] text-gray-500 h-8">Result: Room is destroyed with House.</p>
+                            </div>
+
+                            <!-- Aggregation Column -->
+                            <div class="border border-gray-200 p-4 bg-gray-50 flex flex-col gap-4">
+                                <div class="text-xs font-bold uppercase text-green-600 border-b border-gray-200 pb-2">
+                                    Aggregation (Weak)</div>
+                                <div class="flex-1 flex items-center justify-center relative" id="agg-container">
+                                    <div class="w-32 h-32 bg-white border-2 border-gray-800 flex flex-col items-center justify-center shadow-lg transition-all duration-500 relative z-10"
+                                        id="agg-library">
+                                        <span class="text-xs font-bold mb-2">Library</span>
+                                        <!-- Book is absolute to move out -->
+                                        <div id="agg-book"
+                                            class="w-12 h-16 bg-green-100 border border-green-300 flex items-center justify-center text-[10px] text-green-800 absolute bottom-2">
+                                            Book
+                                        </div>
+                                    </div>
+                                    <div id="agg-rubble" class="hidden absolute text-4xl z-0">💥</div>
+                                </div>
+                                <button onclick="toggleLibrary()" id="btn-library"
+                                    class="btn btn-secondary text-xs text-green-600 border-green-200 hover:bg-green-50">
+                                    Destroy Library
+                                </button>
+                                <p class="text-[10px] text-gray-500 h-8">Result: Book survives independently.</p>
+                            </div>
+
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Inline Quiz: Relationships -->
+                <div id="quiz-oops-relationships" class="mb-20 md:mb-24"></div>
+
+                <!-- 08. Garbage Collection -->
+                <section id="gc" class="mb-12">
+                    <span class="rams-label">10 / Memory Management</span>
+                    <h3 class="text-2xl font-bold mb-4">Garbage Collection</h3>
+                    <p class="text-sm text-gray-600 mb-6 max-w-xl">
+                        In languages like Java or C#, you create objects but don't delete them manually.
+                        The <b>Garbage Collector (GC)</b> runs in the background to reclaim memory from objects that are
+                        no
+                        longer reachable (have no active references).
+                    </p>
+
+                    <div class="tech-box">
+                        <strong>Reachability</strong>
+                        The GC starts from "GC Roots" (like global variables or currently active stack frames) and
+                        traces all reachable references. Anything not connected to the root is considered "garbage" and
+                        is eligible for deletion.
+                    </div>
+
+                    <div class="rams-card">
+                        <div class="flex flex-col gap-6">
+                            <div
+                                class="flex flex-col sm:flex-row justify-between items-center border-b border-gray-100 pb-2 gap-2">
+                                <div>
+                                    <span class="text-[10px] uppercase font-bold text-gray-400">Heap Memory</span>
+                                    <span id="gc-status" class="ml-2 text-[10px] font-mono text-gray-300">System:
+                                        Idle</span>
+                                </div>
+                                <div class="flex gap-2">
+                                    <button onclick="resetGc()" class="btn btn-secondary text-xs">Reset</button>
+                                    <button onclick="addGcNode()" class="btn btn-primary text-xs">+ Create</button>
+                                </div>
+                            </div>
+
+                            <div class="min-h-[200px] bg-gray-50 border-2 border-dashed border-gray-200 p-6 flex flex-wrap content-start gap-y-10 gap-x-4"
+                                id="gc-container">
+                                <!-- Nodes appear here -->
+                                <div id="gc-placeholder" class="text-xs text-gray-400 w-full text-center mt-12 italic">
+                                    Heap is empty. Add objects to start.
+                                </div>
+                            </div>
+
+                            <p class="text-[10px] text-gray-400">
+                                Click any object to <strong>Cut Reference</strong>. The GC will automatically sweep it
+                                away.
+                            </p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Inline Quiz: GC -->
+                <div id="quiz-oops-gc" class="mb-12"></div>
+
+
+                <!-- Glossary Section -->
+                <section id="glossary" class="mb-20">
+                    <span class="rams-label">Glossary</span>
+                    <h3 class="text-xl font-medium mb-8">Key Definitions</h3>
+                    <div class="rams-card">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <h4 class="font-bold text-sm mb-2">Class</h4>
+                                <p class="text-xs text-gray-600">A blueprint or template for creating objects.</p>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-sm mb-2">Object</h4>
+                                <p class="text-xs text-gray-600">An instance of a class containing data and behavior.
+                                </p>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-sm mb-2">Encapsulation</h4>
+                                <p class="text-xs text-gray-600">Bundling data and methods that operate on that data
+                                    within a single unit, restricting direct access.</p>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-sm mb-2">Inheritance</h4>
+                                <p class="text-xs text-gray-600">A mechanism where a new class derives properties and
+                                    behavior from an existing class.</p>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-sm mb-2">Polymorphism</h4>
+                                <p class="text-xs text-gray-600">The ability of different classes to be treated as
+                                    instances of the same general class through a common interface.</p>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-sm mb-2">Abstraction</h4>
+                                <p class="text-xs text-gray-600">Hiding complex implementation details and showing only
+                                    the necessary features of an object.</p>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-sm mb-2">Constructor</h4>
+                                <p class="text-xs text-gray-600">A special method called when an object is instantiated
+                                    to initialize it.</p>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-sm mb-2">Interface</h4>
+                                <p class="text-xs text-gray-600">A contract that defines a set of methods that a class
+                                    must implement.</p>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-sm mb-2">Static</h4>
+                                <p class="text-xs text-gray-600">A keyword indicating that a member belongs to the class
+                                    itself rather than to any specific instance.</p>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-sm mb-2">Garbage Collection</h4>
+                                <p class="text-xs text-gray-600">Automatic memory management that reclaims memory
+                                    occupied by objects that are no longer in use.</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 08. Quiz -->
+                <section id="quiz" class="mb-20 md:mb-24">
+                    <span class="rams-label">08 / Knowledge Check</span>
+                    <div id="quiz-container" class="rams-card">
+                        <!-- Quiz loads here -->
+                    </div>
+                </section>
+
+                <!-- 09. Certificate (Initially Hidden) -->
+                <section id="certificate" class="mb-20 md:mb-24 hidden">
+                    <span class="rams-label">09 / Certification</span>
+                    <h3 class="text-xl font-medium mb-6">Completion Certificate</h3>
+
+                    <div class="rams-card !p-0 overflow-hidden">
+                        <div class="p-6 md:p-8">
+                            <div class="flex flex-col md:flex-row gap-8 items-start">
+                                <div class="w-full md:w-1/3 space-y-4">
+                                    <p class="text-sm text-gray-600">
+                                        Enter your name below to generate your personalized certificate of completion
+                                        for
+                                        the OOPS series.
+                                    </p>
+                                    <div>
+                                        <label for="cert-name"
+                                            class="block text-xs font-bold text-gray-500 uppercase mb-1">Full
+                                            Name</label>
+                                        <input type="text" id="cert-name"
+                                            class="w-full border border-gray-300 p-2 font-mono text-sm focus:border-black outline-none"
+                                            placeholder="Bjarne Stroustrup">
+                                        <p id="cert-error" class="text-red-500 text-xs mt-2 hidden">Please enter your
+                                            name.
+                                        </p>
+                                    </div>
+                                    <button onclick="generateCert()"
+                                        class="btn btn-primary bg-black border-black text-white w-full hover:bg-gray-800">Generate
+                                        Certificate</button>
+                                    <button onclick="downloadCert()" id="btn-download"
+                                        class="btn btn-secondary w-full hidden">Download PNG</button>
+
+                                </div>
+
+                                <div
+                                    class="w-full md:w-2/3 bg-gray-50 border border-gray-200 p-4 flex items-center justify-center">
+                                    <canvas id="cert-canvas" class="w-full shadow-lg bg-white"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="bg-gray-50 px-6 py-3 border-t border-gray-100 text-center">
+                            <p class="text-[10px] text-gray-400 italic">
+                                This certificate confirms successful completion of learning and assessment on this
+                                platform
+                                and is not an accredited or government-recognized qualification.
+                            </p>
+                        </div>
+                    </div>
+                </section>
+
+                <script src="js/script.js"></script>
+                <script>
+                    document.addEventListener('DOMContentLoaded', () => {
+                        new InlineQuiz('quiz-oops-intro', {
+                            question: "What is the core philosophy of OOP?",
+                            options: ["Writing linear code from top to bottom", "Organizing software around data (objects) and logic", "Using only functions and no variables", "Making code runs faster"],
+                            answer: 1,
+                            explanation: "OOP models software after real-world objects, combining state (data) and behavior (logic)."
+                        });
+
+                        new InlineQuiz('quiz-oops-classes', {
+                            question: "If a Class is a 'Blueprint', what is an Object?",
+                            options: ["The Architect", "The House built from the blueprint", "The Land", "The Pencil"],
+                            answer: 1,
+                            explanation: "An object is the concrete 'instance' created using the rules defined by the class."
+                        });
+
+                        new InlineQuiz('quiz-oops-constructors', {
+                            question: "When is a Constructor method called?",
+                            options: ["Every time a method is used", "Only when the object is destroyed", "Automatically when an object is created (instantiated)", "Manually by the user"],
+                            answer: 2,
+                            explanation: "Constructors are special methods designed to set up the initial state of an object the moment it is born."
+                        });
+
+                        new InlineQuiz('quiz-oops-encapsulation', {
+                            question: "What is the main goal of Encapsulation?",
+                            options: ["To delete data", "To hide internal complexity and protect data access", "To make variables public", "To inheritance code"],
+                            answer: 1,
+                            explanation: "Encapsulation acts as a protective shield (black box), preventing unauthorized or harmful direct access to internal data."
+                        });
+
+                        new InlineQuiz('quiz-oops-inheritance', {
+                            question: "Which relationship best describes Inheritance?",
+                            options: ["Has-A", "Is-A", "Uses-A", "Was-A"],
+                            answer: 1,
+                            explanation: "Inheritance creates a hierarchy where a Child class 'Is-A' type of the Parent class (e.g., A Car Is-A Vehicle)."
+                        });
+
+                        new InlineQuiz('quiz-oops-polymorphism', {
+                            question: "What does 'Polymorphism' literally mean?",
+                            options: ["Many Forms", "One Form", "No Form", "Hidden Form"],
+                            answer: 0,
+                            explanation: "Polymorphism allows objects of different types to be treated as the same type (mostly the parent), taking on 'many forms'."
+                        });
+
+                        new InlineQuiz('quiz-oops-overloading', {
+                            question: "How does Method Overloading differ from Overriding?",
+                            options: ["It happens at runtime", "It involves methods with the same name but different parameters", "It changes the return type only", "It deletes the method"],
+                            answer: 1,
+                            explanation: "Overloading is 'Compile-time' polymorphism where the correct method is chosen based on the inputs (parameters) provided."
+                        });
+
+                        new InlineQuiz('quiz-oops-interfaces', {
+                            question: "An Interface is best described as a:",
+                            options: ["Blueprint", "Contract", "Variable", "Loop"],
+                            answer: 1,
+                            explanation: "An interface defines a set of rules (methods) that a class agrees to implement, like a binding contract."
+                        });
+
+                        new InlineQuiz('quiz-oops-abstraction', {
+                            question: "What is the purpose of Abstraction?",
+                            options: ["To make code clearer by hiding complex implementation details", "To make code longer", "To show every single detail to the user", "To confuse the compiler"],
+                            answer: 0,
+                            explanation: "Abstraction allows users to interact with a simple interface (like a car pedal) without worrying about the complex machinery behind it."
+                        });
+
+                        new InlineQuiz('quiz-oops-final', {
+                            question: "What happens if you mark a Class as 'final'?",
+                            options: ["It cannot be deleted", "It cannot be inherited", "It cannot be instantiated", "It becomes public"],
+                            answer: 1,
+                            explanation: "The 'final' keyword on a class prevents any other class from extending (inheriting from) it."
+                        });
+
+                        new InlineQuiz('quiz-oops-threading', {
+                            question: "Why do we use Background Threads in UI applications?",
+                            options: ["To slow down the app", "To keep the Main UI Thread responsive and unblocked", "To change colors", "To saving battery only"],
+                            answer: 1,
+                            explanation: "If heavy tasks run on the Main Thread, the screen freezes. Background threads handle the heavy lifting invisible."
+                        });
+
+                        new InlineQuiz('quiz-oops-static', {
+                            question: "Who owns a 'static' variable?",
+                            options: ["Each individual object", "The Class itself (shared by all)", "The Global Main function", "No one"],
+                            answer: 1,
+                            explanation: "Static members belong to the class blueprint, meaning all instances share the exact same variable."
+                        });
+
+                        new InlineQuiz('quiz-oops-relationships', {
+                            question: "In a 'Composition' relationship (Part-Of), what happens if the Parent is destroyed?",
+                            options: ["The Child survives", "The Child is also destroyed", "The Child becomes the Parent", "Nothing"],
+                            answer: 1,
+                            explanation: "Composition implies a strong dependency; a Room cannot exist without the House it is part of."
+                        });
+
+                        new InlineQuiz('quiz-oops-gc', {
+                            question: "What triggers the Garbage Collector?",
+                            options: ["Pressing a button", "Lack of memory or unreachable objects", "A timer every second", "It never runs"],
+                            answer: 1,
+                            explanation: "The GC runs automatically to reclaim memory occupied by objects that are no longer reachable by the active program."
+                        });
+                    });
+                </script>
+                <script>
+                    // Quiz Data
+                    const questions = [
+                        {
+                            question: "What is the main purpose of Encapsulation?",
+                            options: ["To delete data", "To hide internal details and protect data", "To inherit properties", "To make code faster"],
+                            answer: 1
+                        },
+                        {
+                            question: "Which concept allows an object to take many forms?",
+                            options: ["Polymorphism", "Inheritance", "Encapsulation", "Abstraction"],
+                            answer: 0
+                        },
+                        {
+                            question: "What is the difference between a Class and an Object?",
+                            options: ["They are same", "Object is a blueprint, Class is an instance", "Class is a blueprint, Object is an instance", "None of above"],
+                            answer: 2
+                        },
+                        {
+                            question: "Inheritance allows a class to?",
+                            options: ["Acquire properties and methods of another class", "Hide data", "Change its name", "Delete methods"],
+                            answer: 0
+                        },
+                        {
+                            question: "What does the 'static' keyword imply?",
+                            options: ["Belongs to a specific instance", "Belongs to the class level, not specific instance", "Cannot be changed", "Is private"],
+                            answer: 1
+                        },
+                        {
+                            question: "What is a Constructor used for?",
+                            options: ["To delete an object", "To initialize a new object", "To copy an object", "To print data"],
+                            answer: 1
+                        },
+                        {
+                            question: "Which of these cannot be instantiated directly?",
+                            options: ["Public Class", "Abstract Class", "Final Class", "Static Class"],
+                            answer: 1
+                        },
+                        {
+                            question: "Method Overloading refers to?",
+                            options: ["Same method name, different parameters", "Different method name, same parameters", "Hiding methods", "Deleting methods"],
+                            answer: 0
+                        },
+                        {
+                            question: "The 'is-a' relationship is associated with?",
+                            options: ["Inheritance", "Composition", "Encapsulation", "Polymorphism"],
+                            answer: 0
+                        },
+                        {
+                            question: "The 'has-a' relationship is associated with?",
+                            options: ["Inheritance", "Composition/Aggregation", "Polymorphism", "Abstraction"],
+                            answer: 1
+                        }
+                    ];
+
+                    // Init Quiz
+                    new QuizManager('quiz-container', questions, () => {
+                        document.getElementById('certificate').classList.remove('hidden');
+                        setTimeout(() => {
+                            document.getElementById('certificate').scrollIntoView({ behavior: 'smooth' });
+                        }, 100);
+                    });
+
+                    // Certificate Logic
+                    const certGen = new CertificateGenerator('cert-canvas', 'Object Oriented Programming');
+
+                    function generateCert() {
+                        const nameInput = document.getElementById('cert-name');
+                        const errorMsg = document.getElementById('cert-error');
+                        const name = nameInput.value.trim();
+                        const nameRegex = /^[a-zA-Z\s\-\.'’]+$/;
+
+                        // Reset error state
+                        errorMsg.classList.add('hidden');
+                        nameInput.classList.remove('border-red-500');
+
+                        if (!name) {
+                            errorMsg.textContent = "Please enter your name.";
+                            errorMsg.classList.remove('hidden');
+                            nameInput.classList.add('border-red-500');
+                            return;
+                        }
+
+                        if (name.length < 3 || name.length > 35) {
+                            errorMsg.textContent = "Name must be between 3 and 35 characters.";
+                            errorMsg.classList.remove('hidden');
+                            nameInput.classList.add('border-red-500');
+                            return;
+                        }
+
+                        if (!nameRegex.test(name)) {
+                            errorMsg.textContent = "Name cannot contain numbers or special characters.";
+                            errorMsg.classList.remove('hidden');
+                            nameInput.classList.add('border-red-500');
+                            return;
+                        }
+
+                        certGen.generate(name);
+                        document.getElementById('btn-download').classList.remove('hidden');
+                    }
+
+                    function downloadCert() {
+                        const name = document.getElementById('cert-name').value.trim();
+                        certGen.download(`Undrstanding_OOPS_Certificate_${name.replace(/\s+/g, '_')}.png`);
+                    }
+                </script>
+
+
+
+                <footer class="w-full mt-12 mb-12">
+                    <div class="border-t border-gray-200 pt-8 flex justify-between items-center">
+                        <span class="text-[10px] mono uppercase text-gray-400">Undrstanding</span>
+                        <span class="text-[10px] mono uppercase text-gray-400">For Humans, From Humans</span>
+                    </div>
+                </footer>
+
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Force scroll to top
+        window.history.scrollRestoration = 'manual';
+        window.addEventListener('load', () => {
+            window.scrollTo(0, 0);
+        });
+
+        function sleep(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+
+        // --- 01. Classes & Objects ---
+        const objContainer = document.getElementById('object-container');
+        const emptyState = document.getElementById('empty-state');
+        const classStatus = document.getElementById('class-status');
+        let carCount = 0;
+
+        function createObject(color) {
+            if (emptyState) emptyState.style.display = 'none';
+            carCount++;
+
+            classStatus.textContent = `Instantiating Car #${1000 + carCount}...`;
+
+            const car = document.createElement('div');
+            // Card style
+            car.className = `w-32 bg-white border border-gray-200 p-2 shadow-md flex flex-col gap-2 node-appear relative overflow-hidden`;
+
+            const colorHex = color === 'Red' ? '#dc2626' : '#2563eb';
+            const colorBg = color === 'Red' ? 'bg-red-50' : 'bg-blue-50';
+            const colorText = color === 'Red' ? 'text-red-700' : 'text-blue-700';
+
+            car.innerHTML = `
+                <div class="h-1 bg-[${colorHex}] w-full absolute top-0 left-0"></div>
+                <div class="flex items-center gap-2 border-b border-gray-100 pb-1">
+                    <div class="w-3 h-3 rounded-full bg-[${colorHex}]"></div>
+                    <span class="text-[10px] font-bold text-gray-500">Car Instance</span>
+                </div>
+                <div class="font-mono text-[9px] space-y-1">
+                    <div class="flex justify-between">
+                        <span class="text-gray-400">id:</span>
+                        <span>${1000 + carCount}</span>
+                    </div>
+                    <div class="flex justify-between ${colorBg} p-0.5 rounded">
+                        <span class="text-gray-400">color:</span>
+                        <span class="${colorText} font-bold">'${color}'</span>
+                    </div>
+                </div>
+            `;
+
+            // Adjust visualization limit
+            if (objContainer.children.length > 5) {
+                // Remove the second child (first is empty state if hidden) or first actual car
+                const removeIdx = emptyState.style.display === 'none' ? 0 : 1;
+                if (objContainer.children[removeIdx] !== emptyState) {
+                    objContainer.removeChild(objContainer.children[removeIdx]);
+                }
+            }
+            objContainer.appendChild(car);
+
+            setTimeout(() => {
+                classStatus.textContent = "Instance created in memory.";
+            }, 500);
+        }
+
+        // --- 01.b Constructors ---
+        const ctorContainer = document.getElementById('constructor-container');
+        const ctorEmpty = document.getElementById('constructor-empty');
+        const btnCopy = document.getElementById('btn-copy');
+        let ctorRobots = [];
+
+        function renderCtorRobot(name, type) {
+            if (ctorEmpty) ctorEmpty.style.display = 'none';
+
+            const robot = document.createElement('div');
+            // Stylized robot card
+            robot.className = "flex flex-col items-center bg-white border border-gray-200 p-2 shadow-sm rounded-sm node-appear w-24";
+
+            let colorClass = "bg-gray-200";
+            if (type === 'param') colorClass = "bg-blue-100 border-blue-200";
+            if (type === 'copy') colorClass = "bg-purple-100 border-purple-200";
+
+            robot.innerHTML = `
+                <div class="w-8 h-8 rounded-t-md ${colorClass} border border-b-0 border-gray-300 relative mb-1">
+                    <div class="absolute top-2 left-1.5 w-1.5 h-1.5 bg-black rounded-full"></div>
+                    <div class="absolute top-2 right-1.5 w-1.5 h-1.5 bg-black rounded-full"></div>
+                </div>
+                <div class="text-[9px] font-mono font-bold text-gray-700">${name}</div>
+                <div class="text-[8px] text-gray-400 uppercase tracking-tight">${type}</div>
+            `;
+
+            ctorContainer.appendChild(robot);
+            ctorRobots.push({ name, type });
+
+            // Enable copy button
+            btnCopy.disabled = false;
+            btnCopy.classList.remove('opacity-50', 'cursor-not-allowed');
+
+            // Limit
+            if (ctorContainer.children.length > 6) {
+                // remove first real element (index 1 if empty text is index 0 and hidden)
+                // Actually safer to just remove firstChild if not empty text
+                let toRemove = ctorContainer.firstElementChild;
+                if (toRemove === ctorEmpty) toRemove = toRemove.nextElementSibling;
+                if (toRemove) ctorContainer.removeChild(toRemove);
+            }
+        }
+
+        function buildDefault() {
+            renderCtorRobot("Droid-v1", "default");
+        }
+
+        function buildParam() {
+            const input = document.getElementById('param-name');
+            const name = input.value.trim() || "Custom-X";
+            renderCtorRobot(name, "param");
+            input.value = "";
+        }
+
+        function buildCopy() {
+            if (ctorRobots.length === 0) return;
+            const lastRobot = ctorRobots[ctorRobots.length - 1];
+            renderCtorRobot(lastRobot.name, "copy");
+        }
+
+
+        // --- 02. Encapsulation ---
+        const vaultDoor = document.getElementById('vault-door');
+        const vaultStatus = document.getElementById('vault-status');
+        const vaultValue = document.getElementById('vault-value');
+        const logContainer = document.getElementById('security-log');
+        let balance = 1000;
+
+        function addLog(msg, type) {
+            const line = document.createElement('div');
+            const time = new Date().toLocaleTimeString('en-US', { hour12: false, hour: "numeric", minute: "numeric", second: "numeric" });
+            line.className = `mb-1 ${type === 'error' ? 'text-red-400' : 'text-green-400'}`;
+            line.innerHTML = `<span class="opacity-50">[${time}]</span> ${msg}`;
+            logContainer.appendChild(line);
+            logContainer.scrollTop = logContainer.scrollHeight;
+        }
+
+        function tryDirectAccess() {
+            vaultDoor.classList.add('shake', 'border-red-500');
+            vaultStatus.textContent = "ACCESS DENIED";
+            vaultStatus.classList.add('text-red-500');
+
+            addLog("CRITICAL: Unauthorized access attempt on private property 'balance'.", "error");
+
+            setTimeout(() => {
+                vaultDoor.classList.remove('shake', 'border-red-500');
+                vaultStatus.textContent = "LOCKED";
+                vaultStatus.classList.remove('text-red-500');
+            }, 1000);
+        }
+
+        function useMethod() {
+            vaultDoor.classList.add('border-green-500');
+            vaultStatus.textContent = "AUTHORIZED";
+            vaultStatus.classList.add('text-green-500');
+
+            addLog("INFO: Public method deposit() called. Verifying...", "success");
+
+            setTimeout(() => {
+                balance += 100;
+                addLog(`SUCCESS: Balance updated. New Balance: $${balance}`, "success");
+
+                // Animation of change
+                let temp = balance - 100;
+                const interval = setInterval(() => {
+                    temp += 10;
+                    vaultValue.textContent = temp;
+                    if (temp >= balance) clearInterval(interval);
+                }, 30);
+            }, 500);
+
+            setTimeout(() => {
+                vaultDoor.classList.remove('border-green-500');
+                vaultStatus.textContent = "LOCKED";
+                vaultStatus.classList.remove('text-green-500');
+            }, 2000);
+        }
+
+        // --- 03. Inheritance ---
+        const parentTraits = document.getElementById('parent-traits');
+        const childTraits = document.querySelectorAll('.inherited-traits');
+        const btnAddTrait = document.getElementById('add-trait-btn');
+        let hasGps = false;
+
+        function addTrait() {
+            if (hasGps) return;
+            hasGps = true;
+            btnAddTrait.disabled = true;
+            btnAddTrait.textContent = "Trait Added";
+            btnAddTrait.classList.add('opacity-50', 'cursor-not-allowed');
+
+            // 1. Add to Parent
+            const div = document.createElement('div');
+            div.className = "flex items-center gap-2 node-appear font-bold text-red-600";
+            div.innerHTML = `<div class="w-1.5 h-1.5 rounded-full bg-red-600"></div> GPS`;
+            parentTraits.appendChild(div);
+
+            // 2. Animate Flow
+            const parentRect = document.getElementById('parent-node').getBoundingClientRect();
+            const containerRect = document.getElementById('inheritance-canvas').getBoundingClientRect();
+
+            // Create particle
+            const particle = document.createElement('div');
+            particle.className = "flow-particle";
+            particle.style.left = (parentRect.left + parentRect.width / 2 - containerRect.left) + 'px';
+            particle.style.top = (parentRect.bottom - containerRect.top) + 'px';
+            document.getElementById('inheritance-canvas').appendChild(particle);
+
+            // Animate
+            const anim = particle.animate([
+                { transform: 'translateY(0)' },
+                { transform: 'translateY(60px)' } // To horizontal line
+            ], { duration: 500, fill: 'forwards' });
+
+            anim.onfinish = () => {
+                // Split particle
+                particle.remove();
+
+                // Send to children
+                document.querySelectorAll('.inherited-traits').forEach(child => {
+                    const cDiv = document.createElement('div');
+                    cDiv.className = "text-red-600 font-bold node-appear gps-trait";
+                    cDiv.innerText = "↳ GPS";
+                    setTimeout(() => child.appendChild(cDiv), 300); // Slight delay for visual effect
+                });
+            };
+        }
+
+        function resetInheritance() {
+            // Remove GPS traits
+            if (!hasGps) return;
+            hasGps = false;
+
+            // Reset button
+            btnAddTrait.disabled = false;
+            btnAddTrait.textContent = "Inject 'GPS' to Parent";
+            btnAddTrait.classList.remove('opacity-50', 'cursor-not-allowed');
+
+            // Clear visual traits (last child of parent traits and gps-trait class)
+            if (parentTraits.lastElementChild && parentTraits.children.length > 2) {
+                parentTraits.removeChild(parentTraits.lastElementChild);
+            }
+
+            document.querySelectorAll('.gps-trait').forEach(el => el.remove());
+        }
+
+        // --- 04.a Polymorphism (Overriding) ---
+        const cardsMap = {
+            dog: { code: 'console.log("WOOF!")', output: "WOOF!", color: 'text-black font-extrabold' },
+            cat: { code: 'console.log("MEOW")', output: "MEOW", color: 'text-gray-600 italic' },
+            duck: { code: 'console.log("QUACK")', output: "QUACK", color: 'text-orange-600 font-bold' }
+        };
+
+        async function triggerIndividualPoly(type) {
+            const card = document.getElementById(`card-${type}`);
+            const text = document.getElementById(`poly-${type}`);
+
+            // Visual Active State
+            card.classList.add('border-green-500', 'bg-green-50');
+            text.innerHTML = `<span class="${cardsMap[type].color}">${cardsMap[type].output}</span>`;
+            text.classList.add('border-green-300');
+
+            await sleep(600);
+
+            // Reset
+            card.classList.remove('border-green-500', 'bg-green-50');
+            text.classList.remove('border-green-300');
+            text.innerHTML = "Click Me";
+        }
+
+        async function triggerPolymorphism() {
+            // Sequential Loop
+            for (const type of ['dog', 'cat', 'duck']) {
+                await triggerIndividualPoly(type);
+                await sleep(200);
+            }
+        }
+
+        // --- 04.b Method Overloading ---
+        function setInput(val) {
+            document.getElementById('overload-input').value = val;
+            triggerOverload();
+        }
+
+        function triggerOverload() {
+            const input = document.getElementById('overload-input').value;
+            const screen = document.getElementById('processor-screen');
+            const logicInt = document.getElementById('logic-int');
+            const logicStr = document.getElementById('logic-string');
+
+            // Reset logic highlights
+            logicInt.classList.remove('text-green-400', 'font-bold', 'border-green-500');
+            logicStr.classList.remove('text-green-400', 'font-bold', 'border-green-500');
+            logicInt.classList.add('border-transparent');
+            logicStr.classList.add('border-transparent');
+
+            if (!input) return;
+
+            // Check if number
+            if (!isNaN(input) && input.trim() !== "") {
+                const n = parseInt(input);
+                screen.textContent = `Computing Square: ${n * n}`;
+                logicInt.classList.add('text-green-400', 'font-bold', 'border-green-500');
+                logicInt.classList.remove('border-transparent');
+            } else {
+                screen.textContent = `Formatting Text: "${input.toUpperCase()}"`;
+                logicStr.classList.add('text-green-400', 'font-bold', 'border-green-500');
+                logicStr.classList.remove('border-transparent');
+            }
+        }
+
+        // --- 04.c Interfaces (New Logic) ---
+        async function triggerInterface() {
+            const elements = ['fly-drone', 'fly-bird', 'fly-plane'];
+            const statuses = ['fly-drone-status', 'fly-bird-status', 'fly-plane-status'];
+
+            // Reset
+            elements.forEach(id => document.getElementById(id).classList.remove('translate-y-[-20px]'));
+            statuses.forEach(id => document.getElementById(id).textContent = "Idle");
+
+            await sleep(200);
+
+            // Animate
+            elements.forEach((id, index) => {
+                document.getElementById(id).classList.add('transition-transform', 'duration-500', 'translate-y-[-30px]');
+                document.getElementById(statuses[index]).textContent = "Flying...";
+                document.getElementById(statuses[index]).classList.add('text-blue-600', 'font-bold');
+            });
+
+            await sleep(1500);
+
+            // Reset
+            elements.forEach((id, index) => {
+                document.getElementById(id).classList.remove('translate-y-[-30px]');
+                document.getElementById(statuses[index]).textContent = "Landed";
+                document.getElementById(statuses[index]).classList.remove('text-blue-600', 'font-bold');
+            });
+        }
+
+        // --- 05. Abstraction ---
+        function updateAbstraction(val) {
+            const needle = document.getElementById('speedometer-needle');
+            const display = document.getElementById('speed-display');
+            const complexLayer = document.getElementById('complex-layer');
+
+            // Convert 0-100 input to -90 to 90 degrees
+            const deg = (val / 100 * 180) - 90;
+            needle.style.transform = `translate(-50%, 0) rotate(${deg}deg)`;
+            display.textContent = Math.floor(val * 1.4); // Fake mph math
+        }
+
+        // --- 07. Multi-Threading ---
+        // --- 07. Multi-Threading (Responsiveness Lab) ---
+        let gearAngle = 0;
+
+        function animateGear() {
+            const gear = document.getElementById('ui-gear');
+            if (gear) {
+                gearAngle = (gearAngle + 6) % 360;
+                gear.style.transform = `rotate(${gearAngle}deg)`;
+                requestAnimationFrame(animateGear);
+            }
+        }
+        requestAnimationFrame(animateGear);
+
+        function runBlockingTask() {
+            const btn = document.getElementById('btn-blocking');
+            const uiStatus = document.getElementById('ui-status');
+            const testInput = document.getElementById('lag-test-input');
+
+            // Set UI to "Frozen" BEFORE the heavy loop
+            uiStatus.innerHTML = "❌ FROZEN";
+            uiStatus.className = "font-mono text-sm font-bold text-red-600";
+            btn.textContent = "Processing (UI Locked)...";
+            btn.disabled = true;
+            if (testInput) testInput.placeholder = "Try typing here! (You can't)";
+
+            // Force a repaint before blocking
+            requestAnimationFrame(() => {
+                requestAnimationFrame(() => {
+                    setTimeout(() => {
+                        const start = Date.now();
+                        // HEAVY BLOCKING LOOP using Main Thread
+                        while (Date.now() - start < 3000) {
+                            // Blocks JS execution -> Blocks requestAnimationFrame -> Blocks UI
+                        }
+
+                        // Done
+                        uiStatus.innerHTML = "✅ RESPONSIVE";
+                        uiStatus.className = "font-mono text-sm font-bold text-green-600";
+                        btn.textContent = "Freeze UI (3s)";
+                        btn.disabled = false;
+                        if (testInput) {
+                            testInput.placeholder = "Typing works now...";
+                            testInput.focus();
+                        }
+                    }, 50);
+                });
+            });
+        }
+
+        function runAsyncTask() {
+            const btn = document.getElementById('btn-async');
+            const bar = document.getElementById('task-bar');
+            const status = document.getElementById('task-progress');
+
+            if (btn.disabled) return;
+            btn.disabled = true;
+
+            let progress = 0;
+            status.textContent = "Working...";
+
+            // Simulate ASYNC work using setInterval (doesn't block main thread)
+            const interval = setInterval(() => {
+                progress += 5;
+                bar.style.width = `${progress}%`;
+
+                if (progress >= 100) {
+                    clearInterval(interval);
+                    status.textContent = "Done!";
+                    setTimeout(() => {
+                        bar.style.width = '0%';
+                        status.textContent = "Idle";
+                        btn.disabled = false;
+                    }, 1000);
+                }
+            }, 100); // Updates every 100ms
+        }
+
+        // --- 08. Static Members ---
+        let robotCount = 0;
+        const staticCounter = document.getElementById('static-counter');
+        const robotContainer = document.getElementById('static-instances');
+
+        function createRobot() {
+            robotCount++;
+            staticCounter.textContent = robotCount; // Update Shared Memory
+
+            const robot = document.createElement('div');
+            robot.className = "w-12 h-16 bg-white border border-gray-300 flex flex-col items-center justify-center shadow-sm node-appear";
+            robot.innerHTML = `
+                <div class="w-6 h-6 bg-gray-200 rounded-full mb-1 border border-gray-400"></div>
+                <div class="text-[8px] font-mono text-gray-500">ID:${100 + robotCount}</div>
+            `;
+            robotContainer.appendChild(robot);
+
+            // Visual pop on counter
+            staticCounter.classList.add('text-green-400');
+            setTimeout(() => staticCounter.classList.remove('text-green-400'), 200);
+        }
+
+        function resetStatic() {
+            robotCount = 0;
+            staticCounter.textContent = 0;
+            robotContainer.innerHTML = '';
+        }
+
+        // --- 07. Relationships ---
+        function toggleHouse() {
+            const house = document.getElementById('comp-house');
+            const rubble = document.getElementById('comp-rubble');
+            const btn = document.getElementById('btn-house');
+
+            if (!house.classList.contains('hidden')) {
+                // Destroy
+                house.classList.add('hidden');
+                rubble.classList.remove('hidden');
+                btn.textContent = "Rebuild House";
+                btn.classList.replace('text-red-600', 'text-blue-600');
+                btn.classList.replace('border-red-200', 'border-blue-200');
+                btn.classList.replace('hover:bg-red-50', 'hover:bg-blue-50');
+            } else {
+                // Rebuild
+                house.classList.remove('hidden');
+                rubble.classList.add('hidden');
+                btn.textContent = "Destroy House";
+                btn.classList.replace('text-blue-600', 'text-red-600');
+                btn.classList.replace('border-blue-200', 'border-red-200');
+                btn.classList.replace('hover:bg-blue-50', 'hover:bg-red-50');
+            }
+        }
+
+        function toggleLibrary() {
+            const lib = document.getElementById('agg-library');
+            const book = document.getElementById('agg-book');
+            const rubble = document.getElementById('agg-rubble');
+            const btn = document.getElementById('btn-library');
+
+            if (!lib.classList.contains('opacity-0')) {
+                // Destroy
+                lib.classList.add('opacity-0');
+                rubble.classList.remove('hidden');
+                // Move book out visually
+                book.style.transform = "translateY(50px) scale(1.1)";
+                book.style.zIndex = "50";
+
+                btn.textContent = "Rebuild Library";
+                btn.classList.replace('text-green-600', 'text-blue-600');
+            } else {
+                // Rebuild
+                lib.classList.remove('opacity-0');
+                rubble.classList.add('hidden');
+                book.style.transform = "translateY(0) scale(1)";
+                book.style.zIndex = "auto";
+
+                btn.textContent = "Destroy Library";
+                btn.classList.replace('text-blue-600', 'text-green-600');
+            }
+        }
+
+        // --- 08. Garbage Collection (Fixed & Improved) ---
+        let gcNodeCounter = 0;
+        const gcContainer = document.getElementById('gc-container');
+        const gcPlaceholder = document.getElementById('gc-placeholder');
+        const gcStatus = document.getElementById('gc-status');
+
+        function addGcNode() {
+            if (gcPlaceholder) gcPlaceholder.style.display = 'none';
+            gcNodeCounter++;
+            const id = gcNodeCounter;
+
+            const node = document.createElement('div');
+            node.id = `gc-${id}`;
+            node.className = "w-20 h-20 bg-green-50 border-2 border-green-500 rounded-sm flex flex-col items-center justify-center relative shadow-sm node-appear transition-all duration-500 cursor-pointer group hover:bg-red-50 select-none";
+            node.innerHTML = `
+                <div class="text-[10px] font-bold text-green-800">Object</div>
+                <div class="text-[8px] font-mono text-gray-400 opacity-60">0x${(1000 + id).toString(16)}</div>
+                
+                <!-- Reference Visuals -->
+                <div class="absolute -top-4 w-0.5 h-4 bg-green-500 transition-all duration-300" id="ref-${id}"></div>
+                <div class="absolute -top-8 text-[8px] uppercase font-bold text-green-600 transition-all duration-300" id="ref-label-${id}">Ref</div>
+                
+                <div class="absolute bottom-1 text-[8px] text-red-500 opacity-0 group-hover:opacity-100 font-bold transition-opacity">CUT REF</div>
+            `;
+
+            node.onclick = () => cutGcRef(id);
+            gcContainer.appendChild(node);
+        }
+
+        async function cutGcRef(id) {
+            const node = document.getElementById(`gc-${id}`);
+            if (!node || node.classList.contains('bg-gray-200')) return; // Already cut
+
+            // 1. Cut Reference (User Action)
+            gcStatus.textContent = "System: Reference Lost";
+            gcStatus.className = "ml-2 text-[10px] font-mono text-red-500 font-bold";
+
+            const refLine = document.getElementById(`ref-${id}`);
+            const refLabel = document.getElementById(`ref-label-${id}`);
+
+            if (refLine) refLine.style.height = "0px";
+            if (refLabel) refLabel.style.opacity = "0";
+
+            node.classList.remove('bg-green-50', 'border-green-500', 'hover:bg-red-50', 'cursor-pointer');
+            node.classList.add('bg-gray-200', 'border-gray-400', 'cursor-not-allowed');
+            node.onclick = null;
+
+            // Internal content update
+            node.querySelector('.text-green-800').className = "text-[10px] font-bold text-gray-500 line-through";
+            node.lastElementChild.remove(); // Remove "CUT REF" text
+
+            await sleep(600);
+
+            // 2. Garbage Collection (System Action)
+            gcStatus.textContent = "GC: Sweeping Unreachable Memory...";
+            gcStatus.className = "ml-2 text-[10px] font-mono text-blue-600 font-bold";
+
+            node.style.transform = "scale(0.8)";
+            node.style.opacity = "0.5";
+            node.classList.add('border-dashed');
+
+            await sleep(800);
+
+            // 3. Reclaim
+            node.style.transform = "scale(0) rotate(15deg)";
+            node.style.opacity = "0";
+            node.style.marginTop = "-20px"; // Collapse space slightly before removing
+
+            await sleep(400);
+            node.remove();
+
+            // Reset Status
+            gcStatus.textContent = "System: Idle";
+            gcStatus.className = "ml-2 text-[10px] font-mono text-gray-300";
+
+            // Check empty state
+            const currentNodes = Array.from(gcContainer.children).filter(c => c.id !== 'gc-placeholder');
+            if (currentNodes.length === 0) {
+                if (gcPlaceholder) gcPlaceholder.style.display = 'block';
+            }
+        }
+
+        function resetGc() {
+            gcContainer.innerHTML = '<div id="gc-placeholder" class="text-xs text-gray-400 w-full text-center mt-12 italic">Heap is empty. Add objects to start.</div>';
+            gcNodeCounter = 0;
+            gcStatus.textContent = "System: Idle";
+            gcStatus.className = "ml-2 text-[10px] font-mono text-gray-300";
+        }
+
+        // --- Init ---
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobile-menu');
+            if (menu.classList.contains('hidden')) {
+                menu.classList.remove('hidden');
+                menu.classList.add('flex');
+                document.body.style.overflow = 'hidden';
+            } else {
+                menu.classList.add('hidden');
+                menu.classList.remove('flex');
+                document.body.style.overflow = 'auto';
+            }
+        }
+
+        // Scroll Reveal
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('active');
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.1 });
+
+        document.querySelectorAll('section').forEach(section => {
+            section.classList.add('section-reveal');
+            observer.observe(section);
+        });
+
+    </script>
+
+
+</body>
+
+</html>

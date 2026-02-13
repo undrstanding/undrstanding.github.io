@@ -1,0 +1,1825 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Version Control: Git & GitHub</title>
+    <link rel="icon" type="image/svg+xml" href="../assests/undrlogo.svg">
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Roboto+Mono:wght@400;500&display=swap');
+
+        /* Global Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #a3a3a3;
+            border-radius: 3px;
+        }
+
+        :root {
+            /* Rams Palette - Orange Edition */
+            --bg-color: #f4f4f4;
+            --card-bg: #ffffff;
+            --text-main: #111111;
+            --text-muted: #737373;
+            --accent: #ea580c;
+            --accent-hover: #c2410c;
+            --danger: #ef4444;
+            --border: #e5e5e5;
+            --line: #d4d4d4;
+            --git-graph-line: #a3a3a3;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            -webkit-font-smoothing: antialiased;
+            line-height: 1.5;
+        }
+
+        h1,
+        h2,
+        h3,
+        h4,
+        h5 {
+            font-weight: 600;
+            letter-spacing: -0.03em;
+            color: var(--text-main);
+        }
+
+        .mono {
+            font-family: 'Roboto Mono', monospace;
+        }
+
+        /* Industrial Grid Layout */
+        .rams-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .rams-card:hover {
+            border-color: #a3a3a3;
+        }
+
+        @media (min-width: 768px) {
+            .rams-card {
+                padding: 2rem;
+            }
+        }
+
+        .rams-label {
+            font-family: 'Inter', sans-serif;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+            margin-bottom: 1rem;
+            display: block;
+        }
+
+        /* Controls */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.5rem 1.25rem;
+            font-size: 0.85rem;
+            font-weight: 500;
+            border-radius: 2px;
+            transition: all 0.1s ease;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            white-space: nowrap;
+        }
+
+        .btn-primary {
+            background-color: var(--accent);
+            color: white;
+            border: 1px solid var(--accent);
+        }
+
+        .btn-primary:hover {
+            background-color: var(--accent-hover);
+        }
+
+        .btn-secondary {
+            background-color: transparent;
+            color: var(--text-main);
+            border: 1px solid #a3a3a3;
+        }
+
+        .btn-secondary:hover {
+            background-color: #e5e5e5;
+            border-color: #737373;
+        }
+
+        /* Navigation */
+        .nav-link {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            padding: 0.5rem 0;
+            display: block;
+            transition: color 0.2s;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            color: var(--text-main);
+            font-weight: 500;
+        }
+
+        .nav-link.active::before {
+            content: "• ";
+            color: var(--accent);
+        }
+
+        /* Mobile Menu */
+        .mobile-nav-link {
+            font-size: 1.25rem;
+            font-weight: 500;
+            color: var(--text-main);
+            padding: 1rem 0;
+            border-bottom: 1px solid #e5e5e5;
+            display: block;
+        }
+
+        .divider {
+            height: 1px;
+            background-color: var(--border);
+            width: 100%;
+            margin: 3rem 0;
+        }
+
+        .thin-scrollbar::-webkit-scrollbar {
+            width: 1px;
+        }
+
+        .thin-scrollbar::-webkit-scrollbar-thumb {
+            background: #d4d4d4;
+        }
+
+        /* Animation */
+        .section-reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 1s cubic-bezier(0.25, 1, 0.25, 1), transform 1s cubic-bezier(0.25, 1, 0.25, 1);
+        }
+
+        .section-reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Terminal & Code */
+        .terminal {
+            font-family: 'Roboto Mono', monospace;
+            background-color: #1e1e1e;
+            color: #d4d4d4;
+            padding: 1rem;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            margin-bottom: 1rem;
+        }
+
+        .command::before {
+            content: "$ ";
+            color: #ea580c;
+        }
+
+        /* Conflict Visuals */
+        .conflict-block {
+            font-family: 'Roboto Mono', monospace;
+            font-size: 0.8rem;
+            border: 1px solid #e5e5e5;
+            padding: 10px;
+            background: white;
+        }
+
+        .conflict-ours {
+            background: #eff6ff;
+            border-left: 4px solid #3b82f6;
+        }
+
+        .conflict-theirs {
+            background: #ecfdf5;
+            border-left: 4px solid #10b981;
+        }
+
+        .conflict-marker {
+            color: #9ca3af;
+            font-weight: bold;
+        }
+
+        /* Command Card Styles */
+        .cmd-card {
+            border-left: 2px solid transparent;
+            transition: all 0.2s;
+        }
+
+        .cmd-card:hover {
+            border-left-color: var(--accent);
+            background-color: #fafafa;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="flex min-h-screen flex-col lg:flex-row">
+
+        <!-- Mobile Header (Fixed) -->
+        <header
+            class="lg:hidden fixed top-0 w-full bg-[#f4f4f4] border-b border-[#e5e5e5] z-[100] px-6 py-4 flex justify-between items-center h-16">
+            <div>
+                <h1 class="text-sm font-semibold tracking-wide uppercase text-black leading-tight">Version
+                    Control:<br>Git & GitHub</h1>
+            </div>
+            <button onclick="toggleMobileMenu()"
+                class="text-black focus:outline-none p-2 border border-transparent active:bg-gray-200 rounded">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+            </button>
+        </header>
+
+        <!-- Mobile Menu Overlay -->
+        <div id="mobile-menu" class="fixed inset-0 bg-[#f4f4f4] z-[90] hidden flex-col pt-20 px-6 overflow-y-auto">
+            <nav class="flex flex-col">
+                <span class="text-[10px] text-gray-400 font-bold uppercase tracking-wider px-0 py-2">01. Basics</span>
+                <a href="#intro" class="mobile-nav-link" onclick="toggleMobileMenu()">Introduction</a>
+                <a href="#history" class="mobile-nav-link" onclick="toggleMobileMenu()">Origins</a>
+                <a href="#setup" class="mobile-nav-link" onclick="toggleMobileMenu()">Setup Guide</a>
+                <a href="#lifecycle" class="mobile-nav-link" onclick="toggleMobileMenu()">The Three States</a>
+
+                <span class="text-[10px] text-gray-400 font-bold uppercase tracking-wider px-0 py-2 mt-4">02.
+                    Advanced</span>
+                <a href="#branching" class="mobile-nav-link" onclick="toggleMobileMenu()">Branching</a>
+                <a href="#head" class="mobile-nav-link" onclick="toggleMobileMenu()">The HEAD Pointer</a>
+                <a href="#conflicts" class="mobile-nav-link" onclick="toggleMobileMenu()">Merge Conflicts</a>
+                <a href="#advanced-tools" class="mobile-nav-link" onclick="toggleMobileMenu()">Cherry-pick & Rebase</a>
+                <a href="#deployment" class="mobile-nav-link" onclick="toggleMobileMenu()">Deployment Guide</a>
+
+                <span class="text-[10px] text-gray-400 font-bold uppercase tracking-wider px-0 py-2 mt-4">03.
+                    Reference</span>
+                <a href="#commands" class="mobile-nav-link" onclick="toggleMobileMenu()">Command Guide</a>
+                <a href="#glossary" class="mobile-nav-link" onclick="toggleMobileMenu()">Glossary</a>
+
+                <span class="text-[10px] text-gray-400 font-bold uppercase tracking-wider px-0 py-2 mt-4">04.
+                    Assessment</span>
+                <a href="#quiz" class="mobile-nav-link border-b-0" onclick="toggleMobileMenu()">Knowledge Check</a>
+            </nav>
+        </div>
+
+        <!-- Sidebar (Desktop) -->
+        <aside
+            class="hidden lg:block w-64 fixed h-screen bg-[#f4f4f4] border-r border-[#e5e5e5] z-50 overflow-y-auto thin-scrollbar">
+            <div class="p-8 h-full flex flex-col justify-between">
+                <div>
+                    <a href="../index.html"
+                        class="inline-flex items-center gap-2 px-4 py-2 mb-8 text-[10px] font-mono uppercase tracking-wider text-gray-600 border border-gray-300 hover:bg-black hover:text-white hover:border-black transition-all duration-200">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                        </svg>
+                        Back to Home
+                    </a>
+                    <div class="mb-12">
+                        <h1 class="text-sm font-semibold tracking-wide uppercase text-black">Version Control<br>Systems
+                        </h1>
+                        <p class="text-[10px] text-gray-400 mt-1 uppercase tracking-wider font-bold">Git
+                            Architecture</p>
+                    </div>
+
+                    <nav class="space-y-1">
+                        <a href="#intro" class="nav-link font-medium text-black">Introduction</a>
+
+                        <div class="pt-4 pb-1 text-[10px] text-gray-400 font-bold uppercase tracking-wider">01.
+                            Fundamentals</div>
+                        <a href="#history" class="nav-link">Origins</a>
+                        <a href="#setup" class="nav-link">Setup Guide</a>
+                        <a href="#lifecycle" class="nav-link">The Three States</a>
+                        <a href="#snapshots" class="nav-link">Snapshots vs Deltas</a>
+
+                        <div class="pt-4 pb-1 text-[10px] text-gray-400 font-bold uppercase tracking-wider">02. Logic
+                        </div>
+                        <a href="#branching" class="nav-link">Branching & Merging</a>
+                        <a href="#head" class="nav-link">The HEAD Pointer</a>
+                        <a href="#conflicts" class="nav-link">Merge Conflicts</a>
+                        <a href="#advanced-tools" class="nav-link">Cherry-pick & Rebase</a>
+                        <a href="#remote" class="nav-link">Distributed (GitHub)</a>
+                        <a href="#deployment" class="nav-link">Deployment Guide</a>
+
+                        <div class="pt-4 pb-1 text-[10px] text-gray-400 font-bold uppercase tracking-wider">03.
+                            Reference</div>
+                        <a href="#commands" class="nav-link">Command Guide</a>
+                        <a href="#glossary" class="nav-link">Glossary</a>
+
+                        <div class="pt-4 pb-1 text-[10px] text-gray-400 font-bold uppercase tracking-wider">04.
+                            Assessment</div>
+                        <a href="#quiz" class="nav-link">Knowledge Check</a>
+                    </nav>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 lg:ml-64 bg-white w-full">
+            <div class="max-w-3xl mx-auto px-4 sm:px-8 py-24 lg:py-20">
+
+                <!-- Hero Section -->
+                <section id="intro" class="mb-16 md:mb-24">
+                    <h2 class="text-3xl md:text-5xl font-semibold mb-6 text-black tracking-tight leading-tight">
+                        The Time Machine <br>for Code
+                    </h2>
+                    <p class="text-base md:text-lg text-[#555] max-w-xl font-light leading-relaxed mb-4">
+                        Git is a distributed version control system. It allows humans to track changes in computer files
+                        and coordinate work on those files among multiple people.
+                    </p>
+                    <p class="text-sm text-gray-500 max-w-lg leading-relaxed">
+                        Think of it as a "save game" system for your project. You can save your progress (commit),
+                        create parallel universes to experiment (branch), and merge those universes back together.
+                        GitHub acts as the cloud storage for these histories.
+                    </p>
+                </section>
+
+                <div class="divider hidden md:block"></div>
+
+                <!-- 00. Origins -->
+                <section id="history" class="mb-20 md:mb-24">
+                    <span class="rams-label">00 / The Origins</span>
+                    <h3 class="text-xl font-medium mb-2">A Bit of History</h3>
+                    <p class="text-sm text-gray-600 mb-8 max-w-lg">
+                        Git was born out of frustration. In 2005, the relationship between the Linux kernel community
+                        and their previous VCS provider (BitKeeper) broke down.
+                    </p>
+                    <div class="rams-card bg-gray-50 border-gray-200">
+                        <div class="flex flex-col md:flex-row gap-6">
+                            <div class="flex-1">
+                                <h4 class="text-sm font-bold mb-2">Linus's Criteria</h4>
+                                <ul class="text-xs text-gray-600 space-y-2 list-disc list-inside">
+                                    <li>Speed (Fast enough to handle the Linux Kernel).</li>
+                                    <li>Simple design.</li>
+                                    <li>Strong support for non-linear development (thousands of parallel branches).</li>
+                                    <li>Fully distributed (no central server required).</li>
+                                </ul>
+                            </div>
+                            <div class="flex-1 border-t md:border-t-0 md:border-l border-gray-200 pt-4 md:pt-0 md:pl-6">
+                                <blockquote class="text-xs italic text-gray-500 mb-2">
+                                    "I'm an egotistical bastard, and I name all my projects after myself. First 'Linux',
+                                    now 'Git'."
+                                </blockquote>
+                                <p class="text-[10px] text-gray-400">— Linus Torvalds</p>
+                                <p class="text-[10px] text-gray-400 mt-2">(British slang for "unpleasant person")</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                <!-- Check: Origins -->
+                <div id="quiz-git-history"></div>
+
+                <!-- 00.5 Setup -->
+                <section id="setup" class="mb-20 md:mb-24 section-reveal">
+                    <span class="rams-label">00.5 / Installation</span>
+                    <h3 class="text-xl font-medium mb-2">Getting Started</h3>
+                    <p class="text-sm text-gray-600 mb-8 max-w-lg">
+                        Git works everywhere. Select your operating system to see specific installation instructions.
+                    </p>
+
+                    <div class="rams-card bg-white border-gray-200">
+                        <!-- OS Tabs -->
+                        <div class="flex border-b border-gray-200 mb-6 overflow-x-auto">
+                            <button onclick="switchOsTab('windows')" id="tab-windows"
+                                class="px-4 py-2 text-sm font-medium text-orange-600 border-b-2 border-orange-600 transition-colors whitespace-nowrap">Windows</button>
+                            <button onclick="switchOsTab('macos')" id="tab-macos"
+                                class="px-4 py-2 text-sm font-medium text-gray-400 border-b-2 border-transparent hover:text-gray-600 transition-colors whitespace-nowrap">macOS</button>
+                            <button onclick="switchOsTab('linux')" id="tab-linux"
+                                class="px-4 py-2 text-sm font-medium text-gray-400 border-b-2 border-transparent hover:text-gray-600 transition-colors whitespace-nowrap">Linux</button>
+                        </div>
+
+                        <!-- Windows Content -->
+                        <div id="content-windows" class="os-content block animate-fade-in">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                <div>
+                                    <h4 class="text-sm font-bold mb-3">1. Download Git Bash</h4>
+                                    <p class="text-xs text-gray-600 mb-4">
+                                        For Windows, we strongly recommend <strong>Git Bash</strong>. It provides a
+                                        standard Unix-like environment.
+                                        Go to <a href="https://git-scm.com/download/win" target="_blank"
+                                            class="text-orange-600 underline">git-scm.com</a> and download the
+                                        installer.
+                                    </p>
+                                    <div class="bg-blue-50 border-l-4 border-blue-500 p-3 mb-4">
+                                        <p class="text-xs text-blue-800">
+                                            <strong>Tip:</strong> During install, choose <em>"Git from the command line
+                                                and also from 3rd-party software"</em>.
+                                        </p>
+                                    </div>
+                                </div>
+                                <div>
+                                    <h4 class="text-sm font-bold mb-3">2. Verify</h4>
+                                    <div class="terminal">
+                                        <div class="command">git --version</div>
+                                        <div class="text-gray-500">git version 2.43.0.windows.1</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- macOS Content -->
+                        <div id="content-macos" class="os-content hidden animate-fade-in">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                <div>
+                                    <h4 class="text-sm font-bold mb-3">Option A: Homebrew (Recommended)</h4>
+                                    <p class="text-xs text-gray-600 mb-2">If you have <a href="https://brew.sh"
+                                            target="_blank" class="underline">Homebrew</a> installed:</p>
+                                    <div class="terminal mb-4">
+                                        <div class="command">brew install git</div>
+                                    </div>
+
+                                    <h4 class="text-sm font-bold mb-3 mt-4">Option B: Xcode Tools</h4>
+                                    <p class="text-xs text-gray-600 mb-2">Built-in Apple tools:</p>
+                                    <div class="terminal">
+                                        <div class="command">xcode-select --install</div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <h4 class="text-sm font-bold mb-3">Verify</h4>
+                                    <div class="terminal">
+                                        <div class="command">git --version</div>
+                                        <div class="text-gray-500">git version 2.39.0 (Apple Git-143)</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Linux Content -->
+                        <div id="content-linux" class="os-content hidden animate-fade-in">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                <div>
+                                    <h4 class="text-sm font-bold mb-3">Debian / Ubuntu</h4>
+                                    <div class="terminal mb-4">
+                                        <div class="command">sudo apt update</div>
+                                        <div class="command">sudo apt install git-all</div>
+                                    </div>
+
+                                    <h4 class="text-sm font-bold mb-3 mt-4">Fedora</h4>
+                                    <div class="terminal">
+                                        <div class="command">sudo dnf install git-all</div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <h4 class="text-sm font-bold mb-3">Verify</h4>
+                                    <div class="terminal">
+                                        <div class="command">git --version</div>
+                                        <div class="text-gray-500">git version 2.34.1</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </section>
+
+                <!-- 01. Lifecycle -->
+                <section id="lifecycle" class="mb-20 md:mb-24">
+                    <span class="rams-label">01 / The Local Flow</span>
+                    <h3 class="text-xl font-medium mb-2">The Three States</h3>
+                    <p class="text-sm text-gray-600 mb-8 max-w-lg">
+                        Git architecture is defined by three areas: the <strong>Working Directory</strong> (where you
+                        edit),
+                        the <strong>Staging Area</strong> (what you plan to save), and the <strong>Repository</strong>
+                        (history).
+                    </p>
+
+                    <div class="rams-card">
+                        <div class="flex flex-col gap-8">
+                            <!-- Visualization Area -->
+                            <div class="overflow-x-auto mb-4 border border-gray-200">
+                                <div class="relative bg-[#f4f4f4] p-6 min-w-[600px]">
+                                    <div class="grid grid-cols-3 gap-2 mb-8 text-center">
+                                        <div class="text-[10px] uppercase font-bold text-gray-400">Working Dir</div>
+                                        <div class="text-[10px] uppercase font-bold text-gray-400">Staging Area</div>
+                                        <div class="text-[10px] uppercase font-bold text-gray-400">Repository (.git)
+                                        </div>
+                                    </div>
+
+                                    <div class="grid grid-cols-3 gap-4 h-40 relative">
+                                        <!-- Zones -->
+                                        <div class="border-r border-dashed border-gray-300 h-full"></div>
+                                        <div class="border-r border-dashed border-gray-300 h-full"></div>
+                                        <div class="h-full"></div>
+
+                                        <!-- The File (Animated) -->
+                                        <div id="file-block"
+                                            class="absolute top-1/2 -translate-y-1/2 w-20 h-24 bg-white border border-gray-300 shadow-sm flex flex-col items-center justify-center transition-all duration-700 ease-in-out left-4 z-10">
+                                            <svg class="w-8 h-8 text-orange-500 mb-2" fill="none" stroke="currentColor"
+                                                viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
+                                                </path>
+                                            </svg>
+                                            <span class="text-[10px] font-mono text-gray-500">index.html</span>
+                                            <span id="file-status"
+                                                class="text-[9px] text-red-500 font-bold mt-1">Modified</span>
+                                        </div>
+
+                                        <!-- Committed Stack -->
+                                        <div id="commit-stack"
+                                            class="absolute top-4 right-4 w-20 flex flex-col items-center gap-1 opacity-50">
+                                            <div class="w-full h-2 bg-gray-300 rounded-sm"></div>
+                                            <div class="w-full h-2 bg-gray-300 rounded-sm"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Controls -->
+                            <div class="flex flex-col md:flex-row items-center justify-between gap-4">
+                                <div class="flex flex-wrap gap-2">
+                                    <button onclick="modifyFile()" class="btn btn-secondary">Modify</button>
+                                    <button onclick="gitAdd()"
+                                        class="btn btn-primary bg-orange-600 border-orange-600 hover:bg-orange-700">git
+                                        add</button>
+                                    <button onclick="gitCommit()"
+                                        class="btn btn-primary bg-black border-black hover:bg-gray-800">git
+                                        commit</button>
+                                </div>
+                                <div class="text-right">
+                                    <div class="text-[10px] uppercase text-gray-400 mb-1">Current Command</div>
+                                    <div id="git-command-display" class="font-mono text-sm text-orange-600">$ status
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="text-xs text-gray-500 italic mt-2" id="lifecycle-explainer">
+                                Edit the file to start. Then stage it, then commit it to history.
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                <!-- Check: Lifecycle -->
+                <div id="quiz-git-lifecycle"></div>
+
+                <!-- 02. Snapshots -->
+                <section id="snapshots" class="mb-20 md:mb-24">
+                    <span class="rams-label">02 / Data Model</span>
+                    <h3 class="text-xl font-medium mb-2">Snapshots, Not Deltas</h3>
+                    <p class="text-sm text-gray-600 mb-4 max-w-lg">
+                        Unlike other VCS systems which store changes as a list of file-based changes (deltas), Git
+                        thinks of its data more like a series of <strong>snapshots</strong> of a miniature filesystem.
+                    </p>
+
+                    <div class="rams-card bg-gray-50">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                            <div>
+                                <h4 class="text-sm font-semibold mb-2">The "Delta" Way</h4>
+                                <div class="flex flex-col gap-2 opacity-50">
+                                    <div class="flex items-center gap-2">
+                                        <div
+                                            class="w-8 h-8 border border-gray-300 bg-white flex items-center justify-center text-xs">
+                                            V1</div>
+                                        <div class="h-px bg-gray-400 flex-1"></div>
+                                        <div class="text-xs mono">File A</div>
+                                    </div>
+                                    <div class="flex items-center gap-2">
+                                        <div
+                                            class="w-8 h-8 border border-gray-300 bg-white flex items-center justify-center text-xs">
+                                            V2</div>
+                                        <div class="h-px bg-gray-400 flex-1"></div>
+                                        <div class="text-xs mono text-green-600">+ Diff</div>
+                                    </div>
+                                    <div class="flex items-center gap-2">
+                                        <div
+                                            class="w-8 h-8 border border-gray-300 bg-white flex items-center justify-center text-xs">
+                                            V3</div>
+                                        <div class="h-px bg-gray-400 flex-1"></div>
+                                        <div class="text-xs mono text-green-600">+ Diff</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="border-l border-gray-200 pl-8">
+                                <h4 class="text-sm font-semibold mb-2 text-orange-600">The Git Way (Snapshots)</h4>
+                                <div class="flex flex-col gap-2">
+                                    <div class="flex items-center gap-2">
+                                        <div
+                                            class="w-8 h-8 border border-orange-300 bg-orange-50 flex items-center justify-center text-xs font-bold">
+                                            C1</div>
+                                        <div class="h-px bg-orange-200 flex-1"></div>
+                                        <div class="text-xs mono">Full File A (Blob)</div>
+                                    </div>
+                                    <div class="flex items-center gap-2">
+                                        <div
+                                            class="w-8 h-8 border border-orange-300 bg-orange-50 flex items-center justify-center text-xs font-bold">
+                                            C2</div>
+                                        <div class="h-px bg-orange-200 flex-1"></div>
+                                        <div class="text-xs mono">Full File A'</div>
+                                    </div>
+                                    <div class="flex items-center gap-2">
+                                        <div
+                                            class="w-8 h-8 border border-orange-300 bg-orange-50 flex items-center justify-center text-xs font-bold">
+                                            C3</div>
+                                        <div class="h-px bg-orange-200 flex-1"></div>
+                                        <div class="text-xs mono">Full File A''</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                <!-- Check: Snapshots -->
+                <div id="quiz-git-snapshots"></div>
+
+                <!-- 03. Branching -->
+                <section id="branching" class="mb-20 md:mb-24">
+                    <span class="rams-label">03 / Parallel Universes</span>
+                    <h3 class="text-xl font-medium mb-2">Branching Logic</h3>
+                    <p class="text-sm text-gray-600 mb-8 max-w-lg">
+                        Branching means you diverge from the main line of development and continue to do work without
+                        messing with that main line.
+                    </p>
+
+                    <div class="rams-card">
+                        <!-- Instructions / Status -->
+                        <div
+                            class="mb-4 text-xs font-mono text-gray-500 bg-gray-50 p-2 border border-gray-100 rounded flex justify-between items-center">
+                            <span id="branch-status">System Ready. Initializing main branch...</span>
+                            <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
+                        </div>
+
+                        <div class="relative h-64 w-full bg-[#f4f4f4] border border-gray-200 mb-6 overflow-x-auto custom-scrollbar"
+                            id="branch-canvas-container">
+                            <!-- Visuals rendered via JS SVG -->
+                        </div>
+
+                        <div class="flex justify-between items-end border-t border-gray-100 pt-4">
+                            <div class="flex flex-wrap gap-2">
+                                <button onclick="addMainCommit()" class="btn btn-secondary text-xs">1. Commit
+                                    (Main)</button>
+                                <button onclick="createBranch()"
+                                    class="btn btn-primary bg-orange-600 border-orange-600 hover:bg-orange-700 text-xs">2.
+                                    Branch</button>
+                                <button onclick="addFeatureCommit()" id="btn-feat-commit"
+                                    class="btn btn-secondary text-xs opacity-50 cursor-not-allowed" disabled>3. Commit
+                                    (Feature)</button>
+                                <button onclick="mergeBranch()" id="btn-merge"
+                                    class="btn btn-primary bg-black border-black text-xs opacity-50 cursor-not-allowed"
+                                    disabled>4. Merge</button>
+                                <button onclick="resetBranchDemo()" class="btn btn-ghost text-xs ml-2">Reset</button>
+                            </div>
+                            <div class="text-right hidden sm:block">
+                                <div class="text-[10px] uppercase text-gray-400">Current Branch</div>
+                                <div id="current-branch-label" class="text-sm font-mono font-bold text-black">main
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Terminology Blocks -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+                        <div class="rams-card bg-white border-gray-200 mb-0">
+                            <div class="flex items-start gap-3">
+                                <div class="p-2 bg-gray-100 rounded text-gray-500">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none"
+                                        viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                </div>
+                                <div>
+                                    <h4 class="text-xs uppercase font-bold text-gray-400 mb-1">Main vs. Master</h4>
+                                    <p class="text-xs text-gray-600 leading-relaxed">
+                                        They are <strong>aliases</strong> for the exact same thing: the default branch.
+                                        <br><span class="inline-block mt-1"><strong>master:</strong> Legacy name
+                                            (2005-2020).</span>
+                                        <br><span><strong>main:</strong> Modern standard (2020+) for inclusive
+                                            terminology.</span>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="rams-card bg-white border-gray-200 mb-0">
+                            <div class="flex items-start gap-3">
+                                <div class="p-2 bg-orange-50 rounded text-orange-500">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none"
+                                        viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+                                    </svg>
+                                </div>
+                                <div>
+                                    <h4 class="text-xs uppercase font-bold text-gray-400 mb-1">Feature Branch Workflow
+                                    </h4>
+                                    <p class="text-xs text-gray-600 leading-relaxed">
+                                        Think of <strong>feature branches</strong> as photocopies of your project. You
+                                        scribble notes (commits) on the copy, and only when it's perfect do you staple
+                                        (merge) it into the final report (main).
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </section>
+                <!-- Check: Branching -->
+                <div id="quiz-git-branching"></div>
+
+                <!-- 04. HEAD Pointer -->
+                <section id="head" class="mb-20 md:mb-24">
+                    <span class="rams-label">04 / Navigation</span>
+                    <h3 class="text-xl font-medium mb-2">The HEAD Pointer</h3>
+                    <p class="text-sm text-gray-600 mb-6 max-w-lg">
+                        How does Git know what branch you are on? It uses a special pointer called
+                        <strong>HEAD</strong>. In Git, <code>HEAD</code> is just a reference to the current commit you
+                        are viewing.
+                    </p>
+
+                    <div class="rams-card bg-white">
+                        <div class="flex items-center justify-center gap-4 py-8">
+                            <!-- Commit Node -->
+                            <div class="relative flex flex-col items-center">
+                                <div
+                                    class="w-10 h-10 rounded-full bg-black text-white flex items-center justify-center text-xs font-mono mb-2 z-10">
+                                    C3</div>
+                                <div class="text-[10px] text-gray-400 uppercase font-bold">master</div>
+
+                                <!-- Arrow -->
+                                <div class="h-6 w-px bg-gray-300 my-2"></div>
+
+                                <!-- HEAD -->
+                                <div
+                                    class="border border-orange-500 bg-orange-50 text-orange-600 px-2 py-1 text-xs font-mono rounded shadow-sm">
+                                    HEAD
+                                </div>
+                            </div>
+                        </div>
+                        <p class="text-xs text-gray-500 text-center mt-4">
+                            Usually, HEAD points to a Branch name (like master), which points to a Commit. <br>
+                            If you checkout a specific commit hash directly, you enter "Detached HEAD" state.
+                        </p>
+                    </div>
+                </section>
+                <!-- Check: HEAD -->
+                <div id="quiz-git-head"></div>
+
+                <!-- 05. Conflicts -->
+                <section id="conflicts" class="mb-20 md:mb-24">
+                    <span class="rams-label">05 / Resolution</span>
+                    <h3 class="text-xl font-medium mb-2">Merge Conflicts</h3>
+                    <p class="text-sm text-gray-600 mb-6 max-w-lg">
+                        When two branches modify the <strong>same lines</strong> of the same file, Git doesn't know
+                        which one is correct. It pauses the merge and asks you to resolve it.
+                    </p>
+
+                    <div class="rams-card">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                            <!-- The Code Block -->
+                            <div class="conflict-block" id="conflict-code-area">
+                                <div class="conflict-marker">&lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD</div>
+                                <div class="conflict-ours p-2 my-1">
+                                    <span class="text-blue-600 font-bold">const color = "blue";</span>
+                                </div>
+                                <div class="conflict-marker">=======</div>
+                                <div class="conflict-theirs p-2 my-1">
+                                    <span class="text-green-600 font-bold">const color = "green";</span>
+                                </div>
+                                <div class="conflict-marker">&gt;&gt;&gt;&gt;&gt;&gt;&gt; feature</div>
+                            </div>
+
+                            <!-- Controls -->
+                            <div class="flex flex-col justify-center gap-4">
+                                <p class="text-xs text-gray-500" id="conflict-desc">Git inserted markers. Delete them
+                                    and pick the code you want.</p>
+
+                                <div class="space-y-2" id="conflict-buttons">
+                                    <button
+                                        class="btn btn-secondary w-full text-left hover:bg-blue-50 hover:border-blue-200"
+                                        onclick="resolveConflict('ours')">Accept Current (Blue)</button>
+                                    <button
+                                        class="btn btn-secondary w-full text-left hover:bg-green-50 hover:border-green-200"
+                                        onclick="resolveConflict('theirs')">Accept Incoming (Green)</button>
+                                    <button class="btn btn-secondary w-full text-left"
+                                        onclick="resolveConflict('both')">Accept Both</button>
+                                </div>
+                                <button id="conflict-reset" class="btn btn-ghost text-xs hidden"
+                                    onclick="resetConflict()">Reset Visual</button>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                <!-- Check: Conflicts -->
+                <div id="quiz-git-conflicts"></div>
+
+                <!-- 05.5 Advanced Tools (Cherry Pick, Rebase) -->
+                <section id="advanced-tools" class="mb-20 md:mb-24">
+                    <span class="rams-label">05.5 / Precision Tools</span>
+                    <h3 class="text-xl font-medium mb-6">Cherry-pick & Rebase</h3>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- Cherry Pick -->
+                        <div class="rams-card bg-white h-full">
+                            <h4 class="text-sm font-bold mb-2">Git Cherry-pick</h4>
+                            <p class="text-xs text-gray-500 mb-4 h-10">
+                                Taking a <strong>single specific commit</strong> from one branch and applying it to
+                                another, without merging the whole branch.
+                            </p>
+
+                            <!-- Visual -->
+                            <div
+                                class="bg-gray-50 border border-gray-100 p-4 rounded mb-4 flex items-center justify-center gap-4">
+                                <div class="flex flex-col items-center gap-1">
+                                    <div
+                                        class="w-8 h-8 rounded-full border-2 border-orange-500 bg-orange-100 flex items-center justify-center text-[10px] font-bold text-orange-600">
+                                        C3</div>
+                                    <span class="text-[9px] uppercase text-gray-400">Feature</span>
+                                </div>
+                                <div class="text-gray-300">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none"
+                                        viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                                    </svg>
+                                </div>
+                                <div class="flex flex-col items-center gap-1">
+                                    <div
+                                        class="w-8 h-8 rounded-full border-2 border-gray-300 bg-white flex items-center justify-center text-[10px] font-bold text-gray-600">
+                                        C3'</div>
+                                    <span class="text-[9px] uppercase text-gray-400">Main</span>
+                                </div>
+                            </div>
+
+                            <div class="terminal p-3">
+                                <div class="command text-xs">git cherry-pick a1b2c3d</div>
+                            </div>
+                        </div>
+
+                        <!-- Rebase -->
+                        <div class="rams-card bg-white h-full">
+                            <h4 class="text-sm font-bold mb-2">Git Rebase</h4>
+                            <p class="text-xs text-gray-500 mb-4 h-10">
+                                Rewriting history by moving the <strong>base</strong> of your branch to the tip of
+                                another, creating a linear history.
+                            </p>
+
+                            <!-- Visual -->
+                            <div class="bg-gray-50 border border-gray-100 p-4 rounded mb-4 relative h-24">
+                                <!-- Base Line -->
+                                <div class="absolute top-12 left-4 right-4 h-0.5 bg-gray-300"></div>
+                                <!-- Main Node -->
+                                <div class="absolute top-10 left-10 w-4 h-4 rounded-full bg-black z-10"
+                                    title="Main Tip"></div>
+
+                                <!-- Old Branch -->
+                                <div
+                                    class="absolute top-10 left-20 w-4 h-4 rounded-full border-2 border-orange-400 bg-white z-10 opacity-30">
+                                </div>
+                                <div
+                                    class="absolute top-12 left-20 w-12 h-0.5 bg-orange-300 origin-left -rotate-12 opacity-30">
+                                </div>
+
+                                <!-- Arrow -->
+                                <div class="absolute top-6 left-24 text-orange-500 text-lg">➔</div>
+
+                                <!-- New Branch -->
+                                <div
+                                    class="absolute top-10 left-32 w-4 h-4 rounded-full border-2 border-orange-500 bg-white z-10">
+                                </div>
+                            </div>
+
+                            <div class="terminal p-3">
+                                <div class="command text-xs">git rebase main</div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                <!-- Check: Advanced -->
+                <div id="quiz-git-advanced"></div>
+
+                <!-- 06. Remote -->
+                <section id="remote" class="mb-20 md:mb-24">
+                    <span class="rams-label">06 / The Cloud</span>
+                    <h3 class="text-xl font-medium mb-2">GitHub as Remote</h3>
+                    <p class="text-sm text-gray-600 mb-4 max-w-lg">
+                        Git is the tool running on your machine. GitHub is a hosting service for Git repositories.
+                    </p>
+
+                    <div class="rams-card bg-gray-900 border-gray-800 text-gray-300">
+                        <div class="terminal">
+                            <div class="command">git remote add origin https://github.com/user/repo.git</div>
+                            <div class="command">git push -u origin main</div>
+                            <div class="text-green-500 mt-1">Enumerating objects: 5, done.</div>
+                            <div class="text-green-500">Writing objects: 100% (5/5), 420 bytes, done.</div>
+                            <div class="text-white">To https://github.com/user/repo.git</div>
+                            <div class="text-white">&nbsp;&nbsp;* [new branch] main -> main</div>
+                        </div>
+                        <div
+                            class="flex flex-wrap justify-between items-center text-xs font-mono text-gray-500 px-2 gap-2">
+                            <span>Local Repository</span>
+                            <span class="text-orange-500 truncate mx-2">------- sync -------&gt;</span>
+                            <span>Remote</span>
+                        </div>
+                    </div>
+                </section>
+                <!-- Check: Remote -->
+                <div id="quiz-git-remote"></div>
+
+                <!-- 07. Deployment Guide -->
+                <section id="deployment" class="mb-20 md:mb-24">
+                    <span class="rams-label">07 / Workflow</span>
+                    <h3 class="text-xl font-medium mb-6">Deployment Guide</h3>
+
+                    <div class="rams-card">
+                        <div class="space-y-6">
+                            <div class="flex gap-4">
+                                <div class="flex-none pt-1">
+                                    <span
+                                        class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-black text-white text-xs font-bold">1</span>
+                                </div>
+                                <div class="flex-1">
+                                    <h4 class="text-sm font-bold mb-2">Initialize & Commit</h4>
+                                    <p class="text-xs text-gray-600 mb-3">Turn your folder into a Git repository and
+                                        save your first version.</p>
+                                    <div class="terminal">
+                                        <div class="command">git init</div>
+                                        <div class="command">git add .</div>
+                                        <div class="command">git commit -m "Initial commit"</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="flex gap-4">
+                                <div class="flex-none pt-1">
+                                    <span
+                                        class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-black text-white text-xs font-bold">2</span>
+                                </div>
+                                <div class="flex-1">
+                                    <h4 class="text-sm font-bold mb-2">Branch Naming</h4>
+                                    <p class="text-xs text-gray-600 mb-3">Ensure you are using the modern 'main' branch
+                                        name.</p>
+                                    <div class="terminal">
+                                        <div class="command">git branch -M main</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="flex gap-4">
+                                <div class="flex-none pt-1">
+                                    <span
+                                        class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-black text-white text-xs font-bold">3</span>
+                                </div>
+                                <div class="flex-1">
+                                    <h4 class="text-sm font-bold mb-2">Link Remote</h4>
+                                    <p class="text-xs text-gray-600 mb-3">Connect your local folder to the empty
+                                        repository you created on GitHub.</p>
+                                    <div class="terminal">
+                                        <div class="command">git remote add origin
+                                            https://github.com/username/repo-name.git</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="flex gap-4">
+                                <div class="flex-none pt-1">
+                                    <span
+                                        class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-black text-white text-xs font-bold">4</span>
+                                </div>
+                                <div class="flex-1">
+                                    <h4 class="text-sm font-bold mb-2">Push to Cloud</h4>
+                                    <p class="text-xs text-gray-600 mb-3">Upload your code. The '-u' flag saves the
+                                        connection for future pushes.</p>
+                                    <div class="terminal">
+                                        <div class="command">git push -u origin main</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 08. Commands Reference -->
+                <section id="commands" class="mb-12">
+                    <span class="rams-label">08 / Reference</span>
+                    <h3 class="text-xl font-medium mb-6">Git Command Guide</h3>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <!-- Setup & Init -->
+                        <div class="rams-card cmd-card p-6">
+                            <h4 class="text-xs uppercase font-bold text-gray-400 mb-4">Starting Out</h4>
+                            <div class="space-y-4">
+                                <div>
+                                    <div class="font-mono text-sm font-bold text-black mb-1">git init</div>
+                                    <p class="text-xs text-gray-600">Initializes a new Git repository. Creates a .git
+                                        folder.</p>
+                                </div>
+                                <div>
+                                    <div class="font-mono text-sm font-bold text-black mb-1">git clone [url]</div>
+                                    <p class="text-xs text-gray-600">Copies an entire repository from a remote source
+                                        (like GitHub) to your machine.</p>
+                                </div>
+                                <div>
+                                    <div class="font-mono text-sm font-bold text-black mb-1">git config --global
+                                        user.name</div>
+                                    <p class="text-xs text-gray-600">Sets your identity for commits.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Snapshotting -->
+                        <div class="rams-card cmd-card p-6">
+                            <h4 class="text-xs uppercase font-bold text-gray-400 mb-4">Saving Changes</h4>
+                            <div class="space-y-4">
+                                <div>
+                                    <div class="font-mono text-sm font-bold text-black mb-1">git status</div>
+                                    <p class="text-xs text-gray-600">Shows the state of the working directory and
+                                        staging area.</p>
+                                </div>
+                                <div>
+                                    <div class="font-mono text-sm font-bold text-black mb-1">git add [file]</div>
+                                    <p class="text-xs text-gray-600">Adds files to the staging area (index).</p>
+                                </div>
+                                <div>
+                                    <div class="font-mono text-sm font-bold text-black mb-1">git commit -m "[msg]"</div>
+                                    <p class="text-xs text-gray-600">Saves the staged snapshot to the repository
+                                        history.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Branching -->
+                        <div class="rams-card cmd-card p-6">
+                            <h4 class="text-xs uppercase font-bold text-gray-400 mb-4">Branching & Merging</h4>
+                            <div class="space-y-4">
+                                <div>
+                                    <div class="font-mono text-sm font-bold text-black mb-1">git branch</div>
+                                    <p class="text-xs text-gray-600">Lists your branches. <span
+                                            class="mono bg-gray-100 p-0.5">git branch [name]</span> creates one.</p>
+                                </div>
+                                <div>
+                                    <div class="font-mono text-sm font-bold text-black mb-1">git checkout [branch]</div>
+                                    <p class="text-xs text-gray-600">Switches to another branch.</p>
+                                </div>
+                                <div>
+                                    <div class="font-mono text-sm font-bold text-black mb-1">git merge [branch]</div>
+                                    <p class="text-xs text-gray-600">Combines the specified branch's history into the
+                                        current branch.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Sharing -->
+                        <div class="rams-card cmd-card p-6">
+                            <h4 class="text-xs uppercase font-bold text-gray-400 mb-4">Sharing & Updating</h4>
+                            <div class="space-y-4">
+                                <div>
+                                    <div class="font-mono text-sm font-bold text-black mb-1">git push</div>
+                                    <p class="text-xs text-gray-600">Uploads local branch commits to the remote
+                                        repository.</p>
+                                </div>
+                                <div>
+                                    <div class="font-mono text-sm font-bold text-black mb-1">git fetch</div>
+                                    <p class="text-xs text-gray-600">Downloads history from the remote but does
+                                        <strong>not</strong> merge it.
+                                    </p>
+                                </div>
+                                <div>
+                                    <div class="font-mono text-sm font-bold text-black mb-1">git pull</div>
+                                    <p class="text-xs text-gray-600">Fetches and merges changes from the remote to your
+                                        local branch.</p>
+                                </div>
+                                <div>
+                                    <div class="font-mono text-sm font-bold text-black mb-1">git log</div>
+                                    <p class="text-xs text-gray-600">Shows the commit history.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Glossary Section -->
+                <section id="glossary" class="mb-20">
+                    <span class="rams-label">Glossary</span>
+                    <h3 class="text-xl font-medium mb-8">Key Definitions</h3>
+                    <div class="rams-card">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <h4 class="font-bold text-sm mb-2">Version Control System (VCS)</h4>
+                                <p class="text-xs text-gray-600">A system that records changes to a file or set of files
+                                    over time so that you can recall specific versions later.</p>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-sm mb-2">Git</h4>
+                                <p class="text-xs text-gray-600">A distributed version control system for tracking
+                                    changes in source code during software development.</p>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-sm mb-2">Repository (Repo)</h4>
+                                <p class="text-xs text-gray-600">A data structure used by a VCS to store metadata for a
+                                    set of files and directories.</p>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-sm mb-2">Commit</h4>
+                                <p class="text-xs text-gray-600">A snapshot of your entire project at a specific point
+                                    in time.</p>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-sm mb-2">Branch</h4>
+                                <p class="text-xs text-gray-600">A parallel version of a repository. It is contained
+                                    within the repository, but does not affect the primary or master branch.</p>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-sm mb-2">Staging Area (Index)</h4>
+                                <p class="text-xs text-gray-600">A file that maintains a list of files which are getting
+                                    ready to be committed.</p>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-sm mb-2">Merge</h4>
+                                <p class="text-xs text-gray-600">Taking the changes from one branch (or commit) and
+                                    integrating them into another.</p>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-sm mb-2">Clone</h4>
+                                <p class="text-xs text-gray-600">A copy of an existing Git repository.</p>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-sm mb-2">Pull</h4>
+                                <p class="text-xs text-gray-600">Fetching from and integrating with another repository
+                                    or a local branch.</p>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-sm mb-2">Push</h4>
+                                <p class="text-xs text-gray-600">Uploading local repository content to a remote
+                                    repository.</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 08. Quiz -->
+                <section id="quiz" class="mb-20 md:mb-24">
+                    <span class="rams-label">08 / Knowledge Check</span>
+                    <div id="quiz-container" class="rams-card">
+                        <!-- Quiz loads here -->
+                    </div>
+                </section>
+
+                <!-- 09. Certificate (Initially Hidden) -->
+                <section id="certificate" class="mb-20 md:mb-24 hidden">
+                    <span class="rams-label">09 / Certification</span>
+                    <h3 class="text-xl font-medium mb-6">Completion Certificate</h3>
+
+                    <div class="rams-card !p-0 overflow-hidden">
+                        <div class="p-6 md:p-8">
+                            <div class="flex flex-col md:flex-row gap-8 items-start">
+                                <div class="w-full md:w-1/3 space-y-4">
+                                    <p class="text-sm text-gray-600">
+                                        Enter your name below to generate your personalized certificate of completion
+                                        for
+                                        the Version Control series.
+                                    </p>
+                                    <div>
+                                        <label for="cert-name"
+                                            class="block text-xs font-bold text-gray-500 uppercase mb-1">Full
+                                            Name</label>
+                                        <input type="text" id="cert-name"
+                                            class="w-full border border-gray-300 p-2 font-mono text-sm focus:border-black outline-none"
+                                            placeholder="Junio Hamano">
+                                        <p id="cert-error" class="text-red-500 text-xs mt-2 hidden">Please enter your
+                                            name.
+                                        </p>
+                                    </div>
+                                    <button onclick="generateCert()"
+                                        class="btn btn-primary bg-black border-black text-white w-full hover:bg-gray-800">Generate
+                                        Certificate</button>
+                                    <button onclick="downloadCert()" id="btn-download"
+                                        class="btn btn-secondary w-full hidden">Download PNG</button>
+
+                                </div>
+
+                                <div
+                                    class="w-full md:w-2/3 bg-gray-50 border border-gray-200 p-4 flex items-center justify-center">
+                                    <canvas id="cert-canvas" class="w-full shadow-lg bg-white"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="bg-gray-50 px-6 py-3 border-t border-gray-100 text-center">
+                            <p class="text-[10px] text-gray-400 italic">
+                                This certificate confirms successful completion of learning and assessment on this
+                                platform
+                                and is not an accredited or government-recognized qualification.
+                            </p>
+                        </div>
+                    </div>
+                </section>
+
+                <script src="js/script.js"></script>
+                <script>
+                    document.addEventListener('DOMContentLoaded', () => {
+                        new InlineQuiz('quiz-git-history', {
+                            question: "Why was Git created?",
+                            options: ["To replace SVN at Google", "To manage the Linux Kernel development", "To host social profiles for devs", "To build websites faster"],
+                            answer: 1,
+                            explanation: "Linus Torvalds created Git in 2005 to handle the massive scale and distributed nature of the Linux Kernel project."
+                        });
+
+                        new InlineQuiz('quiz-git-lifecycle', {
+                            question: "What is the 'Staging Area'?",
+                            options: ["The place where code is deployed", "A draft space for your next commit", "The history of all changes", "A backup folder on your desktop"],
+                            answer: 1,
+                            explanation: "The Staging Area (Index) is where you organize and pick exactly what changes you want to include in the next commit."
+                        });
+
+                        new InlineQuiz('quiz-git-snapshots', {
+                            question: "How does Git store data?",
+                            options: ["As a list of changes (deltas)", "As a series of file system snapshots", "As a backup zip file", "As a database of lines"],
+                            answer: 1,
+                            explanation: "Uniquely, Git stores data as snapshots of the entire project at a point in time, not just the differences between files."
+                        });
+
+                        new InlineQuiz('quiz-git-branching', {
+                            question: "What is a 'feature branch'?",
+                            options: ["A separate copy of the project to work safely", "The main version of the code", "A paid add-on for Git", "A type of commit message"],
+                            answer: 0,
+                            explanation: "A feature branch allows you to work on new features in isolation without affecting the stable 'main' code."
+                        });
+
+                        new InlineQuiz('quiz-git-head', {
+                            question: "What does HEAD usually point to?",
+                            options: ["The remote server", "The oldest commit", "The current branch/commit you are viewing", "The staging area"],
+                            answer: 2,
+                            explanation: "HEAD is a special pointer that indicates your current position in the history; usually pointing to the tip of your current branch."
+                        });
+
+                        new InlineQuiz('quiz-git-conflicts', {
+                            question: "When does a merge conflict occur?",
+                            options: ["When you merge two large files", "When two branches modify the same lines of a file", "When you forget to save", "When the internet is down"],
+                            answer: 1,
+                            explanation: "Conflicts happen when Git cannot automatically decide whose changes to keep because the same lines were modified differently."
+                        });
+
+                        new InlineQuiz('quiz-git-advanced', {
+                            question: "What does 'Cherry-pick' do?",
+                            options: ["Deletes a branch", "Applies a specific commit from one branch to another", "Picks a random file", "Merges all history"],
+                            answer: 1,
+                            explanation: "Cherry-pick allows you to take the changes introduced by a single specific commit and re-apply them on your current branch."
+                        });
+
+                        new InlineQuiz('quiz-git-remote', {
+                            question: "What is 'origin' in Git?",
+                            options: ["The first commit you made", "The default alias for your remote repository URL", "The author of the code", "The local folder"],
+                            answer: 1,
+                            explanation: "'origin' is simply the standard default name (alias) given to the remote URL (like GitHub) that you cloned from."
+                        });
+                    });
+                </script>
+                <script>
+                    // Quiz Data
+                    const questions = [
+                        {
+                            question: "Which command initiates a new Git repository?",
+                            options: ["git start", "git init", "git new", "git create"],
+                            answer: 1
+                        },
+                        {
+                            question: "Which command stages changes for the next commit?",
+                            options: ["git save", "git commit", "git stage", "git add"],
+                            answer: 3
+                        },
+                        {
+                            question: "Where is the entire history of the repository stored locally?",
+                            options: ["In the .git directory", "In the cloud only", "In a 'history' folder", "In the commit log"],
+                            answer: 0
+                        },
+                        {
+                            question: "What does 'HEAD' typically refer to?",
+                            options: ["The first commit", " The main branch", "The current commit/branch pointer", "The remote repository"],
+                            answer: 2
+                        },
+                        {
+                            question: "Which command downloads history from a remote repository?",
+                            options: ["git push", "git pull", "git fetch", "git upload"],
+                            answer: 2
+                        },
+                        {
+                            question: "How do you create a new branch called 'feature'?",
+                            options: ["git branch feature", "git checkout feature", "git new feature", "git switch feature"],
+                            answer: 0
+                        },
+                        {
+                            question: "Which command merges the specified branch into the current branch?",
+                            options: ["git join", "git combine", "git merge", "git fuse"],
+                            answer: 2
+                        },
+                        {
+                            question: "What happens in a 'detached HEAD' state?",
+                            options: ["The repository is corrupted", "You are not on any branch", "You cannot make commits", "The remote is unreachable"],
+                            answer: 1
+                        },
+                        {
+                            question: "Which object type stores the content of a file?",
+                            options: ["Tree", "Commit", "Blob", "Tag"],
+                            answer: 2
+                        },
+                        {
+                            question: "What is the purpose of 'git rebase'?",
+                            options: ["To delete commits", "To move a sequence of commits to a new base commit", "To merge branches without history", "To reset the index"],
+                            answer: 1
+                        }
+                    ];
+
+                    // Init Quiz
+                    new QuizManager('quiz-container', questions, () => {
+                        document.getElementById('certificate').classList.remove('hidden');
+                        // Optional: Scroll to certificate
+                        setTimeout(() => {
+                            document.getElementById('certificate').scrollIntoView({ behavior: 'smooth' });
+                        }, 100);
+                    });
+
+                    // Certificate Logic
+                    const certGen = new CertificateGenerator('cert-canvas', 'Version Control: Git & GitHub');
+
+                    function generateCert() {
+                        const nameInput = document.getElementById('cert-name');
+                        const errorMsg = document.getElementById('cert-error');
+                        const name = nameInput.value.trim();
+                        const nameRegex = /^[a-zA-Z\s\-\.'’]+$/;
+
+                        // Reset error state
+                        errorMsg.classList.add('hidden');
+                        nameInput.classList.remove('border-red-500');
+
+                        if (!name) {
+                            errorMsg.textContent = "Please enter your name.";
+                            errorMsg.classList.remove('hidden');
+                            nameInput.classList.add('border-red-500');
+                            return;
+                        }
+
+                        if (name.length < 3 || name.length > 35) {
+                            errorMsg.textContent = "Name must be between 3 and 35 characters.";
+                            errorMsg.classList.remove('hidden');
+                            nameInput.classList.add('border-red-500');
+                            return;
+                        }
+
+                        if (!nameRegex.test(name)) {
+                            errorMsg.textContent = "Name cannot contain numbers or special characters.";
+                            errorMsg.classList.remove('hidden');
+                            nameInput.classList.add('border-red-500');
+                            return;
+                        }
+
+                        certGen.generate(name);
+                        document.getElementById('btn-download').classList.remove('hidden');
+                    }
+
+                    function downloadCert() {
+                        const name = document.getElementById('cert-name').value.trim();
+                        certGen.download(`Undrstanding_Git_Certificate_${name.replace(/\s+/g, '_')}.png`);
+                    }
+                </script>
+
+                <footer class="w-full mt-12 mb-12">
+                    <div class="border-t border-gray-200 pt-8 flex justify-between items-center">
+                        <span class="text-[10px] mono uppercase text-gray-400">Undrstanding</span>
+                        <span class="text-[10px] mono uppercase text-gray-400">For Humans, From Humans</span>
+                    </div>
+                </footer>
+
+            </div>
+        </main>
+    </div>
+
+    <!-- Logic Script -->
+    <script>
+        // --- Mobile Menu ---
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobile-menu');
+            if (menu.classList.contains('hidden')) {
+                menu.classList.remove('hidden');
+                menu.classList.add('flex');
+                document.body.style.overflow = 'hidden';
+            } else {
+                menu.classList.add('hidden');
+                menu.classList.remove('flex');
+                document.body.style.overflow = 'auto';
+            }
+        }
+
+        // --- Setup Tabs Logic ---
+        function switchOsTab(os) {
+            // Reset Tabs
+            ['windows', 'macos', 'linux'].forEach(t => {
+                const btn = document.getElementById(`tab-${t}`);
+                if (btn) {
+                    btn.classList.remove('text-orange-600', 'border-orange-600');
+                    btn.classList.add('text-gray-400', 'border-transparent');
+                }
+
+                const content = document.getElementById(`content-${t}`);
+                if (content) {
+                    content.classList.add('hidden');
+                    content.classList.remove('block');
+                }
+            });
+
+            // Activate Target
+            const activeBtn = document.getElementById(`tab-${os}`);
+            if (activeBtn) {
+                activeBtn.classList.remove('text-gray-400', 'border-transparent');
+                activeBtn.classList.add('text-orange-600', 'border-orange-600');
+            }
+
+            const activeContent = document.getElementById(`content-${os}`);
+            if (activeContent) {
+                activeContent.classList.remove('hidden');
+                activeContent.classList.add('block');
+            }
+        }
+
+        // --- 01. Lifecycle Logic ---
+        const fileBlock = document.getElementById('file-block');
+        const fileStatus = document.getElementById('file-status');
+        const cmdDisplay = document.getElementById('git-command-display');
+        const explainer = document.getElementById('lifecycle-explainer');
+        const stack = document.getElementById('commit-stack');
+        let currentState = 'working';
+
+        function modifyFile() {
+            currentState = 'working';
+            fileBlock.style.left = '1rem';
+            fileBlock.style.opacity = '1';
+            fileBlock.style.borderColor = '#ef4444';
+            fileStatus.innerText = 'Modified';
+            fileStatus.className = 'text-[9px] text-red-500 font-bold mt-1';
+            cmdDisplay.innerText = '$ echo "Hello" > index.html';
+            explainer.innerText = 'File is modified but not tracked. Git knows it changed, but wont save it yet.';
+        }
+
+        function gitAdd() {
+            if (currentState !== 'working') return;
+            currentState = 'staged';
+            fileBlock.style.left = '40%';
+            fileBlock.style.borderColor = '#22c55e';
+            fileStatus.innerText = 'Staged';
+            fileStatus.className = 'text-[9px] text-green-600 font-bold mt-1';
+            cmdDisplay.innerText = '$ git add index.html';
+            explainer.innerText = 'File is in Staging Area (Index). It is ready to be committed.';
+        }
+
+        function gitCommit() {
+            if (currentState !== 'staged') return;
+            currentState = 'committed';
+            fileBlock.style.left = '75%';
+            fileBlock.style.opacity = '0';
+
+            const newCommit = document.createElement('div');
+            newCommit.className = 'w-full h-2 bg-orange-500 rounded-sm mb-1';
+            stack.insertBefore(newCommit, stack.firstChild);
+            stack.style.opacity = '1';
+
+            cmdDisplay.innerText = '$ git commit -m "Save"';
+            explainer.innerText = 'Snapshot saved to Repository history. The working directory is now clean.';
+
+            setTimeout(() => {
+                fileBlock.style.left = '1rem';
+                fileBlock.style.borderColor = '#d1d5db';
+                fileBlock.style.opacity = '0.5';
+                fileStatus.innerText = 'Clean';
+                fileStatus.className = 'text-[9px] text-gray-400 font-bold mt-1';
+            }, 800);
+        }
+
+        // --- 03. Branching Logic (Visual Update) ---
+        const container = document.getElementById('branch-canvas-container');
+        const btnFeat = document.getElementById('btn-feat-commit');
+        const btnMerge = document.getElementById('btn-merge');
+        const branchLabel = document.getElementById('current-branch-label');
+        const statusLabel = document.getElementById('branch-status');
+
+        let commits = [
+            { id: 1, label: 'C1', x: 50, y: 140, branch: 'main', color: '#111', parent: null }
+        ];
+        let branchActive = false;
+        let merged = false;
+        let nextX = 130;
+        let counter = 2; // For C2, C3...
+
+        function updateStatus(text) {
+            statusLabel.innerText = text;
+            statusLabel.classList.remove('animate-pulse');
+            void statusLabel.offsetWidth; // trigger reflow
+            statusLabel.classList.add('animate-pulse');
+            // Remove pulse after 1s
+            setTimeout(() => statusLabel.classList.remove('animate-pulse'), 1000);
+        }
+
+        function renderGraph() {
+            // Calculate dynamic width based on commit positions
+            const containerWidth = container.clientWidth;
+            // nextX is the position for the NEXT commit, so it's a good proxy for total needed width + padding
+            const requiredWidth = nextX + 100;
+            const finalWidth = Math.max(containerWidth, requiredWidth);
+
+            // Re-draw entirely with SVG
+            let svgContent = `<svg width="${finalWidth}px" height="100%">`;
+            let nodesContent = '';
+
+            // Draw Lines (Bezier Curves)
+            commits.forEach(c => {
+                // Primary Parent Line
+                if (c.parent) {
+                    const p = commits.find(p => p.id === c.parent);
+                    if (p) {
+                        const midX = (p.x + c.x) / 2;
+                        // Cubic Bezier: Start -> Control1 -> Control2 -> End
+                        // If same Y, straight line. If different Y, curve.
+                        const pathData = `M ${p.x + 15} ${p.y} C ${midX} ${p.y}, ${midX} ${c.y}, ${c.x + 15} ${c.y}`;
+
+                        // Check if it's the "secondary" merge line or primary
+                        const strokeColor = "#a3a3a3";
+                        svgContent += `<path d="${pathData}" stroke="${strokeColor}" stroke-width="2" fill="none" />`;
+                    }
+                }
+                // Secondary Parent Line (for Merges)
+                if (c.secondaryParent) {
+                    const p2 = commits.find(p => p.id === c.secondaryParent);
+                    if (p2) {
+                        const midX = (p2.x + c.x) / 2;
+                        const pathData = `M ${p2.x + 15} ${p2.y} C ${midX} ${p2.y}, ${midX} ${c.y}, ${c.x + 15} ${c.y}`;
+                        svgContent += `<path d="${pathData}" stroke="#ea580c" stroke-width="2" stroke-dasharray="4" fill="none" />`;
+                    }
+                }
+            });
+
+            // Phantom Branch Line (Visual Feedback for "Create Branch")
+            if (branchActive && !merged) {
+                const featureCommits = commits.filter(c => c.branch === 'feature');
+                if (featureCommits.length === 0) {
+                    // Branch active but empty. Draw phantom line from last main commit.
+                    const lastMain = commits.filter(c => c.branch === 'main').pop();
+                    if (lastMain) {
+                        const startX = lastMain.x + 15;
+                        const startY = lastMain.y;
+                        const endX = startX + 40;
+                        const endY = 60; // Feature track Y
+                        const midX = (startX + endX) / 2;
+
+                        const pathData = `M ${startX} ${startY} C ${midX} ${startY}, ${midX} ${endY}, ${endX} ${endY}`;
+                        svgContent += `<path d="${pathData}" stroke="#ea580c" stroke-width="2" stroke-dasharray="4" fill="none" opacity="0.6" />`;
+
+                        // Phantom Head Dot
+                        nodesContent += `<div class="absolute w-2 h-2 rounded-full bg-orange-400 opacity-50" style="left: ${endX}px; top: ${endY - 4}px;"></div>`;
+                    }
+                }
+            }
+
+            svgContent += `</svg>`;
+
+            // Draw Nodes (HTML overlay)
+            commits.forEach(c => {
+                const isMain = c.branch === 'main';
+                const bg = c.color;
+                // Add labels inside nodes
+                nodesContent += `
+                    <div class="absolute w-8 h-8 rounded-full border-2 border-white shadow-sm z-10 transition-all duration-500 flex items-center justify-center text-[10px] font-mono text-white font-bold"
+                         style="left: ${c.x}px; top: ${c.y - 16}px; background-color: ${bg};">
+                         ${c.label}
+                    </div>
+                `;
+            });
+
+            // Branch Labels
+            const lastMain = commits.filter(c => c.branch === 'main').pop();
+            if (lastMain) {
+                nodesContent += `<div class="absolute text-[10px] font-bold bg-gray-100 px-2 py-0.5 rounded text-gray-600 border border-gray-200" style="left: ${lastMain.x - 2}px; top: ${lastMain.y + 20}px;">main</div>`;
+            }
+
+            if (branchActive && !merged) {
+                const featureCommits = commits.filter(c => c.branch === 'feature');
+                if (featureCommits.length > 0) {
+                    const lastFeat = featureCommits[featureCommits.length - 1];
+                    nodesContent += `<div class="absolute text-[10px] font-bold bg-orange-50 px-2 py-0.5 rounded text-orange-600 border border-orange-100" style="left: ${lastFeat.x - 5}px; top: ${lastFeat.y - 35}px;">feature</div>`;
+                } else {
+                    // Label for Phantom Branch
+                    const lastMain = commits.filter(c => c.branch === 'main').pop();
+                    if (lastMain) {
+                        // Position relative to the phantom end point defined above (startX + 40)
+                        const endX = lastMain.x + 15 + 40;
+                        const endY = 60;
+                        nodesContent += `<div class="absolute text-[10px] font-bold bg-orange-50 px-2 py-0.5 rounded text-orange-600 border border-orange-100 opacity-80" style="left: ${endX - 15}px; top: ${endY - 30}px;">feature (pending)</div>`;
+                    }
+                }
+            }
+
+            container.innerHTML = svgContent + nodesContent;
+
+            // Auto-scroll to the right to see new commits
+            setTimeout(() => {
+                container.scrollLeft = container.scrollWidth;
+            }, 50);
+        }
+
+        function addMainCommit() {
+            // REMOVED: if (merged) resetBranchDemo(); 
+
+            if (branchActive) {
+                updateStatus("Error: You are on 'feature'. Merge or reset first.");
+                alert("You are currently on 'feature'. Please merge or reset.");
+                return;
+            }
+            const parent = commits[commits.length - 1];
+            commits.push({ id: Date.now(), label: 'C' + counter++, x: nextX, y: 140, branch: 'main', color: '#111', parent: parent.id });
+            nextX += 80;
+            updateStatus("Commit added to main branch.");
+            renderGraph();
+        }
+
+        function createBranch() {
+            if (branchActive) return;
+            branchActive = true;
+            merged = false; // Reset merge state for the new branch cycle
+            branchLabel.innerText = 'feature';
+            branchLabel.style.color = '#ea580c';
+            btnFeat.disabled = false;
+            btnFeat.classList.remove('opacity-50', 'cursor-not-allowed');
+            updateStatus("Branched 'feature' off 'main'. HEAD switched.");
+            renderGraph();
+        }
+
+        function addFeatureCommit() {
+            if (!branchActive || merged) return;
+
+            let parent;
+            const featCommits = commits.filter(c => c.branch === 'feature');
+            if (featCommits.length === 0) {
+                // Parent is the last main commit
+                const mainCommits = commits.filter(c => c.branch === 'main');
+                parent = mainCommits[mainCommits.length - 1];
+            } else {
+                parent = featCommits[featCommits.length - 1];
+            }
+
+            // Branch Y is higher (60)
+            commits.push({ id: Date.now(), label: 'C' + counter++, x: nextX, y: 60, branch: 'feature', color: '#ea580c', parent: parent.id });
+            nextX += 80;
+
+            btnMerge.disabled = false;
+            btnMerge.classList.remove('opacity-50', 'cursor-not-allowed');
+            updateStatus("Commit added to feature branch. Main is untouched.");
+
+            renderGraph();
+        }
+
+        function mergeBranch() {
+            if (!branchActive || merged) return;
+            merged = true;
+            branchActive = false; // Switch back to main immediately
+            branchLabel.innerText = 'main';
+            branchLabel.style.color = '#111';
+
+            const lastFeat = commits.filter(c => c.branch === 'feature').pop();
+            const lastMain = commits.filter(c => c.branch === 'main').pop();
+
+            const mergeX = nextX;
+            // Create merge node: Parent 1 is Main, Parent 2 is Feature
+            commits.push({
+                id: 'merge',
+                label: 'C' + counter++,
+                x: mergeX,
+                y: 140,
+                branch: 'main',
+                color: '#111',
+                parent: lastMain.id,
+                secondaryParent: lastFeat.id
+            });
+
+            // Advance X for the next main commit to have space
+            nextX += 80;
+
+            updateStatus("Merged 'feature' into 'main'. You are now on main.");
+            renderGraph();
+
+            btnFeat.disabled = true;
+            btnFeat.classList.add('opacity-50', 'cursor-not-allowed');
+            btnMerge.disabled = true;
+            btnMerge.classList.add('opacity-50', 'cursor-not-allowed');
+        }
+
+        function resetBranchDemo() {
+            commits = [{ id: 1, label: 'C1', x: 50, y: 140, branch: 'main', color: '#111', parent: null }];
+            branchActive = false;
+            merged = false;
+            nextX = 130;
+            counter = 2;
+            btnFeat.disabled = true;
+            btnMerge.disabled = true;
+            btnFeat.classList.add('opacity-50', 'cursor-not-allowed');
+            btnMerge.classList.add('opacity-50', 'cursor-not-allowed');
+            branchLabel.innerText = 'main';
+            branchLabel.style.color = '#111';
+            updateStatus("Graph reset.");
+            renderGraph();
+        }
+
+        // Initial Render
+        renderGraph();
+
+        // --- Scroll Reveal Init ---
+        const revealObserver = new IntersectionObserver((entries, observer) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('active');
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, {
+            threshold: 0.15,
+            rootMargin: "0px 0px -50px 0px"
+        });
+
+        document.querySelectorAll('section').forEach(section => {
+            section.classList.add('section-reveal');
+            revealObserver.observe(section);
+        });
+
+    </script>
+
+
+</body>
+
+</html>
+
+
+
+
+
+<!-- ... Logic Scripts ... -->
+<script>
+    // ... existing scripts ...
+
+    // --- 05. Conflict Logic ---
+    function resolveConflict(choice) {
+        const block = document.getElementById('conflict-code-area');
+        const buttons = document.getElementById('conflict-buttons');
+        const resetBtn = document.getElementById('conflict-reset');
+        const desc = document.getElementById('conflict-desc');
+
+        let content = '';
+        if (choice === 'ours') {
+            content = `<div class="p-2 text-blue-600 font-bold bg-blue-50 border-l-4 border-blue-500">const color = "blue";</div>`;
+            desc.innerText = "Resolved: You kept your local changes.";
+        } else if (choice === 'theirs') {
+            content = `<div class="p-2 text-green-600 font-bold bg-green-50 border-l-4 border-green-500">const color = "green";</div>`;
+            desc.innerText = "Resolved: You accepted the incoming changes.";
+        } else {
+            content = `<div class="p-2 font-bold bg-gray-50 border-l-4 border-purple-500"><span class="text-blue-600">const color1 = "blue";</span><br><span class="text-green-600">const color2 = "green";</span></div>`;
+            desc.innerText = "Resolved: You kept both.";
+        }
+
+        block.innerHTML = content;
+        buttons.classList.add('hidden');
+        resetBtn.classList.remove('hidden');
+    }
+
+    function resetConflict() {
+        const block = document.getElementById('conflict-code-area');
+        const buttons = document.getElementById('conflict-buttons');
+        const resetBtn = document.getElementById('conflict-reset');
+        const desc = document.getElementById('conflict-desc');
+
+        block.innerHTML = `
+                <div class="conflict-marker">&lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD</div>
+                <div class="conflict-ours p-2 my-1">
+                    <span class="text-blue-600 font-bold">const color = "blue";</span>
+                </div>
+                <div class="conflict-marker">=======</div>
+                <div class="conflict-theirs p-2 my-1">
+                    <span class="text-green-600 font-bold">const color = "green";</span>
+                </div>
+                <div class="conflict-marker">&gt;&gt;&gt;&gt;&gt;&gt;&gt; feature</div>
+            `;
+
+        desc.innerText = "Git inserted markers. Delete them and pick the code you want.";
+        buttons.classList.remove('hidden');
+        resetBtn.classList.add('hidden');
+    }
+
+    // ... existing scripts ...
+</script>

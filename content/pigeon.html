@@ -1,0 +1,1257 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pigeonhole Principle</title>
+    <link rel="icon" type="image/svg+xml" href="../assests/undrlogo.svg">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Roboto+Mono:wght@400;500&display=swap');
+
+        /* Global Scrollbar */
+        ::-webkit-scrollbar {
+            width: 1px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #000;
+        }
+
+        :root {
+            /* Rams Palette - Blue Edition */
+            --bg-color: #f4f4f4;
+            /* Light Grey housing */
+            --card-bg: #ffffff;
+            /* Pure White surface */
+            --text-main: #111111;
+            /* Stark Black */
+            --text-muted: #737373;
+            /* Neutral Grey */
+            --accent: #2563eb;
+            /* International Blue (Interaction) */
+            --accent-hover: #1d4ed8;
+            --danger: #ef4444;
+            /* Collision Red */
+            --border: #e5e5e5;
+            /* Subtle division */
+            --line: #d4d4d4;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            -webkit-font-smoothing: antialiased;
+            line-height: 1.5;
+        }
+
+        h1,
+        h2,
+        h3,
+        h4,
+        h5 {
+            font-weight: 600;
+            letter-spacing: -0.03em;
+            color: var(--text-main);
+        }
+
+        .mono {
+            font-family: 'Roboto Mono', monospace;
+        }
+
+        /* Industrial Grid Layout */
+        .rams-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .rams-card:hover {
+            border-color: #a3a3a3;
+        }
+
+        @media (min-width: 768px) {
+            .rams-card {
+                padding: 2rem;
+            }
+        }
+
+        .rams-label {
+            font-family: 'Inter', sans-serif;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+            margin-bottom: 1rem;
+            display: block;
+        }
+
+        /* Controls - Tactile & Honest */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.5rem 1.25rem;
+            font-size: 0.85rem;
+            font-weight: 500;
+            border-radius: 2px;
+            transition: all 0.1s ease;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            white-space: nowrap;
+        }
+
+        .btn-primary {
+            background-color: var(--accent);
+            color: white;
+            border: 1px solid var(--accent);
+        }
+
+        .btn-primary:hover {
+            background-color: var(--accent-hover);
+        }
+
+        .btn-secondary {
+            background-color: transparent;
+            color: var(--text-main);
+            border: 1px solid #a3a3a3;
+        }
+
+        .btn-secondary:hover {
+            background-color: #e5e5e5;
+            border-color: #737373;
+        }
+
+        .btn-ghost {
+            color: var(--text-muted);
+        }
+
+        .btn-ghost:hover {
+            color: var(--text-main);
+            text-decoration: underline;
+        }
+
+        /* Sliders */
+        input[type=range] {
+            -webkit-appearance: none;
+            appearance: none;
+            background: transparent;
+            margin: 1.5rem 0;
+            width: 100%;
+        }
+
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            height: 20px;
+            width: 20px;
+            background: var(--text-main);
+            border-radius: 50%;
+            cursor: pointer;
+            margin-top: -9px;
+            border: 2px solid white;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+        }
+
+        input[type=range]::-webkit-slider-runnable-track {
+            width: 100%;
+            height: 2px;
+            cursor: pointer;
+            background: #a3a3a3;
+        }
+
+        /* Timeline */
+        .timeline-item {
+            padding-left: 1.5rem;
+            border-left: 1px solid var(--line);
+            padding-bottom: 2rem;
+            position: relative;
+        }
+
+        .timeline-item:last-child {
+            border-left: 1px solid transparent;
+        }
+
+        .timeline-marker {
+            position: absolute;
+            left: -5px;
+            top: 0;
+            width: 9px;
+            height: 9px;
+            background-color: var(--text-main);
+            border-radius: 50%;
+        }
+
+        /* Navigation */
+        .nav-link {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            padding: 0.5rem 0;
+            display: block;
+            transition: color 0.2s;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            color: var(--text-main);
+            font-weight: 500;
+        }
+
+        .nav-link.active::before {
+            content: "• ";
+            color: var(--accent);
+        }
+
+        /* Mobile Menu Styles */
+        .mobile-nav-link {
+            font-size: 1.25rem;
+            font-weight: 500;
+            color: var(--text-main);
+            padding: 1rem 0;
+            border-bottom: 1px solid #e5e5e5;
+            display: block;
+        }
+
+        .divider {
+            height: 1px;
+            background-color: var(--border);
+            width: 100%;
+            margin: 3rem 0;
+        }
+
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        .thin-scrollbar::-webkit-scrollbar {
+            width: 1px;
+        }
+
+        .thin-scrollbar::-webkit-scrollbar-thumb {
+            background: #d4d4d4;
+        }
+
+        /* Reveal Animation */
+        .section-reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 1s cubic-bezier(0.25, 1, 0.25, 1), transform 1s cubic-bezier(0.25, 1, 0.25, 1);
+        }
+
+        .section-reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Math Notation */
+        .math-block {
+            font-family: 'Times New Roman', Times, serif;
+            font-style: italic;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="flex min-h-screen flex-col lg:flex-row">
+
+        <!-- Mobile Header (Fixed) -->
+        <header
+            class="lg:hidden fixed top-0 w-full bg-[#f4f4f4] border-b border-[#e5e5e5] z-[100] px-6 py-4 flex justify-between items-center h-16">
+            <div>
+                <h1 class="text-sm font-semibold tracking-wide uppercase text-black leading-tight">Discrete
+                    Math:<br>Dirichlet's Principle</h1>
+            </div>
+            <button onclick="toggleMobileMenu()"
+                class="text-black focus:outline-none p-2 border border-transparent active:bg-gray-200 rounded">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+            </button>
+        </header>
+
+        <!-- Mobile Menu Overlay -->
+        <div id="mobile-menu" class="fixed inset-0 bg-[#f4f4f4] z-[90] hidden flex-col pt-20 px-6 overflow-y-auto">
+            <nav class="flex flex-col">
+                <span class="text-[10px] text-gray-400 font-bold uppercase tracking-wider px-0 py-2">01. Basics</span>
+                <a href="#intro" class="mobile-nav-link" onclick="toggleMobileMenu()">Introduction</a>
+                <a href="#definition" class="mobile-nav-link" onclick="toggleMobileMenu()">Visual Proof</a>
+                <a href="#generalized" class="mobile-nav-link" onclick="toggleMobileMenu()">Generalized Formula</a>
+
+                <span class="text-[10px] text-gray-400 font-bold uppercase tracking-wider px-0 py-2 mt-4">02.
+                    Applications</span>
+                <a href="#hair" class="mobile-nav-link" onclick="toggleMobileMenu()">Hair of London</a>
+                <a href="#birthday" class="mobile-nav-link" onclick="toggleMobileMenu()">Birthday Problem</a>
+                <a href="#geometry" class="mobile-nav-link" onclick="toggleMobileMenu()">Geometry</a>
+                <a href="#compression" class="mobile-nav-link" onclick="toggleMobileMenu()">Lossless
+                    Compression</a>
+                <a href="#glossary" class="mobile-nav-link" onclick="toggleMobileMenu()">Glossary</a>
+
+                <span class="text-[10px] text-gray-400 font-bold uppercase tracking-wider px-0 py-2 mt-4">04.
+                    Assessment</span>
+                <a href="#quiz" class="mobile-nav-link border-b-0" onclick="toggleMobileMenu()">Knowledge Check</a>
+            </nav>
+            <div class="mt-8 text-xs text-gray-400 pb-8">
+                <p>Pure Logic.</p>
+                <p>Inevitability.</p>
+            </div>
+        </div>
+
+        <!-- Sidebar (Desktop) -->
+        <aside
+            class="hidden lg:block w-64 fixed h-screen bg-[#f4f4f4] border-r border-[#e5e5e5] z-50 overflow-y-auto thin-scrollbar">
+            <div class="p-8 h-full flex flex-col justify-between">
+                <div>
+                    <a href="../index.html"
+                        class="inline-flex items-center gap-2 px-4 py-2 mb-8 text-[10px] font-mono uppercase tracking-wider text-gray-600 border border-gray-300 hover:bg-black hover:text-white hover:border-black transition-all duration-200">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                        </svg>
+                        Back to Home
+                    </a>
+                    <div class="mb-12">
+                        <h1 class="text-sm font-semibold tracking-wide uppercase text-black">The Pigeonhole<br>Principle
+                        </h1>
+                        <p class="text-[10px] text-gray-500 mt-1 uppercase tracking-wider">Discrete Math</p>
+                    </div>
+
+                    <nav class="space-y-1">
+                        <a href="#intro" class="nav-link font-medium text-black">Introduction</a>
+
+                        <div class="pt-4 pb-1 text-[10px] text-gray-400 font-bold uppercase tracking-wider">01.
+                            Fundamentals</div>
+                        <a href="#definition" class="nav-link">Visual Proof</a>
+                        <a href="#generalized" class="nav-link">Generalized Formula</a>
+
+                        <div class="pt-4 pb-1 text-[10px] text-gray-400 font-bold uppercase tracking-wider">02. Real
+                            World</div>
+                        <a href="#hair" class="nav-link">Hair of London</a>
+                        <a href="#birthday" class="nav-link">Birthday Problem</a>
+
+                        <div class="pt-4 pb-1 text-[10px] text-gray-400 font-bold uppercase tracking-wider">03. Abstract
+                        </div>
+                        <a href="#geometry" class="nav-link">Geometry</a>
+                        <a href="#compression" class="nav-link">Compression Limits</a>
+                        <a href="#glossary" class="nav-link">Glossary</a>
+
+                        <div class="pt-4 pb-1 text-[10px] text-gray-400 font-bold uppercase tracking-wider">04.
+                            Assessment
+                        </div>
+                        <a href="#quiz" class="nav-link">Knowledge Check</a>
+                    </nav>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 lg:ml-64 bg-white w-full">
+            <div class="max-w-3xl mx-auto px-4 sm:px-8 py-24 lg:py-20">
+
+                <!-- Hero Section -->
+                <section id="intro" class="mb-16 md:mb-24">
+                    <h2 class="text-3xl md:text-5xl font-semibold mb-6 text-black tracking-tight leading-tight">
+                        The Physics of <br>Counting
+                    </h2>
+                    <p class="text-base md:text-lg text-[#555] max-w-xl font-light leading-relaxed mb-4">
+                        Also known as Dirichlet's Box Principle. It is a statement of simple finiteness: you cannot fit
+                        a large quantity into a smaller container without overlap.
+                    </p>
+                    <p class="text-sm text-gray-500 max-w-lg leading-relaxed">
+                        While intuitively obvious, this principle is a profound tool in combinatorics and computer
+                        science. It proves that in a city like London, two people must have the exact same number of
+                        hairs on their heads, and that perfect, universal file compression is mathematically impossible.
+                    </p>
+                </section>
+
+                <!-- Inline Quiz: Intro -->
+                <div id="quiz-pigeon-intro" class="mb-16 md:mb-24"></div>
+
+                <div class="divider hidden md:block"></div>
+
+                <!-- 01. Definition -->
+                <section id="definition" class="mb-20 md:mb-24">
+                    <span class="rams-label">01 / The Concept</span>
+                    <h3 class="text-xl font-medium mb-2">Basic Definition</h3>
+                    <p class="text-sm text-gray-600 mb-8 max-w-lg">If <strong>n</strong> items are put into
+                        <strong>m</strong> containers, with <strong>n > m</strong>, then at least one container must
+                        contain more than one item.
+                    </p>
+
+                    <div class="rams-card">
+                        <div class="flex flex-col gap-8">
+                            <!-- Visualization Area -->
+                            <div class="relative bg-[#f4f4f4] border border-gray-200 p-6 flex flex-col items-center">
+                                <div id="holes-container" class="flex justify-center gap-4 mb-8 flex-wrap w-full">
+                                    <!-- Holes generated by JS -->
+                                </div>
+                                <div id="pigeons-container" class="flex justify-center gap-2 flex-wrap min-h-[40px]">
+                                    <!-- Pigeons generated by JS -->
+                                </div>
+                                <div id="status-message" class="absolute top-2 right-2 text-xs font-mono text-gray-400">
+                                    Status: Empty</div>
+                            </div>
+
+                            <!-- Controls -->
+                            <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
+                                <div class="flex gap-4">
+                                    <button onclick="addPigeon()" class="btn btn-primary">Add Pigeon</button>
+                                    <button onclick="resetPigeons()" class="btn btn-secondary">Reset</button>
+                                </div>
+                                <div class="text-right">
+                                    <div class="text-[10px] uppercase text-gray-400 mb-1">State</div>
+                                    <div id="math-state" class="font-mono text-sm">n = 0, m = 5</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Inline Quiz: Definition -->
+                <div id="quiz-pigeon-definition" class="mb-20 md:mb-24"></div>
+
+                <!-- 02. Generalized Formula -->
+                <section id="generalized" class="mb-20 md:mb-24">
+                    <span class="rams-label">02 / The Math</span>
+                    <h3 class="text-xl font-medium mb-2">Generalized Principle</h3>
+                    <p class="text-sm text-gray-600 mb-4 max-w-lg">
+                        The principle dictates not just the existence of a collision, but the magnitude.
+                    </p>
+                    <p class="text-xs text-gray-500 mb-8 max-w-xl leading-relaxed">
+                        If <strong>n</strong> objects are distributed into <strong>m</strong> boxes, then at least one
+                        box contains at least <strong>⌈n/m⌉</strong> objects. The notation ⌈x⌉ represents the ceiling
+                        function (rounding up).
+                    </p>
+
+                    <div class="rams-card">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
+                            <!-- Input -->
+                            <div class="flex flex-col justify-center">
+                                <div class="mb-6">
+                                    <div class="flex justify-between items-baseline mb-2">
+                                        <label class="text-[10px] text-gray-400 uppercase tracking-wide">Items
+                                            (n)</label>
+                                        <span id="n-val" class="font-mono text-lg font-bold">10</span>
+                                    </div>
+                                    <input type="range" id="n-slider" min="1" max="50" value="10">
+                                </div>
+                                <div>
+                                    <div class="flex justify-between items-baseline mb-2">
+                                        <label class="text-[10px] text-gray-400 uppercase tracking-wide">Containers
+                                            (m)</label>
+                                        <span id="m-val" class="font-mono text-lg font-bold">3</span>
+                                    </div>
+                                    <input type="range" id="m-slider" min="1" max="10" value="3">
+                                </div>
+                            </div>
+
+                            <!-- Output -->
+                            <div
+                                class="bg-blue-50 border border-blue-100 p-6 flex flex-col items-center justify-center text-center">
+                                <span class="text-[10px] uppercase text-blue-400 font-bold mb-2">Guaranteed Crowd</span>
+                                <div class="text-4xl font-light mb-4 text-blue-700 math-block">
+                                    ⌈<span id="calc-n">10</span> / <span id="calc-m">3</span>⌉ = <span id="calc-result"
+                                        class="font-bold">4</span>
+                                </div>
+                                <p class="text-xs text-gray-500 max-w-xs">
+                                    At least one container <strong>must</strong> have <span id="text-result">4</span> or
+                                    more items, no matter how evenly you try to distribute them.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Inline Quiz: Generalized -->
+                <div id="quiz-pigeon-generalized" class="mb-20 md:mb-24"></div>
+
+                <!-- 03. Hair of London -->
+                <section id="hair" class="mb-20 md:mb-24">
+                    <span class="rams-label">03 / Real World Application</span>
+                    <h3 class="text-xl font-medium mb-2">The Hair of London</h3>
+                    <p class="text-sm text-gray-600 mb-8 max-w-lg">A classic proof of existence without finding the
+                        specific instance.</p>
+                    <p class="text-xs text-gray-500 mb-8 max-w-xl leading-relaxed">
+                        <strong>Proposition:</strong> There are at least two people in London with the exact same number
+                        of hairs on their heads.
+                        <br><br>
+                        <strong>Proof:</strong> The population of London (n) is ~9,000,000. The maximum number of hairs
+                        on a human head (m) is ~150,000. Since 9,000,000 > 150,000, by PHP, collisions are inevitable.
+                        In fact, we can calculate exactly how many people <em>must</em> share a count.
+                    </p>
+
+                    <div class="mb-6 p-4 bg-gray-50 border-l-4 border-blue-500 rounded text-xs text-gray-600 space-y-2">
+                        <p><strong>The Sock Drawer (Worst Case):</strong> Use PHP to solve daily problems.
+                            If you have socks of <em>k</em> colors, pulling <strong>k + 1</strong> socks guarantees a
+                            matching pair.</p>
+                        <p><strong>Infinite Sets:</strong> While counting uses finite numbers, PHP also applies to
+                            infinity.
+                            If you put infinitely many items into a finite number of boxes, at least one box must
+                            contain infinitely many items.</p>
+                    </div>
+
+                    <div class="rams-card">
+                        <div
+                            class="relative h-24 bg-[#f4f4f4] border border-gray-200 overflow-hidden flex items-center mb-6">
+                            <!-- Visual Bars -->
+                            <div class="h-full bg-blue-600 opacity-10 absolute left-0" style="width: 100%;"></div>
+                            <!-- Population Representation -->
+                            <div class="h-full border-r-2 border-dashed border-gray-400 absolute top-0"
+                                style="left: 10%;"></div> <!-- Hair Limit -->
+
+                            <div class="absolute top-1/2 left-[5%] -translate-y-1/2 -translate-x-1/2 text-center">
+                                <div class="text-[10px] uppercase text-gray-500 font-bold">Hairs (m)</div>
+                                <div class="text-xs font-mono">150k</div>
+                            </div>
+                            <div class="absolute top-1/2 right-10 -translate-y-1/2 text-right">
+                                <div class="text-[10px] uppercase text-blue-600 font-bold">Population (n)</div>
+                                <div class="text-xs font-mono text-blue-600">9,000,000</div>
+                            </div>
+                        </div>
+                        <div class="flex flex-wrap justify-between items-end border-t border-gray-100 pt-4 gap-2">
+                            <div class="text-xs text-gray-500">
+                                Calculation: ⌈9,000,000 / 150,000⌉
+                            </div>
+                            <div class="text-right">
+                                <div class="text-[10px] uppercase text-gray-400">Guaranteed Matches</div>
+                                <div class="text-2xl font-mono font-bold text-black">60</div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Inline Quiz: Hair -->
+                <div id="quiz-pigeon-hair" class="mb-20 md:mb-24"></div>
+
+                <!-- 04. Birthday Problem -->
+                <section id="birthday" class="mb-20 md:mb-24">
+                    <span class="rams-label">04 / Probability vs Certainty</span>
+                    <h3 class="text-xl font-medium mb-2">The Birthday Problem</h3>
+                    <p class="text-sm text-gray-600 mb-8 max-w-lg">Distinguishing between high probability and the
+                        Pigeonhole Principle.</p>
+                    <p class="text-xs text-gray-500 mb-8 max-w-xl leading-relaxed">
+                        To <strong>guarantee</strong> two people share a birthday, you need 367 people (366 days + 1
+                        pigeon). However, probability works faster. With just 23 people, there is a 50% chance of a
+                        collision. With 70 people, it's 99.9%. The PHP deals only with 100% certainty.
+                    </p>
+
+                    <div class="rams-card">
+                        <div class="flex flex-col items-center">
+                            <div
+                                class="relative w-48 h-48 border rounded-full border-gray-200 mb-8 flex items-center justify-center">
+                                <div id="birthday-canvas" class="absolute inset-0"></div>
+                                <div class="text-center z-10">
+                                    <div id="bd-people" class="text-2xl font-bold font-mono">0</div>
+                                    <div class="text-[10px] uppercase text-gray-400">People</div>
+                                </div>
+                            </div>
+
+                            <div class="w-full">
+                                <input type="range" id="bd-slider" min="0" max="370" value="0" class="w-full">
+                                <div class="flex justify-between text-xs font-mono mt-2">
+                                    <span id="bd-prob" class="text-gray-500">Prob: 0%</span>
+                                    <span id="bd-status" class="text-gray-400">No Match</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Inline Quiz: Birthday -->
+                <div id="quiz-pigeon-birthday" class="mb-20 md:mb-24"></div>
+
+                <!-- 05. Geometry -->
+                <section id="geometry" class="mb-20 md:mb-24">
+                    <span class="rams-label">05 / Geometric Proof</span>
+                    <h3 class="text-xl font-medium mb-2">Points in a Square</h3>
+                    <p class="text-sm text-gray-600 mb-8 max-w-lg">
+                        Pick 5 points in a unit square (1x1). PHP proves that at least two points are within distance
+                        <span class="math-block">√2/2</span> of each other.
+                    </p>
+                    <p class="text-xs text-gray-500 mb-8 max-w-xl leading-relaxed">
+                        <strong>Logic:</strong> Divide the square into 4 smaller squares (bins). If you place 5 points
+                        (pigeons), one small square must contain at least 2 points. The max distance in a small square
+                        is its diagonal (<span class="math-block">√2/2 ≈ 0.707</span>).
+                    </p>
+
+                    <div class="rams-card">
+                        <div class="flex flex-col md:flex-row gap-8 items-center">
+                            <div class="relative w-64 h-64 bg-gray-50 border border-gray-300 cursor-crosshair"
+                                id="geo-box" onclick="addPoint(event)">
+                                <!-- Quadrants -->
+                                <div class="absolute w-full h-px bg-blue-200 top-1/2 pointer-events-none"></div>
+                                <div class="absolute h-full w-px bg-blue-200 left-1/2 pointer-events-none"></div>
+                                <!-- Points added via JS -->
+                            </div>
+                            <div class="flex-1">
+                                <div class="text-[10px] uppercase text-gray-400 mb-2">Points Placed</div>
+                                <div id="geo-count" class="text-xl font-mono font-bold mb-6">0 / 5</div>
+
+                                <div id="geo-result" class="text-xs text-gray-500 opacity-0 transition-opacity">
+                                    PHP Triggered.<br>
+                                    Two points share Quadrant <span id="geo-quad"
+                                        class="font-bold text-blue-600">--</span>.
+                                </div>
+                                <button onclick="resetGeo()" class="btn btn-secondary text-xs mt-6">Clear Board</button>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Inline Quiz: Geometry -->
+                <div id="quiz-pigeon-geometry" class="mb-20 md:mb-24"></div>
+
+                <!-- 06. Lossless Compression -->
+                <section id="compression" class="mb-12">
+                    <span class="rams-label">06 / Computer Science</span>
+                    <h3 class="text-xl font-medium mb-2">The Impossibility of Infinite Compression</h3>
+                    <p class="text-sm text-gray-600 mb-4 max-w-lg">Why "Pied Piper" from Silicon Valley is
+                        mathematically impossible.</p>
+                    <p class="text-xs text-gray-500 mb-8 max-w-xl leading-relaxed">
+                        If a compression algorithm guarantees that a file gets smaller, then there are fewer possible
+                        output files (holes) than input files (pigeons). Therefore, two different inputs must compress
+                        to the same output. Since you can't decompress one file into two different originals, lossless
+                        compression for <strong>all</strong> files is impossible.
+                    </p>
+
+                    <div class="rams-card bg-gray-900 border-gray-800">
+                        <div class="flex flex-col items-center py-8">
+                            <div class="flex items-center gap-12 w-full justify-center text-white">
+                                <div class="flex flex-col items-center">
+                                    <div class="w-16 h-24 border border-gray-600 mb-2 relative flex flex-col gap-1 p-1">
+                                        <div class="w-full h-1 bg-gray-700"></div>
+                                        <div class="w-full h-1 bg-gray-700"></div>
+                                        <div class="w-full h-1 bg-gray-700"></div>
+                                        <div class="w-full h-1 bg-gray-700"></div>
+                                    </div>
+                                    <span class="text-[10px] text-gray-400">All Files (N bits)</span>
+                                    <span class="font-mono text-lg">2ᴺ</span>
+                                </div>
+
+                                <div class="text-gray-500">→</div>
+
+                                <div class="flex flex-col items-center">
+                                    <div class="w-12 h-16 border border-blue-500 mb-2 bg-blue-900/20"></div>
+                                    <span class="text-[10px] text-gray-400">Compressed</span>
+                                    <span class="font-mono text-lg text-blue-400">2ᴺ⁻¹</span>
+                                </div>
+                            </div>
+
+                            <div class="mt-8 text-center px-4">
+                                <p class="text-xs text-red-400 font-mono">
+                                    Error: Pigeonhole Overflow.<br>
+                                    Multiple inputs map to single output. Data loss inevitable.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Inline Quiz: Compression -->
+                <div id="quiz-pigeon-compression" class="mb-12"></div>
+
+                <!-- Glossary Section -->
+                <section id="glossary" class="mb-20">
+                    <span class="rams-label">Glossary</span>
+                    <h3 class="text-xl font-medium mb-8">Key Definitions</h3>
+                    <div class="rams-card">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <h4 class="font-bold text-sm mb-2">Pigeonhole Principle</h4>
+                                <p class="text-xs text-gray-600">The principle stating that if n items are put into m
+                                    containers, with n > m, then at least one container must contain more than one item.
+                                </p>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-sm mb-2">Mapping</h4>
+                                <p class="text-xs text-gray-600">A relationship between two sets of data (domain and
+                                    codomain).</p>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-sm mb-2">Collision</h4>
+                                <p class="text-xs text-gray-600">When two or more inputs map to the same output
+                                    (pigeonhole).</p>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-sm mb-2">Proof</h4>
+                                <p class="text-xs text-gray-600">A logical argument demonstrating that a statement is
+                                    true in all cases.</p>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-sm mb-2">Combinatorics</h4>
+                                <p class="text-xs text-gray-600">A branch of mathematics concerning the study of finite
+                                    or countable discrete structures.</p>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-sm mb-2">Function</h4>
+                                <p class="text-xs text-gray-600">A relation from a set of inputs to a set of possible
+                                    outputs.</p>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-sm mb-2">Lossless Compression</h4>
+                                <p class="text-xs text-gray-600">A class of data compression algorithms that allows the
+                                    original data to be perfectly reconstructed.</p>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-sm mb-2">Probability</h4>
+                                <p class="text-xs text-gray-600">The measure of the likelihood that an event will occur.
+                                </p>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-sm mb-2">Ceiling Function</h4>
+                                <p class="text-xs text-gray-600">A mathematical function that maps x to the least
+                                    integer greater than or equal to x (⌈x⌉).</p>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-sm mb-2">Existence Proof</h4>
+                                <p class="text-xs text-gray-600">A proof that shows an object exists without necessarily
+                                    constructing it or providing an example.</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 08. Quiz -->
+                <section id="quiz" class="mb-20 md:mb-24">
+                    <span class="rams-label">08 / Knowledge Check</span>
+                    <div id="quiz-container" class="rams-card">
+                        <!-- Quiz loads here -->
+                    </div>
+                </section>
+
+                <!-- 09. Certificate (Initially Hidden) -->
+                <section id="certificate" class="mb-20 md:mb-24 hidden">
+                    <span class="rams-label">09 / Certification</span>
+                    <h3 class="text-xl font-medium mb-6">Completion Certificate</h3>
+
+                    <div class="rams-card !p-0 overflow-hidden">
+                        <div class="p-6 md:p-8">
+                            <div class="flex flex-col md:flex-row gap-8 items-start">
+                                <div class="w-full md:w-1/3 space-y-4">
+                                    <p class="text-sm text-gray-600">
+                                        Enter your name below to generate your personalized certificate of completion
+                                        for
+                                        the Pigeonhole Principle series.
+                                    </p>
+                                    <div>
+                                        <label for="cert-name"
+                                            class="block text-xs font-bold text-gray-500 uppercase mb-1">Full
+                                            Name</label>
+                                        <input type="text" id="cert-name"
+                                            class="w-full border border-gray-300 p-2 font-mono text-sm focus:border-black outline-none"
+                                            placeholder="Peter Dirichlet">
+                                        <p id="cert-error" class="text-red-500 text-xs mt-2 hidden">Please enter your
+                                            name.
+                                        </p>
+                                    </div>
+                                    <button onclick="generateCert()"
+                                        class="btn btn-primary bg-black border-black text-white w-full hover:bg-gray-800">Generate
+                                        Certificate</button>
+                                    <button onclick="downloadCert()" id="btn-download"
+                                        class="btn btn-secondary w-full hidden">Download PNG</button>
+
+                                </div>
+
+                                <div
+                                    class="w-full md:w-2/3 bg-gray-50 border border-gray-200 p-4 flex items-center justify-center">
+                                    <canvas id="cert-canvas" class="w-full shadow-lg bg-white"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="bg-gray-50 px-6 py-3 border-t border-gray-100 text-center">
+                            <p class="text-[10px] text-gray-400 italic">
+                                This certificate confirms successful completion of learning and assessment on this
+                                platform
+                                and is not an accredited or government-recognized qualification.
+                            </p>
+                        </div>
+                    </div>
+                </section>
+
+                <script src="js/script.js"></script>
+                <script>
+                    document.addEventListener('DOMContentLoaded', () => {
+                        new InlineQuiz('quiz-pigeon-intro', {
+                            question: "What is the fundamental concept behind the Pigeonhole Principle?",
+                            options: ["Counting birds", "Overlap is inevitable when fitting a large quantity into a smaller container", "Probability calculation", "Sorting algorithms"],
+                            answer: 1,
+                            explanation: "The principle states that if you have more items than containers, at least one container must hold more than one item."
+                        });
+
+                        new InlineQuiz('quiz-pigeon-definition', {
+                            question: "If n > m (items > containers), what is guaranteed?",
+                            options: ["All containers are empty", "At least one container has > 1 item", "All containers have exactly 1 item", "None of the above"],
+                            answer: 1,
+                            explanation: "This is the core definition: you simply cannot fit n items into m holes without doubling up somewhere."
+                        });
+
+                        new InlineQuiz('quiz-pigeon-generalized', {
+                            question: "The Generalized PHP formula ⌈n/m⌉ tells us:",
+                            options: ["The exact number of empty holes", "The minimum number of items in the most crowded hole", "The total number of pigeons", "The probability of a collision"],
+                            answer: 1,
+                            explanation: "It calculates the 'worst-case best-case', guaranteeing that at least one box is crowded with at least ceil(n/m) items."
+                        });
+
+                        new InlineQuiz('quiz-pigeon-hair', {
+                            question: "How does PHP prove two Londoners have the same number of hairs?",
+                            options: ["It counts everyone's hair", "Population (9M) > Max Hairs (150k), so overlap is guaranteed", "It guesses based on averages", "It doesn't prove it"],
+                            answer: 1,
+                            explanation: "Since there are more people (pigeons) than possible hair counts (holes), multiple people must map to the same hair count."
+                        });
+
+                        new InlineQuiz('quiz-pigeon-birthday', {
+                            question: "How many people do you need to GUARANTEE a shared birthday (PHP)?",
+                            options: ["23", "365", "367", "50"],
+                            answer: 2,
+                            explanation: "There are 366 possible birthdays (leap year). To force a collision with 100% certainty, you need 366 + 1 = 367 people."
+                        });
+
+                        new InlineQuiz('quiz-pigeon-geometry', {
+                            question: "In the 'Points in a Square' proof, what acts as the 'holes'?",
+                            options: ["The points themselves", "The smaller sub-squares (quadrants)", "The corners", "The center"],
+                            answer: 1,
+                            explanation: "We divide the large square into 4 smaller zones. These zones act as the 'pigeonholes' for the points."
+                        });
+
+                        new InlineQuiz('quiz-pigeon-compression', {
+                            question: "Why is perfect, universal lossless compression impossible?",
+                            options: ["Computers aren't fast enough", "Because multiple inputs would map to the same output (PHP), causing data loss", "Because files are too big", "It is possible"],
+                            answer: 1,
+                            explanation: "If every file got smaller, you'd run out of unique bit combinations. Two files would compress to the same data, making decompression ambiguous."
+                        });
+                    });
+                </script>
+                <script>
+                    // Quiz Data
+                    const questions = [
+                        {
+                            question: "If there are n items and m containers, and n > m, what is guaranteed?",
+                            options: ["At least one container has > 1 item", "All containers are full", "Some containers are empty", "It is impossible"],
+                            answer: 0
+                        },
+                        {
+                            question: "What does 'n' typically represent in PHP?",
+                            options: ["Holes", "Pigeons/Items", "Time", "Probability"],
+                            answer: 1
+                        },
+                        {
+                            question: "If you have 3 gloves of 2 colors (Red, Blue), what is guaranteed?",
+                            options: ["You have 3 Red gloves", "You have a matching pair (at least 2 of same color)", "You have 1 of each", "Nothing is guaranteed"],
+                            answer: 1
+                        },
+                        {
+                            question: "The worst-case number of picks to ensure a match from k colors is?",
+                            options: ["k", "k + 1", "k - 1", "1"],
+                            answer: 1
+                        },
+                        {
+                            question: "Which mathematician is associated with the formalization of this principle?",
+                            options: ["Newton", "Dirichlet", "Euler", "Gauss"],
+                            answer: 1
+                        },
+                        {
+                            question: "Is the Pigeonhole Principle a constructive proof?",
+                            options: ["Yes, it tells you exactly where the item is", "No, it is an existential proof (it guarantees existence only)", "Maybe", "It is not a proof"],
+                            answer: 1
+                        },
+                        {
+                            question: "In a group of 367 people, what is certain?",
+                            options: ["Everyone has same birthday", "No one shares a birthday", "At least two people share a birthday", "Everyone was born on Jan 1st"],
+                            answer: 2
+                        },
+                        {
+                            question: "Generalized PHP states that if n items are put into k boxes, at least one box contains?",
+                            options: ["n/k items", "ceil(n/k) items", "n-k items", "1 item"],
+                            answer: 1
+                        },
+                        {
+                            question: "Can PHP be applied to infinite sets?",
+                            options: ["No, only finite", "Yes", "Only in geometry", "Only in computer science"],
+                            answer: 1
+                        },
+                        {
+                            question: "If you distribute 10 letters into 9 mailboxes:",
+                            options: ["Every mailbox has 1 letter", "One mailbox is empty", "At least one mailbox has 2 or more letters", "All mailboxes have 2 letters"],
+                            answer: 2
+                        }
+                    ];
+
+                    // Init Quiz
+                    new QuizManager('quiz-container', questions, () => {
+                        document.getElementById('certificate').classList.remove('hidden');
+                        setTimeout(() => {
+                            document.getElementById('certificate').scrollIntoView({ behavior: 'smooth' });
+                        }, 100);
+                    });
+
+                    // Certificate Logic
+                    const certGen = new CertificateGenerator('cert-canvas', 'Pigeonhole Principle');
+
+                    function generateCert() {
+                        const nameInput = document.getElementById('cert-name');
+                        const errorMsg = document.getElementById('cert-error');
+                        const name = nameInput.value.trim();
+                        const nameRegex = /^[a-zA-Z\s\-\.'’]+$/;
+
+                        // Reset error state
+                        errorMsg.classList.add('hidden');
+                        nameInput.classList.remove('border-red-500');
+
+                        if (!name) {
+                            errorMsg.textContent = "Please enter your name.";
+                            errorMsg.classList.remove('hidden');
+                            nameInput.classList.add('border-red-500');
+                            return;
+                        }
+
+                        if (name.length < 3 || name.length > 35) {
+                            errorMsg.textContent = "Name must be between 3 and 35 characters.";
+                            errorMsg.classList.remove('hidden');
+                            nameInput.classList.add('border-red-500');
+                            return;
+                        }
+
+                        if (!nameRegex.test(name)) {
+                            errorMsg.textContent = "Name cannot contain numbers or special characters.";
+                            errorMsg.classList.remove('hidden');
+                            nameInput.classList.add('border-red-500');
+                            return;
+                        }
+
+                        certGen.generate(name);
+                        document.getElementById('btn-download').classList.remove('hidden');
+                    }
+
+                    function downloadCert() {
+                        const name = document.getElementById('cert-name').value.trim();
+                        certGen.download(`Undrstanding_Pigeonhole_Certificate_${name.replace(/\s+/g, '_')}.png`);
+                    }
+                </script>
+
+
+
+                <footer class="w-full mt-12 mb-12">
+                    <div class="border-t border-gray-200 pt-8 flex justify-between items-center">
+                        <span class="text-[10px] mono uppercase text-gray-400">Undrstanding</span>
+                        <span class="text-[10px] mono uppercase text-gray-400">For Humans, From Humans</span>
+                    </div>
+                </footer>
+
+            </div>
+        </main>
+    </div>
+
+    <!-- Logic Script -->
+    <script>
+        // --- Mobile Menu ---
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobile-menu');
+            if (menu.classList.contains('hidden')) {
+                menu.classList.remove('hidden');
+                menu.classList.add('flex');
+                document.body.style.overflow = 'hidden';
+            } else {
+                menu.classList.add('hidden');
+                menu.classList.remove('flex');
+                document.body.style.overflow = 'auto';
+            }
+        }
+
+        // --- 01. Visual Proof Logic ---
+        const holesContainer = document.getElementById('holes-container');
+        const pigeonsContainer = document.getElementById('pigeons-container');
+        const statusMessage = document.getElementById('status-message');
+        const mathState = document.getElementById('math-state');
+
+        const HOLE_COUNT = 5;
+        let pigeons = 0;
+        let holesArray = Array(HOLE_COUNT).fill(0); // Tracks counts per hole
+
+        function initHoles() {
+            holesContainer.innerHTML = '';
+            for (let i = 0; i < HOLE_COUNT; i++) {
+                const hole = document.createElement('div');
+                hole.className = 'w-12 h-12 border-2 border-gray-300 rounded flex items-center justify-center transition-all duration-300 relative';
+                hole.id = `hole-${i}`;
+
+                const label = document.createElement('span');
+                label.className = 'text-xs font-mono text-gray-400';
+                label.innerText = '0';
+                hole.appendChild(label);
+
+                holesContainer.appendChild(hole);
+            }
+        }
+
+        function addPigeon() {
+            pigeons++;
+
+            // Logic: Fill empty first, then random
+            let targetIndex = holesArray.findIndex(count => count === 0);
+            if (targetIndex === -1) {
+                // PHP Triggered: All full, must double up
+                targetIndex = Math.floor(Math.random() * HOLE_COUNT);
+            }
+
+            holesArray[targetIndex]++;
+
+            // Visuals
+            updateHoleVisuals();
+            renderPigeon(targetIndex);
+            updateState();
+        }
+
+        function resetPigeons() {
+            pigeons = 0;
+            holesArray = Array(HOLE_COUNT).fill(0);
+            pigeonsContainer.innerHTML = '';
+            initHoles();
+            updateState();
+            statusMessage.style.color = '#9ca3af';
+            statusMessage.innerText = "Status: Empty";
+        }
+
+        function updateHoleVisuals() {
+            holesArray.forEach((count, i) => {
+                const el = document.getElementById(`hole-${i}`);
+                el.querySelector('span').innerText = count;
+
+                if (count > 1) {
+                    el.classList.remove('border-gray-300', 'border-blue-500');
+                    el.classList.add('border-red-500', 'bg-red-50');
+                } else if (count === 1) {
+                    el.classList.remove('border-gray-300');
+                    el.classList.add('border-blue-500');
+                } else {
+                    el.className = 'w-12 h-12 border-2 border-gray-300 rounded flex items-center justify-center transition-all duration-300 relative';
+                }
+            });
+        }
+
+        function renderPigeon(holeIndex) {
+            const p = document.createElement('div');
+            p.className = 'w-3 h-3 rounded-full bg-blue-600 animate-bounce';
+
+            // Simplified: we just show total pigeons in a pool for visual feedback of "N"
+            pigeonsContainer.appendChild(p);
+        }
+
+        function updateState() {
+            mathState.innerText = `n = ${pigeons}, m = ${HOLE_COUNT}`;
+            if (pigeons > HOLE_COUNT) {
+                statusMessage.innerText = "PHP Active: Collision Detected";
+                statusMessage.style.color = "#ef4444";
+            } else {
+                statusMessage.innerText = "Status: Safe";
+                statusMessage.style.color = "#9ca3af";
+            }
+        }
+
+        initHoles();
+
+        // --- 02. Generalized Formula Logic ---
+        const nSlider = document.getElementById('n-slider');
+        const mSlider = document.getElementById('m-slider');
+
+        function updateFormula() {
+            const n = parseInt(nSlider.value);
+            const m = parseInt(mSlider.value);
+            const result = Math.ceil(n / m);
+
+            document.getElementById('n-val').innerText = n;
+            document.getElementById('m-val').innerText = m;
+            document.getElementById('calc-n').innerText = n;
+            document.getElementById('calc-m').innerText = m;
+            document.getElementById('calc-result').innerText = result;
+            document.getElementById('text-result').innerText = result;
+        }
+
+        nSlider.addEventListener('input', updateFormula);
+        mSlider.addEventListener('input', updateFormula);
+
+        // --- 04. Birthday Logic ---
+        const bdSlider = document.getElementById('bd-slider');
+        const bdPeople = document.getElementById('bd-people');
+        const bdProb = document.getElementById('bd-prob');
+        const bdStatus = document.getElementById('bd-status');
+        const bdCanvas = document.getElementById('birthday-canvas');
+
+        bdSlider.addEventListener('input', (e) => {
+            const n = parseInt(e.target.value);
+            bdPeople.innerText = n;
+
+            // Probability Calculation
+            let probability = 0;
+            if (n > 366) {
+                probability = 1;
+            } else {
+                let pNoMatch = 1;
+                for (let i = 0; i < n; i++) {
+                    pNoMatch *= (365 - i) / 365;
+                }
+                probability = 1 - pNoMatch;
+            }
+
+            const percent = (probability * 100).toFixed(4);
+            bdProb.innerText = `Prob: ${percent}%`;
+
+            if (n >= 367) {
+                bdStatus.innerText = "Pigeonhole Guarantee!";
+                bdStatus.style.color = "#ef4444";
+                bdStatus.className = "text-red-500 font-bold";
+            } else if (probability > 0.99) {
+                bdStatus.innerText = "Near Certainty";
+                bdStatus.className = "text-orange-600 font-bold";
+            } else if (probability > 0.5) {
+                bdStatus.innerText = "Likely Match";
+                bdStatus.className = "text-blue-600";
+            } else {
+                bdStatus.innerText = "Unlikely";
+                bdStatus.className = "text-gray-400";
+            }
+
+            drawBirthdayVisual(n);
+        });
+
+        function drawBirthdayVisual(n) {
+            // Simple visual representation: Dots on a circle
+            bdCanvas.innerHTML = '';
+            const radius = 90; // relative to 48*4 = 192px container
+            const centerX = 96;
+            const centerY = 96;
+
+            // Limit dots drawn for performance, represent "density"
+            const dotsToDraw = Math.min(n, 100);
+
+            for (let i = 0; i < dotsToDraw; i++) {
+                const dot = document.createElement('div');
+                const angle = Math.random() * Math.PI * 2;
+                // Random radius for chaos feel
+                const r = (Math.random() * 20) + 60;
+
+                const x = centerX + r * Math.cos(angle);
+                const y = centerY + r * Math.sin(angle);
+
+                dot.style.left = `${x}px`;
+                dot.style.top = `${y}px`;
+                dot.className = 'absolute w-1 h-1 bg-blue-500 rounded-full opacity-60';
+                bdCanvas.appendChild(dot);
+            }
+
+            if (n >= 367) {
+                const overlay = document.createElement('div');
+                overlay.className = 'absolute inset-0 bg-red-500 opacity-20 rounded-full animate-pulse';
+                bdCanvas.appendChild(overlay);
+            }
+        }
+
+        // --- 05. Geometry Logic ---
+        let geoPoints = [];
+        const geoBox = document.getElementById('geo-box');
+        const geoCount = document.getElementById('geo-count');
+        const geoResult = document.getElementById('geo-result');
+        const geoQuadDisplay = document.getElementById('geo-quad');
+
+        function addPoint(e) {
+            if (geoPoints.length >= 5) return;
+
+            const rect = geoBox.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+
+            // Determine Quadrant (0=TL, 1=TR, 2=BL, 3=BR)
+            const midX = rect.width / 2;
+            const midY = rect.height / 2;
+            let q = 0;
+            if (x > midX) q += 1;
+            if (y > midY) q += 2;
+
+            geoPoints.push({ x, y, q });
+
+            // Draw
+            const pt = document.createElement('div');
+            pt.className = 'absolute w-3 h-3 bg-black rounded-full -ml-1.5 -mt-1.5 border border-white';
+            pt.style.left = `${x}px`;
+            pt.style.top = `${y}px`;
+            geoBox.appendChild(pt);
+
+            geoCount.innerText = `${geoPoints.length} / 5`;
+
+            if (geoPoints.length === 5) {
+                checkGeoPHP();
+            }
+        }
+
+        function checkGeoPHP() {
+            // Count quads
+            const counts = [0, 0, 0, 0];
+            geoPoints.forEach(p => counts[p.q]++);
+
+            const overloadedQuad = counts.findIndex(c => c >= 2);
+
+            geoResult.style.opacity = '1';
+            const quadNames = ["Top-Left", "Top-Right", "Bottom-Left", "Bottom-Right"];
+            geoQuadDisplay.innerText = quadNames[overloadedQuad];
+
+            // Highlight points in that quad
+            Array.from(geoBox.children).forEach((child, index) => {
+                if (index < 2) return; // Skip grid lines
+                const ptIndex = index - 2;
+                if (geoPoints[ptIndex].q === overloadedQuad) {
+                    child.classList.remove('bg-black');
+                    child.classList.add('bg-red-600', 'z-10', 'scale-125');
+                } else {
+                    child.classList.add('opacity-30');
+                }
+            });
+        }
+
+        function resetGeo() {
+            geoPoints = [];
+            // Keep first 2 children (grid lines)
+            while (geoBox.children.length > 2) {
+                geoBox.removeChild(geoBox.lastChild);
+            }
+            geoCount.innerText = "0 / 5";
+            geoResult.style.opacity = '0';
+        }
+
+        // --- Scroll Reveal Init ---
+        const revealObserver = new IntersectionObserver((entries, observer) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('active');
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, {
+            threshold: 0.15,
+            rootMargin: "0px 0px -50px 0px"
+        });
+
+        document.querySelectorAll('section').forEach(section => {
+            section.classList.add('section-reveal');
+            revealObserver.observe(section);
+        });
+
+    </script>
+
+
+</body>
+
+</html>

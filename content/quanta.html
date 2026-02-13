@@ -1,0 +1,2521 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quantum Computing</title>
+    <link rel="icon" type="image/svg+xml" href="../assests/undrlogo.svg">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Roboto+Mono:wght@400;500&display=swap');
+
+        /* Global Scrollbar */
+        ::-webkit-scrollbar {
+            width: 1px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #000;
+        }
+
+        :root {
+            /* Rams Palette */
+            --bg-color: #f4f4f4;
+            /* Light Grey housing */
+            --card-bg: #ffffff;
+            /* Pure White surface */
+            --text-main: #111111;
+            /* Stark Black */
+            --text-muted: #737373;
+            /* Neutral Grey */
+            --accent: #ea580c;
+            /* Signal Orange (Interaction) */
+            --border: #e5e5e5;
+            /* Subtle division */
+            --line: #d4d4d4;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            -webkit-font-smoothing: antialiased;
+            line-height: 1.5;
+        }
+
+        h1,
+        h2,
+        h3,
+        h4,
+        h5 {
+            font-weight: 600;
+            letter-spacing: -0.03em;
+            color: var(--text-main);
+        }
+
+        .mono {
+            font-family: 'Roboto Mono', monospace;
+        }
+
+        /* Industrial Grid Layout */
+        .rams-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        @media (min-width: 768px) {
+            .rams-card {
+                padding: 2rem;
+            }
+        }
+
+        .rams-label {
+            font-family: 'Inter', sans-serif;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+            margin-bottom: 1rem;
+            display: block;
+        }
+
+        /* Controls - Tactile & Honest */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.5rem 1.25rem;
+            font-size: 0.85rem;
+            font-weight: 500;
+            border-radius: 2px;
+            transition: all 0.1s ease;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            white-space: nowrap;
+        }
+
+        .btn-primary {
+            background-color: var(--accent);
+            color: white;
+            border: 1px solid var(--accent);
+        }
+
+        .btn-primary:hover {
+            background-color: #c2410c;
+        }
+
+        .btn-secondary {
+            background-color: transparent;
+            color: var(--text-main);
+            border: 1px solid #a3a3a3;
+        }
+
+        .btn-secondary:hover {
+            background-color: #e5e5e5;
+            border-color: #737373;
+        }
+
+        .btn-ghost {
+            color: var(--text-muted);
+        }
+
+        .btn-ghost:hover {
+            color: var(--text-main);
+            text-decoration: underline;
+        }
+
+        /* Grid Button for Gates */
+        .btn-gate {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 0.75rem 0.25rem;
+            background-color: transparent;
+            border: 1px solid #e5e5e5;
+            border-radius: 2px;
+            transition: all 0.1s ease;
+        }
+
+        .btn-gate:hover,
+        .btn-gate.active {
+            border-color: var(--accent);
+            background-color: #fff7ed;
+            color: var(--accent);
+        }
+
+        .btn-gate span.symbol {
+            font-family: 'Roboto Mono', monospace;
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .btn-gate span.name {
+            font-size: 0.6rem;
+            text-transform: uppercase;
+            color: var(--text-muted);
+        }
+
+        .btn-gate:hover span.name,
+        .btn-gate.active span.name {
+            color: var(--accent);
+        }
+
+        /* Sliders */
+        input[type=range] {
+            -webkit-appearance: none;
+            appearance: none;
+            background: transparent;
+            margin: 1.5rem 0;
+        }
+
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            height: 20px;
+            width: 20px;
+            background: var(--text-main);
+            border-radius: 50%;
+            cursor: pointer;
+            margin-top: -9px;
+            border: 2px solid white;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+        }
+
+        input[type=range]::-webkit-slider-runnable-track {
+            width: 100%;
+            height: 2px;
+            cursor: pointer;
+            background: #a3a3a3;
+        }
+
+        /* Visualizations */
+        .bloch-arrow {
+            transform-origin: bottom center;
+            transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+
+        /* Timeline */
+        .timeline-item {
+            padding-left: 1.5rem;
+            border-left: 1px solid var(--line);
+            padding-bottom: 2rem;
+            position: relative;
+        }
+
+        .timeline-item:last-child {
+            border-left: 1px solid transparent;
+        }
+
+        .timeline-marker {
+            position: absolute;
+            left: -5px;
+            top: 0;
+            width: 9px;
+            height: 9px;
+            background-color: var(--text-main);
+            border-radius: 50%;
+        }
+
+        /* Navigation */
+        .nav-link {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            padding: 0.5rem 0;
+            display: block;
+            transition: color 0.2s;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            color: var(--text-main);
+            font-weight: 500;
+        }
+
+        .nav-link.active::before {
+            content: "• ";
+            color: var(--accent);
+        }
+
+        /* Mobile Menu Styles */
+        .mobile-nav-link {
+            font-size: 1.25rem;
+            font-weight: 500;
+            color: var(--text-main);
+            padding: 1rem 0;
+            border-bottom: 1px solid #e5e5e5;
+            display: block;
+        }
+
+        .divider {
+            height: 1px;
+            background-color: var(--border);
+            width: 100%;
+            margin: 3rem 0;
+        }
+
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        /* 1px Scrollbar Class */
+        .thin-scrollbar::-webkit-scrollbar {
+            width: 1px;
+        }
+
+        .thin-scrollbar::-webkit-scrollbar-thumb {
+            background: #d4d4d4;
+        }
+
+        /* Tunneling Animation Class */
+        .tunnel-particle {
+            transition: transform 1s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.5s ease;
+        }
+
+        /* Reveal Animation */
+        .section-reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 1s cubic-bezier(0.25, 1, 0.25, 1), transform 1s cubic-bezier(0.25, 1, 0.25, 1);
+        }
+
+        .section-reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="flex min-h-screen flex-col lg:flex-row">
+
+        <!-- Mobile Header (Fixed) -->
+        <header
+            class="lg:hidden fixed top-0 w-full bg-[#f4f4f4] border-b border-[#e5e5e5] z-[100] px-6 py-4 flex justify-between items-center h-16">
+            <div>
+                <h1 class="text-sm font-semibold tracking-wide uppercase text-black leading-tight">
+                    Quantum<br>Computing</h1>
+            </div>
+            <button onclick="toggleMobileMenu()"
+                class="text-black focus:outline-none p-2 border border-transparent active:bg-gray-200 rounded">
+                <!-- Inline SVG for Hamburger -->
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+            </button>
+        </header>
+
+        <!-- Mobile Menu Overlay -->
+        <div id="mobile-menu" class="fixed inset-0 bg-[#f4f4f4] z-[90] hidden flex-col pt-20 px-6 overflow-y-auto">
+            <nav class="flex flex-col">
+                <span class="text-[10px] text-gray-400 font-bold uppercase tracking-wider px-0 py-2">01.
+                    Foundations</span>
+                <a href="#intro" class="mobile-nav-link" onclick="toggleMobileMenu()">Introduction</a>
+                <a href="#history" class="mobile-nav-link" onclick="toggleMobileMenu()">Timeline</a>
+                <a href="#heisenberg" class="mobile-nav-link" onclick="toggleMobileMenu()">Heisenberg Uncertainty</a>
+                <a href="#qubits" class="mobile-nav-link" onclick="toggleMobileMenu()">Bit vs Qubit</a>
+                <a href="#superposition" class="mobile-nav-link" onclick="toggleMobileMenu()">Superposition</a>
+
+                <span class="text-[10px] text-gray-400 font-bold uppercase tracking-wider px-0 py-2 mt-4">02.
+                    Mechanics</span>
+                <a href="#measurement" class="mobile-nav-link" onclick="toggleMobileMenu()">Measurement</a>
+                <a href="#entanglement" class="mobile-nav-link" onclick="toggleMobileMenu()">Entanglement</a>
+                <a href="#no-cloning" class="mobile-nav-link" onclick="toggleMobileMenu()">No-Cloning</a>
+
+                <span class="text-[10px] text-gray-400 font-bold uppercase tracking-wider px-0 py-2 mt-4">03.
+                    Hardware</span>
+                <a href="#tunneling" class="mobile-nav-link" onclick="toggleMobileMenu()">Quantum Tunneling</a>
+                <a href="#cooper" class="mobile-nav-link" onclick="toggleMobileMenu()">Cooper Pairs</a>
+                <a href="#josephson" class="mobile-nav-link" onclick="toggleMobileMenu()">Josephson Junction</a>
+                <a href="#types" class="mobile-nav-link" onclick="toggleMobileMenu()">Qubit Types</a>
+
+                <span class="text-[10px] text-gray-400 font-bold uppercase tracking-wider px-0 py-2 mt-4">04.
+                    Computation</span>
+                <a href="#gates" class="mobile-nav-link" onclick="toggleMobileMenu()">Logic Gates</a>
+                <a href="#scaling" class="mobile-nav-link" onclick="toggleMobileMenu()">Scaling</a>
+
+                <span class="text-[10px] text-gray-400 font-bold uppercase tracking-wider px-0 py-2 mt-4">05.
+                    Stability</span>
+                <a href="#decoherence" class="mobile-nav-link" onclick="toggleMobileMenu()">Decoherence</a>
+                <a href="#error-correction" class="mobile-nav-link" onclick="toggleMobileMenu()">Error
+                    Correction</a>
+                <a href="#glossary" class="mobile-nav-link" onclick="toggleMobileMenu()">Glossary</a>
+
+                <span class="text-[10px] text-gray-400 font-bold uppercase tracking-wider px-0 py-2 mt-4">06.
+                    Assessment</span>
+                <a href="#quiz" class="mobile-nav-link border-b-0" onclick="toggleMobileMenu()">Knowledge Check</a>
+            </nav>
+        </div>
+
+        <!-- Sidebar (Desktop) -->
+        <aside
+            class="hidden lg:block w-64 fixed h-screen bg-[#f4f4f4] border-r border-[#e5e5e5] z-50 overflow-y-auto thin-scrollbar">
+            <div class="p-8 h-full flex flex-col justify-between">
+                <div>
+                    <a href="../index.html"
+                        class="inline-flex items-center gap-2 px-4 py-2 mb-8 text-[10px] font-mono uppercase tracking-wider text-gray-600 border border-gray-300 hover:bg-black hover:text-white hover:border-black transition-all duration-200">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                        </svg>
+                        Back to Home
+                    </a>
+                    <div class="mb-12">
+                        <h1 class="text-sm font-semibold tracking-wide uppercase text-black">Quantum<br>
+                            Computing</h1>
+                        <p class="text-[10px] text-gray-500 mt-1 uppercase tracking-wider">Physics</p>
+                    </div>
+
+                    <nav class="space-y-1">
+                        <a href="#intro" class="nav-link font-medium text-black">Introduction</a>
+
+                        <div class="pt-4 pb-1 text-[10px] text-gray-400 font-bold uppercase tracking-wider">01.
+                            Foundations</div>
+                        <a href="#history" class="nav-link">Timeline</a>
+                        <a href="#heisenberg" class="nav-link">Heisenberg Uncertainty</a>
+                        <a href="#qubits" class="nav-link">Bit vs Qubit</a>
+                        <a href="#superposition" class="nav-link">Superposition</a>
+
+                        <div class="pt-4 pb-1 text-[10px] text-gray-400 font-bold uppercase tracking-wider">02.
+                            Mechanics</div>
+                        <a href="#measurement" class="nav-link">Measurement</a>
+                        <a href="#entanglement" class="nav-link">Entanglement</a>
+                        <a href="#no-cloning" class="nav-link">No-Cloning</a>
+
+                        <div class="pt-4 pb-1 text-[10px] text-gray-400 font-bold uppercase tracking-wider">03. Hardware
+                        </div>
+                        <a href="#tunneling" class="nav-link">Quantum Tunneling</a>
+                        <a href="#cooper" class="nav-link">Cooper Pairs</a>
+                        <a href="#josephson" class="nav-link">Josephson Junction</a>
+                        <a href="#types" class="nav-link">Qubit Types</a>
+
+                        <div class="pt-4 pb-1 text-[10px] text-gray-400 font-bold uppercase tracking-wider">04.
+                            Computation</div>
+                        <a href="#gates" class="nav-link">Logic Gates</a>
+                        <a href="#scaling" class="nav-link">Scaling</a>
+
+                        <div class="pt-4 pb-1 text-[10px] text-gray-400 font-bold uppercase tracking-wider">05.
+                            Stability</div>
+                        <a href="#decoherence" class="nav-link">Decoherence</a>
+                        <a href="#error-correction" class="nav-link">Error Correction</a>
+                        <a href="#glossary" class="nav-link">Glossary</a>
+
+                        <div class="pt-4 pb-1 text-[10px] text-gray-400 font-bold uppercase tracking-wider">06.
+                            Assessment
+                        </div>
+                        <a href="#quiz" class="nav-link">Knowledge Check</a>
+                    </nav>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 lg:ml-64 bg-white w-full">
+            <div class="max-w-3xl mx-auto px-4 sm:px-8 py-24 lg:py-20">
+
+                <!-- Hero Section -->
+                <section id="intro" class="mb-16 md:mb-24">
+                    <h2 class="text-3xl md:text-5xl font-semibold mb-6 text-black tracking-tight leading-tight">
+                        Principles of <br>Quantum Computing
+                    </h2>
+                    <p class="text-base md:text-lg text-[#555] max-w-xl font-light leading-relaxed mb-4">
+                        A functional guide to the physics of information. Classical computers, bound by the limits of
+                        Moore's Law, struggle with problems involving complex optimization or molecular simulation.
+                        Quantum computers operate on a different paradigm entirely.
+                    </p>
+                    <p class="text-sm text-gray-500 max-w-lg leading-relaxed">
+                        Unlike classical computers which are <strong>deterministic</strong> (1+1 is always 2), quantum
+                        computers are <strong>probabilistic</strong>. They leverage the laws of quantum
+                        mechanics—Superposition and Entanglement—to explore vast computational spaces simultaneously.
+                        This interactive primer will guide you through these concepts, moving from the abstract math to
+                        the concrete hardware.
+                    </p>
+                </section>
+
+                <!-- Inline Quiz: Intro -->
+                <div id="quiz-quanta-intro" class="mb-16 md:mb-24"></div>
+
+                <div class="divider hidden md:block"></div>
+
+                <!-- 01. History -->
+                <section id="history" class="mb-20 md:mb-24">
+                    <span class="rams-label">01 / Context</span>
+                    <h3 class="text-xl font-medium mb-8">Historical Development</h3>
+
+                    <div class="mt-8">
+                        <div class="timeline-item">
+                            <div class="timeline-marker"></div>
+                            <div class="flex flex-col sm:flex-row sm:items-baseline gap-1 sm:gap-2 mb-1">
+                                <span class="text-sm font-bold text-black">1900 — 1927</span>
+                                <span
+                                    class="text-xs sm:text-sm text-gray-500 uppercase tracking-wide">Foundations</span>
+                            </div>
+                            <p class="text-sm text-gray-600 max-w-lg mb-2">Planck, Einstein, and Schrödinger establish
+                                the quantization of energy and wave-particle duality.</p>
+                            <p class="text-xs text-gray-500 max-w-lg leading-relaxed">
+                                This era marked the departure from classical Newtonian mechanics. Planck proposed that
+                                energy is radiated in discrete packets (quanta). Einstein confirmed this with the
+                                photoelectric effect, and Schrödinger provided the wave equation, describing how quantum
+                                states evolve deterministically until measured.
+                            </p>
+                        </div>
+
+                        <div class="timeline-item">
+                            <div class="timeline-marker"></div>
+                            <div class="flex flex-col sm:flex-row sm:items-baseline gap-1 sm:gap-2 mb-1">
+                                <span class="text-sm font-bold text-black">1981</span>
+                                <span class="text-xs sm:text-sm text-gray-500 uppercase tracking-wide">Concept</span>
+                            </div>
+                            <p class="text-sm text-gray-600 max-w-lg mb-2">Richard Feynman proposes quantum mechanical
+                                systems for efficient simulation of nature.</p>
+                            <p class="text-xs text-gray-500 max-w-lg leading-relaxed">
+                                Feynman famously noted that "Nature isn't classical, dammit." He realized that
+                                simulating quantum physics on binary computers was exponentially inefficient. He
+                                proposed a radical solution: build a computer out of quantum elements to simulate nature
+                                natively.
+                            </p>
+                        </div>
+
+                        <div class="timeline-item">
+                            <div class="timeline-marker"></div>
+                            <div class="flex flex-col sm:flex-row sm:items-baseline gap-1 sm:gap-2 mb-1">
+                                <span class="text-sm font-bold text-black">Present</span>
+                                <span
+                                    class="text-xs sm:text-sm text-gray-500 uppercase tracking-wide">Implementation</span>
+                            </div>
+                            <p class="text-sm text-gray-600 max-w-lg mb-2">The NISQ era. Physical quantum processors
+                                operate in research facilities worldwide.</p>
+                            <p class="text-xs text-gray-500 max-w-lg leading-relaxed">
+                                We are in the Noisy Intermediate-Scale Quantum era. Machines from IBM, Google, and
+                                others have reached 'quantum supremacy' in specific tasks, but noise remains a critical
+                                barrier. The current race is to achieve Fault Tolerance through error correction.
+                            </p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Inline Quiz: History -->
+                <div id="quiz-quanta-history" class="mb-20 md:mb-24"></div>
+
+                <!-- 02. Heisenberg Uncertainty -->
+                <section id="heisenberg" class="mb-20 md:mb-24">
+                    <span class="rams-label">02 / Precision</span>
+                    <h3 class="text-xl font-medium mb-2">Heisenberg Uncertainty Principle</h3>
+                    <p class="text-sm text-gray-600 mb-4 max-w-lg">Fundamental limit to the precision with which pairs
+                        of properties can be known.</p>
+                    <p class="text-xs text-gray-500 mb-4 max-w-xl leading-relaxed">
+                        Formulated by Werner Heisenberg, this principle states that you cannot simultaneously know the
+                        exact position (Δx) and momentum (Δp) of a particle. This is not due to measurement faults, but
+                        a fundamental property of waves: to localize a wave (definite position), you must sum many
+                        different wavelengths (indefinite momentum).
+                    </p>
+                    <p class="text-xs text-gray-500 mb-8 max-w-xl leading-relaxed">
+                        <strong>Why this matters for computing:</strong> It means quantum information is inherently
+                        fuzzy. We can't just read the state of a qubit like a book; reading one aspect might scramble
+                        another. This necessitates a completely new way of designing algorithms that manipulate these
+                        probabilities rather than distinct values.
+                    </p>
+
+                    <div class="rams-card">
+                        <div class="flex flex-col gap-8">
+                            <!-- Visualization Area -->
+                            <div
+                                class="relative h-48 bg-[#f4f4f4] border border-gray-200 overflow-hidden flex flex-col justify-center items-center">
+                                <canvas id="heisenberg-canvas" class="w-full h-full"></canvas>
+
+                                <!-- Legends overlay -->
+                                <div
+                                    class="absolute top-3 left-3 flex flex-col gap-1 bg-white/80 p-2 backdrop-blur-sm border border-gray-100 rounded-sm">
+                                    <div class="flex items-center gap-2">
+                                        <div class="w-2 h-2 rounded-full bg-black"></div>
+                                        <span
+                                            class="text-[9px] uppercase text-gray-500 font-mono tracking-wider">Position
+                                            Probability</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Controls -->
+                            <div>
+                                <div
+                                    class="flex justify-between text-[10px] uppercase text-gray-400 mb-2 font-medium tracking-wide">
+                                    <span>Wave (Known Momentum)</span>
+                                    <span>Particle (Known Position)</span>
+                                </div>
+                                <input type="range" id="uncertainty-slider" min="10" max="150" value="80"
+                                    class="w-full">
+                            </div>
+
+                            <!-- Metrics -->
+                            <div class="grid grid-cols-2 gap-4 border-t border-gray-100 pt-4">
+                                <div class="text-center transition-opacity duration-200" id="dx-container">
+                                    <span class="block text-[10px] uppercase text-gray-400 mb-1">Δx (Position
+                                        Uncertainty)</span>
+                                    <div id="delta-x-val" class="font-mono text-sm font-bold">Medium</div>
+                                    <div class="w-full bg-gray-200 h-1 mt-2 rounded-full overflow-hidden">
+                                        <div id="dx-bar" class="h-full bg-black transition-all duration-300"
+                                            style="width: 50%"></div>
+                                    </div>
+                                </div>
+                                <div class="text-center transition-opacity duration-200" id="dp-container">
+                                    <span class="block text-[10px] uppercase text-gray-400 mb-1">Δp (Momentum
+                                        Uncertainty)</span>
+                                    <div id="delta-p-val" class="font-mono text-sm text-orange-600 font-bold">Medium
+                                    </div>
+                                    <div class="w-full bg-orange-100 h-1 mt-2 rounded-full overflow-hidden">
+                                        <div id="dp-bar" class="h-full bg-orange-600 transition-all duration-300"
+                                            style="width: 50%"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Inline Quiz: Heisenberg -->
+                <div id="quiz-quanta-heisenberg" class="mb-20 md:mb-24"></div>
+
+                <!-- 03. Bits vs Qubits -->
+                <section id="qubits" class="mb-20 md:mb-24">
+                    <span class="rams-label">03 / Fundamentals</span>
+                    <h3 class="text-xl font-medium mb-2">The Unit of Information</h3>
+                    <p class="text-sm text-gray-600 mb-4 max-w-lg">Contrast the binary certainty of a classical bit with
+                        the fluid probability of a qubit.</p>
+                    <p class="text-xs text-gray-500 mb-4 max-w-xl leading-relaxed">
+                        Think of a classical bit as a coin glued to the table: it is always definitely Heads (0) or
+                        definitely Tails (1). A qubit is a coin spinning in mid-air. Until it lands (measurement), it is
+                        a complex mix of both states. This allows it to hold more 'state' information than a simple
+                        binary switch.
+                    </p>
+                    <p class="text-xs text-gray-500 mb-8 max-w-xl leading-relaxed">
+                        On the <strong>Bloch Sphere</strong> below, the North Pole represents |0⟩ and the South Pole
+                        |1⟩. Any point on the surface represents a valid state. This means a single qubit can represent
+                        an infinite number of states between 0 and 1, though we can only extract one bit of information
+                        upon measurement.
+                    </p>
+
+                    <div class="rams-card">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-start">
+                            <!-- Classical -->
+                            <div class="flex flex-col">
+                                <span class="text-xs uppercase tracking-wider text-gray-400 mb-4">Classical Bit</span>
+                                <div class="flex items-center gap-6">
+                                    <div id="classical-bit"
+                                        class="w-16 h-16 bg-[#e5e5e5] flex items-center justify-center text-xl font-mono text-gray-500 transition-colors duration-200">
+                                        0
+                                    </div>
+                                    <button onclick="toggleBit()" class="btn btn-secondary text-xs">Switch
+                                        State</button>
+                                </div>
+                            </div>
+
+                            <!-- Quantum -->
+                            <div class="flex flex-col">
+                                <span class="text-xs uppercase tracking-wider text-gray-400 mb-4">Qubit (Bloch
+                                    Sphere)</span>
+                                <div class="flex flex-col sm:flex-row items-start gap-6">
+                                    <div class="relative w-32 h-32 shrink-0">
+                                        <svg viewBox="0 0 100 100" class="w-full h-full overflow-visible">
+                                            <path d="M 10 50 A 40 12 0 0 1 90 50" fill="none" stroke="#f0f0f0"
+                                                stroke-width="1" />
+                                            <circle cx="50" cy="50" r="40" fill="none" stroke="#d4d4d4"
+                                                stroke-width="1.5" />
+                                            <line x1="50" y1="10" x2="50" y2="90" stroke="#e5e5e5" stroke-width="1"
+                                                stroke-dasharray="2,2" />
+                                            <line x1="10" y1="50" x2="90" y2="50" stroke="#e5e5e5" stroke-width="1"
+                                                stroke-dasharray="2,2" />
+                                            <path d="M 10 50 A 40 12 0 0 0 90 50" fill="none" stroke="#d4d4d4"
+                                                stroke-width="1" />
+                                            <text x="50" y="6" text-anchor="middle"
+                                                class="text-[6px] font-mono fill-black font-bold">|0⟩</text>
+                                            <text x="50" y="99" text-anchor="middle"
+                                                class="text-[6px] font-mono fill-black font-bold">|1⟩</text>
+                                            <circle cx="50" cy="50" r="1.5" fill="#111" />
+
+                                            <g id="qubit-arrow" class="bloch-arrow"
+                                                style="transform: rotate(0deg); transform-origin: 50px 50px;">
+                                                <line x1="50" y1="50" x2="50" y2="10" stroke="#ea580c" stroke-width="2"
+                                                    stroke-linecap="round" />
+                                                <circle cx="50" cy="10" r="2.5" fill="#ea580c" stroke="white"
+                                                    stroke-width="0.5" />
+                                            </g>
+                                        </svg>
+                                    </div>
+                                    <div class="flex-1 pt-2 w-full">
+                                        <div id="qubit-value"
+                                            class="mono text-xs text-black border-l-2 border-orange-600 pl-3 mb-4">
+                                            State: Pure |0⟩
+                                        </div>
+                                        <input type="range" id="superposition-slider" min="0" max="100" value="0"
+                                            class="w-full">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Inline Quiz: Qubits -->
+                <div id="quiz-quanta-qubits" class="mb-20 md:mb-24"></div>
+
+                <!-- 04. Superposition -->
+                <section id="superposition" class="mb-20 md:mb-24">
+                    <span class="rams-label">04 / Core Concept</span>
+                    <h3 class="text-xl font-medium mb-2">Quantum Superposition</h3>
+                    <p class="text-sm text-gray-600 mb-8 max-w-lg">The ability of a quantum system to be in multiple
+                        states simultaneously, represented as a linear combination of |0⟩ and |1⟩.</p>
+                    <p class="text-xs text-gray-500 mb-4 max-w-xl leading-relaxed">
+                        This is the secret sauce of quantum speed. If you were searching a maze, a classical computer
+                        tries one path, hits a wall, goes back, and tries another. A quantum computer in superposition
+                        can explore all paths simultaneously.
+                    </p>
+                    <p class="text-xs text-gray-500 mb-8 max-w-xl leading-relaxed">
+                        It is crucial to understand that superposition is not merely "being in two places at once." It
+                        is a wave-like property where amplitudes can be positive or negative. This allows for
+                        <strong>interference</strong>: correct answers can be amplified (constructive interference)
+                        while wrong answers cancel each other out (destructive interference), leading to the correct
+                        solution.
+                    </p>
+
+                    <div class="rams-card">
+                        <div class="flex flex-col gap-8">
+                            <!-- Visualization -->
+                            <div class="flex items-center justify-center gap-12 h-32">
+                                <!-- State 0 Component -->
+                                <div class="flex flex-col items-center gap-2">
+                                    <div
+                                        class="relative w-16 h-16 bg-gray-100 rounded-full overflow-hidden border border-gray-200">
+                                        <div id="sup-0-fill"
+                                            class="absolute bottom-0 w-full bg-black transition-all duration-100"
+                                            style="height: 100%"></div>
+                                    </div>
+                                    <span class="text-xs font-mono text-gray-500">|0⟩ <span id="sup-0-val"
+                                            class="font-bold text-black">100%</span></span>
+                                </div>
+
+                                <div class="text-2xl font-light text-gray-300">+</div>
+
+                                <!-- State 1 Component -->
+                                <div class="flex flex-col items-center gap-2">
+                                    <div
+                                        class="relative w-16 h-16 bg-gray-100 rounded-full overflow-hidden border border-gray-200">
+                                        <div id="sup-1-fill"
+                                            class="absolute bottom-0 w-full bg-orange-500 transition-all duration-100"
+                                            style="height: 0%"></div>
+                                    </div>
+                                    <span class="text-xs font-mono text-gray-500">|1⟩ <span id="sup-1-val"
+                                            class="font-bold text-black">0%</span></span>
+                                </div>
+                            </div>
+
+                            <!-- Controls -->
+                            <div>
+                                <div
+                                    class="flex justify-between text-[10px] uppercase text-gray-400 mb-2 font-medium tracking-wide">
+                                    <span>Pure |0⟩</span>
+                                    <span>Mixed State</span>
+                                    <span>Pure |1⟩</span>
+                                </div>
+                                <input type="range" id="superposition-mixer" min="0" max="100" value="0" class="w-full">
+                            </div>
+
+                            <div
+                                class="text-center font-mono text-xs text-black bg-gray-50 p-2 rounded border border-gray-100">
+                                State Equation: <span id="sup-equation">1.00|0⟩ + 0.00|1⟩</span>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Inline Quiz: Superposition -->
+                <div id="quiz-quanta-superposition" class="mb-20 md:mb-24"></div>
+
+                <!-- 05. Measurement -->
+                <section id="measurement" class="mb-20 md:mb-24">
+                    <span class="rams-label">05 / Observation</span>
+                    <h3 class="text-xl font-medium mb-2">Wave Function Collapse</h3>
+                    <p class="text-sm text-gray-600 mb-8">Measurement forces a probabilistic state into a definite
+                        value.</p>
+                    <p class="text-xs text-gray-500 mb-4 max-w-xl leading-relaxed">
+                        This is the "destructive" nature of quantum mechanics. Going back to the spinning coin analogy:
+                        measuring a qubit is like slamming your hand down on the spinning coin. It forces the coin to
+                        choose a state (Heads or Tails).
+                    </p>
+                    <p class="text-xs text-gray-500 mb-8 max-w-xl leading-relaxed">
+                        Before measurement, the qubit exists in a superposition defined by a complex wave function. The
+                        act of measuring collapses the wave function instantly to either |0⟩ or |1⟩. This randomness is
+                        intrinsic to nature, not a lack of knowledge. You cannot peek at the spinning coin without
+                        stopping it.
+                    </p>
+
+                    <div class="rams-card">
+                        <div class="max-w-md w-full">
+                            <div
+                                class="flex justify-between text-[10px] uppercase text-gray-400 mb-1 font-medium tracking-wide">
+                                <span>Bias: 0</span>
+                                <span>Bias: 1</span>
+                            </div>
+                            <input type="range" id="prob-slider" min="0" max="100" value="50" class="w-full mb-8">
+
+                            <div class="flex flex-col sm:flex-row items-center gap-6">
+                                <div id="mystery-box"
+                                    class="w-20 h-20 border border-gray-300 flex items-center justify-center text-2xl font-mono text-gray-400 transition-colors shrink-0">
+                                    ?</div>
+                                <div class="flex-1 w-full text-center sm:text-left">
+                                    <button id="measure-btn" class="btn btn-primary w-full mb-3">Measure System</button>
+                                    <div id="measure-result"
+                                        class="text-xs font-mono text-black opacity-0 transition-opacity">Collapsed: _
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Inline Quiz: Measurement -->
+                <div id="quiz-quanta-measurement" class="mb-20 md:mb-24"></div>
+
+                <!-- 06. Entanglement -->
+                <section id="entanglement" class="mb-20 md:mb-24">
+                    <span class="rams-label">06 / Correlation</span>
+                    <h3 class="text-xl font-medium mb-2">Quantum Entanglement</h3>
+                    <p class="text-sm text-gray-600 mb-8 max-w-xl leading-relaxed">When qubits are entangled, they cease
+                        to be independent entities. They form a single quantum system where the state of one part cannot
+                        be described without the other.</p>
+                    <p class="text-xs text-gray-500 mb-8 max-w-xl leading-relaxed">
+                        Imagine two dice rolled in different galaxies. If they are entangled, the moment one lands on
+                        '6', the other will <strong>instantly</strong> show a corresponding number (based on how they
+                        were prepared), no matter the distance. They share a single destiny. Einstein called this
+                        "spooky action at a distance." This does not violate relativity because no useful information is
+                        transmitted faster than light; the correlation is only visible when comparing results later.
+                    </p>
+
+                    <div class="rams-card">
+                        <div
+                            class="flex flex-col sm:flex-row items-center justify-between mb-8 pb-4 border-b border-gray-100 gap-4">
+                            <span id="entangle-msg"
+                                class="text-xs font-mono text-gray-500 text-center sm:text-left">State:
+                                Independent</span>
+                            <button id="entangle-btn" class="btn btn-secondary text-xs">Link Systems</button>
+                        </div>
+
+                        <div class="flex justify-around items-start relative py-4">
+                            <div class="absolute top-12 left-[15%] right-[15%] h-[2px] z-0">
+                                <div id="entanglement-beam"
+                                    class="w-full h-full bg-orange-500 opacity-0 transition-opacity duration-300"></div>
+                            </div>
+
+                            <div class="flex flex-col items-center gap-3 bg-white p-2 z-10 relative">
+                                <div id="particle-a"
+                                    class="w-12 h-12 border border-gray-300 rounded-full flex items-center justify-center text-sm font-bold text-gray-400 transition-colors">
+                                    A</div>
+                                <button onclick="measureParticle('a')"
+                                    class="text-[10px] uppercase font-bold text-gray-400 hover:text-orange-600 transition-colors">Measure</button>
+                            </div>
+
+                            <div class="flex flex-col items-center gap-3 bg-white p-2 z-10 relative">
+                                <div id="particle-b"
+                                    class="w-12 h-12 border border-gray-300 rounded-full flex items-center justify-center text-sm font-bold text-gray-400 transition-colors">
+                                    B</div>
+                                <button onclick="measureParticle('b')"
+                                    class="text-[10px] uppercase font-bold text-gray-400 hover:text-orange-600 transition-colors">Measure</button>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Inline Quiz: Entanglement -->
+                <div id="quiz-quanta-entanglement" class="mb-20 md:mb-24"></div>
+
+                <!-- 07. No-Cloning Theorem -->
+                <section id="no-cloning" class="mb-20 md:mb-24">
+                    <span class="rams-label">07 / Limitation</span>
+                    <h3 class="text-xl font-medium mb-2">No-Cloning Theorem</h3>
+                    <p class="text-sm text-gray-600 mb-4 max-w-lg">The mathematical impossibility of creating an
+                        identical copy of an arbitrary unknown quantum state.</p>
+                    <p class="text-xs text-gray-500 mb-4 max-w-xl leading-relaxed">
+                        In classical computing, copying data (Ctrl+C) is trivial; you just read the bits and write them
+                        elsewhere. In quantum mechanics, <strong>reading is destructive</strong>. To copy a state, you
+                        must measure it, which collapses the superposition and destroys the original information.
+                    </p>
+                    <p class="text-xs text-gray-500 mb-8 max-w-xl leading-relaxed">
+                        This is a double-edged sword: it makes Quantum Key Distribution (QKD) incredibly secure because
+                        any eavesdropper will destroy the message they try to intercept. However, it also makes error
+                        correction extremely difficult, as we cannot simply "back up" our qubits.
+                    </p>
+
+                    <div class="rams-card">
+                        <div class="flex flex-col gap-8 items-center">
+                            <div class="flex items-center gap-8 md:gap-16">
+                                <!-- Source -->
+                                <div class="flex flex-col items-center gap-2">
+                                    <div id="source-qubit"
+                                        class="w-16 h-16 bg-orange-500 rounded flex items-center justify-center text-white font-mono text-xs transition-colors shadow-sm">
+                                        |ψ⟩
+                                    </div>
+                                    <span class="text-[10px] uppercase text-gray-400 font-bold">Original</span>
+                                </div>
+
+                                <!-- Arrow -->
+                                <div class="text-gray-300 text-2xl font-light">→</div>
+
+                                <!-- Clone (Target) -->
+                                <div class="flex flex-col items-center gap-2">
+                                    <div id="target-qubit"
+                                        class="w-16 h-16 border border-gray-300 rounded flex items-center justify-center text-gray-400 font-mono text-xs transition-colors bg-white">
+                                        Empty
+                                    </div>
+                                    <span class="text-[10px] uppercase text-gray-400 font-bold">Copy</span>
+                                </div>
+                            </div>
+
+                            <div class="flex flex-col items-center gap-2 w-full max-w-xs">
+                                <button onclick="attemptClone()" class="btn btn-secondary w-full">Attempt to Clone
+                                    |ψ⟩</button>
+                                <div id="clone-msg" class="text-xs text-center text-gray-500 h-8 mt-2 leading-tight">
+                                    Ready to verify theorem.</div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Inline Quiz: No-Cloning -->
+                <div id="quiz-quanta-no-cloning" class="mb-20 md:mb-24"></div>
+
+                <!-- 08. Quantum Tunneling -->
+                <section id="tunneling" class="mb-20 md:mb-24">
+                    <span class="rams-label">08 / Mechanics</span>
+                    <h3 class="text-xl font-medium mb-2">Quantum Tunneling</h3>
+                    <p class="text-sm text-gray-600 mb-8 max-w-lg">In the quantum realm, particles can pass through
+                        potential energy barriers that would be impassable in classical physics.</p>
+                    <p class="text-xs text-gray-500 mb-8 max-w-xl leading-relaxed">
+                        Imagine rolling a ball up a hill. If you don't push it hard enough, it rolls back down. In the
+                        quantum world, the ball has a small probability of simply vanishing and reappearing on the other
+                        side of the hill. This is used in <strong>quantum annealing</strong> to escape "local minima"
+                        (good, but not best solutions) to find the "global minimum" (the optimal solution) in complex
+                        optimization problems.
+                    </p>
+
+                    <div class="rams-card">
+                        <div class="flex flex-col gap-8">
+                            <div
+                                class="relative h-24 bg-white border border-gray-200 overflow-hidden flex items-center px-4">
+                                <div id="tunnel-particle"
+                                    class="w-4 h-4 bg-orange-600 rounded-full absolute left-4 z-20 tunnel-particle">
+                                </div>
+                                <div id="barrier"
+                                    class="h-full bg-gray-300 absolute left-1/2 -translate-x-1/2 z-10 transition-all duration-300"
+                                    style="width: 20px;"></div>
+                                <div class="absolute right-4 text-xs text-gray-300 font-mono">Target</div>
+                            </div>
+
+                            <div class="flex items-center gap-6">
+                                <div class="flex-1">
+                                    <label class="text-[10px] text-gray-400 uppercase tracking-wide block mb-2">Barrier
+                                        Thickness</label>
+                                    <input type="range" id="barrier-slider" min="1" max="100" value="20" class="w-full">
+                                </div>
+                                <button onclick="fireParticle()" class="btn btn-primary text-xs">Fire Particle</button>
+                            </div>
+                            <div id="tunnel-result" class="text-xs font-mono text-gray-500 h-4">Ready to experiment.
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Inline Quiz: Tunneling -->
+                <div id="quiz-quanta-tunneling" class="mb-20 md:mb-24"></div>
+
+                <!-- 09. Cooper Pairs -->
+                <section id="cooper" class="mb-20 md:mb-24">
+                    <span class="rams-label">09 / Superconductivity</span>
+                    <h3 class="text-xl font-medium mb-2">Cooper Pairs & BCS Theory</h3>
+                    <p class="text-sm text-gray-600 mb-4 max-w-lg">How electrons overcome natural repulsion to flow
+                        without resistance.</p>
+                    <p class="text-xs text-gray-500 mb-8 max-w-xl leading-relaxed">
+                        Normally, electrons repel each other due to their negative charge. However, in a superconductor
+                        at very low temperatures (below critical <i>T<sub>c</sub></i>), the crystal lattice acts like a
+                        mattress. A passing electron weighs down the mattress (attracts positive ions), creating a
+                        depression. A second electron rolls into this depression, binding them together. These "Cooper
+                        Pairs" act like a single particle that can flow through the lattice without hitting
+                        anything—zero resistance.
+                    </p>
+
+                    <div class="rams-card">
+                        <div class="flex flex-col gap-8">
+                            <!-- Visualization Area -->
+                            <div
+                                class="relative h-48 bg-[#f4f4f4] border border-gray-200 overflow-hidden flex flex-col justify-center items-center">
+                                <canvas id="cooper-canvas" class="w-full h-full"></canvas>
+
+                                <div
+                                    class="absolute top-3 left-3 bg-white/80 p-2 backdrop-blur-sm border border-gray-100 rounded-sm">
+                                    <span id="state-label" class="text-[10px] uppercase font-bold text-gray-500">State:
+                                        Normal (Resistance)</span>
+                                </div>
+                            </div>
+
+                            <!-- Controls -->
+                            <div>
+                                <div
+                                    class="flex justify-between text-[10px] uppercase text-gray-400 mb-2 font-medium tracking-wide">
+                                    <span>0K (Superconducting)</span>
+                                    <span>Critical Temp (Tc)</span>
+                                    <span>300K (Normal)</span>
+                                </div>
+                                <input type="range" id="temp-slider" min="0" max="100" value="80" class="w-full">
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Inline Quiz: Cooper -->
+                <div id="quiz-quanta-cooper" class="mb-20 md:mb-24"></div>
+
+                <!-- 10. Josephson Junction -->
+                <section id="josephson" class="mb-20 md:mb-24">
+                    <span class="rams-label">10 / Component Deep Dive</span>
+                    <h3 class="text-xl font-medium mb-2">The Josephson Junction</h3>
+                    <p class="text-sm text-gray-600 mb-8 max-w-lg">The non-linear inductor that allows superconducting
+                        circuits to behave as artificial atoms.</p>
+                    <p class="text-xs text-gray-500 mb-8 max-w-xl leading-relaxed">
+                        Why do we need this? A standard LC circuit acts like a simple ladder where every rung is the
+                        same distance apart. You cannot isolate just the bottom two rungs (0 and 1) because any energy
+                        used to climb to rung 1 would also boost you to rung 2. The Josephson Junction acts like a
+                        non-linear spring, changing the spacing of these rungs (anharmonicity) so we can target the |0⟩
+                        to |1⟩ transition uniquely, creating a controllable two-level system (a qubit).
+                    </p>
+
+                    <div class="rams-card flex flex-col items-center">
+                        <div
+                            class="relative w-full max-w-sm h-48 border border-gray-200 bg-white flex items-center justify-center p-8">
+                            <svg viewBox="0 0 200 100" class="w-full h-full">
+                                <rect x="20" y="20" width="60" height="60" fill="#e5e5e5" stroke="#111"
+                                    stroke-width="1" />
+                                <text x="50" y="55" text-anchor="middle" font-size="8" font-family="monospace"
+                                    fill="#555">Al</text>
+                                <rect x="120" y="20" width="60" height="60" fill="#e5e5e5" stroke="#111"
+                                    stroke-width="1" />
+                                <text x="150" y="55" text-anchor="middle" font-size="8" font-family="monospace"
+                                    fill="#555">Al</text>
+                                <rect x="80" y="20" width="40" height="60" fill="#333" />
+                                <text x="100" y="55" text-anchor="middle" font-size="6" font-family="monospace"
+                                    fill="#fff">AlOx</text>
+                                <circle cx="50" cy="80" r="2" fill="#ea580c">
+                                    <animate attributeName="cx" values="50;150" dur="2s" repeatCount="indefinite" />
+                                    <animate attributeName="opacity" values="0;1;0" dur="2s" repeatCount="indefinite" />
+                                </circle>
+                                <circle cx="60" cy="80" r="2" fill="#ea580c">
+                                    <animate attributeName="cx" values="60;160" dur="2s" begin="0.5s"
+                                        repeatCount="indefinite" />
+                                    <animate attributeName="opacity" values="0;1;0" dur="2s" begin="0.5s"
+                                        repeatCount="indefinite" />
+                                </circle>
+                            </svg>
+                        </div>
+                        <div class="mt-4 text-center">
+                            <span class="text-[10px] uppercase font-bold text-gray-400">SIS Structure</span>
+                            <p class="text-xs text-gray-500 mt-1 max-w-xs mx-auto">Superconductor - Insulator -
+                                Superconductor. Cooper pairs tunnel through the barrier without resistance.</p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Inline Quiz: Josephson -->
+                <div id="quiz-quanta-josephson" class="mb-20 md:mb-24"></div>
+
+                <!-- 11. Qubit Types -->
+                <section id="types" class="mb-20 md:mb-24">
+                    <span class="rams-label">11 / Hardware</span>
+                    <h3 class="text-xl font-medium mb-8">Qubit Implementations</h3>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div class="border border-gray-200 p-6 hover:border-black transition-colors bg-white">
+                            <span class="text-xs font-bold text-orange-600 uppercase mb-2 block">Leading Tech</span>
+                            <h4 class="text-lg font-bold mb-2">Superconducting</h4>
+                            <p class="text-xs text-gray-500 leading-relaxed mb-4">
+                                Loops of superconducting wire (LC circuits) with a Josephson Junction. Current flows
+                                without resistance.
+                            </p>
+                            <p class="text-[10px] text-gray-400 border-t border-gray-100 pt-2">
+                                <strong>Pros:</strong> Fast gate speeds, manufacturable.<br>
+                                <strong>Cons:</strong> Very short coherence times, requires near-absolute zero (mK).
+                            </p>
+                        </div>
+
+                        <div class="border border-gray-200 p-6 hover:border-black transition-colors bg-white">
+                            <span class="text-xs font-bold text-gray-400 uppercase mb-2 block">High Fidelity</span>
+                            <h4 class="text-lg font-bold mb-2">Trapped Ion</h4>
+                            <p class="text-xs text-gray-500 leading-relaxed mb-4">
+                                Individual atoms suspended in electromagnetic fields. Lasers control their state.
+                            </p>
+                            <p class="text-[10px] text-gray-400 border-t border-gray-100 pt-2">
+                                <strong>Pros:</strong> Extremely long coherence times, perfect qubits.<br>
+                                <strong>Cons:</strong> Slow gate speeds, hard to scale number of ions.
+                            </p>
+                        </div>
+
+                        <div class="border border-gray-200 p-6 hover:border-black transition-colors bg-white">
+                            <span class="text-xs font-bold text-gray-400 uppercase mb-2 block">Room Temp</span>
+                            <h4 class="text-lg font-bold mb-2">Photonic</h4>
+                            <p class="text-xs text-gray-500 leading-relaxed mb-4">
+                                Particles of light (photons) moving through silicon waveguides. Harder to entangle.
+                            </p>
+                            <p class="text-[10px] text-gray-400 border-t border-gray-100 pt-2">
+                                <strong>Pros:</strong> Works at room temp, integrates with communication.<br>
+                                <strong>Cons:</strong> Photons don't interact easily; massive overhead.
+                            </p>
+                        </div>
+
+                        <div class="border border-gray-200 p-6 hover:border-black transition-colors bg-white">
+                            <span class="text-xs font-bold text-gray-400 uppercase mb-2 block">Theoretical</span>
+                            <h4 class="text-lg font-bold mb-2">Topological</h4>
+                            <p class="text-xs text-gray-500 leading-relaxed mb-4">
+                                Quasiparticles braided together. Topology protects the state, theoretically eliminating
+                                errors.
+                            </p>
+                            <p class="text-[10px] text-gray-400 border-t border-gray-100 pt-2">
+                                <strong>Pros:</strong> Inherent error protection (stable).<br>
+                                <strong>Cons:</strong> Has not yet been definitively experimentally proven.
+                            </p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Inline Quiz: Types -->
+                <div id="quiz-quanta-types" class="mb-20 md:mb-24"></div>
+
+                <!-- 12. Logic Gates -->
+                <section id="gates" class="mb-20 md:mb-24">
+                    <span class="rams-label">12 / Operations</span>
+                    <h3 class="text-xl font-medium mb-2">Logic Gates</h3>
+                    <p class="text-sm text-gray-600 mb-8">Manipulation of state via rotation. Select a gate to apply.
+                    </p>
+                    <p class="text-xs text-gray-500 mb-4 max-w-xl leading-relaxed">
+                        Quantum gates are fundamentally different from classical gates. A classical AND gate is
+                        irreversible—if you see a '0' output, you don't know what the inputs were. Quantum gates must be
+                        <strong>reversible</strong> (unitary).
+                    </p>
+                    <p class="text-xs text-gray-500 mb-8 max-w-xl leading-relaxed">
+                        Instead of flipping switches, imagine a quantum gate as rotating the sphere. An X-gate rotates
+                        the vector 180 degrees (like flipping the coin). A Z-gate rotates it around the vertical axis
+                        (changing phase). We perform sequences of these rotations to run algorithms.
+                    </p>
+
+                    <div class="rams-card overflow-hidden">
+                        <div
+                            class="flex items-center justify-start md:justify-between gap-4 mb-10 overflow-x-auto pb-4 no-scrollbar">
+                            <div class="flex items-center gap-2 min-w-max mx-auto md:mx-0">
+                                <div class="flex flex-col items-center gap-2">
+                                    <button id="gate-input-box" onclick="toggleGateInput()"
+                                        class="w-12 h-12 border border-gray-300 flex items-center justify-center font-mono text-sm text-gray-600 hover:border-orange-600 hover:text-orange-600 transition-colors cursor-pointer"
+                                        title="Click to toggle input">|0⟩</button>
+                                    <button onclick="toggleGateInput()"
+                                        class="text-[10px] text-gray-400 uppercase hover:text-orange-600 transition-colors">Input
+                                        (Toggle)</button>
+                                </div>
+                                <div class="w-8 h-[1px] bg-gray-300"></div>
+                                <div class="flex flex-col items-center gap-2">
+                                    <div id="active-gate"
+                                        class="w-12 h-12 bg-black text-white flex items-center justify-center font-mono text-sm transition-all duration-200">
+                                        -</div>
+                                    <span class="text-[10px] text-gray-400 uppercase">Op</span>
+                                </div>
+                                <div class="w-8 h-[1px] bg-gray-300"></div>
+                                <div class="flex flex-col items-center gap-2">
+                                    <div id="gate-output"
+                                        class="w-12 h-12 border border-gray-300 flex items-center justify-center font-mono text-sm text-gray-600">
+                                        |0⟩</div>
+                                    <span class="text-[10px] text-gray-400 uppercase">Result</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="border-t border-gray-100 pt-6">
+                            <label class="text-[10px] text-gray-400 uppercase tracking-wide mb-4 block">Select
+                                Gate</label>
+                            <div class="grid grid-cols-3 sm:grid-cols-6 gap-2 mb-4">
+                                <button onclick="applyGate('X', this)" class="btn-gate"><span
+                                        class="symbol">X</span><span class="name">Pauli-X</span></button>
+                                <button onclick="applyGate('Y', this)" class="btn-gate"><span
+                                        class="symbol">Y</span><span class="name">Pauli-Y</span></button>
+                                <button onclick="applyGate('Z', this)" class="btn-gate"><span
+                                        class="symbol">Z</span><span class="name">Pauli-Z</span></button>
+                                <button onclick="applyGate('H', this)" class="btn-gate"><span
+                                        class="symbol">H</span><span class="name">Hadamard</span></button>
+                                <button onclick="applyGate('S', this)" class="btn-gate"><span
+                                        class="symbol">S</span><span class="name">Phase</span></button>
+                                <button onclick="applyGate('T', this)" class="btn-gate"><span
+                                        class="symbol">T</span><span class="name">π/8</span></button>
+                            </div>
+                            <div class="flex justify-end">
+                                <button onclick="applyGate('Reset')" class="btn btn-ghost text-xs">Reset System</button>
+                            </div>
+                        </div>
+                        <div id="gate-desc"
+                            class="mt-4 text-xs text-gray-500 font-mono border-l-2 border-transparent pl-3 transition-colors">
+                            System Ready.</div>
+                        <div class="mt-4 p-2 bg-blue-50 border border-blue-100 rounded text-[10px] text-blue-800">
+                            <strong>Tip:</strong> The <strong>Hadamard (H)</strong> gate is the "superposition maker."
+                            It transforms the definite state |0⟩ into a 50/50 superposition of |0⟩ and |1⟩.
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Inline Quiz: Gates -->
+                <div id="quiz-quanta-gates" class="mb-20 md:mb-24"></div>
+
+                <!-- 13. Scaling -->
+                <section id="scaling" class="mb-20 md:mb-24">
+                    <span class="rams-label">13 / Advantage</span>
+                    <h3 class="text-xl font-medium mb-2">Computational Space</h3>
+                    <p class="text-sm text-gray-600 mb-4 max-w-lg">The exponential power of adding qubits compared to
+                        classical bits.</p>
+                    <p class="text-xs text-gray-500 mb-8 max-w-xl leading-relaxed">
+                        To simulate <i>N</i> qubits on a classical computer, you need to store 2<sup>N</sup> complex
+                        numbers. This exponential scaling means that with just 50 qubits, you are tracking
+                        2<sup>50</sup> states—more than a quadrillion numbers. By 300 qubits, you would need more bits
+                        than there are atoms in the observable universe. This is why we call it "Quantum Advantage."
+                    </p>
+
+                    <div class="rams-card">
+                        <div class="flex flex-col gap-8">
+                            <div>
+                                <div class="flex justify-between items-baseline mb-2">
+                                    <label class="text-[10px] text-gray-400 uppercase tracking-wide">Number of Qubits
+                                        (N)</label>
+                                    <span id="qubit-count-display"
+                                        class="font-mono text-xl font-bold text-black">1</span>
+                                </div>
+                                <input type="range" id="scaling-slider" min="1" max="60" value="1" class="w-full">
+                            </div>
+
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 border-t border-gray-100 pt-6">
+                                <div>
+                                    <span class="text-[10px] uppercase font-bold text-gray-400 block mb-1">Quantum
+                                        States</span>
+                                    <div id="states-display"
+                                        class="text-lg md:text-xl font-mono text-black break-all leading-tight">2</div>
+                                    <span class="text-[10px] text-gray-400 mt-1 block">2<sup>N</sup> combinations</span>
+                                </div>
+
+                                <div>
+                                    <span class="text-[10px] uppercase font-bold text-gray-400 block mb-1">Classical RAM
+                                        Required</span>
+                                    <div id="ram-display"
+                                        class="text-lg md:text-xl font-mono text-orange-600 font-bold">16 Bytes</div>
+                                    <span class="text-[10px] text-gray-400 mt-1 block">To simulate full state
+                                        vector</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-12 rams-card">
+                        <h4 class="text-sm font-bold mb-4">Famous Algorithms & Supremacy</h4>
+                        <p class="text-xs text-gray-600 mb-4">
+                            <strong>Quantum Supremacy</strong> is the milestone where a quantum computer solves a
+                            problem that is practically impossible for a classical computer (taking thousands of years
+                            vs seconds).
+                        </p>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="p-3 bg-gray-50 border border-gray-200 rounded">
+                                <strong class="text-xs block mb-1">Shor's Algorithm</strong>
+                                <p class="text-[10px] text-gray-500">Exponential speedup for <strong>factoring large
+                                        integers</strong>. Threatens RSA encryption.</p>
+                            </div>
+                            <div class="p-3 bg-gray-50 border border-gray-200 rounded">
+                                <strong class="text-xs block mb-1">Grover's Algorithm</strong>
+                                <p class="text-[10px] text-gray-500">Quadratic speedup for <strong>unstructured
+                                        search</strong> (finding an item in a database).</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Inline Quiz: Scaling -->
+                <div id="quiz-quanta-scaling" class="mb-20 md:mb-24"></div>
+
+                <!-- 14. Decoherence -->
+                <section id="decoherence" class="mb-20 md:mb-24">
+                    <span class="rams-label">14 / Stability</span>
+                    <h3 class="text-xl font-medium mb-2">Decoherence</h3>
+                    <p class="text-sm text-gray-600 mb-4 max-w-lg">The loss of information from a system into the
+                        environment.</p>
+                    <p class="text-xs text-gray-500 mb-8 max-w-xl leading-relaxed">
+                        Quantum states are incredibly fragile. Think of a spinning top: it requires perfect balance to
+                        keep spinning. Any small bump—heat, electromagnetic waves, even cosmic rays—makes it wobble and
+                        eventually fall over. That "fall" is decoherence, where the quantum magic fades into classical
+                        noise. This happens in microseconds, so calculations must be extremely fast.
+                    </p>
+
+                    <div class="rams-card">
+                        <div class="flex flex-col gap-6">
+                            <div
+                                class="relative h-32 bg-[#f4f4f4] border border-gray-200 overflow-hidden flex items-center justify-center">
+                                <canvas id="noise-canvas" class="w-full h-full"></canvas>
+                                <div
+                                    class="absolute top-2 right-2 text-[10px] font-mono text-gray-400 bg-white px-2 py-1 border border-gray-200">
+                                    Coherence: <span id="coherence-value" class="text-black">100%</span>
+                                </div>
+                            </div>
+
+                            <div>
+                                <div
+                                    class="flex justify-between text-[10px] uppercase text-gray-400 mb-2 font-medium tracking-wide">
+                                    <span>Vacuum (Pure)</span>
+                                    <span>Thermal Noise</span>
+                                    <span>Chaotic</span>
+                                </div>
+                                <input type="range" id="noise-slider" min="0" max="100" value="0" class="w-full">
+                                <p class="text-xs text-gray-500 mt-2">
+                                    Increase environmental noise to see how the quantum signal degrades over time.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Inline Quiz: Decoherence -->
+                <div id="quiz-quanta-decoherence" class="mb-20 md:mb-24"></div>
+
+                <!-- 15. Error Correction -->
+                <section id="error-correction" class="mb-12">
+                    <span class="rams-label">15 / Resilience</span>
+                    <h3 class="text-xl font-medium mb-2">Error Correction</h3>
+                    <p class="text-sm text-gray-600 mb-4 max-w-lg">Using many physical qubits to create one reliable
+                        logical qubit.</p>
+                    <p class="text-xs text-gray-500 mb-8 max-w-xl leading-relaxed">
+                        Because we cannot copy quantum states (No-Cloning), we can't back up data like normal computers.
+                        Instead, we use "strength in numbers." We entangle many physical qubits to form one "logical"
+                        qubit. If one physical qubit flips due to noise, we can detect it by measuring the
+                        *relationships* (parity) between neighbors without looking at the data itself. It's like a
+                        majority vote: if one person whispers the wrong secret, the group corrects them.
+                    </p>
+
+                    <div class="rams-card">
+                        <div class="flex flex-col items-center">
+
+                            <!-- Logical Qubit Status -->
+                            <div class="mb-8 text-center">
+                                <span class="text-[10px] uppercase font-bold text-gray-400 mb-1 block">Logical Qubit
+                                    State</span>
+                                <div id="logical-state" class="text-2xl font-mono text-black">|0⟩</div>
+                                <div id="error-status" class="text-xs text-green-600 mt-1 h-4">System Stable</div>
+                            </div>
+
+                            <!-- Physical Qubits -->
+                            <div class="flex gap-4 sm:gap-8 mb-8">
+                                <button onclick="flipPhysicalQubit(0)" id="pq-0"
+                                    class="w-16 h-16 border-2 border-gray-300 rounded flex flex-col items-center justify-center hover:border-orange-400 transition-all bg-white relative group">
+                                    <span class="text-lg font-mono font-bold">0</span>
+                                    <span class="text-[8px] text-gray-400 uppercase mt-1">Phys 1</span>
+                                    <div
+                                        class="absolute inset-0 bg-orange-50 opacity-0 group-hover:opacity-20 transition-opacity">
+                                    </div>
+                                </button>
+
+                                <button onclick="flipPhysicalQubit(1)" id="pq-1"
+                                    class="w-16 h-16 border-2 border-gray-300 rounded flex flex-col items-center justify-center hover:border-orange-400 transition-all bg-white relative group">
+                                    <span class="text-lg font-mono font-bold">0</span>
+                                    <span class="text-[8px] text-gray-400 uppercase mt-1">Phys 2</span>
+                                    <div
+                                        class="absolute inset-0 bg-orange-50 opacity-0 group-hover:opacity-20 transition-opacity">
+                                    </div>
+                                </button>
+
+                                <button onclick="flipPhysicalQubit(2)" id="pq-2"
+                                    class="w-16 h-16 border-2 border-gray-300 rounded flex flex-col items-center justify-center hover:border-orange-400 transition-all bg-white relative group">
+                                    <span class="text-lg font-mono font-bold">0</span>
+                                    <span class="text-[8px] text-gray-400 uppercase mt-1">Phys 3</span>
+                                    <div
+                                        class="absolute inset-0 bg-orange-50 opacity-0 group-hover:opacity-20 transition-opacity">
+                                    </div>
+                                </button>
+                            </div>
+
+                            <!-- Actions -->
+                            <div
+                                class="w-full flex flex-col sm:flex-row justify-between items-center border-t border-gray-100 pt-6 gap-4">
+                                <span class="text-xs text-gray-400 italic">Click squares to simulate bit-flip
+                                    errors.</span>
+                                <button onclick="correctErrors()" id="correct-btn"
+                                    class="btn btn-secondary text-xs opacity-50 cursor-not-allowed" disabled>
+                                    Apply Correction
+                                </button>
+                            </div>
+
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Inline Quiz: Error Correction -->
+                <div id="quiz-quanta-error-correction" class="mb-12"></div>
+
+                <!-- Glossary Section -->
+                <section id="glossary" class="mb-20">
+                    <span class="rams-label">Glossary</span>
+                    <h3 class="text-xl font-medium mb-8">Key Definitions</h3>
+                    <div class="rams-card">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <h4 class="font-bold text-sm mb-2">Qubit</h4>
+                                <p class="text-xs text-gray-600">The fundamental unit of quantum information, capable of
+                                    existing in a superposition of states.</p>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-sm mb-2">Superposition</h4>
+                                <p class="text-xs text-gray-600">The ability of a quantum system to be in multiple
+                                    states simultaneously.</p>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-sm mb-2">Entanglement</h4>
+                                <p class="text-xs text-gray-600">A phenomenon where particles become correlated such
+                                    that the state of one instantly influences the other.</p>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-sm mb-2">Decoherence</h4>
+                                <p class="text-xs text-gray-600">The loss of quantum coherence (information) due to
+                                    interaction with the environment.</p>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-sm mb-2">Heisenberg Uncertainty</h4>
+                                <p class="text-xs text-gray-600">Fundamental limit to the precision with which pairs of
+                                    properties (position/momentum) can be known.</p>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-sm mb-2">No-Cloning Theorem</h4>
+                                <p class="text-xs text-gray-600">The impossibility of creating an identical copy of an
+                                    arbitrary unknown quantum state.</p>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-sm mb-2">Quantum Supremacy</h4>
+                                <p class="text-xs text-gray-600">The point where a quantum computer solves a problem
+                                    that is practically impossible for a classical computer.</p>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-sm mb-2">Josephson Junction</h4>
+                                <p class="text-xs text-gray-600">A component that creates a non-linear system
+                                    (anharmonicity) to isolate energy levels for qubits.</p>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-sm mb-2">Cooper Pair</h4>
+                                <p class="text-xs text-gray-600">Bound pairs of electrons in a superconductor that flow
+                                    without resistance.</p>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-sm mb-2">Wave Function Collapse</h4>
+                                <p class="text-xs text-gray-600">The reduction of a physical system to a single definite
+                                    state upon measurement.</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 13. Quiz -->
+                <section id="quiz" class="mb-20 md:mb-24">
+                    <span class="rams-label">13 / Knowledge Check</span>
+                    <div id="quiz-container" class="rams-card">
+                        <!-- Quiz loads here -->
+                    </div>
+                </section>
+
+                <!-- 14. Certificate (Initially Hidden) -->
+                <section id="certificate" class="mb-20 md:mb-24 hidden">
+                    <span class="rams-label">14 / Certification</span>
+                    <h3 class="text-xl font-medium mb-6">Completion Certificate</h3>
+
+                    <div class="rams-card !p-0 overflow-hidden">
+                        <div class="p-6 md:p-8">
+                            <div class="flex flex-col md:flex-row gap-8 items-start">
+                                <div class="w-full md:w-1/3 space-y-4">
+                                    <p class="text-sm text-gray-600">
+                                        Enter your name below to generate your personalized certificate of completion
+                                        for
+                                        the Quantum Computing series.
+                                    </p>
+                                    <div>
+                                        <label for="cert-name"
+                                            class="block text-xs font-bold text-gray-500 uppercase mb-1">Full
+                                            Name</label>
+                                        <input type="text" id="cert-name"
+                                            class="w-full border border-gray-300 p-2 font-mono text-sm focus:border-black outline-none"
+                                            placeholder="Richard Feynman">
+                                        <p id="cert-error" class="text-red-500 text-xs mt-2 hidden">Please enter your
+                                            name.
+                                        </p>
+                                    </div>
+                                    <button onclick="generateCert()"
+                                        class="btn btn-primary bg-black border-black text-white w-full hover:bg-gray-800">Generate
+                                        Certificate</button>
+                                    <button onclick="downloadCert()" id="btn-download"
+                                        class="btn btn-secondary w-full hidden">Download PNG</button>
+
+                                </div>
+
+                                <div
+                                    class="w-full md:w-2/3 bg-gray-50 border border-gray-200 p-4 flex items-center justify-center">
+                                    <canvas id="cert-canvas" class="w-full shadow-lg bg-white"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="bg-gray-50 px-6 py-3 border-t border-gray-100 text-center">
+                            <p class="text-[10px] text-gray-400 italic">
+                                This certificate confirms successful completion of learning and assessment on this
+                                platform
+                                and is not an accredited or government-recognized qualification.
+                            </p>
+                        </div>
+                    </div>
+                </section>
+
+                <script src="js/script.js"></script>
+                <script>
+                    document.addEventListener('DOMContentLoaded', () => {
+                        new InlineQuiz('quiz-quanta-intro', {
+                            question: "How does a Quantum Computer differ from a Classical one?",
+                            options: ["It is smaller", "It is 100% deterministic", "It is probabilistic and operates on quantum mechanics", "It has no errors"],
+                            answer: 2,
+                            explanation: "Classical computers are deterministic (1+1=2), while quantum computers use probability and quantum laws like superposition."
+                        });
+
+                        new InlineQuiz('quiz-quanta-history', {
+                            question: "What did Richard Feynman propose in 1981?",
+                            options: ["The Internet", "Simulating nature using quantum mechanical systems", "The first laser", "General Relativity"],
+                            answer: 1,
+                            explanation: "Feynman realized that simulating quantum physics on classical computers was inefficient and proposed building a quantum computer instead."
+                        });
+
+                        new InlineQuiz('quiz-quanta-heisenberg', {
+                            question: "What does the Heisenberg Uncertainty Principle state?",
+                            options: ["You can know everything simultaneously", "You cannot know both position and momentum exactly at the same time", "Measurement is always perfect", "Particles are stationary"],
+                            answer: 1,
+                            explanation: "Precision in one property (like position) fundamentally forces uncertainty in its conjugate property (like momentum)."
+                        });
+
+                        new InlineQuiz('quiz-quanta-qubits', {
+                            question: "What is the key advantage of a Qubit (Bloch Sphere) over a Bit?",
+                            options: ["It can only be 0 or 1", "It can represent an infinite number of states on the sphere's surface", "It uses less energy", "It is easier to make"],
+                            answer: 1,
+                            explanation: "While a bit is binary, a qubit can exist in a state that is a complex linear combination of |0⟩ and |1⟩."
+                        });
+
+                        new InlineQuiz('quiz-quanta-superposition', {
+                            question: "Which analogy best fits Superposition?",
+                            options: ["A coin showing Heads", "A coin showing Tails", "A spinning coin that is both Heads and Tails until stopped", "Two separate coins"],
+                            answer: 2,
+                            explanation: "Superposition allows the qubit to explore multiple states simultaneously, like a spinning coin, until it is measured."
+                        });
+
+                        new InlineQuiz('quiz-quanta-measurement', {
+                            question: "What happens during 'Wave Function Collapse'?",
+                            options: ["The wave gets bigger", "The probabilistic state is forced into a definite outcome (|0⟩ or |1⟩)", "The qubit duplicates", "Nothing changes"],
+                            answer: 1,
+                            explanation: "Measurement destroys the delicate superposition, forcing nature to 'choose' a specific, single state."
+                        });
+
+                        new InlineQuiz('quiz-quanta-entanglement', {
+                            question: "If two particles are entangled, what is true?",
+                            options: ["They are completely independent", "Measuring one instantly reveals the state of the other, regardless of distance", "They repel each other", "They move slower"],
+                            answer: 1,
+                            explanation: "Entanglement links particles into a single system; the fate of one determines the fate of the other instantly."
+                        });
+
+                        new InlineQuiz('quiz-quanta-no-cloning', {
+                            question: "The No-Cloning Theorem means:",
+                            options: ["You can always backup data", "Perfect Copy-Paste is impossible for unknown quantum states", "Cloning is easy", "Qubits are digital"],
+                            answer: 1,
+                            explanation: "Reading a quantum state changes it, so you cannot create an identical copy without destroying the original."
+                        });
+
+                        new InlineQuiz('quiz-quanta-tunneling', {
+                            question: "How does Quantum Tunneling help in optimization?",
+                            options: ["It builds walls", "It allows the system to pass through barriers to find the Global Minimum", "It creates more heat", "It deletes data"],
+                            answer: 1,
+                            explanation: "Tunneling allows particles to escape 'local traps' (sub-optimal solutions) by passing through energy barriers."
+                        });
+
+                        new InlineQuiz('quiz-quanta-cooper', {
+                            question: "What is a Cooper Pair?",
+                            options: ["Two electrons bound together that flow without resistance", "A proton and electron", "Two atoms", "A wire type"],
+                            answer: 0,
+                            explanation: "In superconductors, electrons pair up to overcome repulsion and flow frictionlessly through the lattice."
+                        });
+
+                        new InlineQuiz('quiz-quanta-josephson', {
+                            question: "What role does the Josephson Junction play?",
+                            options: ["It creates resistance", "It acts as a linear wire", "It creates a non-linear system (anharmonicity) to isolate the |0⟩-|1⟩ energy levels", "It cools the system"],
+                            answer: 2,
+                            explanation: "It changes the energy spacing so we can target just the lowest two levels to form a qubit, acting like an artificial atom."
+                        });
+
+                        new InlineQuiz('quiz-quanta-types', {
+                            question: "Which Qubit type uses individual atoms suspended by lasers?",
+                            options: ["Superconducting", "Trapped Ion", "Photonic", "Topological"],
+                            answer: 1,
+                            explanation: "Trapped Ion computers use electromagnetic fields to hold suspended ions in a vacuum."
+                        });
+
+                        new InlineQuiz('quiz-quanta-gates', {
+                            question: "What does the Hadamard (H) gate do?",
+                            options: ["Flips 0 to 1", "Does nothing", "Creates a 50/50 superposition from a pure state", "Measures the qubit"],
+                            answer: 2,
+                            explanation: "The H-gate is the primary way to put a qubit into superposition, starting the quantum computation."
+                        });
+
+                        new InlineQuiz('quiz-quanta-scaling', {
+                            question: "How many classical numbers do you need to simulate N qubits?",
+                            options: ["N", "2*N", "2 to the power of N (2^N)", "N^2"],
+                            answer: 2,
+                            explanation: "The state space grows exponentially. 300 qubits require more tracking numbers than atoms in the universe."
+                        });
+
+                        new InlineQuiz('quiz-quanta-decoherence', {
+                            question: "Decoherence is caused by:",
+                            options: ["Interaction with the environment (noise, heat)", "Running code too fast", "Using too many qubits", "Software bugs"],
+                            answer: 0,
+                            explanation: "Any outside interference 'measures' the system, causing it to collapse into classical noise."
+                        });
+
+                        new InlineQuiz('quiz-quanta-error-correction', {
+                            question: "How do we fix errors if we can't clone qubits?",
+                            options: ["We guess", "We use many physical qubits to form one Logical Qubit", "We restart the computer", "We ignore them"],
+                            answer: 1,
+                            explanation: "Quantum Error Correction spreads information across many entangled physical qubits to detect and fix flips without reading the data."
+                        });
+                    });
+                </script>
+                <script>
+                    // Quiz Data
+                    const questions = [
+                        {
+                            question: "What is the fundamental unit of quantum information?",
+                            options: ["Bit", "Qubit", "Byte", "Pixel"],
+                            answer: 1
+                        },
+                        {
+                            question: "Which phenomenon allows a qubit to be in a state of |0⟩ and |1⟩ simultaneously?",
+                            options: ["Entanglement", "Superposition", "Tunneling", "Teleportation"],
+                            answer: 1
+                        },
+                        {
+                            question: "What describes the correlation between two particles where the state of one instantly influences the other?",
+                            options: ["Superposition", "Entanglement", "Interference", "Decoherence"],
+                            answer: 1
+                        },
+                        {
+                            question: "Which quantum gate creates a superposition state from |0⟩?",
+                            options: ["X-Gate", "Hadamard (H) Gate", "Z-Gate", "CNOT Gate"],
+                            answer: 1
+                        },
+                        {
+                            question: "What happens when you measure a qubit in superposition?",
+                            options: ["It stays in superposition", "It collapses to a definite state (|0⟩ or |1⟩)", "It disappears", "It doubles"],
+                            answer: 1
+                        },
+                        {
+                            question: "What is Decoherence?",
+                            options: ["The loss of quantum state due to environmental interaction", "Making the system colder", "Adding more qubits", "Speeding up the computation"],
+                            answer: 0
+                        },
+                        {
+                            question: "Shor's Algorithm is best known for efficiently solving which problem?",
+                            options: ["Searching a database", "Factoring large integers", "Sorting numbers", "Simulating physics"],
+                            answer: 1
+                        },
+                        {
+                            question: "Grover's Algorithm provides a speedup for which task?",
+                            options: ["Factoring", "Unstructured Search", "Encryption", "Compression"],
+                            answer: 1
+                        },
+                        {
+                            question: "What does the No-Cloning Theorem state?",
+                            options: ["You can copy any qubit", "You cannot create an identical copy of an arbitrary unknown quantum state", "Cloning is easy", "Quantum states copy themselves"],
+                            answer: 1
+                        },
+                        {
+                            question: "What does Quantum Supremacy refer to?",
+                            options: ["Ruliing the world", "A quantum computer solving a problem that classical computers practically cannot", "Using only quantum computers", "Having the most qubits"],
+                            answer: 1
+                        }
+                    ];
+
+                    // Init Quiz
+                    new QuizManager('quiz-container', questions, () => {
+                        document.getElementById('certificate').classList.remove('hidden');
+                        setTimeout(() => {
+                            document.getElementById('certificate').scrollIntoView({ behavior: 'smooth' });
+                        }, 100);
+                    });
+
+                    // Certificate Logic
+                    const certGen = new CertificateGenerator('cert-canvas', 'Quantum Computing');
+
+                    function generateCert() {
+                        const nameInput = document.getElementById('cert-name');
+                        const errorMsg = document.getElementById('cert-error');
+                        const name = nameInput.value.trim();
+                        const nameRegex = /^[a-zA-Z\s\-\.'’]+$/;
+
+                        // Reset error state
+                        errorMsg.classList.add('hidden');
+                        nameInput.classList.remove('border-red-500');
+
+                        if (!name) {
+                            errorMsg.textContent = "Please enter your name.";
+                            errorMsg.classList.remove('hidden');
+                            nameInput.classList.add('border-red-500');
+                            return;
+                        }
+
+                        if (name.length < 3 || name.length > 35) {
+                            errorMsg.textContent = "Name must be between 3 and 35 characters.";
+                            errorMsg.classList.remove('hidden');
+                            nameInput.classList.add('border-red-500');
+                            return;
+                        }
+
+                        if (!nameRegex.test(name)) {
+                            errorMsg.textContent = "Name cannot contain numbers or special characters.";
+                            errorMsg.classList.remove('hidden');
+                            nameInput.classList.add('border-red-500');
+                            return;
+                        }
+
+                        certGen.generate(name);
+                        document.getElementById('btn-download').classList.remove('hidden');
+                    }
+
+                    function downloadCert() {
+                        const name = document.getElementById('cert-name').value.trim();
+                        certGen.download(`Undrstanding_Quantum_Certificate_${name.replace(/\s+/g, '_')}.png`);
+                    }
+                </script>
+
+
+
+                <footer class="w-full mt-12 mb-12">
+                    <div class="border-t border-gray-200 pt-8 flex justify-between items-center">
+                        <span class="text-[10px] mono uppercase text-gray-400">Undrstanding</span>
+                        <span class="text-[10px] mono uppercase text-gray-400">For Humans, From Humans</span>
+                    </div>
+                </footer>
+
+            </div>
+        </main>
+    </div>
+
+    <!-- Logic Script -->
+    <script>
+        // Toggle Mobile Menu
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobile-menu');
+            if (menu.classList.contains('hidden')) {
+                menu.classList.remove('hidden');
+                menu.classList.add('flex');
+                document.body.style.overflow = 'hidden';
+            } else {
+                menu.classList.add('hidden');
+                menu.classList.remove('flex');
+                document.body.style.overflow = 'auto';
+            }
+        }
+
+        // --- 1. Bit vs Qubit ---
+        let isBitOn = false;
+        function toggleBit() {
+            isBitOn = !isBitOn;
+            const bit = document.getElementById('classical-bit');
+            if (isBitOn) {
+                bit.className = "w-16 h-16 bg-black text-white flex items-center justify-center text-xl font-mono transition-colors duration-200";
+                bit.textContent = "1";
+            } else {
+                bit.className = "w-16 h-16 bg-[#e5e5e5] flex items-center justify-center text-xl font-mono text-gray-500 transition-colors duration-200";
+                bit.textContent = "0";
+            }
+        }
+
+        const qubitSlider = document.getElementById('superposition-slider');
+        const qubitArrow = document.getElementById('qubit-arrow');
+        const qubitValue = document.getElementById('qubit-value');
+
+        qubitSlider.addEventListener('input', (e) => {
+            const val = parseInt(e.target.value);
+            const angle = (val / 100) * 180;
+            qubitArrow.style.transform = `rotate(${angle}deg)`;
+
+            if (val === 0) {
+                qubitValue.innerHTML = `State: Pure |0⟩`;
+                qubitValue.className = "mono text-xs text-black border-l-2 border-orange-600 pl-3 mb-4";
+            } else if (val === 100) {
+                qubitValue.innerHTML = `State: Pure |1⟩`;
+                qubitValue.className = "mono text-xs text-black border-l-2 border-orange-600 pl-3 mb-4";
+            } else {
+                qubitValue.innerHTML = `State: Superposition`;
+                qubitValue.className = "mono text-xs text-orange-600 border-l-2 border-orange-600 pl-3 mb-4";
+            }
+        });
+
+        // --- 2. Superposition Mixer ---
+        const supSlider = document.getElementById('superposition-mixer');
+        const sup0Fill = document.getElementById('sup-0-fill');
+        const sup1Fill = document.getElementById('sup-1-fill');
+        const sup0Val = document.getElementById('sup-0-val');
+        const sup1Val = document.getElementById('sup-1-val');
+        const supEq = document.getElementById('sup-equation');
+
+        supSlider.addEventListener('input', (e) => {
+            const val = parseInt(e.target.value);
+            const theta = (val / 100) * Math.PI;
+            const amp0 = Math.cos(theta / 2);
+            const amp1 = Math.sin(theta / 2);
+            const prob0 = Math.pow(amp0, 2) * 100;
+            const prob1 = Math.pow(amp1, 2) * 100;
+
+            sup0Fill.style.height = `${prob0}%`;
+            sup1Fill.style.height = `${prob1}%`;
+            sup0Val.textContent = `${prob0.toFixed(1)}%`;
+            sup1Val.textContent = `${prob1.toFixed(1)}%`;
+            supEq.innerHTML = `${amp0.toFixed(2)}|0⟩ + ${amp1.toFixed(2)}|1⟩`;
+        });
+
+        // --- 3. Tunneling Logic ---
+        function fireParticle() {
+            const particle = document.getElementById('tunnel-particle');
+            const barrier = document.getElementById('barrier');
+            const container = barrier.parentElement;
+            const resultText = document.getElementById('tunnel-result');
+            const thickness = parseInt(document.getElementById('barrier-slider').value);
+
+            barrier.style.width = `${thickness}px`;
+            barrier.style.opacity = `${0.3 + (thickness / 150)}`;
+
+            particle.style.transition = 'none';
+            particle.style.transform = 'translateX(0)';
+
+            const containerWidth = container.offsetWidth;
+            const startPos = 16;
+            const particleWidth = 16;
+            const distanceToBarrier = (containerWidth / 2) - startPos - (thickness / 2) - particleWidth + 5;
+            const distanceToTarget = containerWidth - startPos - 50;
+
+            const tunnelProb = Math.exp(-thickness / 20);
+            const success = Math.random() < tunnelProb;
+
+            void particle.offsetWidth;
+
+            setTimeout(() => {
+                particle.style.transition = 'transform 1s cubic-bezier(0.25, 1, 0.5, 1)';
+                if (success) {
+                    particle.style.transform = `translateX(${distanceToTarget}px)`;
+                    resultText.textContent = `Success! Tunneled (Prob: ${(tunnelProb * 100).toFixed(1)}%)`;
+                    resultText.style.color = '#15803d';
+                } else {
+                    particle.style.transform = `translateX(${distanceToBarrier}px)`;
+                    setTimeout(() => {
+                        particle.style.transform = 'translateX(0px)';
+                    }, 1000);
+                    resultText.textContent = `Reflected by barrier (Prob: ${(tunnelProb * 100).toFixed(1)}%)`;
+                    resultText.style.color = '#737373';
+                }
+            }, 50);
+        }
+
+        // --- 4. Gates ---
+        let gateInputState = 0;
+        let lastGateType = null;
+
+        function toggleGateInput() {
+            gateInputState = gateInputState === 0 ? 1 : 0;
+            const btn = document.getElementById('gate-input-box');
+            if (gateInputState === 0) {
+                btn.textContent = "|0⟩";
+                btn.className = "w-12 h-12 border border-gray-300 flex items-center justify-center font-mono text-sm text-gray-600 hover:border-orange-600 hover:text-orange-600 transition-colors cursor-pointer";
+            } else {
+                btn.textContent = "|1⟩";
+                btn.className = "w-12 h-12 bg-black text-white flex items-center justify-center font-mono text-sm transition-colors cursor-pointer border border-black";
+            }
+            if (lastGateType) {
+                applyGate(lastGateType);
+            } else {
+                document.getElementById('gate-output').textContent = gateInputState === 0 ? "|0⟩" : "|1⟩";
+                document.getElementById('gate-output').className = "w-12 h-12 border border-gray-300 flex items-center justify-center font-mono text-sm text-gray-600";
+            }
+        }
+
+        function applyGate(type, element) {
+            const gateBox = document.getElementById('active-gate');
+            const outputBox = document.getElementById('gate-output');
+            const desc = document.getElementById('gate-desc');
+
+            if (type === 'Reset') {
+                lastGateType = null;
+                gateInputState = 0;
+                document.querySelectorAll('.btn-gate').forEach(btn => btn.classList.remove('active'));
+                const btn = document.getElementById('gate-input-box');
+                btn.textContent = "|0⟩";
+                btn.className = "w-12 h-12 border border-gray-300 flex items-center justify-center font-mono text-sm text-gray-600 hover:border-orange-600 hover:text-orange-600 transition-colors cursor-pointer";
+                gateBox.textContent = '-';
+                gateBox.className = "w-12 h-12 bg-black text-white flex items-center justify-center font-mono text-sm transition-all duration-200";
+                outputBox.textContent = "|0⟩";
+                outputBox.className = "w-12 h-12 border border-gray-300 flex items-center justify-center font-mono text-sm text-gray-600";
+                desc.textContent = "System Ready.";
+                desc.className = "mt-4 text-xs text-gray-500 font-mono border-l-2 border-transparent pl-3 transition-colors";
+                return;
+            }
+
+            if (element) {
+                document.querySelectorAll('.btn-gate').forEach(btn => btn.classList.remove('active'));
+                element.classList.add('active');
+            }
+
+            lastGateType = type;
+            gateBox.textContent = type;
+            gateBox.className = "w-12 h-12 bg-orange-600 text-white flex items-center justify-center font-mono text-sm transition-all duration-200";
+            desc.className = "mt-4 text-xs text-black font-mono border-l-2 border-orange-600 pl-3 transition-colors";
+
+            if (gateInputState === 0) {
+                if (type === 'X') {
+                    outputBox.textContent = "|1⟩";
+                    outputBox.className = "w-12 h-12 border-2 border-black flex items-center justify-center font-mono text-sm text-black font-bold";
+                    desc.innerHTML = "X-Gate (Pauli-X): Bit flip. |0⟩ → |1⟩";
+                } else if (type === 'Y') {
+                    outputBox.textContent = "|1⟩";
+                    outputBox.className = "w-12 h-12 border-2 border-black flex items-center justify-center font-mono text-sm text-black font-bold";
+                    desc.innerHTML = "Y-Gate (Pauli-Y): Bit & Phase flip. |0⟩ → i|1⟩";
+                } else if (type === 'Z') {
+                    outputBox.textContent = "|0⟩";
+                    outputBox.className = "w-12 h-12 border border-gray-300 flex items-center justify-center font-mono text-sm text-gray-600";
+                    desc.innerHTML = "Z-Gate (Pauli-Z): Phase flip. No magnitude change on |0⟩.";
+                } else if (type === 'H') {
+                    outputBox.innerHTML = '50%';
+                    outputBox.className = "w-12 h-12 border-2 border-orange-600 flex items-center justify-center font-mono text-[10px] text-orange-600 font-bold";
+                    desc.innerHTML = "H-Gate: Superposition. |0⟩ → (|0⟩+|1⟩)/√2";
+                } else if (type === 'S') {
+                    outputBox.textContent = "|0⟩";
+                    outputBox.className = "w-12 h-12 border border-gray-300 flex items-center justify-center font-mono text-sm text-gray-600";
+                    desc.innerHTML = "S-Gate: 90° Z-rotation. No magnitude change on |0⟩.";
+                } else if (type === 'T') {
+                    outputBox.textContent = "|0⟩";
+                    outputBox.className = "w-12 h-12 border border-gray-300 flex items-center justify-center font-mono text-sm text-gray-600";
+                    desc.innerHTML = "T-Gate: 45° Z-rotation. No magnitude change on |0⟩.";
+                }
+            } else {
+                if (type === 'X') {
+                    outputBox.textContent = "|0⟩";
+                    outputBox.className = "w-12 h-12 border border-gray-300 flex items-center justify-center font-mono text-sm text-gray-600";
+                    desc.innerHTML = "X-Gate (Pauli-X): Bit flip. |1⟩ → |0⟩";
+                } else if (type === 'Y') {
+                    outputBox.textContent = "|0⟩";
+                    outputBox.className = "w-12 h-12 border border-gray-300 flex items-center justify-center font-mono text-sm text-gray-600";
+                    desc.innerHTML = "Y-Gate (Pauli-Y): Bit & Phase flip. |1⟩ → -i|0⟩";
+                } else if (type === 'Z') {
+                    outputBox.textContent = "|1⟩";
+                    outputBox.className = "w-12 h-12 border-2 border-black flex items-center justify-center font-mono text-sm text-black font-bold";
+                    desc.innerHTML = "Z-Gate (Pauli-Z): Phase flip. |1⟩ → -|1⟩ (Phase change)";
+                } else if (type === 'H') {
+                    outputBox.innerHTML = '50%';
+                    outputBox.className = "w-12 h-12 border-2 border-orange-600 flex items-center justify-center font-mono text-[10px] text-orange-600 font-bold";
+                    desc.innerHTML = "H-Gate: Superposition. |1⟩ → (|0⟩-|1⟩)/√2";
+                } else if (type === 'S') {
+                    outputBox.textContent = "|1⟩";
+                    outputBox.className = "w-12 h-12 border-2 border-black flex items-center justify-center font-mono text-sm text-black font-bold";
+                    desc.innerHTML = "S-Gate: 90° Z-rotation. |1⟩ → i|1⟩ (Phase change)";
+                } else if (type === 'T') {
+                    outputBox.textContent = "|1⟩";
+                    outputBox.className = "w-12 h-12 border-2 border-black flex items-center justify-center font-mono text-sm text-black font-bold";
+                    desc.innerHTML = "T-Gate: 45° Z-rotation. |1⟩ → e^(iπ/4)|1⟩ (Phase change)";
+                }
+            }
+        }
+
+        // --- 5. Measurement ---
+        const probSlider = document.getElementById('prob-slider');
+        const mysteryBox = document.getElementById('mystery-box');
+        const measureBtn = document.getElementById('measure-btn');
+        const measureResult = document.getElementById('measure-result');
+
+        let probabilityOne = 0.5;
+
+        probSlider.addEventListener('input', (e) => {
+            probabilityOne = e.target.value / 100;
+            mysteryBox.textContent = "?";
+            mysteryBox.className = "w-20 h-20 border border-gray-300 flex items-center justify-center text-2xl font-mono text-gray-400 transition-colors";
+            measureResult.style.opacity = "0";
+        });
+
+        measureBtn.addEventListener('click', () => {
+            const random = Math.random();
+            const result = random < probabilityOne ? 1 : 0;
+            if (result === 1) {
+                mysteryBox.textContent = "1";
+                mysteryBox.className = "w-20 h-20 bg-black text-white flex items-center justify-center text-2xl font-mono";
+                measureResult.innerHTML = `Collapsed: 1`;
+            } else {
+                mysteryBox.textContent = "0";
+                mysteryBox.className = "w-20 h-20 bg-[#e5e5e5] text-black flex items-center justify-center text-2xl font-mono";
+                measureResult.innerHTML = `Collapsed: 0`;
+            }
+            measureResult.style.opacity = "1";
+        });
+
+        // --- 6. Entanglement ---
+        let isEntangled = false;
+        const entangleBtn = document.getElementById('entangle-btn');
+        const entangleMsg = document.getElementById('entangle-msg');
+        const beam = document.getElementById('entanglement-beam');
+        const particleA = document.getElementById('particle-a');
+        const particleB = document.getElementById('particle-b');
+
+        function resetParticles() {
+            [particleA, particleB].forEach(p => {
+                p.className = "w-12 h-12 border border-gray-300 rounded-full flex items-center justify-center text-sm font-bold text-gray-400 transition-colors";
+                if (p.id === 'particle-a') p.textContent = "A";
+                if (p.id === 'particle-b') p.textContent = "B";
+            });
+        }
+
+        entangleBtn.addEventListener('click', () => {
+            isEntangled = !isEntangled;
+            resetParticles();
+            if (isEntangled) {
+                beam.style.opacity = "1";
+                entangleBtn.textContent = "Unlink";
+                entangleMsg.innerHTML = "State: <span class='text-orange-600 font-bold'>Entangled</span>";
+            } else {
+                beam.style.opacity = "0";
+                entangleBtn.textContent = "Link Systems";
+                entangleMsg.innerHTML = "State: Independent";
+            }
+        });
+
+        function setParticleVisual(element, state) {
+            if (state === 0) {
+                element.className = "w-12 h-12 bg-[#e5e5e5] border border-gray-300 rounded-full flex items-center justify-center font-bold text-black text-sm transition-colors";
+                element.textContent = "0";
+            } else {
+                element.className = "w-12 h-12 bg-black border border-black rounded-full flex items-center justify-center font-bold text-white text-sm transition-colors";
+                element.textContent = "1";
+            }
+        }
+
+        window.measureParticle = function (who) {
+            const result = Math.random() > 0.5 ? 1 : 0;
+            if (who === 'a') {
+                setParticleVisual(particleA, result);
+                if (isEntangled) {
+                    setParticleVisual(particleB, result);
+                    entangleMsg.innerHTML = `A: ${result} → B: ${result}`;
+                } else {
+                    entangleMsg.textContent = `A: ${result}`;
+                }
+            } else {
+                setParticleVisual(particleB, result);
+                if (isEntangled) {
+                    setParticleVisual(particleA, result);
+                    entangleMsg.innerHTML = `B: ${result} → A: ${result}`;
+                } else {
+                    entangleMsg.textContent = `B: ${result}`;
+                }
+            }
+        };
+
+        // Barrier Slider Init
+        document.getElementById('barrier-slider').addEventListener('input', function () {
+            document.getElementById('barrier').style.width = this.value + 'px';
+            document.getElementById('barrier').style.opacity = 0.3 + (this.value / 150);
+        });
+
+        // --- 7. Decoherence Visualization (Canvas) ---
+        const noiseCanvas = document.getElementById('noise-canvas');
+        const ctx = noiseCanvas.getContext('2d');
+        const noiseSlider = document.getElementById('noise-slider');
+        const coherenceValue = document.getElementById('coherence-value');
+
+        // Set canvas resolution
+        function resizeCanvas() {
+            noiseCanvas.width = noiseCanvas.parentElement.offsetWidth;
+            noiseCanvas.height = noiseCanvas.parentElement.offsetHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        let time = 0;
+        let noiseLevel = 0;
+
+        noiseSlider.addEventListener('input', (e) => {
+            noiseLevel = e.target.value / 100; // 0 to 1
+            const purity = Math.max(0, 100 - (noiseLevel * 100)).toFixed(0);
+            coherenceValue.textContent = `${purity}%`;
+
+            if (purity < 50) coherenceValue.style.color = "#ea580c";
+            else coherenceValue.style.color = "#000";
+        });
+
+        function drawSignal() {
+            ctx.clearRect(0, 0, noiseCanvas.width, noiseCanvas.height);
+            ctx.beginPath();
+
+            const amplitude = 30;
+            const frequency = 0.05;
+            const midY = noiseCanvas.height / 2;
+
+            ctx.moveTo(0, midY);
+
+            for (let x = 0; x < noiseCanvas.width; x++) {
+                // Pure Sine Wave
+                const pureY = Math.sin((x + time) * frequency) * amplitude;
+
+                // Add Noise
+                const randomJitter = (Math.random() - 0.5) * 50 * noiseLevel;
+                const decayFactor = 1 - (noiseLevel * 0.5); // Amplitude shrinks with noise
+
+                const y = midY + (pureY * decayFactor) + randomJitter;
+                ctx.lineTo(x, y);
+            }
+
+            ctx.strokeStyle = noiseLevel > 0.5 ? '#737373' : '#000';
+            ctx.lineWidth = 1.5;
+            ctx.stroke();
+
+            time += 2;
+            requestAnimationFrame(drawSignal);
+        }
+        drawSignal();
+
+        // --- 8. Error Correction Logic ---
+        let physicalQubits = [0, 0, 0];
+        const pqElements = [document.getElementById('pq-0'), document.getElementById('pq-1'), document.getElementById('pq-2')];
+        const correctBtn = document.getElementById('correct-btn');
+        const logicalStateDisplay = document.getElementById('logical-state');
+        const errorStatusDisplay = document.getElementById('error-status');
+
+        window.flipPhysicalQubit = function (index) {
+            // Flip state
+            physicalQubits[index] = physicalQubits[index] === 0 ? 1 : 0;
+            updateErrorCorrectionUI();
+        }
+
+        window.correctErrors = function () {
+            // Majority Vote
+            const sum = physicalQubits.reduce((a, b) => a + b, 0);
+            const consensus = sum > 1.5 ? 1 : 0;
+
+            // Fix all to consensus
+            physicalQubits = [consensus, consensus, consensus];
+            updateErrorCorrectionUI();
+        }
+
+        function updateErrorCorrectionUI() {
+            // Update physical visuals
+            physicalQubits.forEach((state, i) => {
+                const el = pqElements[i];
+                const textSpan = el.querySelector('span');
+                textSpan.textContent = state;
+
+                if (state === 1) {
+                    el.className = "w-16 h-16 border-2 border-black bg-black text-white rounded flex flex-col items-center justify-center hover:border-gray-600 transition-all relative group cursor-pointer";
+                } else {
+                    el.className = "w-16 h-16 border-2 border-gray-300 bg-white text-black rounded flex flex-col items-center justify-center hover:border-orange-400 transition-all relative group cursor-pointer";
+                }
+            });
+
+            // Analyze Logic
+            const sum = physicalQubits.reduce((a, b) => a + b, 0);
+
+            // Majority vote logic
+            const logicalValue = sum > 1.5 ? 1 : 0;
+            logicalStateDisplay.textContent = `|${logicalValue}⟩`;
+
+            // Error Detection
+            // An error exists if not all qubits are the same (sum is not 0 or 3)
+            const hasError = (sum !== 0 && sum !== 3);
+
+            if (hasError) {
+                errorStatusDisplay.textContent = "Error Detected (Drift)";
+                errorStatusDisplay.className = "text-xs text-orange-600 mt-1 h-4 font-bold animate-pulse";
+
+                correctBtn.disabled = false;
+                correctBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+                correctBtn.classList.add('btn-primary');
+                correctBtn.classList.remove('btn-secondary');
+            } else {
+                errorStatusDisplay.textContent = "System Stable";
+                errorStatusDisplay.className = "text-xs text-green-600 mt-1 h-4";
+
+                correctBtn.disabled = true;
+                correctBtn.classList.add('opacity-50', 'cursor-not-allowed', 'btn-secondary');
+                correctBtn.classList.remove('btn-primary');
+            }
+        }
+
+        // --- 9. No-Cloning Logic ---
+        function attemptClone() {
+            const sourceQubit = document.getElementById('source-qubit');
+            const targetQubit = document.getElementById('target-qubit');
+            const msg = document.getElementById('clone-msg');
+
+            // 1. "Measure" or "Clone" attempt
+            targetQubit.textContent = "Scanning...";
+            targetQubit.className = "w-16 h-16 border border-dashed border-gray-400 rounded flex items-center justify-center text-gray-400 font-mono text-[8px] transition-colors bg-gray-50 animate-pulse overflow-hidden";
+
+            setTimeout(() => {
+                // 2. Result: Imperfect copy or random state
+                const randomState = Math.random() > 0.5 ? "|1⟩" : "|0⟩";
+                const isDifferent = Math.random() > 0.5; // Simulate loss of fidelity
+
+                if (isDifferent) {
+                    // Fail state
+                    targetQubit.textContent = "?";
+                    targetQubit.className = "w-16 h-16 border-2 border-red-500 rounded flex items-center justify-center text-red-500 font-mono text-lg font-bold bg-red-50";
+                    msg.innerHTML = "Error: Measurement collapsed the state.<br>Copy failed.";
+                    msg.className = "text-xs text-center text-red-600 h-8 mt-2 leading-tight font-medium";
+
+                    // Slightly change source to indicate disturbance
+                    sourceQubit.style.backgroundColor = "#c2410c"; // Darker orange
+                    setTimeout(() => sourceQubit.style.backgroundColor = "#ea580c", 500);
+                } else {
+                    // Seemingly successful (but purely probabilistic)
+                    targetQubit.textContent = randomState;
+                    targetQubit.className = "w-16 h-16 border border-gray-800 rounded flex items-center justify-center text-gray-800 font-mono text-xs bg-gray-200";
+                    msg.innerHTML = "Result: Probabilistic collapse.<br>Not a true clone.";
+                    msg.className = "text-xs text-center text-gray-600 h-8 mt-2 leading-tight";
+                }
+            }, 800);
+        }
+
+        // --- 10. Scaling Logic ---
+        const scalingSlider = document.getElementById('scaling-slider');
+        const qubitCountDisplay = document.getElementById('qubit-count-display');
+        const statesDisplay = document.getElementById('states-display');
+        const ramDisplay = document.getElementById('ram-display');
+
+        scalingSlider.addEventListener('input', (e) => {
+            const n = parseInt(e.target.value);
+            qubitCountDisplay.textContent = n;
+
+            // Calculate 2^n
+            // Javascript handles large numbers with BigInt for n > 53 roughly
+            let states;
+            if (n < 30) {
+                states = Math.pow(2, n).toLocaleString();
+            } else {
+                states = "2^" + n; // Simplified notation for huge numbers
+            }
+            statesDisplay.textContent = states;
+
+            // Calculate RAM (16 bytes per state for complex double precision)
+            // 2^n * 16 bytes
+            const bytes = Math.pow(2, n) * 16;
+
+            let ramText = "";
+            if (bytes < 1024) ramText = bytes.toFixed(0) + " Bytes";
+            else if (bytes < 1024 * 1024) ramText = (bytes / 1024).toFixed(1) + " KB";
+            else if (bytes < 1024 * 1024 * 1024) ramText = (bytes / (1024 * 1024)).toFixed(1) + " MB";
+            else if (bytes < 1024 * 1024 * 1024 * 1024) ramText = (bytes / (1024 * 1024 * 1024)).toFixed(1) + " GB";
+            else if (bytes < 1024 * 1024 * 1024 * 1024 * 1024) ramText = (bytes / (1024 * 1024 * 1024 * 1024)).toFixed(1) + " TB";
+            else if (bytes < 1024 * 1024 * 1024 * 1024 * 1024 * 1024) ramText = (bytes / (1024 * 1024 * 1024 * 1024 * 1024)).toFixed(1) + " PB";
+            else ramText = "> Exabytes (Impossible)";
+
+            ramDisplay.textContent = ramText;
+        });
+
+        // --- 11. Heisenberg Logic ---
+        const hCanvas = document.getElementById('heisenberg-canvas');
+        const hCtx = hCanvas.getContext('2d');
+        const hSlider = document.getElementById('uncertainty-slider');
+        const dxVal = document.getElementById('delta-x-val');
+        const dpVal = document.getElementById('delta-p-val');
+        const dxBar = document.getElementById('dx-bar');
+        const dpBar = document.getElementById('dp-bar');
+
+        let hTime = 0;
+
+        function resizeHCanvas() {
+            if (hCanvas.parentElement) {
+                hCanvas.width = hCanvas.parentElement.offsetWidth;
+                hCanvas.height = hCanvas.parentElement.offsetHeight;
+            }
+        }
+        window.addEventListener('resize', resizeHCanvas);
+        // Initial resize happens in the loop or after load, but let's force it once
+        setTimeout(resizeHCanvas, 100);
+
+        function drawHeisenberg() {
+            if (!hCanvas.parentElement) {
+                requestAnimationFrame(drawHeisenberg);
+                return;
+            }
+
+            // Ensure size matches
+            if (hCanvas.width !== hCanvas.parentElement.offsetWidth) resizeHCanvas();
+
+            hCtx.clearRect(0, 0, hCanvas.width, hCanvas.height);
+
+            const w = hCanvas.width;
+            const h = hCanvas.height;
+            const centerY = h / 2;
+            const centerX = w / 2;
+
+            // Slider value (10 to 150)
+            // Low value = High Uncertainty in Pos (Wave), Low Uncertainty in Mom
+            // High value = Low Uncertainty in Pos (Particle), High Uncertainty in Mom
+            const tightness = parseInt(hSlider.value);
+
+            // Standard Deviation of Position (sigma)
+            // Inverted relationship: High tightness = Low sigma (narrow)
+            const sigma = 1600 / tightness;
+
+            hCtx.beginPath();
+            hCtx.moveTo(0, centerY);
+
+            for (let x = 0; x < w; x++) {
+                const dist = x - centerX;
+
+                // Gaussian Envelope
+                const envelope = Math.exp(-(dist * dist) / (2 * sigma * sigma));
+
+                // Carrier Wave (Momentum)
+                // We add "uncertainty" to the frequency visually if sigma is small
+                // Ideally, a pure position state has ALL frequencies. 
+                // A pure momentum state has ONE frequency.
+
+                // Pure frequency
+                const k = 0.2;
+                let wave = Math.cos(dist * k - hTime);
+
+                // Combine
+                const y = centerY - (wave * envelope * (h * 0.4));
+
+                hCtx.lineTo(x, y);
+            }
+
+            hCtx.strokeStyle = '#111';
+            hCtx.lineWidth = 2;
+            hCtx.stroke();
+
+            // Draw Envelope (Visual guide for Position Uncertainty)
+            hCtx.beginPath();
+            for (let x = 0; x < w; x++) {
+                const dist = x - centerX;
+                const envelope = Math.exp(-(dist * dist) / (2 * sigma * sigma));
+                const y = centerY - (envelope * (h * 0.4));
+                hCtx.lineTo(x, y);
+            }
+            hCtx.strokeStyle = 'rgba(234, 88, 12, 0.3)'; // Orange transparent
+            hCtx.lineWidth = 4;
+            hCtx.stroke();
+
+            // Update Metrics UI
+            // Width of packet is proportional to sigma
+            const dxPercent = Math.min(100, (sigma / 80) * 100);
+            // Momentum uncertainty is inversely proportional
+            const dpPercent = Math.min(100, (100 - dxPercent) + 20); // offset for visual balance
+
+            dxBar.style.width = `${dxPercent}%`;
+            dpBar.style.width = `${100 - dxPercent}%`; // Visual inverse
+
+            if (tightness < 40) {
+                dxVal.textContent = "High (Unknown)";
+                dpVal.textContent = "Low (Precise)";
+            } else if (tightness > 120) {
+                dxVal.textContent = "Low (Precise)";
+                dpVal.textContent = "High (Unknown)";
+            } else {
+                dxVal.textContent = "Balanced";
+                dpVal.textContent = "Balanced";
+            }
+
+            hTime += 0.15;
+            requestAnimationFrame(drawHeisenberg);
+        }
+
+        // Start animation
+        drawHeisenberg();
+
+        // --- 12. Cooper Pairs Logic ---
+        const cCanvas = document.getElementById('cooper-canvas');
+        const cCtx = cCanvas.getContext('2d');
+        const tempSlider = document.getElementById('temp-slider');
+        const stateLabel = document.getElementById('state-label');
+
+        let electron1 = { x: -20, y: 0 };
+        let electron2 = { x: -60, y: 0 }; // Trailing behind
+        let cTime = 0;
+
+        function resizeCCanvas() {
+            if (cCanvas.parentElement) {
+                cCanvas.width = cCanvas.parentElement.offsetWidth;
+                cCanvas.height = cCanvas.parentElement.offsetHeight;
+            }
+        }
+        window.addEventListener('resize', resizeCCanvas);
+        setTimeout(resizeCCanvas, 100);
+
+        function drawCooper() {
+            if (!cCanvas.parentElement) {
+                requestAnimationFrame(drawCooper);
+                return;
+            }
+            if (cCanvas.width !== cCanvas.parentElement.offsetWidth) resizeCCanvas();
+
+            cCtx.clearRect(0, 0, cCanvas.width, cCanvas.height);
+
+            const w = cCanvas.width;
+            const h = cCanvas.height;
+            const cy = h / 2;
+
+            // Slider 0 (Cold) to 100 (Hot)
+            const temp = parseInt(tempSlider.value);
+            const isSuper = temp < 40;
+
+            // Update Label
+            if (temp < 40) {
+                stateLabel.textContent = "State: Superconducting (Paired)";
+                stateLabel.style.color = "#ea580c"; // Orange
+            } else {
+                stateLabel.textContent = "State: Normal (Resistance)";
+                stateLabel.style.color = "#737373"; // Grey
+            }
+
+            // Draw Lattice Ions
+            const cols = 12;
+            const rows = 3;
+            const gap = w / cols;
+            const startY = cy - gap;
+
+            for (let r = 0; r < rows; r++) {
+                for (let c = 0; c <= cols; c++) {
+                    const bx = c * gap;
+                    const by = startY + (r * gap);
+
+                    // Thermal Vibration
+                    const shakeAmt = (temp / 100) * 3;
+                    const shakeX = (Math.random() - 0.5) * shakeAmt;
+                    const shakeY = (Math.random() - 0.5) * shakeAmt;
+
+                    // Phonon Interaction (Attraction to electron 1)
+                    // If cold, ions pull towards passing electron
+                    let pullX = 0;
+                    let pullY = 0;
+
+                    if (isSuper) {
+                        const dist = Math.abs(bx - electron1.x);
+                        if (dist < 40) {
+                            // Pull towards E1 vertical center (cy)
+                            const pullStr = (40 - dist) / 8; // Max 5px
+                            const yDir = (cy - by) > 0 ? 1 : -1;
+                            pullY = yDir * pullStr;
+                        }
+                    }
+
+                    // Draw Ion (+)
+                    cCtx.fillStyle = '#e5e5e5';
+                    cCtx.beginPath();
+                    cCtx.arc(bx + shakeX, by + shakeY + pullY, 4, 0, Math.PI * 2);
+                    cCtx.fill();
+
+                    cCtx.fillStyle = '#aaa';
+                    cCtx.font = "10px sans-serif";
+                    cCtx.textAlign = "center";
+                    cCtx.textBaseline = "middle";
+                    cCtx.fillText("+", bx + shakeX, by + shakeY + pullY);
+                }
+            }
+
+            // Move Electrons
+            const speed = 2;
+            electron1.x += speed;
+
+            // Logic for Electron 2
+            if (isSuper) {
+                // Follows E1 smoothly in the "wake"
+                electron2.x = electron1.x - 50;
+                electron2.y = 0;
+            } else {
+                // Scatters randomly
+                electron2.x += speed * 0.8; // Slower due to resistance
+                electron2.y += (Math.random() - 0.5) * (temp / 10);
+            }
+
+            // Loop reset
+            if (electron1.x > w + 50) {
+                electron1.x = -20;
+                if (!isSuper) electron2.x = -100; // Reset scattering
+            }
+
+            // Draw Electron 1
+            cCtx.fillStyle = '#2563eb'; // Blue
+            cCtx.beginPath();
+            cCtx.arc(electron1.x, cy, 5, 0, Math.PI * 2);
+            cCtx.fill();
+            cCtx.fillStyle = 'white';
+            cCtx.fillText("-", electron1.x, cy);
+
+            // Draw Electron 2
+            // If super, draw pairing line
+            if (isSuper) {
+                cCtx.beginPath();
+                cCtx.moveTo(electron1.x, cy);
+                cCtx.lineTo(electron2.x, cy);
+                cCtx.strokeStyle = 'rgba(37, 99, 235, 0.3)';
+                cCtx.lineWidth = 2;
+                cCtx.setLineDash([4, 2]);
+                cCtx.stroke();
+                cCtx.setLineDash([]);
+            }
+
+            cCtx.fillStyle = '#2563eb';
+            cCtx.beginPath();
+            // Constrain Y for E2 to canvas bounds
+            const e2y = Math.max(10, Math.min(h - 10, cy + electron2.y));
+            cCtx.arc(electron2.x, e2y, 5, 0, Math.PI * 2);
+            cCtx.fill();
+            cCtx.fillStyle = 'white';
+            cCtx.fillText("-", electron2.x, e2y);
+
+            requestAnimationFrame(drawCooper);
+        }
+        drawCooper();
+
+        // --- Scroll Reveal ---
+        const revealObserver = new IntersectionObserver((entries, observer) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('active');
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, {
+            root: null,
+            threshold: 0.15, // Trigger when 15% visible
+            rootMargin: "0px 0px -50px 0px" // Offset slightly so it triggers as it comes up
+        });
+
+        document.querySelectorAll('section').forEach(section => {
+            section.classList.add('section-reveal');
+            revealObserver.observe(section);
+        });
+
+    </script>
+
+
+</body>
+
+</html>

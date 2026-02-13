@@ -1,0 +1,1527 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Android & Kotlin</title>
+    <link rel="icon" type="image/svg+xml" href="../assests/undrlogo.svg">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Roboto+Mono:wght@400;500&display=swap');
+
+        /* Global Scrollbar */
+        ::-webkit-scrollbar {
+            width: 1px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #000;
+        }
+
+        :root {
+            /* Palette */
+            --bg-color: #f4f4f4;
+            --card-bg: #ffffff;
+            --text-main: #111111;
+            --text-muted: #737373;
+            /* Colors */
+            --accent: #3DDC84;
+            /* Android Green */
+            --accent-dark: #37c875;
+            --border: #e5e5e5;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            -webkit-font-smoothing: antialiased;
+            line-height: 1.6;
+            overflow-x: hidden;
+            max-width: 100vw;
+        }
+
+        h1,
+        h2,
+        h3,
+        h4,
+        h5 {
+            font-weight: 600;
+            letter-spacing: -0.02em;
+            color: var(--text-main);
+        }
+
+        p {
+            color: #404040;
+        }
+
+        .mono {
+            font-family: 'Roboto Mono', monospace;
+        }
+
+        /* Card System */
+        .tech-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            transition: all 0.3s ease;
+        }
+
+        .tech-card:hover {
+            border-color: #a3a3a3;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        }
+
+        @media (min-width: 768px) {
+            .tech-card {
+                padding: 2.5rem;
+            }
+        }
+
+        .label-text {
+            font-family: 'Inter', sans-serif;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        /* Controls */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.5rem 1.25rem;
+            font-size: 0.85rem;
+            font-weight: 500;
+            border-radius: 2px;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            white-space: nowrap;
+        }
+
+        .btn-primary {
+            background-color: var(--accent);
+            color: #003300;
+            border: 1px solid var(--accent);
+        }
+
+        .btn-primary:hover {
+            background-color: var(--accent-dark);
+        }
+
+        /* Nav */
+        .nav-link {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            padding: 0.5rem 0;
+            display: block;
+            transition: color 0.2s;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            color: var(--text-main);
+            font-weight: 500;
+        }
+
+        .nav-link.active::before {
+            content: "• ";
+            color: var(--accent);
+        }
+
+        /* Animation */
+        .section-reveal {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+        }
+
+        .section-reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="flex min-h-screen flex-col lg:flex-row">
+
+        <!-- Mobile Header -->
+        <header
+            class="lg:hidden fixed top-0 w-full bg-[#f4f4f4] border-b border-[#e5e5e5] z-[100] px-6 py-4 flex justify-between items-center h-16">
+            <div>
+                <h1 class="text-sm font-semibold tracking-wide uppercase text-black leading-tight">Android<br>& Kotlin
+                </h1>
+            </div>
+            <button onclick="toggleMobileMenu()" class="text-black focus:outline-none p-2 rounded">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+            </button>
+        </header>
+
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="fixed inset-0 bg-[#f4f4f4] z-[90] hidden flex-col pt-20 px-6 overflow-y-auto">
+            <nav class="flex flex-col">
+                <span class="text-[10px] text-gray-400 font-bold uppercase tracking-wider px-0 py-2">01. Studio</span>
+                <a href="#studio" class="nav-link text-black" onclick="toggleMobileMenu()">The IDE</a>
+
+                <span class="text-[10px] text-gray-400 font-bold uppercase tracking-wider px-0 py-2 mt-4">02.
+                    Language</span>
+                <a href="#kotlin" class="nav-link text-black" onclick="toggleMobileMenu()">Kotlin Basics</a>
+                <a href="#syntax" class="nav-link text-black" onclick="toggleMobileMenu()">Syntax & Safety</a>
+
+                <span class="text-[10px] text-gray-400 font-bold uppercase tracking-wider px-0 py-2 mt-4">03.
+                    Structure</span>
+                <a href="#project" class="nav-link text-black" onclick="toggleMobileMenu()">Project Anatomy</a>
+                <a href="#components" class="nav-link text-black" onclick="toggleMobileMenu()">App Components</a>
+
+                <span class="text-[10px] text-gray-400 font-bold uppercase tracking-wider px-0 py-2 mt-4">04.
+                    Patterns</span>
+                <a href="#architecture" class="nav-link text-black" onclick="toggleMobileMenu()">App Architecture</a>
+
+                <span class="text-[10px] text-gray-400 font-bold uppercase tracking-wider px-0 py-2 mt-4">05.
+                    Essentials</span>
+                <a href="#essentials" class="nav-link text-black" onclick="toggleMobileMenu()">Core Libraries</a>
+
+                <span class="text-[10px] text-gray-400 font-bold uppercase tracking-wider px-0 py-2 mt-4">06. Modern
+                    UI</span>
+                <a href="#compose" class="nav-link text-black" onclick="toggleMobileMenu()">Jetpack Compose</a>
+
+                <span class="text-[10px] text-gray-400 font-bold uppercase tracking-wider px-0 py-2 mt-4">07.
+                    Publishing</span>
+                <a href="#publishing" class="nav-link text-black" onclick="toggleMobileMenu()">Release App</a>
+
+                <span class="text-[10px] text-gray-400 font-bold uppercase tracking-wider px-0 py-2 mt-4">08.
+                    Glossary</span>
+                <a href="#glossary" class="nav-link text-black" onclick="toggleMobileMenu()">Common Terms</a>
+
+                <span class="text-[10px] text-gray-400 font-bold uppercase tracking-wider px-0 py-2 mt-4">09.
+                    Evaluation</span>
+                <a href="#quiz" class="nav-link text-black" onclick="toggleMobileMenu()">Knowledge Check</a>
+            </nav>
+        </div>
+
+        <!-- Sidebar -->
+        <aside
+            class="hidden lg:block w-64 fixed h-screen bg-[#f4f4f4] border-r border-[#e5e5e5] z-50 overflow-y-auto thin-scrollbar">
+            <div class="p-8 h-full flex flex-col justify-between">
+                <div>
+                    <a href="../index.html"
+                        class="inline-flex items-center gap-2 px-4 py-2 mb-8 text-[10px] font-mono uppercase tracking-wider text-gray-600 border border-gray-300 hover:bg-black hover:text-white hover:border-black transition-all duration-200">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                        </svg>
+                        Back to Home
+                    </a>
+                    <div class="mb-12">
+                        <h1 class="text-sm font-semibold tracking-wide uppercase text-black">Android<br>& Kotlin</h1>
+                        <p class="text-[10px] text-gray-400 mt-1 uppercase tracking-wider font-bold">Mobile
+                            Dev</p>
+                    </div>
+                    <nav class="space-y-1">
+                        <a href="#intro" class="nav-link font-medium text-black">Introduction</a>
+
+                        <div class="pt-4 pb-1 text-[10px] text-gray-400 font-bold uppercase tracking-wider">01. Studio
+                        </div>
+                        <a href="#studio" class="nav-link">The IDE</a>
+
+                        <div class="pt-4 pb-1 text-[10px] text-gray-400 font-bold uppercase tracking-wider">02. Language
+                        </div>
+                        <a href="#kotlin" class="nav-link">Kotlin Basics</a>
+                        <a href="#syntax" class="nav-link">Syntax & Safety</a>
+
+                        <div class="pt-4 pb-1 text-[10px] text-gray-400 font-bold uppercase tracking-wider">03.
+                            Structure</div>
+                        <a href="#project" class="nav-link">Project Anatomy</a>
+                        <a href="#components" class="nav-link">App Components</a>
+
+                        <div class="pt-4 pb-1 text-[10px] text-gray-400 font-bold uppercase tracking-wider">04.
+                            Patterns</div>
+                        <a href="#architecture" class="nav-link">App Architecture</a>
+
+                        <div class="pt-4 pb-1 text-[10px] text-gray-400 font-bold uppercase tracking-wider">05.
+                            Essentials</div>
+                        <a href="#essentials" class="nav-link">Core Libraries</a>
+
+                        <div class="pt-4 pb-1 text-[10px] text-gray-400 font-bold uppercase tracking-wider">06. Modern
+                            UI</div>
+                        <a href="#compose" class="nav-link">Jetpack Compose</a>
+
+                        <div class="pt-4 pb-1 text-[10px] text-gray-400 font-bold uppercase tracking-wider">07.
+                            Publishing</div>
+                        <a href="#publishing" class="nav-link">Release App</a>
+
+                        <div class="pt-4 pb-1 text-[10px] text-gray-400 font-bold uppercase tracking-wider">08.
+                            Glossary</div>
+                        <a href="#glossary" class="nav-link">Common Terms</a>
+
+                        <div class="pt-4 pb-1 text-[10px] text-gray-400 font-bold uppercase tracking-wider">09.
+                            Evaluation</div>
+                        <a href="#quiz" class="nav-link">Knowledge Check</a>
+                    </nav>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 lg:ml-64 bg-white w-full">
+            <div class="max-w-3xl mx-auto px-4 sm:px-8 py-24 lg:py-20">
+
+                <!-- Hero -->
+                <section id="intro" class="mb-16 md:mb-24 section-reveal active">
+                    <h2
+                        class="text-3xl sm:text-4xl md:text-5xl font-semibold mb-6 text-black tracking-tight leading-tight">
+                        Concise, Safe, <br>Interoperable.
+                    </h2>
+                    <p class="text-sm sm:text-base md:text-lg text-gray-600 max-w-xl font-light leading-relaxed mb-6">
+                        From the IntelliJ powerhouse comes Kotlin—a modern language designed to make Android development
+                        happier, safer, and more productive.
+                    </p>
+                </section>
+
+                <div class="w-full h-px bg-gray-200 hidden md:block mb-10"></div>
+
+                <!-- 01. Android Studio -->
+                <section id="studio" class="mb-20 md:mb-24 section-reveal">
+                    <span class="label-text">01 / The Workshop</span>
+                    <h3 class="text-xl font-medium mb-6">Android Studio</h3>
+                    <p class="text-sm text-gray-600 mb-8 max-w-xl">
+                        Based on IntelliJ IDEA, Android Studio is the official IDE for Google's Android operating
+                        system. It provides the fastest tools for building apps on every type of Android device.
+                    </p>
+
+                    <div
+                        class="tech-card bg-gray-50 border border-gray-200 mb-8 flex flex-col md:flex-row items-center justify-between gap-6">
+                        <div>
+                            <h4 class="text-sm font-bold uppercase text-black mb-2">Get Started</h4>
+                            <p class="text-sm text-gray-600 mb-4 max-w-md">
+                                Download the official IDE to start building. Includes the Android SDK and emulators.
+                            </p>
+                            <div class="text-[10px] text-gray-500 font-mono space-y-1">
+                                <p><strong>Min Req:</strong> 8GB RAM, 8GB Disk, 1280x800 Screen</p>
+                                <p><strong>OS:</strong> Windows 64-bit, macOS 10.14+, Linux</p>
+                            </div>
+                        </div>
+                        <a href="https://developer.android.com/studio" target="_blank" rel="noopener noreferrer"
+                            class="btn btn-primary shadow-sm hover:shadow-md">
+                            Download Android Studio
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-2" fill="none" viewBox="0 0 24 24"
+                                stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                            </svg>
+                        </a>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10">
+                        <div class="tech-card border-l-4 border-l-[#3DDC84]">
+                            <h4 class="text-sm font-bold uppercase tracking-widest text-black mb-3">Gradle Build System
+                            </h4>
+                            <p class="text-sm text-gray-600 leading-relaxed">
+                                A powerful build automation tool that manages dependencies, build types (debug/release),
+                                and product flavors with ease.
+                            </p>
+                        </div>
+
+                        <div class="tech-card border-l-4 border-l-gray-900">
+                            <h4 class="text-sm font-bold uppercase tracking-widest text-black mb-3">Layout Inspector
+                            </h4>
+                            <p class="text-sm text-gray-600 leading-relaxed">
+                                Debug your UI in real-time. See exactly how your app is laid out on a device and inspect
+                                attributes on the fly.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="tech-card">
+                        <h4 class="text-xs font-bold uppercase tracking-widest text-[#3DDC84] mb-4">Quality Assurance
+                        </h4>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <div>
+                                <strong class="block text-sm font-bold text-gray-800 mb-1">Testing</strong>
+                                <p class="text-xs text-gray-600 mb-2">Verify app behavior automatically.</p>
+                                <ul class="list-disc list-inside text-[10px] text-gray-500 font-mono">
+                                    <li><strong>JUnit:</strong> Local unit tests (fast, no device).</li>
+                                    <li><strong>Espresso:</strong> UI tests (runs on device/emulator).</li>
+                                </ul>
+                            </div>
+                            <div>
+                                <strong class="block text-sm font-bold text-gray-800 mb-1">Debugging</strong>
+                                <p class="text-xs text-gray-600 mb-2">Fix issues efficiently.</p>
+                                <ul class="list-disc list-inside text-[10px] text-gray-500 font-mono">
+                                    <li><strong>Logcat:</strong> System logs & stack traces.</li>
+                                    <li><strong>Breakpoints:</strong> Pause execution to inspect variables.</li>
+                                </ul>
+                            </div>
+                            <div>
+                                <strong class="block text-sm font-bold text-gray-800 mb-1">Linting</strong>
+                                <p class="text-xs text-gray-600 mb-2">Static code analysis.</p>
+                                <ul class="list-disc list-inside text-[10px] text-gray-500 font-mono">
+                                    <li><strong>Lint:</strong> Finds structural/performance issues.</li>
+                                    <li><strong>KtLint:</strong> Enforces Kotlin coding style.</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <div class="w-full h-px bg-gray-200 hidden md:block mb-10"></div>
+
+                <!-- 02. Kotlin Basics -->
+                <section id="kotlin" class="mb-20 md:mb-24 section-reveal">
+                    <span class="label-text">02 / The Language</span>
+                    <h3 class="text-xl font-medium mb-6">Why Kotlin?</h3>
+                    <p class="text-sm text-gray-600 mb-8 max-w-xl">
+                        Java was the standard, but Kotlin is the future. It dramatically reduces boilerplate code and
+                        avoids entire classes of errors (like NullPointerExceptions).
+                    </p>
+
+                    <div class="tech-card bg-gray-900 text-gray-100">
+                        <h4 class="text-xs font-bold uppercase tracking-widest text-[#3DDC84] mb-4">Java vs Kotlin</h4>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 font-mono text-xs">
+                            <div>
+                                <p class="mb-2 text-gray-500">// Java User Code</p>
+                                <div class="text-gray-400">
+                                    public class User {<br>
+                                    &nbsp;&nbsp;private String name;<br>
+                                    &nbsp;&nbsp;public String getName() {<br>
+                                    &nbsp;&nbsp;&nbsp;&nbsp;return name;<br>
+                                    &nbsp;&nbsp;}<br>
+                                    &nbsp;&nbsp;public void setName(String n) {<br>
+                                    &nbsp;&nbsp;&nbsp;&nbsp;this.name = n;<br>
+                                    &nbsp;&nbsp;}<br>
+                                    }
+                                </div>
+                            </div>
+                            <div>
+                                <p class="mb-2 text-gray-500">// Kotlin User Code</p>
+                                <div class="text-[#3DDC84]">
+                                    data class User(val name: String)
+                                </div>
+                                <p class="mt-4 text-gray-500 italic">One line. Done.</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 02. Kotlin Essentials -->
+                <section id="kotlin" class="mb-20 md:mb-24 section-reveal">
+                    <span class="label-text">02 / Essentials</span>
+                    <h3 class="text-xl font-medium mb-6">Kotlin Language Basics</h3>
+                    <p class="text-sm text-gray-600 mb-8 max-w-xl">
+                        Clean, concise, and pragmatic. Kotlin reduces the noise in your code.
+                    </p>
+
+                    <div class="space-y-8">
+                        <!-- Hello World -->
+                        <div class="tech-card">
+                            <div class="flex justify-between items-end mb-3">
+                                <h4 class="text-xs font-bold uppercase tracking-widest text-[#3DDC84]">01. Hello World
+                                </h4>
+                                <button id="btn-run-hello"
+                                    class="text-[10px] bg-gray-900 text-white px-3 py-1.5 rounded hover:bg-black transition-colors flex items-center gap-2 font-medium">
+                                    <svg class="w-3 h-3 text-[#3DDC84]" fill="none" stroke="currentColor"
+                                        viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                    Run Code
+                                </button>
+                            </div>
+                            <div class="font-mono text-sm bg-gray-50 p-4 rounded text-gray-800 border border-gray-100">
+                                <span class="text-purple-600">fun</span> <span class="text-blue-600">main</span>() {<br>
+                                &nbsp;&nbsp;<span class="text-gray-500">// Standard Output</span><br>
+                                &nbsp;&nbsp;<span class="text-gray-900">println</span>(<span
+                                    class="text-green-600">"Hello, Android"</span>)<br>
+                                }
+                            </div>
+                            <div id="console-output"
+                                class="hidden mt-3 font-mono text-xs bg-[#1E1E1E] text-gray-300 p-4 rounded border-l-4 border-[#3DDC84] shadow-inner">
+                                <div
+                                    class="flex items-center gap-2 mb-1 opacity-50 text-[10px] uppercase tracking-wide">
+                                    <span>Console</span>
+                                </div>
+                                <div>
+                                    <span class="text-[#3DDC84]">➜</span> <span id="console-text"
+                                        class="text-white"></span><span class="animate-pulse">_</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Variables -->
+                        <div class="tech-card">
+                            <h4 class="text-xs font-bold uppercase tracking-widest text-[#3DDC84] mb-3">02. Variables
+                            </h4>
+                            <div class="flex flex-col gap-4">
+                                <div class="p-3 border-l-2 border-green-500 bg-green-50 text-xs">
+                                    <strong class="text-green-700 block mb-1">val (Value)</strong>
+                                    Immutable (Read-only). Assigned once. Prefer this by default.
+                                </div>
+                                <div class="p-3 border-l-2 border-blue-500 bg-blue-50 text-xs">
+                                    <strong class="text-blue-700 block mb-1">var (Variable)</strong>
+                                    Mutable. Can be reassigned. Use only when necessary.
+                                </div>
+                                <div class="font-mono text-sm bg-gray-50 p-4 rounded text-gray-800 mt-2">
+                                    <span class="text-purple-600">val</span> name = <span
+                                        class="text-green-600">"Human"</span> <span
+                                        class="text-gray-400 lowercase text-[10px]">//
+                                        Inferred as String</span><br>
+                                    <span class="text-purple-600">var</span> age: <span
+                                        class="text-yellow-600">Int</span> = <span class="text-blue-600">25</span><br>
+                                    age = <span class="text-blue-600">26</span> <span
+                                        class="text-gray-400 lowercase text-[10px]">//
+                                        OK</span><br>
+                                    <span class="text-gray-400 line-through">name = "Other"</span> <span
+                                        class="text-red-500 lowercase text-[10px]">// Error: Val cannot be
+                                        reassigned</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Functions -->
+                        <div class="tech-card">
+                            <h4 class="text-xs font-bold uppercase tracking-widest text-[#3DDC84] mb-3">03. Functions
+                            </h4>
+                            <div class="font-mono text-sm bg-gray-50 p-4 rounded text-gray-800">
+                                <span class="text-purple-600">fun</span> <span class="text-blue-600">add</span>(a: <span
+                                    class="text-yellow-600">Int</span>, b: <span class="text-yellow-600">Int</span>):
+                                <span class="text-yellow-600">Int</span> {<br>
+                                &nbsp;&nbsp;<span class="text-purple-600">return</span> a + b<br>
+                                }<br><br>
+
+                                <span class="text-gray-500">// Single Expression Syntax</span><br>
+                                <span class="text-purple-600">fun</span> <span class="text-blue-600">multiply</span>(a:
+                                <span class="text-yellow-600">Int</span>, b: <span class="text-yellow-600">Int</span>) =
+                                a * b
+                            </div>
+                        </div>
+
+                        <!-- Keywords & Examples -->
+                        <div class="tech-card">
+                            <h4 class="text-xs font-bold uppercase tracking-widest text-[#3DDC84] mb-3">04. Key Keywords
+                                & Examples
+                            </h4>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <!-- Class -->
+                                <div>
+                                    <p class="text-xs font-bold text-gray-700 mb-1">class</p>
+                                    <div class="font-mono text-xs bg-gray-50 p-3 rounded text-gray-800">
+                                        <span class="text-purple-600">class</span> <span
+                                            class="text-blue-600">User</span>(<span class="text-purple-600">val</span>
+                                        name: <span class="text-yellow-600">String</span>)<br>
+                                        <span class="text-gray-400">// Blueprint for objects</span>
+                                    </div>
+                                </div>
+
+                                <!-- Object -->
+                                <div>
+                                    <p class="text-xs font-bold text-gray-700 mb-1">object</p>
+                                    <div class="font-mono text-xs bg-gray-50 p-3 rounded text-gray-800">
+                                        <span class="text-purple-600">object</span> <span
+                                            class="text-blue-600">Database</span> {<br>
+                                        &nbsp;&nbsp;<span class="text-purple-600">fun</span> <span
+                                            class="text-blue-600">connect</span>() { }<br>
+                                        }<br>
+                                        <span class="text-gray-400">// Singleton instance</span>
+                                    </div>
+                                </div>
+
+                                <!-- Interface -->
+                                <div>
+                                    <p class="text-xs font-bold text-gray-700 mb-1">interface</p>
+                                    <div class="font-mono text-xs bg-gray-50 p-3 rounded text-gray-800">
+                                        <span class="text-purple-600">interface</span> <span
+                                            class="text-blue-600">Clickable</span> {<br>
+                                        &nbsp;&nbsp;<span class="text-purple-600">fun</span> <span
+                                            class="text-blue-600">onClick</span>()<br>
+                                        }<br>
+                                        <span class="text-gray-400">// Contract definition</span>
+                                    </div>
+                                </div>
+
+                                <!-- When -->
+                                <div>
+                                    <p class="text-xs font-bold text-gray-700 mb-1">when</p>
+                                    <div class="font-mono text-xs bg-gray-50 p-3 rounded text-gray-800">
+                                        <span class="text-purple-600">when</span> (x) {<br>
+                                        &nbsp;&nbsp;1 -> <span class="text-gray-900">print</span>(<span
+                                            class="text-green-600">"One"</span>)<br>
+                                        &nbsp;&nbsp;<span class="text-purple-600">else</span> -> <span
+                                            class="text-gray-900">print</span>(<span
+                                            class="text-green-600">"Other"</span>)<br>
+                                        }<br>
+                                        <span class="text-gray-400">// Better switch-case</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- String Templates -->
+                        <div class="tech-card">
+                            <h4 class="text-xs font-bold uppercase tracking-widest text-[#3DDC84] mb-3">05. String
+                                Templates
+                            </h4>
+                            <div class="font-mono text-sm bg-gray-50 p-4 rounded text-gray-800">
+                                <span class="text-purple-600">val</span> name = <span
+                                    class="text-green-600">"Kotlin"</span><br>
+                                <span class="text-gray-900">println</span>(<span class="text-green-600">"Hello,
+                                    $name!"</span>) <span class="text-gray-400">// Hello, Kotlin!</span><br>
+                                <span class="text-gray-900">println</span>(<span class="text-green-600">"Length:
+                                    ${name.length}"</span>) <span class="text-gray-400">// Length: 6</span>
+                            </div>
+                        </div>
+
+                        <!-- Control Flow -->
+                        <div class="tech-card">
+                            <h4 class="text-xs font-bold uppercase tracking-widest text-[#3DDC84] mb-3">06. Loops &
+                                Ranges
+                            </h4>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs font-mono">
+                                <div class="bg-gray-50 p-3 rounded">
+                                    <p class="text-purple-600 font-bold mb-1">Ranges</p>
+                                    <span class="text-gray-900">1..5</span> <span class="text-gray-400">// 1, 2, 3, 4,
+                                        5</span><br>
+                                    <span class="text-gray-900">1 until 5</span> <span class="text-gray-400">// 1, 2, 3,
+                                        4</span><br>
+                                    <span class="text-gray-900">10 downTo 1</span> <span class="text-gray-400">//
+                                        Reverse</span>
+                                </div>
+                                <div class="bg-gray-50 p-3 rounded">
+                                    <p class="text-purple-600 font-bold mb-1">For Loop</p>
+                                    <span class="text-purple-600">for</span> (i <span class="text-purple-600">in</span>
+                                    1..5) {<br>
+                                    &nbsp;&nbsp;<span class="text-gray-900">print</span>(i)<br>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Collections -->
+                        <div class="tech-card">
+                            <h4 class="text-xs font-bold uppercase tracking-widest text-[#3DDC84] mb-3">07. Collections
+                            </h4>
+                            <div class="flex flex-col gap-4">
+                                <div class="font-mono text-xs bg-gray-50 p-4 rounded text-gray-800">
+                                    <p class="text-gray-500 mb-2">// Immutable List (Default)</p>
+                                    <span class="text-purple-600">val</span> items = <span
+                                        class="text-blue-600">listOf</span>(<span class="text-green-600">"Apple"</span>,
+                                    <span class="text-green-600">"Banana"</span>)<br>
+                                    <span class="text-gray-400 line-through">items.add("Orange")</span> <span
+                                        class="text-red-500">// Error</span>
+                                </div>
+                                <div class="font-mono text-xs bg-gray-50 p-4 rounded text-gray-800">
+                                    <p class="text-gray-500 mb-2">// Mutable List</p>
+                                    <span class="text-purple-600">val</span> mutableItems = <span
+                                        class="text-blue-600">mutableListOf</span>(<span
+                                        class="text-green-600">"Apple"</span>)<br>
+                                    mutableItems.<span class="text-blue-600">add</span>(<span
+                                        class="text-green-600">"Orange"</span>) <span class="text-gray-400">// OK</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Asynchronism -->
+                        <div class="tech-card">
+                            <h4 class="text-xs font-bold uppercase tracking-widest text-[#3DDC84] mb-3">08. Asynchronism
+                            </h4>
+                            <p class="text-xs text-gray-600 mb-3">
+                                Android has a <strong>Main Thread</strong> (UI) that must never be blocked. For long
+                                operations (Network, Database), use <strong>Coroutines</strong>.
+                            </p>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div class="font-mono text-xs bg-gray-50 p-4 rounded text-gray-800">
+                                    <p class="text-gray-500 mb-2">// Suspend Function</p>
+                                    <span class="text-purple-600">suspend fun</span> <span
+                                        class="text-blue-600">fetchData</span>(): String {<br>
+                                    &nbsp;&nbsp;<span class="text-purple-600">return</span> <span
+                                        class="text-blue-600">withContext</span>(Dispatchers.IO) {<br>
+                                    &nbsp;&nbsp;&nbsp;&nbsp;<span class="text-gray-400">// Heavy work here...</span><br>
+                                    &nbsp;&nbsp;&nbsp;&nbsp;<span class="text-green-600">"Result"</span><br>
+                                    &nbsp;&nbsp;}<br>
+                                    }
+                                </div>
+                                <div class="font-mono text-xs bg-gray-50 p-4 rounded text-gray-800">
+                                    <p class="text-gray-500 mb-2">// Calling it</p>
+                                    <span class="text-blue-600">viewModelScope</span>.<span
+                                        class="text-blue-600">launch</span> {<br>
+                                    &nbsp;&nbsp;<span class="text-purple-600">val</span> data = <span
+                                        class="text-blue-600">fetchData</span>()<br>
+                                    &nbsp;&nbsp;<span class="text-gray-400">// Update UI with data</span><br>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                </section>
+
+                <div class="w-full h-px bg-gray-200 hidden md:block mb-10"></div>
+
+                <!-- 02.5 Syntax & Safety -->
+                <section id="syntax" class="mb-20 md:mb-24 section-reveal">
+                    <span class="label-text">02.5 / Safety First</span>
+                    <h3 class="text-xl font-medium mb-6">Null Safety</h3>
+                    <p class="text-sm text-gray-600 mb-8 max-w-xl">
+                        The "Billion Dollar Mistake" is fixed. In Kotlin, the type system distinguishes between
+                        references that can hold null (nullable references) and those that cannot (non-null references).
+                    </p>
+
+                    <div class="tech-card">
+                        <ul class="space-y-4 text-sm text-gray-600 font-mono">
+                            <li class="flex items-start gap-4">
+                                <span class="text-red-500">var a: String = "abc"</span>
+                                <span>a = null // Compilation Error</span>
+                            </li>
+                            <li class="flex items-start gap-4">
+                                <span class="text-green-600">var b: String? = "abc"</span>
+                                <span>b = null // Allowed (Nullable type)</span>
+                            </li>
+                            <li class="flex items-start gap-4">
+                                <span class="text-blue-600">val l = b?.length</span>
+                                <span>Safe call. Returns length or null (no crash).</span>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div id="quiz-android-null"></div>
+                </section>
+
+                <div class="w-full h-px bg-gray-200 hidden md:block mb-10"></div>
+
+                <!-- 04. Project Structure -->
+                <section id="project" class="mb-20 md:mb-24 section-reveal">
+                    <span class="label-text">03 / Anatomy</span>
+                    <h3 class="text-xl font-medium mb-6">The Android Project</h3>
+
+                    <div
+                        class="tech-card !p-0 overflow-hidden border border-gray-200 flex flex-col md:flex-row h-auto md:h-64 shadow-sm">
+                        <!-- Left: File Tree -->
+                        <div class="w-full md:w-1/3 bg-gray-50 border-b md:border-b-0 md:border-r border-gray-200 p-4">
+                            <h4 class="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-3">Project
+                                Explorer</h4>
+                            <ul class="space-y-1 font-mono text-xs cursor-pointer select-none">
+                                <li class="tree-item flex items-center gap-2 p-2 rounded bg-white text-green-700 font-bold border border-gray-200 shadow-sm transition-all"
+                                    data-target="manifest">
+                                    <span class="opacity-50">📄</span> AndroidManifest.xml
+                                </li>
+                                <li class="tree-item flex items-center gap-2 p-2 rounded text-gray-600 hover:bg-gray-100 transition-colors border border-transparent"
+                                    data-target="java">
+                                    <span class="opacity-50">📂</span> java/
+                                </li>
+                                <li class="tree-item flex items-center gap-2 p-2 rounded text-gray-600 hover:bg-gray-100 transition-colors border border-transparent"
+                                    data-target="res">
+                                    <span class="opacity-50">📂</span> res/
+                                </li>
+                                <li class="tree-item flex items-center gap-2 p-2 rounded text-gray-600 hover:bg-gray-100 transition-colors border border-transparent"
+                                    data-target="gradle">
+                                    <span class="opacity-50">🐘</span> build.gradle
+                                </li>
+                            </ul>
+                        </div>
+                        <!-- Right: Details -->
+                        <div class="w-full md:w-2/3 p-6 flex items-center justify-center bg-white relative">
+                            <div id="anatomy-details" class="text-center max-w-sm">
+                                <div id="anatomy-icon"
+                                    class="w-12 h-12 mx-auto flex items-center justify-center bg-green-100 text-green-700 rounded-lg font-bold text-lg mb-4">
+                                    M</div>
+                                <h4 id="anatomy-title" class="font-bold text-lg mb-2">AndroidManifest.xml</h4>
+                                <p id="anatomy-desc" class="text-sm text-gray-500 leading-relaxed">The identity card of
+                                    your app. It declares the app's package name, permissions (camera, internet), and
+                                    registered activities.</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section id="components" class="mb-20 md:mb-24 section-reveal">
+                    <span class="label-text">03.5 / Core Components</span>
+                    <h3 class="text-xl font-medium mb-6">The Four Pillars</h3>
+                    <p class="text-sm text-gray-600 mb-8 max-w-xl">
+                        Android apps are built from a combination of these loosely coupled components.
+                    </p>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div class="p-4 border border-gray-200 rounded hover:border-[#3DDC84] transition-colors">
+                            <h4 class="font-bold text-sm mb-2">Activity</h4>
+                            <p class="text-xs text-gray-500">A single screen with a user interface. The entry point for
+                                user interaction.</p>
+                        </div>
+                        <div class="p-4 border border-gray-200 rounded hover:border-[#3DDC84] transition-colors">
+                            <h4 class="font-bold text-sm mb-2">Service</h4>
+                            <p class="text-xs text-gray-500">Runs in the background for long-running operations (music
+                                playback, downloads) without UI.</p>
+                        </div>
+                        <div class="p-4 border border-gray-200 rounded hover:border-[#3DDC84] transition-colors">
+                            <h4 class="font-bold text-sm mb-2">Broadcast Receiver</h4>
+                            <p class="text-xs text-gray-500">Listens for system-wide announcements (e.g., "Battery Low",
+                                "Screen Off").</p>
+                        </div>
+                        <div class="p-4 border border-gray-200 rounded hover:border-[#3DDC84] transition-colors">
+                            <h4 class="font-bold text-sm mb-2">Content Provider</h4>
+                            <p class="text-xs text-gray-500">Manages a shared set of app data (e.g., Contacts) that
+                                other apps can query.</p>
+                        </div>
+                    </div>
+                    <div id="quiz-android-components"></div>
+                </section>
+
+                <div class="w-full h-px bg-gray-200 hidden md:block mb-10"></div>
+
+                <!-- Architecture Section -->
+                <section id="architecture" class="mb-20 md:mb-24 section-reveal">
+                    <span class="label-text">04 / Pattern</span>
+                    <h3 class="text-xl font-medium mb-6">App Architecture</h3>
+                    <p class="text-sm text-gray-600 mb-8 max-w-xl">
+                        Robust apps separate concerns. The recommended pattern is <strong>MVVM</strong>
+                        (Model-View-ViewModel), which decouples the UI from data and logic.
+                    </p>
+
+                    <!-- MVVM Visual -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+                        <!-- View -->
+                        <div
+                            class="p-4 border border-gray-200 rounded bg-gray-50 flex flex-col items-center text-center relative">
+                            <h4 class="text-xs font-bold uppercase mb-2 text-black">UI Layer (View)</h4>
+                            <div class="text-[10px] text-gray-500 mb-2">Activities, Fragments, Composables</div>
+                            <p class="text-xs text-gray-600">Displays data and captures user events. Observes the
+                                ViewModel.</p>
+                            <!-- Arrow Mobile (Down) -->
+                            <div class="md:hidden mt-2 text-gray-300">↓</div>
+                        </div>
+
+                        <!-- ViewModel -->
+                        <div
+                            class="p-4 border-l-4 border-l-[#3DDC84] bg-green-50 rounded shadow-sm flex flex-col items-center text-center relative z-10">
+                            <h4 class="text-xs font-bold uppercase mb-2 text-green-800">Presentation (ViewModel)</h4>
+                            <div class="text-[10px] text-green-600 mb-2">State Holder</div>
+                            <p class="text-xs text-gray-600">Holds UI state, handles logic, and exposes data streams.
+                                Survives config changes.</p>
+                            <!-- Arrow Mobile (Down) -->
+                            <div class="md:hidden mt-2 text-gray-300">↓</div>
+                        </div>
+
+                        <!-- Model -->
+                        <div
+                            class="p-4 border border-gray-200 rounded bg-gray-50 flex flex-col items-center text-center">
+                            <h4 class="text-xs font-bold uppercase mb-2 text-black">Data Layer (Model)</h4>
+                            <div class="text-[10px] text-gray-500 mb-2">Repositories, Data Sources</div>
+                            <p class="text-xs text-gray-600">The single source of truth. Manages application data (API,
+                                Database).</p>
+                        </div>
+                    </div>
+                </section>
+
+                <div class="w-full h-px bg-gray-200 hidden md:block mb-10"></div>
+
+                <div class="w-full h-px bg-gray-200 hidden md:block mb-10"></div>
+
+                <!-- Essentials Section -->
+                <section id="essentials" class="mb-20 md:mb-24 section-reveal">
+                    <span class="label-text">05 / Libraries</span>
+                    <h3 class="text-xl font-medium mb-6">Essentials</h3>
+                    <p class="text-sm text-gray-600 mb-8 max-w-xl">
+                        Don't reinvent the wheel. Use the Android Jetpack libraries and community standards for common
+                        tasks.
+                    </p>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <!-- Networking -->
+                        <div
+                            class="p-5 border border-gray-200 rounded hover:border-blue-400 transition-colors bg-blue-50/30">
+                            <div class="flex items-center gap-3 mb-2">
+                                <div class="p-2 bg-blue-100 rounded text-blue-600">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none"
+                                        viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                </div>
+                                <h4 class="font-bold text-sm text-gray-800">Networking</h4>
+                            </div>
+                            <p class="text-xs text-gray-600 mb-2"><strong>Retrofit / OkHttp</strong></p>
+                            <p class="text-[10px] text-gray-500">Type-safe HTTP client for consuming REST APIs. Handles
+                                JSON parsing (GSON/Moshi) automatically.</p>
+                        </div>
+
+                        <!-- Database -->
+                        <div
+                            class="p-5 border border-gray-200 rounded hover:border-green-400 transition-colors bg-green-50/30">
+                            <div class="flex items-center gap-3 mb-2">
+                                <div class="p-2 bg-green-100 rounded text-green-600">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none"
+                                        viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4" />
+                                    </svg>
+                                </div>
+                                <h4 class="font-bold text-sm text-gray-800">Database</h4>
+                            </div>
+                            <p class="text-xs text-gray-600 mb-2"><strong>Room</strong></p>
+                            <p class="text-[10px] text-gray-500">Abstraction layer over SQLite. Provides compile-time
+                                checks of SQL queries and integrates with Coroutines/Flow.</p>
+                        </div>
+
+                        <!-- Background -->
+                        <div
+                            class="p-5 border border-gray-200 rounded hover:border-orange-400 transition-colors bg-orange-50/30">
+                            <div class="flex items-center gap-3 mb-2">
+                                <div class="p-2 bg-orange-100 rounded text-orange-600">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none"
+                                        viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                </div>
+                                <h4 class="font-bold text-sm text-gray-800">Background Work</h4>
+                            </div>
+                            <p class="text-xs text-gray-600 mb-2"><strong>WorkManager</strong></p>
+                            <p class="text-[10px] text-gray-500">Schedule deferrable, asynchronous tasks that perform
+                                even if the app exits or device restarts.</p>
+                        </div>
+
+                        <!-- Image Loading -->
+                        <div
+                            class="p-5 border border-gray-200 rounded hover:border-purple-400 transition-colors bg-purple-50/30">
+                            <div class="flex items-center gap-3 mb-2">
+                                <div class="p-2 bg-purple-100 rounded text-purple-600">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none"
+                                        viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                    </svg>
+                                </div>
+                                <h4 class="font-bold text-sm text-gray-800">Image Loading</h4>
+                            </div>
+                            <p class="text-xs text-gray-600 mb-2"><strong>Coil / Glide</strong></p>
+                            <p class="text-[10px] text-gray-500">Fast, memory-efficient image loading, catching, and
+                                display. Coil is Kotlin-first and Coroutine-based.</p>
+                        </div>
+                    </div>
+                </section>
+
+                <div class="w-full h-px bg-gray-200 hidden md:block mb-10"></div>
+
+                <!-- 06. Jetpack Compose -->
+                <section id="compose" class="mb-20 md:mb-24 section-reveal">
+                    <span class="label-text">06 / The Modern UI</span>
+                    <h3 class="text-xl font-medium mb-6">Jetpack Compose</h3>
+                    <p class="text-sm text-gray-600 mb-8 max-w-xl">
+                        The modern toolkit for building native Android UI. It simplifies and accelerates UI development
+                        on Android with less code, powerful tools, and intuitive Kotlin APIs.
+                    </p>
+
+                    <div class="tech-card bg-gray-900 text-white font-mono text-xs overflow-x-auto">
+                        <pre>
+<span class="text-[#3DDC84]">@Composable</span>
+fun Greeting(name: String) {
+    <span class="text-blue-400">Text</span>(text = "Hello $name!")
+}
+
+<span class="text-[#3DDC84]">@Preview</span>
+<span class="text-[#3DDC84]">@Composable</span>
+fun PreviewGreeting() {
+    Greeting("Android")
+}
+                        </pre>
+                    </div>
+                    <p class="text-xs text-gray-500 mt-4 text-center">No more XML layouts. Just pure Kotlin code to
+                        describe your UI.</p>
+                </section>
+
+
+                <!-- Publishing Section -->
+                <section id="publishing" class="mb-20 md:mb-24 section-reveal">
+                    <span class="label-text">07 / Release</span>
+                    <h3 class="text-xl font-medium mb-6">Publishing</h3>
+                    <p class="text-sm text-gray-600 mb-8 max-w-xl">
+                        Getting your app from Android Studio to the world. The process involves preparation, signing,
+                        and distribution.
+                    </p>
+
+                    <!-- Publishing Pipeline Visual -->
+                    <div class="mb-10 overflow-x-auto pb-4">
+                        <div class="flex items-center justify-between min-w-[600px] text-center">
+
+                            <!-- Step 1: Code -->
+                            <div class="flex flex-col items-center gap-2 group">
+                                <div
+                                    class="w-12 h-12 rounded-lg bg-gray-100 border border-gray-300 flex items-center justify-center text-gray-500 group-hover:border-[#3DDC84] group-hover:text-[#3DDC84] transition-all">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none"
+                                        viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
+                                    </svg>
+                                </div>
+                                <span
+                                    class="text-[10px] uppercase font-bold tracking-wider text-gray-500 group-hover:text-black">Code</span>
+                            </div>
+
+                            <!-- Arrow -->
+                            <div class="flex-1 h-px bg-gray-300 mx-4 relative">
+                                <div
+                                    class="absolute right-0 -top-1 w-2 h-2 border-t border-r border-gray-300 transform rotate-45">
+                                </div>
+                            </div>
+
+                            <!-- Step 2: Build -->
+                            <div class="flex flex-col items-center gap-2 group">
+                                <div
+                                    class="w-12 h-12 rounded-lg bg-gray-100 border border-gray-300 flex items-center justify-center text-gray-500 group-hover:border-[#3DDC84] group-hover:text-[#3DDC84] transition-all">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none"
+                                        viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                                    </svg>
+                                </div>
+                                <span
+                                    class="text-[10px] uppercase font-bold tracking-wider text-gray-500 group-hover:text-black">Build</span>
+                            </div>
+
+                            <!-- Arrow -->
+                            <div class="flex-1 h-px bg-gray-300 mx-4 relative">
+                                <div
+                                    class="absolute right-0 -top-1 w-2 h-2 border-t border-r border-gray-300 transform rotate-45">
+                                </div>
+                            </div>
+
+                            <!-- Step 3: Sign -->
+                            <div class="flex flex-col items-center gap-2 group">
+                                <div
+                                    class="w-12 h-12 rounded-lg bg-gray-100 border border-gray-300 flex items-center justify-center text-gray-500 group-hover:border-[#3DDC84] group-hover:text-[#3DDC84] transition-all">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none"
+                                        viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                                    </svg>
+                                </div>
+                                <span
+                                    class="text-[10px] uppercase font-bold tracking-wider text-gray-500 group-hover:text-black">Sign</span>
+                            </div>
+
+                            <!-- Arrow -->
+                            <div class="flex-1 h-px bg-gray-300 mx-4 relative">
+                                <div
+                                    class="absolute right-0 -top-1 w-2 h-2 border-t border-r border-gray-300 transform rotate-45">
+                                </div>
+                            </div>
+
+                            <!-- Step 4: Upload -->
+                            <div class="flex flex-col items-center gap-2 group">
+                                <div
+                                    class="w-12 h-12 rounded-lg bg-gray-100 border border-gray-300 flex items-center justify-center text-gray-500 group-hover:border-[#3DDC84] group-hover:text-[#3DDC84] transition-all">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none"
+                                        viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                                    </svg>
+                                </div>
+                                <span
+                                    class="text-[10px] uppercase font-bold tracking-wider text-gray-500 group-hover:text-black">Upload</span>
+                            </div>
+
+                            <!-- Arrow -->
+                            <div class="flex-1 h-px bg-gray-300 mx-4 relative">
+                                <div
+                                    class="absolute right-0 -top-1 w-2 h-2 border-t border-r border-gray-300 transform rotate-45">
+                                </div>
+                            </div>
+
+                            <!-- Step 5: User -->
+                            <div class="flex flex-col items-center gap-2 group">
+                                <div
+                                    class="w-12 h-12 rounded-lg bg-[#3DDC84] bg-opacity-10 border border-[#3DDC84] flex items-center justify-center text-[#3DDC84] shadow-sm">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none"
+                                        viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                                    </svg>
+                                </div>
+                                <span
+                                    class="text-[10px] uppercase font-bold tracking-wider text-[#3DDC84]">Device</span>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <div class="space-y-6">
+                        <!-- Step 1 -->
+                        <div class="flex flex-col md:flex-row gap-4">
+                            <div class="flex-shrink-0">
+                                <div
+                                    class="w-8 h-8 rounded-full bg-[#3DDC84] flex items-center justify-center font-bold text-black text-sm">
+                                    1</div>
+                            </div>
+                            <div class="tech-card w-full !mb-0 !mt-0">
+                                <h4 class="text-sm font-bold uppercase text-black mb-2">Prepare</h4>
+                                <ul class="list-disc list-inside text-xs text-gray-600 space-y-1">
+                                    <li>Remove debug code and logging using <code>BuildConfig.DEBUG</code> check.</li>
+                                    <li>Update <code>versionCode</code> (integer, incremented) and
+                                        <code>versionName</code> (string, e.g. "1.0.0") in <code>build.gradle</code>.
+                                    </li>
+                                    <li>Run ProGuard/R8 to shrink and obfuscate code.</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- Step 2 -->
+                        <div class="flex flex-col md:flex-row gap-4">
+                            <div class="flex-shrink-0">
+                                <div
+                                    class="w-8 h-8 rounded-full bg-black flex items-center justify-center font-bold text-white text-sm">
+                                    2</div>
+                            </div>
+                            <div class="tech-card w-full !mb-0 !mt-0">
+                                <h4 class="text-sm font-bold uppercase text-black mb-2">Sign</h4>
+                                <ul class="list-disc list-inside text-xs text-gray-600 space-y-1">
+                                    <li>Generate a private signing key (Keystore) via Android Studio (Build > Generate
+                                        Signed Bundle / APK).</li>
+                                    <li>Create an <strong>Android App Bundle (.aab)</strong>. This serves optimized APKs
+                                        to users.</li>
+                                    <li><strong>Caution:</strong> Keep your keystore safe. If lost, you cannot update
+                                        your app.</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- Step 3 -->
+                        <div class="flex flex-col md:flex-row gap-4">
+                            <div class="flex-shrink-0">
+                                <div
+                                    class="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center font-bold text-gray-600 text-sm">
+                                    3</div>
+                            </div>
+                            <div class="tech-card w-full !mb-0 !mt-0">
+                                <h4 class="text-sm font-bold uppercase text-black mb-2">Console</h4>
+                                <ul class="list-disc list-inside text-xs text-gray-600 space-y-1">
+                                    <li>Create an account on <strong>Google Play Console</strong> ($25 one-time fee).
+                                    </li>
+                                    <li>Create App entry, fill details (Title, Description, Screenshots).</li>
+                                    <li>Upload your <code>.aab</code> to a release track (Internal, Closed, Open, or
+                                        Production).</li>
+                                    <li>Submit for review.</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <div class="w-full h-px bg-gray-200 hidden md:block mb-10"></div>
+
+                <!-- Glossary Section -->
+                <section id="glossary" class="mb-20 md:mb-24 section-reveal">
+                    <span class="label-text">08 / Terminology</span>
+                    <h3 class="text-xl font-medium mb-6">Glossary</h3>
+                    <p class="text-sm text-gray-600 mb-8 max-w-xl">
+                        Common keywords and concepts you'll encounter in the Android ecosystem.
+                    </p>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        <!-- Terms -->
+                        <div
+                            class="p-4 border border-gray-200 rounded hover:border-gray-400 transition-colors bg-gray-50">
+                            <strong class="block text-xs font-bold uppercase mb-1 text-[#3DDC84]">ADB</strong>
+                            <p class="text-xs text-gray-600">Android Debug Bridge. A command-line tool to communicate
+                                with a device (install apps, debug, shell).</p>
+                        </div>
+                        <div
+                            class="p-4 border border-gray-200 rounded hover:border-gray-400 transition-colors bg-gray-50">
+                            <strong class="block text-xs font-bold uppercase mb-1 text-[#3DDC84]">APK / AAB</strong>
+                            <p class="text-xs text-gray-600">Android Package Kit / App Bundle. The file formats used to
+                                distribute and install apps.</p>
+                        </div>
+                        <div
+                            class="p-4 border border-gray-200 rounded hover:border-gray-400 transition-colors bg-gray-50">
+                            <strong class="block text-xs font-bold uppercase mb-1 text-[#3DDC84]">Context</strong>
+                            <p class="text-xs text-gray-600">Interface to global information about an app environment.
+                                Access resources, launch activities, etc.</p>
+                        </div>
+                        <div
+                            class="p-4 border border-gray-200 rounded hover:border-gray-400 transition-colors bg-gray-50">
+                            <strong class="block text-xs font-bold uppercase mb-1 text-[#3DDC84]">Gradle</strong>
+                            <p class="text-xs text-gray-600">The build system used by Android Studio to compile, test,
+                                and package your app.</p>
+                        </div>
+                        <div
+                            class="p-4 border border-gray-200 rounded hover:border-gray-400 transition-colors bg-gray-50">
+                            <strong class="block text-xs font-bold uppercase mb-1 text-[#3DDC84]">Intent</strong>
+                            <p class="text-xs text-gray-600">A messaging object used to request an action from another
+                                app component (e.g., start an Activity).</p>
+                        </div>
+                        <div
+                            class="p-4 border border-gray-200 rounded hover:border-gray-400 transition-colors bg-gray-50">
+                            <strong class="block text-xs font-bold uppercase mb-1 text-[#3DDC84]">Manifest</strong>
+                            <p class="text-xs text-gray-600">XML file describing essential information about the app
+                                (permissions, components) to the OS.</p>
+                        </div>
+                        <div
+                            class="p-4 border border-gray-200 rounded hover:border-gray-400 transition-colors bg-gray-50">
+                            <strong class="block text-xs font-bold uppercase mb-1 text-[#3DDC84]">Fragment</strong>
+                            <p class="text-xs text-gray-600">A reusable portion of user interface in an Activity. Has
+                                its own lifecycle.</p>
+                        </div>
+                        <div
+                            class="p-4 border border-gray-200 rounded hover:border-gray-400 transition-colors bg-gray-50">
+                            <strong class="block text-xs font-bold uppercase mb-1 text-[#3DDC84]">ANR</strong>
+                            <p class="text-xs text-gray-600">"Application Not Responding". A dialog displayed when the
+                                app freezes (blocks main thread).</p>
+                        </div>
+                        <div
+                            class="p-4 border border-gray-200 rounded hover:border-gray-400 transition-colors bg-gray-50">
+                            <strong class="block text-xs font-bold uppercase mb-1 text-[#3DDC84]">Logcat</strong>
+                            <p class="text-xs text-gray-600">Command-line tool that dumps a log of system messages,
+                                including stack traces for errors.</p>
+                        </div>
+                    </div>
+                </section>
+
+                <div class="w-full h-px bg-gray-200 hidden md:block mb-10"></div>
+
+                <!-- Quiz Section -->
+                <section id="quiz" class="mb-20 md:mb-24">
+                    <span class="label-text">09 / Knowledge Check</span>
+                    <h3 class="text-xl font-medium mb-6">Assessment</h3>
+                    <div class="tech-card">
+                        <div id="quiz-container"></div>
+                    </div>
+                </section>
+
+                <!-- Certification (Initially Hidden) -->
+                <section id="certificate" class="mb-20 md:mb-24 hidden">
+                    <span class="label-text">10 / Certification</span>
+                    <h3 class="text-xl font-medium mb-6">Completion Certificate</h3>
+
+                    <div class="tech-card !p-0 overflow-hidden">
+                        <div class="p-6 md:p-8">
+                            <div class="flex flex-col md:flex-row gap-8 items-start">
+                                <div class="w-full md:w-1/3 space-y-4">
+                                    <p class="text-sm text-gray-600">
+                                        Enter your name below to generate your personalized certificate of completion
+                                        for the Android & Kotlin series.
+                                    </p>
+                                    <div>
+                                        <label for="cert-name"
+                                            class="block text-xs font-bold text-gray-500 uppercase mb-1">Full
+                                            Name</label>
+                                        <input type="text" id="cert-name"
+                                            class="w-full border border-gray-300 p-2 font-mono text-sm focus:border-black outline-none"
+                                            placeholder="Andy Rubin">
+                                        <p id="cert-error" class="text-red-500 text-xs mt-2 hidden">Please enter your
+                                            name.</p>
+                                    </div>
+                                    <button onclick="generateCert()"
+                                        class="btn btn-primary w-full text-white bg-[#3DDC84] border-[#3DDC84] hover:bg-[#32b36b]">Generate
+                                        Certificate</button>
+                                    <button onclick="downloadCert()" id="btn-download"
+                                        class="btn w-full hidden border border-gray-300 hover:bg-gray-50">Download
+                                        PNG</button>
+                                </div>
+
+                                <div
+                                    class="w-full md:w-2/3 bg-gray-50 border border-gray-200 p-4 flex items-center justify-center">
+                                    <canvas id="cert-canvas" class="w-full shadow-lg bg-white"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="bg-gray-50 px-6 py-3 border-t border-gray-100 text-center">
+                            <p class="text-[10px] text-gray-400 italic">
+                                This certificate confirms successful completion of learning and assessment on this
+                                platform
+                                and is not an accredited or government-recognized qualification.
+                            </p>
+                        </div>
+                    </div>
+                </section>
+
+                <footer class="w-full mt-12 mb-12">
+                    <div class="border-t border-gray-200 pt-8 flex justify-between items-center">
+                        <span class="text-[10px] mono uppercase text-gray-400">Undrstanding</span>
+                        <span class="text-[10px] mono uppercase text-gray-400">For Humans, From Humans</span>
+                    </div>
+                </footer>
+
+            </div>
+        </main>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/script.js"></script>
+    <script>
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            // Intersection Observer for Animations
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('active');
+                    }
+                });
+            }, { threshold: 0.1 });
+
+            document.querySelectorAll('.section-reveal').forEach(section => {
+                observer.observe(section);
+            });
+
+            // Sidebar Active State
+            const navLinks = document.querySelectorAll('aside .nav-link');
+            const sectionObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const id = entry.target.getAttribute('id');
+                        const activeLink = document.querySelector(`aside .nav-link[href="#${id}"]`);
+
+                        if (activeLink) {
+                            navLinks.forEach(link => link.classList.remove('active'));
+                            activeLink.classList.add('active');
+                        }
+                    }
+                });
+            }, { rootMargin: '-20% 0px -60% 0px' });
+
+            document.querySelectorAll('section').forEach(section => {
+                sectionObserver.observe(section);
+            });
+
+            // Inline Quizzes
+            new InlineQuiz('quiz-android-null', {
+                question: "Which of these lines will cause a compilation error in Kotlin?",
+                options: [
+                    "var a: String? = null",
+                    "var b: String = \"Hello\"",
+                    "var c: String = null",
+                    "val d = 5"
+                ],
+                answer: 2,
+                explanation: "In Kotlin, regular types like String cannot hold null by default. You must explicitly mark them as nullable using '?' (e.g., String?)."
+            });
+
+            new InlineQuiz('quiz-android-components', {
+                question: "Which component is primarily responsible for the User Interface?",
+                options: [
+                    "Service",
+                    "Content Provider",
+                    "Activity",
+                    "Broadcast Receiver"
+                ],
+                answer: 2,
+                explanation: "An Activity represents a single screen with a user interface. Services run in the background, receivers listen for events, and providers share data."
+            });
+
+
+            // Final Certificate Quiz
+            const questions = [
+                {
+                    question: "What is the official IDE for Android development?",
+                    options: ["Visual Studio Code", "Eclipse", "Android Studio", "Xcode"],
+                    answer: 2
+                },
+                {
+                    question: "Which language is now the preferred language for Android?",
+                    options: ["Java", "C++", "Kotlin", "Python"],
+                    answer: 2
+                },
+                {
+                    question: "What symbol denotes a nullable type in Kotlin?",
+                    options: ["!", "?", "*", "&"],
+                    answer: 1
+                },
+                {
+                    question: "Which file contains the essential information about an app (permissions, activities)?",
+                    options: ["build.gradle", "MainActivity.kt", "AndroidManifest.xml", "strings.xml"],
+                    answer: 2
+                },
+                {
+                    question: "Which build system does Android Studio use?",
+                    options: ["Maven", "Ant", "Gradle", "Make"],
+                    answer: 2
+                },
+                {
+                    question: "Which component runs in the background without a UI?",
+                    options: ["Activity", "Service", "Fragment", "Layout"],
+                    answer: 1
+                },
+                {
+                    question: "How do you declare a read-only variable in Kotlin?",
+                    options: ["var", "let", "const", "val"],
+                    answer: 3
+                },
+                {
+                    question: "Jetpack Compose allows you to build UIs using:",
+                    options: ["XML", "HTML", "Kotlin Code", "CSS"],
+                    answer: 2
+                },
+                {
+                    question: "What prevents NullPointerExceptions in Kotlin?",
+                    options: ["Try-Catch blocks", "Null Safety Type System", "Good luck", "The JVM"],
+                    answer: 1
+                },
+                {
+                    question: "Which folder contains images and layouts?",
+                    options: ["src", "assets", "res", "static"],
+                    answer: 2
+                }
+            ];
+
+            new QuizManager('quiz-container', questions, () => {
+                document.getElementById('certificate').classList.remove('hidden');
+                setTimeout(() => {
+                    document.getElementById('certificate').scrollIntoView({ behavior: 'smooth' });
+                }, 100);
+            });
+
+            // Certificate Logic
+            const certGen = new CertificateGenerator('cert-canvas', 'Android & Kotlin');
+
+            window.generateCert = function () {
+                const nameInput = document.getElementById('cert-name');
+                const errorMsg = document.getElementById('cert-error');
+                const name = nameInput.value.trim();
+                const nameRegex = /^[a-zA-Z\s\-\.'’]+$/;
+
+                // Reset error state
+                errorMsg.classList.add('hidden');
+                nameInput.classList.remove('border-red-500');
+
+                if (!name) {
+                    errorMsg.textContent = "Please enter your name.";
+                    errorMsg.classList.remove('hidden');
+                    nameInput.classList.add('border-red-500');
+                    return;
+                }
+
+                if (name.length < 3 || name.length > 35) {
+                    errorMsg.textContent = "Name must be between 3 and 35 characters.";
+                    errorMsg.classList.remove('hidden');
+                    nameInput.classList.add('border-red-500');
+                    return;
+                }
+
+                if (!nameRegex.test(name)) {
+                    errorMsg.textContent = "Name cannot contain numbers or special characters.";
+                    errorMsg.classList.remove('hidden');
+                    nameInput.classList.add('border-red-500');
+                    return;
+                }
+
+                certGen.generate(name);
+                document.getElementById('btn-download').classList.remove('hidden');
+            };
+
+            window.downloadCert = function () {
+                const name = document.getElementById('cert-name').value.trim();
+                certGen.download(`Undrstanding_Android_Certificate_${name.replace(/\s+/g, '_')}.png`);
+            };
+
+            // Mobile Menu Toggle
+            window.toggleMobileMenu = function () {
+                const menu = document.getElementById('mobile-menu');
+                menu.classList.toggle('hidden');
+                menu.classList.toggle('flex');
+            }
+
+            // Hello World Interactive Logic
+            const runBtn = document.getElementById('btn-run-hello');
+            const consoleOutput = document.getElementById('console-output');
+            const consoleText = document.getElementById('console-text');
+
+            runBtn.addEventListener('click', () => {
+                consoleOutput.classList.remove('hidden');
+                consoleText.textContent = '';
+                const text = "Hello, Android";
+                let i = 0;
+
+                runBtn.disabled = true;
+                runBtn.classList.add('opacity-50', 'cursor-not-allowed');
+
+                const typeWriter = setInterval(() => {
+                    if (i < text.length) {
+                        consoleText.textContent += text.charAt(i);
+                        i++;
+                    } else {
+                        clearInterval(typeWriter);
+                        runBtn.disabled = false;
+                        runBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+                    }
+                }, 50);
+            });
+
+            // Project Anatomy Interactive Logic
+            const anatomyData = {
+                manifest: {
+                    icon: 'M',
+                    color: 'text-green-700 bg-green-100',
+                    title: 'AndroidManifest.xml',
+                    desc: "The identity card of your app. It declares the app's package name, permissions (camera, internet), and registered activities."
+                },
+                java: {
+                    icon: 'K',
+                    color: 'text-blue-700 bg-blue-100',
+                    title: 'java/ (Source Code)',
+                    desc: "The brain of your application. This folder contains all your Kotlin (and Java) source code files, organized by package."
+                },
+                res: {
+                    icon: 'R',
+                    color: 'text-yellow-700 bg-yellow-100',
+                    title: 'res/ (Resources)',
+                    desc: "Static resources live here. XML layouts for UI, drawable images, strings for translation, and theme definitions."
+                },
+                gradle: {
+                    icon: 'G',
+                    color: 'text-gray-700 bg-gray-200',
+                    title: 'build.gradle',
+                    desc: "The builder. Gradle scripts define how to build the app, which external libraries (dependencies) to include, and version settings."
+                }
+            };
+
+            const treeItems = document.querySelectorAll('.tree-item');
+            const anatomyTitle = document.getElementById('anatomy-title');
+            const anatomyDesc = document.getElementById('anatomy-desc');
+            const anatomyIcon = document.getElementById('anatomy-icon');
+
+            treeItems.forEach(item => {
+                item.addEventListener('click', () => {
+                    const target = item.getAttribute('data-target');
+                    const data = anatomyData[target];
+
+                    // Update UI Selection
+                    treeItems.forEach(i => {
+                        i.classList.remove('bg-white', 'text-green-700', 'font-bold', 'shadow-sm', 'border-gray-200');
+                        i.classList.add('text-gray-600', 'hover:bg-gray-100', 'border-transparent');
+                    });
+                    item.classList.remove('text-gray-600', 'hover:bg-gray-100', 'border-transparent');
+                    item.classList.add('bg-white', 'text-green-700', 'font-bold', 'shadow-sm', 'border-gray-200');
+
+                    // Update Details with Animation
+                    const detailsContainer = document.getElementById('anatomy-details');
+                    detailsContainer.classList.add('opacity-0', 'translate-y-2');
+
+                    setTimeout(() => {
+                        anatomyTitle.textContent = data.title;
+                        anatomyDesc.textContent = data.desc;
+                        anatomyIcon.textContent = data.icon;
+                        anatomyIcon.className = `w-12 h-12 mx-auto flex items-center justify-center rounded-lg font-bold text-lg mb-4 transition-all duration-300 ${data.color}`;
+
+                        detailsContainer.classList.remove('opacity-0', 'translate-y-2');
+                    }, 200);
+                });
+            });
+        });
+    </script>
+</body>
+
+</html>

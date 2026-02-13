@@ -1,0 +1,1964 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Theory of Computation</title>
+    <link rel="icon" type="image/svg+xml" href="../assests/undrlogo.svg">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Roboto+Mono:wght@400;500&display=swap');
+
+        ::-webkit-scrollbar {
+            width: 1px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #000;
+        }
+
+        :root {
+            --bg-color: #f4f4f4;
+            --card-bg: #ffffff;
+            --text-main: #111111;
+            --text-muted: #737373;
+            --accent: #6b21a8;
+            /* Purple-800 */
+            --accent-light: #f3e8ff;
+            /* Purple-100 */
+            --border: #e5e5e5;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            -webkit-font-smoothing: antialiased;
+            line-height: 1.6;
+            overflow-x: hidden;
+            max-width: 100vw;
+        }
+
+        h1,
+        h2,
+        h3,
+        h4,
+        h5 {
+            font-weight: 600;
+            letter-spacing: -0.02em;
+            color: var(--text-main);
+        }
+
+        p {
+            color: #404040;
+        }
+
+        .mono {
+            font-family: 'Roboto Mono', monospace;
+        }
+
+        .rams-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            transition: all 0.3s ease;
+        }
+
+        .rams-card:hover {
+            border-color: #a3a3a3;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        }
+
+        @media (min-width: 768px) {
+            .rams-card {
+                padding: 2.5rem;
+            }
+        }
+
+        .rams-label {
+            font-family: 'Inter', sans-serif;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        .nav-link {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            padding: 0.5rem 0;
+            display: block;
+            transition: color 0.2s;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            color: var(--text-main);
+            font-weight: 500;
+        }
+
+        .nav-link.active::before {
+            content: "• ";
+            color: var(--accent);
+        }
+
+        .deep-dive {
+            background-color: #faf5ff;
+            /* Slight purple tint */
+            border: 1px solid #e9d5ff;
+            padding: 1.5rem;
+            margin-top: 1.5rem;
+            font-size: 0.9rem;
+            line-height: 1.7;
+            color: #4b5563;
+        }
+
+        .deep-dive h4 {
+            color: #581c87;
+            font-weight: 600;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .deep-dive h4::before {
+            content: "";
+            display: inline-block;
+            width: 4px;
+            height: 4px;
+            background: var(--accent);
+            border-radius: 50%;
+        }
+
+        /* Controls */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.5rem 1.25rem;
+            font-size: 0.85rem;
+            font-weight: 500;
+            border-radius: 2px;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            white-space: nowrap;
+        }
+
+        .btn-primary {
+            background-color: var(--accent);
+            color: white;
+            border: 1px solid var(--accent);
+        }
+
+        .btn-primary:hover {
+            opacity: 0.9;
+            filter: brightness(1.1);
+        }
+
+        .btn-secondary {
+            background-color: transparent;
+            color: var(--text-main);
+            border: 1px solid #a3a3a3;
+        }
+
+        .btn-secondary:hover {
+            background-color: #f0f0f0;
+            border-color: #555;
+        }
+
+        .hierarchy-level {
+            transition: all 0.3s ease;
+        }
+
+        .hierarchy-level:hover {
+            transform: scale(1.02);
+            filter: brightness(1.05);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Canvas Styles */
+        canvas {
+            border-radius: 4px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="flex min-h-screen flex-col lg:flex-row">
+
+        <!-- Mobile Header -->
+        <header
+            class="lg:hidden fixed top-0 w-full bg-[#f4f4f4] border-b border-[#e5e5e5] z-[100] px-6 py-4 flex justify-between items-center h-16">
+            <div>
+                <h1 class="text-sm font-semibold tracking-wide uppercase text-black leading-tight">Theory
+                    of<br>Computation
+                </h1>
+            </div>
+            <button onclick="toggleMobileMenu()" class="text-black focus:outline-none p-2 rounded">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+            </button>
+        </header>
+
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="fixed inset-0 bg-[#f4f4f4] z-[90] hidden flex-col pt-20 px-6 overflow-y-auto">
+            <nav class="flex flex-col">
+                <span class="text-[10px] text-gray-400 font-bold uppercase tracking-wider px-0 py-2">00. Intro</span>
+                <a href="#fundamentals" class="mobile-nav-link" onclick="toggleMobileMenu()">Fundamentals</a>
+                <a href="#automata" class="mobile-nav-link" onclick="toggleMobileMenu()">Automata</a>
+                <span class="text-[10px] text-gray-400 font-bold uppercase tracking-wider px-0 py-2 mt-4">02.
+                    Languages</span>
+                <a href="#grammars" class="mobile-nav-link" onclick="toggleMobileMenu()">Grammars</a>
+                <span class="text-[10px] text-gray-400 font-bold uppercase tracking-wider px-0 py-2 mt-4">03.
+                    Computing</span>
+                <a href="#turing" class="mobile-nav-link" onclick="toggleMobileMenu()">Turing Machine</a>
+                <span class="text-[10px] text-gray-400 font-bold uppercase tracking-wider px-0 py-2 mt-4">04.
+                    Complexity</span>
+                <a href="#complexity" class="mobile-nav-link" onclick="toggleMobileMenu()">P vs NP</a>
+                <a href="#glossary" class="mobile-nav-link" onclick="toggleMobileMenu()">Glossary</a>
+            </nav>
+        </div>
+
+        <!-- Sidebar -->
+        <aside
+            class="hidden lg:block w-64 fixed h-screen bg-[#f4f4f4] border-r border-[#e5e5e5] z-50 overflow-y-auto thin-scrollbar">
+            <div class="p-8 h-full flex flex-col justify-between">
+                <div>
+                    <a href="../index.html"
+                        class="inline-flex items-center gap-2 px-4 py-2 mb-8 text-[10px] font-mono uppercase tracking-wider text-gray-600 border border-gray-300 hover:bg-black hover:text-white hover:border-black transition-all duration-200">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                        </svg>
+                        Back to Home
+                    </a>
+                    <div class="mb-12">
+                        <h1 class="text-sm font-semibold tracking-wide uppercase text-black">Theory of<br>Computation
+                        </h1>
+                        <p class="text-[10px] text-gray-400 mt-1 uppercase tracking-wider font-bold">
+                            Formal Systems</p>
+                    </div>
+                    <nav class="space-y-1">
+                        <a href="#intro" class="nav-link font-medium text-black">Introduction</a>
+                        <a href="#fundamentals" class="nav-link">Fundamentals</a>
+
+                        <div class="pt-4 pb-1 text-[10px] text-gray-400 font-bold uppercase tracking-wider">01. Models
+                        </div>
+                        <a href="#automata" class="nav-link">Finite Automata</a>
+                        <a href="#regex" class="nav-link">Regular Languages</a>
+
+                        <div class="pt-4 pb-1 text-[10px] text-gray-400 font-bold uppercase tracking-wider">02.
+                            Structure</div>
+                        <a href="#grammars" class="nav-link">Context-Free</a>
+                        <a href="#chomsky" class="nav-link">Chomsky Hierarchy</a>
+
+                        <div class="pt-4 pb-1 text-[10px] text-gray-400 font-bold uppercase tracking-wider">03. Power
+                        </div>
+                        <a href="#turing" class="nav-link">Turing Machines</a>
+                        <a href="#halting" class="nav-link">Halting Problem</a>
+
+                        <div class="pt-4 pb-1 text-[10px] text-gray-400 font-bold uppercase tracking-wider">04. Cost
+                        </div>
+                        <a href="#complexity" class="nav-link">P vs NP</a>
+
+                        <div class="pt-4 pb-1 text-[10px] text-gray-400 font-bold uppercase tracking-wider">05. Summary
+                        </div>
+
+                        <a href="#glossary" class="nav-link">Glossary</a>
+                        <a href="#quiz" class="nav-link">Knowledge Check</a>
+                    </nav>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 lg:ml-64 bg-white w-full">
+            <div class="max-w-3xl mx-auto px-4 sm:px-8 py-24 lg:py-20">
+
+                <!-- Hero -->
+                <section id="intro" class="mb-16 md:mb-24">
+                    <h2 class="text-3xl md:text-5xl font-semibold mb-6 text-black tracking-tight leading-tight">The
+                        Limits<br>& The Logic</h2>
+                    <p class="text-base md:text-lg text-gray-600 max-w-xl font-light leading-relaxed mb-6">
+                        Before we build computers, we must ask: What <b>can</b> be computed? From simple state machines
+                        to
+                        the universal Turing Machine.
+                    </p>
+                </section>
+
+                <div class="divider hidden md:block border-t border-gray-100 my-10"></div>
+
+                <!-- 00. Fundamentals -->
+                <section id="fundamentals" class="mb-20 md:mb-24">
+                    <span class="rams-label">00 / Basics</span>
+                    <h3 class="text-xl font-medium mb-4">Fundamental Concepts</h3>
+                    <p class="text-sm text-gray-600 mb-6 max-w-xl">
+                        Before diving into machines, we must define the mathematical building blocks of computation:
+                        Sets, Alphabets, and Languages.
+                    </p>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                        <!-- Sets -->
+                        <div class="rams-card bg-white h-full">
+                            <h4 class="text-xs font-bold uppercase mb-3 text-purple-900">Sets</h4>
+                            <div class="space-y-4">
+                                <div>
+                                    <span class="text-xs font-bold text-gray-700 block mb-1">Finite Set</span>
+                                    <p class="text-xs text-gray-600 mb-1">A collection with a countable number of
+                                        distinct elements.</p>
+                                    <code
+                                        class="text-[10px] bg-gray-100 px-1 py-0.5 rounded font-mono">S = {a, b, c}</code>
+                                </div>
+                                <div class="border-t border-gray-100 pt-3">
+                                    <span class="text-xs font-bold text-gray-700 block mb-1">Infinite Set</span>
+                                    <p class="text-xs text-gray-600 mb-1">A collection with an endless number of
+                                        elements.</p>
+                                    <code
+                                        class="text-[10px] bg-gray-100 px-1 py-0.5 rounded font-mono">Z = {..., -1, 0, 1, ...}</code>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Alphabets & Strings -->
+                        <div class="rams-card bg-white h-full">
+                            <h4 class="text-xs font-bold uppercase mb-3 text-purple-900">Alphabets & Strings</h4>
+                            <div class="space-y-4">
+                                <div>
+                                    <span class="text-xs font-bold text-gray-700 block mb-1">Alphabet (&Sigma;)</span>
+                                    <p class="text-xs text-gray-600 mb-1">A finite, non-empty set of symbols.</p>
+                                    <code
+                                        class="text-[10px] bg-gray-100 px-1 py-0.5 rounded font-mono">&Sigma; = {0, 1}</code>
+                                </div>
+                                <div class="border-t border-gray-100 pt-3">
+                                    <span class="text-xs font-bold text-gray-700 block mb-1">String</span>
+                                    <p class="text-xs text-gray-600 mb-1">A finite sequence of symbols from an alphabet.
+                                    </p>
+                                    <code class="text-[10px] bg-gray-100 px-1 py-0.5 rounded font-mono">w = 01011</code>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Language Definition -->
+                    <div class="rams-card bg-purple-50 border-purple-100">
+                        <h4 class="text-xs font-bold uppercase mb-2 text-purple-900">Formal Language</h4>
+                        <p class="text-xs text-gray-700 mb-2">
+                            In TOC, a <strong>Language</strong> is simply a set of strings chosen from some alphabet
+                            &Sigma;*.
+                        </p>
+                        <ul class="text-xs list-disc pl-4 space-y-1 text-gray-600">
+                            <li><strong>&Sigma;*</strong>: The set of all possible strings over &Sigma;.</li>
+                            <li><strong>Language L</strong>: Any subset of &Sigma;*.</li>
+                        </ul>
+                        <p class="text-[10px] text-gray-500 italic mt-3 border-l-2 border-purple-300 pl-2">
+                            <strong>Note:</strong> A language can be finite (e.g., {"cat", "dog"}) or infinite (e.g.,
+                            all words starting with 'a').
+                        </p>
+                    </div>
+
+                    <!-- Symbol Reference Grid -->
+                    <div class="mt-8">
+                        <h4 class="text-xs font-bold uppercase mb-4 text-gray-400 tracking-wider">Common Notation
+                            Reference</h4>
+                        <div class="grid grid-cols-2 lg:grid-cols-4 gap-3">
+                            <!-- Sigma -->
+                            <div
+                                class="p-3 bg-white border border-gray-200 rounded hover:border-purple-300 transition-colors group">
+                                <span
+                                    class="block font-mono text-xl font-bold text-black mb-1 group-hover:text-purple-700">&Sigma;</span>
+                                <span class="text-[10px] font-bold text-gray-500 uppercase block">Alphabet</span>
+                                <p class="text-[10px] text-gray-400 leading-tight mt-1">Set of symbols (e.g., {0, 1})
+                                </p>
+                            </div>
+
+                            <!-- Epsilon -->
+                            <div
+                                class="p-3 bg-white border border-gray-200 rounded hover:border-purple-300 transition-colors group">
+                                <span
+                                    class="block font-mono text-xl font-bold text-black mb-1 group-hover:text-purple-700">&epsilon;</span>
+                                <span class="text-[10px] font-bold text-gray-500 uppercase block">Epsilon</span>
+                                <p class="text-[10px] text-gray-400 leading-tight mt-1">Empty string (length 0)</p>
+                            </div>
+
+                            <!-- Empty Set -->
+                            <div
+                                class="p-3 bg-white border border-gray-200 rounded hover:border-purple-300 transition-colors group">
+                                <span
+                                    class="block font-mono text-xl font-bold text-black mb-1 group-hover:text-purple-700">&empty;</span>
+                                <span class="text-[10px] font-bold text-gray-500 uppercase block">Empty Set</span>
+                                <p class="text-[10px] text-gray-400 leading-tight mt-1">Language with no strings</p>
+                            </div>
+
+                            <!-- Sigma Star -->
+                            <div
+                                class="p-3 bg-white border border-gray-200 rounded hover:border-purple-300 transition-colors group">
+                                <span
+                                    class="block font-mono text-xl font-bold text-black mb-1 group-hover:text-purple-700">&Sigma;*</span>
+                                <span class="text-[10px] font-bold text-gray-500 uppercase block">Kleene Star</span>
+                                <p class="text-[10px] text-gray-400 leading-tight mt-1">Zero or more concat</p>
+                            </div>
+
+                            <!-- Delta -->
+                            <div
+                                class="p-3 bg-white border border-gray-200 rounded hover:border-purple-300 transition-colors group">
+                                <span
+                                    class="block font-mono text-xl font-bold text-black mb-1 group-hover:text-purple-700">&delta;</span>
+                                <span class="text-[10px] font-bold text-gray-500 uppercase block">Delta</span>
+                                <p class="text-[10px] text-gray-400 leading-tight mt-1">Transition Function</p>
+                            </div>
+
+                            <!-- Length -->
+                            <div
+                                class="p-3 bg-white border border-gray-200 rounded hover:border-purple-300 transition-colors group">
+                                <span
+                                    class="block font-mono text-xl font-bold text-black mb-1 group-hover:text-purple-700">|w|</span>
+                                <span class="text-[10px] font-bold text-gray-500 uppercase block">Length</span>
+                                <p class="text-[10px] text-gray-400 leading-tight mt-1">Number of chars in w</p>
+                            </div>
+
+                            <!-- Element Of -->
+                            <div
+                                class="p-3 bg-white border border-gray-200 rounded hover:border-purple-300 transition-colors group">
+                                <span
+                                    class="block font-mono text-xl font-bold text-black mb-1 group-hover:text-purple-700">&isin;</span>
+                                <span class="text-[10px] font-bold text-gray-500 uppercase block">Element Of</span>
+                                <p class="text-[10px] text-gray-400 leading-tight mt-1">w &isin; L (w is in L)</p>
+                            </div>
+
+                            <!-- Subset -->
+                            <div
+                                class="p-3 bg-white border border-gray-200 rounded hover:border-purple-300 transition-colors group">
+                                <span
+                                    class="block font-mono text-xl font-bold text-black mb-1 group-hover:text-purple-700">&sube;</span>
+                                <span class="text-[10px] font-bold text-gray-500 uppercase block">Subset</span>
+                                <p class="text-[10px] text-gray-400 leading-tight mt-1">L1 &sube; L2</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <div class="divider hidden md:block border-t border-gray-100 my-10"></div>
+
+                <!-- 01. Automata -->
+                <section id="automata" class="mb-20 md:mb-24">
+                    <span class="rams-label">01 / Finite Memory</span>
+                    <h3 class="text-xl font-medium mb-4">Finite Automata (DFA)</h3>
+                    <p class="text-sm text-gray-600 mb-6 max-w-xl">
+                        A machine with a limited amount of memory. It is always in one of a finite number of states. It
+                        reads input character by character and transitions between states.
+                    </p>
+
+                    <div class="rams-card bg-white border border-gray-200">
+                        <div class="flex flex-col w-full">
+                            <h4 class="text-xs font-bold uppercase tracking-widest text-gray-500 mb-4">Interactive DFA:
+                                Odd Number of 1s</h4>
+
+                            <!-- Compact Grid Layout -->
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                <!-- Col 1: Canvas (Span 2) -->
+                                <div
+                                    class="md:col-span-2 relative bg-white border border-gray-200 rounded-lg overflow-hidden">
+                                    <canvas id="canvas-dfa" width="800" height="440"
+                                        class="w-full h-auto block"></canvas>
+                                    <div
+                                        class="absolute top-2 left-2 px-2 py-1 bg-white/90 border border-gray-200 rounded text-[10px] font-mono text-gray-500 backdrop-blur-sm">
+                                        STATE: <span id="dfa-current-state"
+                                            class="font-bold text-purple-700">EVEN</span>
+                                    </div>
+                                </div>
+
+                                <!-- Col 2: Controls & Log (Span 1) -->
+                                <div class="flex flex-col justify-between gap-4">
+                                    <!-- Sidebar Output -->
+                                    <div class="flex flex-col gap-1">
+                                        <span class="text-[10px] font-bold uppercase text-gray-300">Input Tape</span>
+                                        <div
+                                            class="w-full bg-gray-50 border border-gray-200 rounded px-3 py-2 font-mono text-sm flex items-center overflow-hidden">
+                                            <span class="text-gray-400 select-none mr-2">$</span>
+                                            <div class="flex-1 whitespace-nowrap overflow-x-auto scrollbar-hide">
+                                                <span id="dfa-string"
+                                                    class="text-purple-700 font-bold tracking-widest"></span>
+                                                <span
+                                                    class="w-1.5 h-4 bg-gray-300 inline-block align-middle ml-0.5 animate-pulse"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Sidebar Controls -->
+                                    <div class="flex flex-col gap-2">
+                                        <span class="text-[10px] font-bold uppercase text-gray-300">Controls</span>
+                                        <div class="grid grid-cols-2 gap-2">
+                                            <button onclick="dfaInput('0')"
+                                                class="h-9 bg-white hover:bg-gray-50 border border-gray-200 rounded text-sm font-bold text-gray-600 transition-colors active:bg-gray-100">0</button>
+                                            <button onclick="dfaInput('1')"
+                                                class="h-9 bg-purple-50 hover:bg-purple-100 border border-purple-200 rounded text-sm font-bold text-purple-700 transition-colors active:bg-purple-200">1</button>
+                                        </div>
+                                        <button onclick="dfaReset()"
+                                            class="h-8 w-full text-xs font-bold text-gray-400 hover:text-red-600 hover:bg-red-50 rounded transition-colors uppercase tracking-wider">Reset
+                                            Simulation</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Solved Example: DFA -->
+                    <div class="mt-8 bg-blue-50 border border-blue-200 rounded-lg p-5">
+                        <div class="flex items-center gap-2 mb-3">
+                            <span
+                                class="bg-blue-600 text-white text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider">Solved
+                                Example</span>
+                            <span class="text-sm font-bold text-blue-900">Design a DFA</span>
+                        </div>
+                        <p class="text-xs text-gray-700 mb-4">
+                            <strong>Problem:</strong> Construct a DFA over &Sigma; = {0, 1} that accepts all strings
+                            ending with "01".
+                        </p>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <h5 class="text-xs font-bold uppercase text-gray-500 mb-2">Logic</h5>
+                                <ul class="list-disc pl-4 text-xs text-gray-600 space-y-2">
+                                    <li>We need to track the progress of the suffix "01".</li>
+                                    <li><strong>q0 (Start):</strong> Haven't seen '0' yet.</li>
+                                    <li><strong>q1:</strong> Just saw '0'. (Potential start of match)</li>
+                                    <li><strong>q2 (Accept):</strong> Saw '0' then '1'. (Match found!)</li>
+                                </ul>
+                            </div>
+                            <div>
+                                <h5 class="text-xs font-bold uppercase text-gray-500 mb-2">Transition Table</h5>
+                                <table class="w-full text-xs text-center border border-gray-200 bg-white">
+                                    <thead>
+                                        <tr class="bg-gray-50 border-b border-gray-200">
+                                            <th class="py-1">State</th>
+                                            <th class="py-1">Input 0</th>
+                                            <th class="py-1">Input 1</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="divide-y divide-gray-100">
+                                        <tr>
+                                            <td class="py-1 border-r">-> q0</td>
+                                            <td>q1</td>
+                                            <td>q0</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="py-1 border-r">q1</td>
+                                            <td>q1</td>
+                                            <td>q2</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="py-1 border-r text-blue-700 font-bold">* q2</td>
+                                            <td>q1</td>
+                                            <td>q0</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="deep-dive">
+                        <h4 class="uppercase tracking-widest text-xs font-bold mb-3 text-purple-800">Formal Definition
+                        </h4>
+                        <p class="mb-3 text-sm">
+                            A DFA is a 5-tuple (Q, &Sigma;, &delta;, q<sub>0</sub>, F):
+                        </p>
+                        <ul class="text-xs list-disc pl-4 space-y-1 text-gray-600">
+                            <li><strong>Q</strong>: Finite set of states.</li>
+                            <li><strong>&Sigma;</strong>: Finite set of input symbols (Alphabet).</li>
+                            <li><strong>&delta;</strong>: Transition function (Q &times; &Sigma; &rarr; Q).</li>
+                            <li><strong>q<sub>0</sub></strong>: Start state.</li>
+                            <li><strong>F</strong>: Set of accept states.</li>
+                        </ul>
+                    </div>
+                </section>
+
+                <!-- NFA Section -->
+                <div class="mb-12 cursor-pointer group">
+                    <h3 class="text-lg font-medium mb-4 group-hover:text-purple-700 transition-colors">Non-Deterministic
+                        Finite Automata (NFA)</h3>
+                    <p class="text-sm text-gray-600 mb-6 max-w-xl">
+                        An NFA is like a DFA but with superpowers: it can be in multiple states at once. It can
+                        transition to multiple states on the same input, or move without any input at all (Epsilon
+                        transitions).
+                    </p>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="rams-card bg-purple-50 border-purple-100">
+                            <h4 class="text-xs font-bold uppercase mb-2 text-purple-900">Epsilon Transitions (&epsilon;)
+                            </h4>
+                            <p class="text-xs text-gray-600 mb-2">
+                                The ability to jump between states without consuming any input character. This models
+                                "spontaneous" state changes.
+                            </p>
+                            <div class="code-block text-[10px] !bg-white !text-purple-800 border border-purple-200">
+                                q0 --(&epsilon;)--> q1
+                            </div>
+                        </div>
+                        <div class="rams-card">
+                            <h4 class="text-xs font-bold uppercase mb-2">Equivalence & Power</h4>
+                            <p class="text-xs text-gray-600 mb-2">
+                                Surprisingly, <strong>every NFA has an equivalent DFA</strong>.
+                            </p>
+                            <p class="text-[10px] text-gray-500 italic">
+                                <strong>Intuition (Subset Construction):</strong> A single state in the equivalent DFA
+                                corresponds to a <em>set</em> of states the NFA could be in at once. If the NFA has N
+                                states, the DFA could have 2<sup>N</sup> states.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="mt-6 p-4 bg-gray-50 border-l-4 border-gray-400">
+                        <h4 class="text-xs font-bold uppercase mb-2">Applications of Automata</h4>
+                        <ul class="list-disc pl-4 text-xs text-gray-600 space-y-1">
+                            <li><strong>Lexical Analysis:</strong> Compilers use DFAs to scan code and identify keywords
+                                (if, while, int).</li>
+                            <li><strong>Text Search:</strong> Algorithms like KMP use finite automata for fast string
+                                matching.</li>
+                            <li><strong>Protocol Verification:</strong> Verifying network protocols by modeling states.
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- 01b. Regular Languages -->
+                <section id="regex" class="mb-20 md:mb-24">
+                    <span class="rams-label">01 / Patterns</span>
+                    <h3 class="text-xl font-medium mb-4">Regular Expressions & Limits</h3>
+                    <p class="text-sm text-gray-600 mb-6 max-w-xl">
+                        Any language accepted by a DFA is a "Regular Language". These can be described concisely using
+                        Regular Expressions (RegEx). But regular languages have limits—they cannot memory-dependent
+                        tasks like counting.
+                    </p>
+                    <div class="rams-card grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+                        <div>
+                            <h4 class="text-xs font-bold uppercase mb-2">Operations</h4>
+                            <ul class="text-sm space-y-2 text-gray-700">
+                                <li><code class="bg-gray-100 px-1 rounded">ab</code> : Concatenation (a then b)</li>
+                                <li><code class="bg-gray-100 px-1 rounded">a|b</code> : Union (a or b)</li>
+                                <li><code class="bg-gray-100 px-1 rounded">a*</code> : Kleene Star (zero or more a's)
+                                </li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h4 class="text-xs font-bold uppercase mb-2">Example</h4>
+                            <p class="text-xs text-gray-500 mb-2">Email validation pattern:</p>
+                            <code class="block bg-gray-900 text-green-400 p-2 rounded text-xs font-mono mb-2">
+                                ^[a-z0-9]+@[a-z]+\.[a-z]{2,3}$
+                            </code>
+                        </div>
+                    </div>
+
+                    <!-- Interactive Regex Tester -->
+                    <div class="rams-card bg-white border border-gray-200">
+                        <h4 class="text-xs font-bold uppercase tracking-widest text-purple-900 mb-4">Live Regex Tester
+                        </h4>
+                        <div class="flex flex-col gap-4">
+                            <div class="flex flex-col md:flex-row gap-4">
+                                <div class="flex-1">
+                                    <label class="text-[10px] font-bold text-gray-400 uppercase block mb-1">Regex
+                                        Pattern</label>
+                                    <input type="text" id="regex-input" value="(a|b)*b" placeholder="e.g. ^[a-z]+(\d+)$"
+                                        class="w-full bg-gray-50 border border-gray-200 rounded p-2 text-sm font-mono text-purple-800 focus:outline-none focus:border-purple-400 font-bold">
+                                </div>
+                                <div class="flex-1">
+                                    <label class="text-[10px] font-bold text-gray-400 uppercase block mb-1">Test
+                                        String</label>
+                                    <input type="text" id="regex-test-str" value="aab" placeholder="String to test..."
+                                        class="w-full bg-gray-50 border border-gray-200 rounded p-2 text-sm font-mono text-gray-800 focus:outline-none focus:border-purple-400">
+                                </div>
+                            </div>
+                            <div
+                                class="flex items-center justify-between bg-gray-50 p-3 rounded border border-gray-100">
+                                <div class="flex items-center gap-2">
+                                    <span class="text-[10px] font-bold uppercase text-gray-400">Result:</span>
+                                    <span id="regex-result"
+                                        class="text-xs font-bold px-2 py-0.5 rounded bg-gray-200 text-gray-500">...</span>
+                                </div>
+                                <div class="text-[10px] text-gray-400 italic" id="regex-error"></div>
+                            </div>
+                        </div>
+
+
+
+                        <!-- Solved Example: Regex -->
+                        <div class="mt-8 bg-orange-50 border border-orange-200 rounded-lg p-5">
+                            <div class="flex items-center gap-2 mb-3">
+                                <span
+                                    class="bg-orange-600 text-white text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider">Solved
+                                    Example</span>
+                                <span class="text-sm font-bold text-orange-900">Constructing Regex</span>
+                            </div>
+                            <p class="text-xs text-gray-700 mb-4">
+                                <strong>Problem:</strong> Write a Regular Expression for the set of all strings over {a,
+                                b}
+                                that start with
+                                'a' and end with 'b'.
+                            </p>
+                            <div
+                                class="font-mono text-sm bg-white border border-orange-100 rounded p-2 text-center text-orange-800 font-bold mb-2">
+                                a(a|b)*b
+                            </div>
+                            <ul class="text-[10px] text-gray-600 list-disc pl-4 space-y-1">
+                                <li><strong>a</strong>: Must start with 'a'.</li>
+                                <li><strong>(a|b)*</strong>: Any combination of 'a's and 'b's in the middle (zero or
+                                    more).
+                                </li>
+                                <li><strong>b</strong>: Must end with 'b'.</li>
+                            </ul>
+                        </div>
+
+                        <!-- Concept: Star vs Plus -->
+                        <div class="rams-card mt-6 border-l-4 border-yellow-400 bg-yellow-50/20">
+                            <div class="flex items-start gap-3">
+                                <span class="text-2xl pt-1">💡</span>
+                                <div>
+                                    <h4 class="text-xs font-bold uppercase mb-1 text-yellow-900">Concept: Star (*) vs.
+                                        Plus
+                                        (+)</h4>
+                                    <p class="text-xs text-gray-600 mb-2">
+                                        The <strong>Kleene Star</strong> (*) means "zero or more", while the
+                                        <strong>Kleene
+                                            Plus</strong> (+) means "one or more".
+                                    </p>
+                                    <div class="grid grid-cols-2 gap-4 text-[10px] font-mono mt-2">
+                                        <div class="bg-white p-2 border border-gray-200 rounded">
+                                            <div class="font-bold text-gray-800 mb-1">(a|b)*</div>
+                                            <div class="text-gray-500">Includes &epsilon; (empty)</div>
+                                            <div class="text-gray-400 mt-1">{ &epsilon;, a, b, aa, ab... }</div>
+                                        </div>
+                                        <div class="bg-white p-2 border border-gray-200 rounded">
+                                            <div class="font-bold text-gray-800 mb-1">(a|b)⁺</div>
+                                            <div class="text-gray-500">Excludes &epsilon;</div>
+                                            <div class="text-gray-400 mt-1">{ a, b, aa, ab... }</div>
+                                        </div>
+                                    </div>
+                                    <p class="text-[10px] text-gray-500 mt-2 italic">
+                                        <strong>Relation:</strong> L⁺ = L L* &nbsp; (or L* minus &epsilon;)
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Pumping Lemma -->
+                        <div class="rams-card border-red-200 bg-red-50/30 mt-8">
+                            <h4 class="text-xs font-bold uppercase mb-3 text-red-800">The Pumping Lemma</h4>
+                            <p class="text-xs text-gray-700 mb-2">
+                                A rigorous proof technique for showing non-regularity.
+                            </p>
+
+                            <!-- Solved Example: Pumping Lemma -->
+                            <div class="bg-white border border-red-100 rounded p-3 mt-3">
+                                <span
+                                    class="text-[10px] font-bold text-red-900 block mb-1 uppercase tracking-wide">Proof
+                                    Example</span>
+                                <p class="text-[10px] text-gray-600 mb-2">
+                                    <strong>Show:</strong> L = { 0<sup>n</sup>1<sup>n</sup> | n &ge; 0 } is not regular.
+                                </p>
+                                <ol class="list-decimal pl-4 text-[10px] text-gray-600 space-y-1">
+                                    <li>Assume L is regular. Let <em>p</em> be the pumping length.</li>
+                                    <li>Choose string <strong>w = 0<sup>p</sup>1<sup>p</sup></strong>. (Note: |w| = 2p
+                                        &ge;
+                                        p).</li>
+                                    <li>Split w into <strong>xyz</strong> such that |xy| &le; p and |y| > 0.</li>
+                                    <li>Since |xy| &le; p, the substring <strong>y</strong> must consist entirely of 0s.
+                                    </li>
+                                    <li><strong>Pump it:</strong> Consider xy<sup>2</sup>z. This string has more 0s than
+                                        1s.
+                                    </li>
+                                    <li><strong>Contradiction:</strong> xy<sup>2</sup>z &notin; L, but Pumping Lemma
+                                        says it
+                                        must be.
+                                        Therefore, L is not regular.</li>
+                                </ol>
+                            </div>
+                        </div>
+                </section>
+
+                <div id="quiz-automata"></div>
+
+                <div class="divider hidden md:block border-t border-gray-100 my-10"></div>
+
+                <!-- 02. Context-Free Grammars -->
+                <section id="grammars" class="mb-20 md:mb-24">
+                    <span class="rams-label">02 / Architecture</span>
+                    <h3 class="text-xl font-medium mb-4">Context-Free Languages & PDAs</h3>
+                    <p class="text-sm text-gray-600 mb-6 max-w-xl">
+                        DFAs cannot count (e.g., matching open/close parentheses). For this, we need a <strong>Pushdown
+                            Automaton (PDA)</strong>—a machine with an infinite stack memory. These correspond to
+                        Context-Free
+                        Languages (CFLs).
+                    </p>
+
+                    <div class="rams-card mb-8">
+                        <div class="flex flex-col md:flex-row gap-8 items-center">
+                            <div class="flex-1">
+                                <h4 class="text-sm font-bold mb-2">Context-Free Grammars (CFG)</h4>
+                                <p class="text-xs text-gray-600 mb-4">A CFG is defined by 4-tuple (V, T, P, S). It
+                                    defines valid strings by substitution
+                                    rules.</p>
+                                <div class="bg-gray-50 p-4 rounded font-mono text-sm border-l-2 border-purple-600">
+                                    S &rarr; aSb<br>
+                                    S &rarr; &epsilon;
+                                </div>
+                                <p class="text-[10px] text-gray-400 mt-2">
+                                    Generates: <span class="font-mono text-black">"", "ab", "aabb", "aaabbb"</span>...
+                                </p>
+                                <div class="mt-4 p-2 bg-yellow-50 border border-yellow-100 rounded">
+                                    <strong class="text-[10px] text-yellow-800 uppercase block mb-1">Concept:
+                                        Ambiguity</strong>
+                                    <p class="text-[10px] text-gray-600">A grammar is "ambiguous" if a string has more
+                                        than one valid parse tree. This is bad for compilers (dangling else problem)!
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="flex-1 border-l border-gray-200 pl-8">
+                                <h4 class="text-sm font-bold mb-2">Pushdown Automata (PDA)</h4>
+                                <p class="text-xs text-gray-600 mb-2">
+                                    A nondeterministic finite automaton with an extra component: a
+                                    <strong>stack</strong>.
+                                    The stack provides "LIFO" memory, allowing the machine to remember an arbitrary
+                                    amount of information.
+                                </p>
+                                <!-- Interactive Stack Visualization -->
+                                <div class="bg-gray-50 p-4 rounded border border-gray-200 flex flex-col items-center">
+                                    <div id="pda-stack-container"
+                                        class="w-24 h-56 border-b-2 border-x-2 border-gray-400 bg-white relative flex flex-col-reverse items-center p-1 gap-1 overflow-hidden transition-all">
+                                        <!-- Stack items will be injected here -->
+                                        <div
+                                            class="w-full h-8 bg-gray-100 border border-gray-200 text-[10px] flex items-center justify-center text-gray-400">
+                                            Z₀ (Bottom)</div>
+                                    </div>
+                                    <div class="flex gap-2 mt-4 w-full justify-center">
+                                        <button onclick="pdaPush('a')"
+                                            class="px-3 py-1 bg-purple-100 hover:bg-purple-200 text-purple-700 text-[10px] font-bold rounded">Push
+                                            'a'</button>
+                                        <button onclick="pdaPush('b')"
+                                            class="px-3 py-1 bg-blue-100 hover:bg-blue-200 text-blue-700 text-[10px] font-bold rounded">Push
+                                            'b'</button>
+                                        <button onclick="pdaPop()"
+                                            class="px-3 py-1 bg-red-100 hover:bg-red-200 text-red-700 text-[10px] font-bold rounded">Pop</button>
+                                    </div>
+                                    <p class="text-[10px] text-center text-gray-400 mt-2">LIFO (Last In, First Out)</p>
+                                </div>
+                                <p class="text-[10px] text-gray-500 mt-4 italic">
+                                    <strong>Intuition:</strong> A PDA can non-deterministically "guess" transitions and
+                                    use the stack to verify if the guess was correct.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- CNF & Applications -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="rams-card bg-white">
+                            <h4 class="text-xs font-bold uppercase mb-2">Chomsky Normal Form (CNF)</h4>
+                            <p class="text-xs text-gray-600 mb-3">
+                                A simplified way to write CFGs. In CNF, every rule must be either:
+                            </p>
+                            <ul class="text-xs text-gray-600 list-disc pl-4 mb-3 space-y-1">
+                                <li>A non-terminal producing two non-terminals (A &rarr; BC)</li>
+                                <li>A non-terminal producing a terminal (A &rarr; a)</li>
+                            </ul>
+                            <p class="text-[10px] text-gray-500 italic">Useful for algorithms like CYK (parsing).</p>
+                        </div>
+                        <div class="rams-card bg-blue-50/10 border-blue-100">
+                            <h4 class="text-xs font-bold uppercase mb-2 text-blue-900">Applications of CFGs</h4>
+                            <ul class="text-xs text-gray-600 list-disc pl-4 space-y-2">
+                                <li><strong>Programming Syntax:</strong> Most programming languages (Java, C++) are
+                                    defined by CFGs.</li>
+                                <li><strong>Parsers:</strong> Browsers use CFGs to parse HTML properties.</li>
+                                <li><strong>XML/JSON:</strong> Nested data structures are context-free.</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Solved Example: CFG Derivation -->
+                    <div class="mt-8 bg-green-50 border border-green-200 rounded-lg p-5">
+                        <div class="flex items-center gap-2 mb-3">
+                            <span
+                                class="bg-green-600 text-white text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider">Solved
+                                Example</span>
+                            <span class="text-sm font-bold text-green-900">Leftmost Derivation</span>
+                        </div>
+                        <p class="text-xs text-gray-700 mb-4">
+                            <strong>Problem:</strong> Given the grammar S &rarr; 0S1 | &epsilon;, derive the string
+                            "0011".
+                        </p>
+
+                        <div class="bg-white border border-green-100 rounded p-3 font-mono text-xs text-gray-700">
+                            <div class="grid grid-cols-[auto_1fr] gap-x-4 gap-y-2">
+                                <span class="text-gray-400">Step 1:</span>
+                                <div><strong>S</strong> &Rightarrow; 0S1 <span class="text-gray-400 italic ml-2">(Apply
+                                        S &rarr; 0S1)</span></div>
+
+                                <span class="text-gray-400">Step 2:</span>
+                                <div>0<strong>S</strong>1 &Rightarrow; 0(0S1)1 = 00S11 <span
+                                        class="text-gray-400 italic ml-2">(Apply S &rarr; 0S1 again)</span></div>
+
+                                <span class="text-gray-400">Step 3:</span>
+                                <div>00<strong>S</strong>11 &Rightarrow; 00(&epsilon;)11 = 0011 <span
+                                        class="text-gray-400 italic ml-2">(Apply S &rarr; &epsilon;)</span></div>
+                            </div>
+                        </div>
+                        <p class="text-[10px] text-gray-500 mt-2 italic">
+                            Result: The string "0011" is generated by this grammar (Language is
+                            0<sup>n</sup>1<sup>n</sup>).
+                        </p>
+                    </div>
+                </section>
+
+                <div id="quiz-grammars"></div>
+
+                <!-- 02b. Chomsky Hierarchy -->
+                <section id="chomsky" class="mb-20 md:mb-24">
+                    <span class="rams-label">02 / Hierarchy</span>
+                    <h3 class="text-xl font-medium mb-4">The Chomsky Hierarchy</h3>
+                    <p class="text-sm text-gray-600 mb-6 max-w-xl">
+                        Proposed by Noam Chomsky, this categorizes grammars by their power. Each level strictly contains
+                        the one below it.
+                    </p>
+
+                    <div
+                        class="relative w-full max-w-lg mx-auto aspect-[4/3] flex items-center justify-center text-xs font-bold text-center mb-10">
+                        <!-- Level 0: Recursively Enumerable -->
+                        <div
+                            class="hierarchy-level absolute inset-0 bg-purple-50 border border-purple-200 rounded-2xl flex flex-col items-center pt-4 shadow-sm z-0">
+                            <span class="text-purple-900">Level 0: Recursively Enumerable</span>
+                            <span class="text-[9px] font-normal text-gray-500">Turing Machines</span>
+                        </div>
+
+                        <!-- Level 1: Context-Sensitive -->
+                        <div
+                            class="hierarchy-level absolute inset-3 top-9 md:inset-8 md:top-12 bg-purple-100 border border-purple-300 rounded-xl flex flex-col items-center pt-4 shadow-sm z-10">
+                            <span class="text-purple-900">Level 1: Context-Sensitive</span>
+                            <span class="text-[9px] font-normal text-gray-600">Linear Bounded Automata (LBA)</span>
+                        </div>
+
+                        <!-- Level 2: Context-Free -->
+                        <div
+                            class="hierarchy-level absolute inset-8 top-20 md:inset-16 md:top-24 bg-purple-200 border border-purple-400 rounded-lg flex flex-col items-center pt-4 shadow-sm z-20">
+                            <span class="text-purple-950">Level 2: Context-Free</span>
+                            <span class="text-[9px] font-normal text-gray-700">Pushdown Automata (Syntax)</span>
+                        </div>
+
+                        <!-- Level 3: Regular -->
+                        <div
+                            class="hierarchy-level absolute inset-14 top-32 md:inset-24 md:top-36 bg-purple-600 border border-purple-800 rounded flex flex-col items-center justify-center shadow-lg z-30 text-white">
+                            <span>Level 3: Regular</span>
+                            <span class="text-[9px] font-normal opacity-80">Finite Automata (Regex)</span>
+                        </div>
+                    </div>
+
+                    <!-- Detailed Breakdown Table -->
+                    <div class="overflow-x-auto border border-gray-200 rounded-lg">
+                        <table class="w-full text-xs text-left">
+                            <thead class="bg-gray-50 uppercase font-bold text-gray-500 border-b border-gray-200">
+                                <tr>
+                                    <th class="px-4 py-3">Type</th>
+                                    <th class="px-4 py-3">Language Class</th>
+                                    <th class="px-4 py-3">Automaton</th>
+                                    <th class="px-4 py-3">Production Rules</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-100">
+                                <tr class="hover:bg-purple-50/30 transition-colors">
+                                    <td class="px-4 py-3 font-bold text-black border-r border-gray-100">Type 0</td>
+                                    <td class="px-4 py-3">
+                                        <span class="block font-bold text-purple-900">Recursively Enumerable</span>
+                                        <span class="text-[10px] text-gray-500">Unrestricted Grammar</span>
+                                    </td>
+                                    <td class="px-4 py-3 font-mono text-purple-700">Turing Machine</td>
+                                    <td class="px-4 py-3 font-mono text-[10px] text-gray-600">
+                                        &alpha; &rarr; &beta; <br>
+                                        <span class="text-[9px] text-gray-400">(No restrictions)</span>
+                                    </td>
+                                </tr>
+                                <tr class="hover:bg-purple-50/30 transition-colors">
+                                    <td class="px-4 py-3 font-bold text-black border-r border-gray-100">Type 1</td>
+                                    <td class="px-4 py-3">
+                                        <span class="block font-bold text-purple-800">Context-Sensitive</span>
+                                        <span class="text-[10px] text-gray-500">CSG</span>
+                                    </td>
+                                    <td class="px-4 py-3 font-mono text-purple-700">Linear Bounded</td>
+                                    <td class="px-4 py-3 font-mono text-[10px] text-gray-600">
+                                        &alpha;A&beta; &rarr; &alpha;&gamma;&beta; <br>
+                                        <span class="text-[9px] text-gray-400">(Length increasing)</span>
+                                    </td>
+                                </tr>
+                                <tr class="hover:bg-purple-50/30 transition-colors">
+                                    <td class="px-4 py-3 font-bold text-black border-r border-gray-100">Type 2</td>
+                                    <td class="px-4 py-3">
+                                        <span class="block font-bold text-purple-700">Context-Free</span>
+                                        <span class="text-[10px] text-gray-500">CFG</span>
+                                    </td>
+                                    <td class="px-4 py-3 font-mono text-purple-700">Pushdown Automaton</td>
+                                    <td class="px-4 py-3 font-mono text-[10px] text-gray-600">
+                                        A &rarr; &gamma; <br>
+                                        <span class="text-[9px] text-gray-400">(LHS is single variable)</span>
+                                    </td>
+                                </tr>
+                                <tr class="hover:bg-purple-50/30 transition-colors">
+                                    <td class="px-4 py-3 font-bold text-black border-r border-gray-100">Type 3</td>
+                                    <td class="px-4 py-3">
+                                        <span class="block font-bold text-purple-600">Regular</span>
+                                        <span class="text-[10px] text-gray-500">Regular Grammar</span>
+                                    </td>
+                                    <td class="px-4 py-3 font-mono text-purple-700">Finite Automaton</td>
+                                    <td class="px-4 py-3 font-mono text-[10px] text-gray-600">
+                                        A &rarr; a | A &rarr; aB <br>
+                                        <span class="text-[9px] text-gray-400">(Right/Left Linear)</span>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <div class="divider hidden md:block border-t border-gray-100 my-10"></div>
+
+                <!-- 03. Turing Machines -->
+                <section id="turing" class="mb-20 md:mb-24">
+                    <span class="rams-label">03 / Universality</span>
+                    <h3 class="text-xl font-medium mb-4">The Turing Machine</h3>
+                    <p class="text-sm text-gray-600 mb-6 max-w-xl">
+                        A mathematical model of a general purpose computer. If a problem can be solved by an algorithm,
+                        it can be solved by a Turing Machine.
+                    </p>
+
+                    <!-- Church-Turing Thesis Note -->
+                    <div class="mb-6 border-l-4 border-gray-800 pl-4 py-2">
+                        <strong class="block text-xs uppercase font-bold text-gray-500 mb-1">Church-Turing
+                            Thesis</strong>
+                        <p class="text-sm italic">
+                            "Everything that is intuitively computable can be computed by a Turing Machine." This
+                            connects physical computing to mathematical logic.
+                        </p>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                        <!-- Recursive -->
+                        <div class="rams-card">
+                            <h4 class="text-xs font-bold uppercase mb-2">Recursive Languages (Decidable)</h4>
+                            <p class="text-xs text-gray-600">
+                                A language is <strong>Recursive</strong> if a Turing Machine exists that will accept
+                                valid strings and <strong>always halt</strong> and reject invalid strings.
+                            </p>
+                        </div>
+                        <!-- Recursively Enumerable -->
+                        <div class="rams-card bg-gray-50 border-gray-200">
+                            <h4 class="text-xs font-bold uppercase mb-2">Recursively Enumerable</h4>
+                            <p class="text-xs text-gray-600">
+                                A language is <strong>Recursively Enumerable</strong> if a TM accepts valid strings, but
+                                might <strong>run forever</strong> (loop) on invalid strings.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Universal Turing Machine -->
+                    <div class="rams-card border-purple-200 mb-8">
+                        <h4 class="text-xs font-bold uppercase mb-2 text-purple-900">Universal Turing Machine (UTM)</h4>
+                        <p class="text-xs text-gray-600 mb-2">
+                            A "standard" TM takes an input string and runs. A <strong>Universal</strong> TM takes
+                            <em>two</em> inputs: a description of machine M and an input w, and simulates M on w.
+                        </p>
+                        <p class="text-xs text-gray-500 italic">
+                            This is the theoretical basis for <strong>software</strong>. Your computer (a UTM) runs
+                            programs (input machines).
+                        </p>
+                    </div>
+
+                    <!-- Solved Example: Turing Machine -->
+                    <div class="mt-8 bg-purple-50 border border-purple-200 rounded-lg p-5">
+                        <div class="flex items-center gap-2 mb-3">
+                            <span
+                                class="bg-purple-600 text-white text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider">Solved
+                                Example</span>
+                            <span class="text-sm font-bold text-purple-900">TM Trace</span>
+                        </div>
+                        <p class="text-xs text-gray-700 mb-4">
+                            <strong>Problem:</strong> Trace a Turing Machine designed to increment a binary number
+                            (e.g., transform
+                            "101" to "110").
+                        </p>
+
+                        <div class="bg-white border border-purple-100 rounded overflow-hidden">
+                            <table class="w-full text-[10px] text-left">
+                                <thead class="bg-purple-50 text-purple-900 border-b border-purple-100">
+                                    <tr>
+                                        <th class="px-3 py-2">Step</th>
+                                        <th class="px-3 py-2">State</th>
+                                        <th class="px-3 py-2">Tape Content (Head is Bold)</th>
+                                        <th class="px-3 py-2">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-gray-50">
+                                    <tr>
+                                        <td class="px-3 py-1">1</td>
+                                        <td class="px-3 py-1 font-mono">q_start</td>
+                                        <td class="px-3 py-1 font-mono"><strong>1</strong>01</td>
+                                        <td class="px-3 py-1 text-gray-500">Move Right to end</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="px-3 py-1">2</td>
+                                        <td class="px-3 py-1 font-mono">q_right</td>
+                                        <td class="px-3 py-1 font-mono">1<strong>0</strong>1</td>
+                                        <td class="px-3 py-1 text-gray-500">Move Right</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="px-3 py-1">3</td>
+                                        <td class="px-3 py-1 font-mono">q_right</td>
+                                        <td class="px-3 py-1 font-mono">10<strong>1</strong></td>
+                                        <td class="px-3 py-1 text-gray-500">Move Right</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="px-3 py-1">4</td>
+                                        <td class="px-3 py-1 font-mono">q_carry</td>
+                                        <td class="px-3 py-1 font-mono">10<strong>1</strong></td>
+                                        <td class="px-3 py-1 text-gray-500">Read 1 -> Write 0, Carry Left</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="px-3 py-1">5</td>
+                                        <td class="px-3 py-1 font-mono">q_carry</td>
+                                        <td class="px-3 py-1 font-mono">1<strong>0</strong>0</td>
+                                        <td class="px-3 py-1 text-gray-500">Read 0 -> Write 1, Done</td>
+                                    </tr>
+                                    <tr class="bg-green-50">
+                                        <td class="px-3 py-1">6</td>
+                                        <td class="px-3 py-1 font-mono">q_halt</td>
+                                        <td class="px-3 py-1 font-mono">1<strong>1</strong>0</td>
+                                        <td class="px-3 py-1 text-green-600 font-bold">HALT</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- LBA Detail -->
+                    <div class="rams-card bg-green-50/30 border-green-100">
+                        <h4 class="text-xs font-bold uppercase mb-2 text-green-800">Linear Bounded Automata (LBA)</h4>
+                        <p class="text-xs text-gray-600 mb-2">
+                            A restricted Turing Machine where the tape size is limited to a constant multiple of the
+                            input size.
+                        </p>
+                        <p class="text-xs text-gray-600">
+                            <strong>Significance:</strong> LBAs recognize Context-Sensitive Languages (Type 1). They are
+                            less powerful than standard TMs but more powerful than PDAs.
+                        </p>
+                    </div>
+
+                    <div class="rams-card bg-white border border-gray-200 mt-8">
+                        <div class="flex flex-col items-center w-full">
+                            <h4 class="text-xs font-bold uppercase tracking-widest text-gray-500 mb-4 text-center">
+                                Turing Machine: Binary Flips</h4>
+
+                            <!-- Integrated Toolbar Card -->
+                            <div
+                                class="w-full max-w-3xl border border-gray-200 rounded-lg overflow-hidden flex flex-col">
+                                <!-- Top: Controls Toolbar -->
+                                <div
+                                    class="bg-gray-50 border-b border-gray-200 px-4 py-2 flex items-center justify-between">
+                                    <div class="flex items-center gap-4">
+                                        <div class="flex items-center gap-2 text-xs font-mono text-gray-500">
+                                            <span
+                                                class="font-bold uppercase text-[10px] tracking-wide text-gray-400">State</span>
+                                            <span id="tm-state"
+                                                class="bg-white border border-gray-200 px-1.5 rounded text-gray-800 font-bold">q0</span>
+                                        </div>
+                                        <div class="w-px h-4 bg-gray-300"></div>
+                                        <div
+                                            class="flex items-center gap-2 text-[10px] font-mono text-gray-400 hidden sm:flex">
+                                            <span>Read 0&rarr;1</span>
+                                            <span>Read 1&rarr;0</span>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center gap-2">
+                                        <button onclick="turingStep()"
+                                            class="px-3 py-1 bg-purple-600 hover:bg-purple-700 text-white text-xs font-bold rounded shadow-sm border border-transparent transition-colors active:translate-y-px">Step</button>
+                                        <button onclick="turingReset()"
+                                            class="px-3 py-1 bg-white hover:bg-gray-100 text-gray-600 text-xs font-medium rounded border border-gray-200 transition-colors">Reset</button>
+                                    </div>
+                                </div>
+
+                                <!-- Middle: Canvas -->
+                                <div class="bg-white p-4 overflow-x-auto">
+                                    <canvas id="canvas-turing" width="1000" height="240" class="block"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Halting Problem -->
+                <section id="halting" class="mb-20 md:mb-24">
+                    <span class="rams-label">03 / Limits</span>
+                    <h3 class="text-xl font-medium mb-4">Undecidability</h3>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                        <div class="rams-card border-none bg-red-50">
+                            <h4 class="text-sm font-bold text-red-900 mb-2">The Halting Problem</h4>
+                            <p class="text-xs text-gray-700 italic border-l-2 border-red-500 pl-4 py-1 mb-2">
+                                Is there an algorithm that can inspect any code and determine if it runs forever?
+                            </p>
+                            <p class="text-xs text-gray-700">
+                                <strong>Answer: No.</strong> Turing proved this is logically impossible.
+                            </p>
+                        </div>
+
+                        <div class="rams-card border-yellow-200 bg-yellow-50/30">
+                            <h4 class="text-sm font-bold text-yellow-900 mb-2">Post Correspondence Problem (PCP)</h4>
+                            <p class="text-xs text-gray-700 mb-2">
+                                Another famous undecidable problem. Given a set of dominoes with strings on top and
+                                bottom, can you arrange them so the top string equals the bottom string?
+                            </p>
+                            <div class="flex gap-2 mb-2 font-mono text-[10px] items-center justify-center">
+                                <div class="border border-gray-400 bg-white px-2 py-1 flex flex-col items-center">
+                                    <span>ab</span>
+                                    <hr class="w-full border-gray-300"><span>a</span>
+                                </div>
+                                <div class="border border-gray-400 bg-white px-2 py-1 flex flex-col items-center">
+                                    <span>b</span>
+                                    <hr class="w-full border-gray-300"><span>ba</span>
+                                </div>
+                                <span>...</span>
+                            </div>
+                            <p class="text-[10px] text-gray-500 italic">
+                                For an arbitrary set, there is <strong>no algorithm</strong> to decide this.
+                            </p>
+                        </div>
+                    </div>
+                </section>
+
+                <div id="quiz-turing"></div>
+
+                <!-- 04. Complexity -->
+                <section id="complexity" class="mb-20 md:mb-24">
+                    <span class="rams-label">04 / Complexity</span>
+                    <h3 class="text-xl font-medium mb-4">P vs NP</h3>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="rams-card">
+                            <h4 class="text-lg font-bold mb-2">Class P</h4>
+                            <p class="text-xs text-gray-500 mb-4">Problems solvable in polynomial time.</p>
+                            <ul class="text-xs list-disc pl-4 space-y-1 text-gray-600">
+                                <li>Shortest Path</li>
+                                <li>Matrix Multiplication</li>
+                                <li>Alphabetic Sorting</li>
+                            </ul>
+                        </div>
+                        <div class="rams-card border-purple-200 bg-purple-50/50">
+                            <h4 class="text-lg font-bold mb-2 text-purple-900">Class NP</h4>
+                            <p class="text-xs text-gray-500 mb-4">Problems verifiable in polynomial time.</p>
+                            <ul class="text-xs list-disc pl-4 space-y-1 text-gray-600">
+                                <li>Sudoku</li>
+                                <li>Protein Folding</li>
+                                <li>Traveling Salesman</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="deep-dive mt-6 bg-yellow-50 border-yellow-200">
+                        <h4 class="!text-yellow-800 !mb-2 before:!bg-yellow-500">The Millennium Prize Problems</h4>
+                        <p class="mb-3 text-sm text-yellow-900">
+                            In 2000, the <strong>Clay Mathematics Institute</strong> designated seven "Millennium Prize
+                            Problems" as the most significant open questions in mathematics.
+                        </p>
+                        <ul class="list-disc pl-4 mb-4 text-xs text-yellow-800 space-y-1">
+                            <li><strong>P vs NP</strong> (Computer Science)</li>
+                            <li><strong>Riemann Hypothesis</strong> (Number Theory)</li>
+                            <li><strong>Navier-Stokes Existence</strong> (Fluid Dynamics)</li>
+                            <li><strong>Poincaré Conjecture</strong> (Topology - <em>Solved by Perelman, 2003</em>)</li>
+                            <li><strong>Yang-Mills Existence</strong> (Physics)</li>
+                            <li><strong>Birch and Swinnerton-Dyer Conjecture</strong> (Algebraic Geometry)</li>
+                            <li><strong>Hodge Conjecture</strong> (Algebraic Geometry)</li>
+                        </ul>
+                        <p class="text-xs text-yellow-900 italic">
+                            Solving any of these awards a <strong>$1,000,000</strong> prize. P vs NP is often considered
+                            the most important problem in theoretical computer science, with profound implications for
+                            cryptography, AI, and optimization.
+                        </p>
+                    </div>
+                </section>
+
+                <div class="divider hidden md:block border-t border-gray-100 my-10"></div>
+
+                <!-- Key Takeaways Section -->
+
+
+                <!-- Glossary Section -->
+                <section id="glossary" class="mb-20">
+                    <span class="rams-label">Glossary</span>
+                    <h3 class="text-xl font-medium mb-8">Key Definitions</h3>
+                    <div class="rams-card">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <h4 class="font-bold text-sm mb-2">Automata Theory</h4>
+                                <p class="text-xs text-gray-600">The study of abstract machines and what problems they
+                                    can solve.</p>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-sm mb-2">Finite Automata (DFA)</h4>
+                                <p class="text-xs text-gray-600">A machine with limited memory that is always in one of
+                                    a finite number of states.</p>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-sm mb-2">Regular Expression (Regex)</h4>
+                                <p class="text-xs text-gray-600">A sequence of characters that describes a search
+                                    pattern.</p>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-sm mb-2">Context-Free Grammar (CFG)</h4>
+                                <p class="text-xs text-gray-600">A system of rules for generating valid strings in a
+                                    language, supporting nesting.</p>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-sm mb-2">Pushdown Automaton</h4>
+                                <p class="text-xs text-gray-600">A finite automaton with an infinite stack memory.</p>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-sm mb-2">Turing Machine</h4>
+                                <p class="text-xs text-gray-600">A mathematical model of a general-purpose computer with
+                                    an infinite tape.</p>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-sm mb-2">Halting Problem</h4>
+                                <p class="text-xs text-gray-600">The problem of determining whether a program will
+                                    finish running or run forever (proven undecidable).</p>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-sm mb-2">P vs NP</h4>
+                                <p class="text-xs text-gray-600">The open question of whether every problem whose
+                                    solution can be quickly verified can also be quickly solved.</p>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-sm mb-2">Chomsky Hierarchy</h4>
+                                <p class="text-xs text-gray-600">A containment hierarchy of classes of formal grammars
+                                    (Regular < Context-Free < Context-Sensitive < Recursively Enumerable).</p>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-sm mb-2">Undecidability</h4>
+                                <p class="text-xs text-gray-600">The property of a decision problem for which it is
+                                    impossible to construct an algorithm that always leads to a correct yes-or-no
+                                    answer.</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 07. Assessment -->
+                <section id="quiz" class="mb-20">
+                    <span class="rams-label">06 / Assessment</span>
+                    <h3 class="text-xl font-medium mb-8">Knowledge Check</h3>
+                    <div class="rams-card">
+                        <div id="quiz-computation-final"></div>
+                    </div>
+                </section>
+
+                <!-- Certificate -->
+                <section id="certificate" class="mb-20 md:mb-24 hidden">
+                    <span class="rams-label">07 / Certification</span>
+                    <h3 class="text-xl font-medium mb-6">Completion Certificate</h3>
+
+                    <div class="rams-card !p-0 overflow-hidden">
+                        <div class="p-6 md:p-8">
+                            <div class="flex flex-col md:flex-row gap-8 items-start">
+                                <div class="w-full md:w-1/3 space-y-4">
+                                    <p class="text-sm text-gray-600">
+                                        Enter your name below to generate your personalized certificate.
+                                    </p>
+                                    <div>
+                                        <label for="cert-name"
+                                            class="block text-xs font-bold text-gray-500 uppercase mb-1">Full
+                                            Name</label>
+                                        <input type="text" id="cert-name"
+                                            class="w-full border border-gray-300 p-2 font-mono text-sm focus:border-black outline-none"
+                                            placeholder="Alan Turing">
+                                        <p id="cert-error" class="text-red-500 text-xs mt-2 hidden">Please enter your
+                                            name.
+                                        </p>
+                                    </div>
+                                    <button onclick="generateCert()"
+                                        class="btn btn-primary bg-black border-black text-white w-full hover:bg-gray-800 p-2 rounded text-sm font-medium transition-colors">Generate
+                                        Certificate</button>
+                                    <button onclick="downloadCert()" id="btn-download"
+                                        class="btn btn-secondary w-full hidden border border-gray-300 text-gray-700 p-2 rounded text-sm font-medium hover:bg-gray-50 transition-colors">Download
+                                        PNG</button>
+
+                                </div>
+
+                                <div
+                                    class="w-full md:w-2/3 bg-gray-50 border border-gray-200 p-4 flex items-center justify-center">
+                                    <canvas id="cert-canvas" class="w-full shadow-lg bg-white"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="bg-gray-50 px-6 py-3 border-t border-gray-100 text-center">
+                            <p class="text-[10px] text-gray-400 italic">
+                                This certificate confirms successful completion of learning and assessment on this
+                                platform
+                                and is not an accredited or government-recognized qualification.
+                            </p>
+                        </div>
+                    </div>
+                </section>
+
+
+                <footer class="w-full mt-12 mb-12">
+                    <div class="border-t border-gray-200 pt-8 flex justify-between items-center">
+                        <span class="text-[10px] mono uppercase text-gray-400">Undrstanding</span>
+                        <span class="text-[10px] mono uppercase text-gray-400">For Humans, From Humans</span>
+                    </div>
+                </footer>
+
+            </div>
+        </main>
+    </div>
+
+    <script>
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobile-menu');
+            menu.classList.toggle('hidden');
+            menu.classList.toggle('flex');
+            if (menu.classList.contains('flex')) {
+                document.body.style.overflow = 'hidden';
+            } else {
+                document.body.style.overflow = '';
+            }
+        }
+
+        // Active Link Highlight
+        const sections = document.querySelectorAll('section');
+        const navLinks = document.querySelectorAll('.nav-link');
+        window.addEventListener('scroll', () => {
+            let current = '';
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                if (pageYOffset >= sectionTop - 150) {
+                    current = section.getAttribute('id');
+                }
+            });
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href').includes(current) && current !== '') {
+                    link.classList.add('active');
+                }
+            });
+        });
+
+        // --- Visualizations Script ---
+
+        // Improved DFA Visualizer (Canvas) - High DPI
+        const dfaCanvas = document.getElementById('canvas-dfa');
+        const dfaCtx = dfaCanvas ? dfaCanvas.getContext('2d') : null;
+        if (dfaCtx) dfaCtx.scale(2, 2); // Scale for High DPI
+
+        let dfaState = 'even'; // 'even' or 'odd'
+        let dfaInputStr = '';
+
+        function drawDFA() {
+            if (!dfaCtx) return;
+            const ctx = dfaCtx;
+            ctx.clearRect(0, 0, 400, 220); // Clear rect based on canvas CSS width/height
+
+            // Positions
+            const s1 = { x: 100, y: 110, r: 35 };
+            const s2 = { x: 300, y: 110, r: 35 };
+
+            // Draw Connections First (Underneath)
+
+            // Arrow 1 (Even -> Odd) TOP ARC
+            ctx.beginPath();
+            ctx.moveTo(s1.x, s1.y - 35); // Start at top of node
+            ctx.quadraticCurveTo(200, 20, s2.x, s2.y - 35); // Higher arc
+            ctx.strokeStyle = '#94a3b8';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+
+            // Arrow Head for 1
+            const angle1 = Math.atan2(s2.y - 35 - 20, s2.x - 200); // Approximate angle
+            ctx.fillStyle = '#94a3b8';
+            ctx.beginPath();
+            // Simplify arrow head logic for arc
+            ctx.moveTo(s2.x - 5, s2.y - 40);
+            ctx.lineTo(s2.x - 15, s2.y - 45);
+            ctx.lineTo(s2.x - 12, s2.y - 35);
+            ctx.fill();
+
+            // Label 1 (Top)
+            ctx.fillStyle = '#6b21a8'; // Purple for active transition
+            ctx.font = 'bold 12px Inter';
+            ctx.textAlign = 'center';
+            ctx.fillText("1", 200, 35); // Moved UP to clear line
+
+            // Arrow 2 (Odd -> Even) BOTTOM ARC
+            ctx.beginPath();
+            ctx.moveTo(s2.x, s2.y + 35);
+            ctx.quadraticCurveTo(200, 200, s1.x, s1.y + 35);
+            ctx.strokeStyle = '#94a3b8';
+            ctx.stroke();
+
+            // Arrow Head for 2
+            ctx.fillStyle = '#94a3b8';
+            ctx.beginPath();
+            ctx.moveTo(s1.x + 5, s1.y + 40);
+            ctx.lineTo(s1.x + 15, s1.y + 45);
+            ctx.lineTo(s1.x + 12, s1.y + 35);
+            ctx.fill();
+
+            // Label 1 (Bottom)
+            ctx.fillStyle = '#6b21a8';
+            ctx.fillText("1", 200, 185); // Moved DOWN to clear line
+
+            // Self Loops (for '0')
+            // Left Loop
+            ctx.strokeStyle = '#cbd5e1';
+            ctx.beginPath();
+            ctx.arc(s1.x - 50, s1.y, 20, 0, Math.PI * 2);
+            ctx.stroke();
+            ctx.fillStyle = '#64748b';
+            ctx.fillText("0", s1.x - 75, s1.y + 5);
+
+            // Right Loop
+            ctx.beginPath();
+            ctx.arc(s2.x + 50, s2.y, 20, 0, Math.PI * 2);
+            ctx.stroke();
+            ctx.fillText("0", s2.x + 75, s2.y + 5);
+
+            // Draw Nodes
+            function drawNode(node, label, isActive, isAccepting) {
+                ctx.beginPath();
+                ctx.arc(node.x, node.y, node.r, 0, Math.PI * 2);
+                ctx.fillStyle = isActive ? '#f3e8ff' : '#ffffff';
+                ctx.fill();
+                ctx.lineWidth = isActive ? 3 : 2;
+                ctx.strokeStyle = isActive ? '#7e22ce' : '#e2e8f0'; // Darker purple if active
+                ctx.stroke();
+
+                if (isAccepting) {
+                    ctx.beginPath();
+                    ctx.arc(node.x, node.y, node.r - 4, 0, Math.PI * 2);
+                    ctx.strokeStyle = isActive ? '#a855f7' : '#cbd5e1';
+                    ctx.stroke();
+                }
+
+                ctx.fillStyle = isActive ? '#4c1d95' : '#475569';
+                ctx.font = isActive ? 'bold 12px Inter' : '12px Inter';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(label, node.x, node.y);
+            }
+
+            drawNode(s1, "EVEN", dfaState === 'even', false);
+            drawNode(s2, "ODD", dfaState === 'odd', true);
+
+            // Start Arrow
+            ctx.beginPath();
+            ctx.moveTo(s1.x - 70, s1.y - 20); // Offset to not overlap loop
+            ctx.lineTo(s1.x - 40, s1.y - 10);
+            ctx.strokeStyle = '#94a3b8';
+            ctx.stroke();
+            ctx.fillStyle = '#94a3b8';
+            ctx.font = '10px Inter';
+            ctx.fillText("Start", s1.x - 85, s1.y - 25);
+        }
+
+        function dfaInput(bit) {
+            dfaInputStr += bit;
+            document.getElementById('dfa-string').innerText = dfaInputStr;
+            const stateLabel = document.getElementById('dfa-current-state');
+
+            if (bit === '1') {
+                dfaState = dfaState === 'even' ? 'odd' : 'even';
+            }
+            // Update UI text
+            stateLabel.innerText = dfaState.toUpperCase();
+            stateLabel.className = dfaState === 'odd' ? 'font-bold text-purple-700' : 'font-bold text-gray-500';
+
+            drawDFA();
+        }
+
+        function dfaReset() {
+            dfaState = 'even';
+            dfaInputStr = '';
+            document.getElementById('dfa-string').innerText = '';
+            document.getElementById('dfa-current-state').innerText = 'EVEN';
+            drawDFA();
+        }
+
+        if (dfaCanvas) drawDFA();
+
+
+        // Turing Visualizer - High DPI
+        const turingCanvas = document.getElementById('canvas-turing');
+        const turingCtx = turingCanvas ? turingCanvas.getContext('2d') : null;
+        if (turingCtx) turingCtx.scale(2, 2); // Scale for High DPI
+
+        let tape = [0, 1, 0, 0, 1, 1, 0, 0, 0, 0];
+        let headPos = 2; // Index
+        let tmStepCount = 0;
+
+        function drawTuring() {
+            if (!turingCtx) return;
+            const ctx = turingCtx;
+
+            // Dynamic Width Calculation
+            const cellSize = 40;
+            const startX = 50;
+            const requiredWidth = startX + tape.length * cellSize + 100; // Extra buffer
+            const logicalWidth = Math.max(500, requiredWidth); // Min 500px
+
+            // Resize if needed (Retina 2x)
+            if (turingCanvas.width !== logicalWidth * 2) {
+                turingCanvas.width = logicalWidth * 2;
+                turingCanvas.height = 240; // Fixed height (120 logical)
+                turingCanvas.style.width = `${logicalWidth}px`;
+                turingCanvas.style.height = '120px';
+                ctx.scale(2, 2); // Re-apply scale after resize
+            }
+
+            ctx.clearRect(0, 0, logicalWidth, 120);
+            const y = 60;
+
+            // Draw Tape Track
+            ctx.fillStyle = '#f8fafc';
+            ctx.fillRect(0, y - 25, logicalWidth, 50);
+
+            // Draw Tape Cells
+            for (let i = 0; i < tape.length; i++) {
+                const x = startX + i * cellSize;
+
+                // Cell Box
+                ctx.fillStyle = '#ffffff';
+                ctx.strokeStyle = '#e2e8f0';
+                ctx.lineWidth = 1;
+
+                // Rounded Rect manually or just Rect
+                ctx.fillRect(x + 2, y - 18, cellSize - 4, 36);
+                ctx.strokeRect(x + 2, y - 18, cellSize - 4, 36);
+
+                // Value
+                ctx.fillStyle = '#334155';
+                ctx.font = 'bold 16px Mono';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(tape[i], x + cellSize / 2, y);
+            }
+
+            // Draw Head
+            const headX = startX + headPos * cellSize + cellSize / 2;
+
+            // Pointer Line
+            ctx.beginPath();
+            ctx.moveTo(headX, y - 25);
+            ctx.lineTo(headX, y - 40);
+            ctx.strokeStyle = '#7e22ce'; // Purple-700
+            ctx.lineWidth = 2;
+            ctx.stroke();
+
+            // Head Label Box
+            ctx.fillStyle = '#7e22ce';
+            ctx.beginPath();
+            ctx.roundRect(headX - 18, y - 55, 36, 16, 4);
+            ctx.fill();
+
+            ctx.fillStyle = '#ffffff';
+            ctx.font = 'bold 9px Inter';
+            ctx.fillText("HEAD", headX, y - 47);
+        }
+
+        function turingStep() {
+            // Rule: Flip bit, move right. If 1, set 0. If 0, set 1.
+            tape[headPos] = tape[headPos] === 0 ? 1 : 0;
+            headPos++;
+            if (headPos >= tape.length) {
+                tape.push(0); // Extend tape infinite
+            }
+            tmStepCount++;
+            drawTuring();
+            // Update UI state
+            document.getElementById('tm-state').innerText = 'q' + (tmStepCount % 2); // Dummy state change
+        }
+
+        function turingReset() {
+            tape = [0, 1, 0, 0, 1, 1, 0, 0, 0, 0];
+            headPos = 2;
+            tmStepCount = 0;
+            drawTuring();
+            document.getElementById('tm-state').innerText = 'q0';
+        }
+
+        if (turingCanvas) drawTuring();
+
+        // --- PDA Interaction ---
+        const pdaStackContainer = document.getElementById('pda-stack-container');
+        let pdaStack = [];
+
+        function renderPdaStack() {
+            pdaStackContainer.innerHTML = '<div class="w-full h-8 bg-gray-100 border border-gray-200 text-[10px] flex items-center justify-center text-gray-400 shrink-0">Z₀</div>';
+            // Render from bottom up (visual top is last index)
+            pdaStack.forEach(item => {
+                const el = document.createElement('div');
+                el.className = `w-full h-8 border text-[10px] flex items-center justify-center font-bold shrink-0 animate-in slide-in-from-top-2 fade-in duration-200 ${item === 'a' ? 'bg-purple-100 border-purple-300 text-purple-700' : 'bg-blue-100 border-blue-300 text-blue-700'}`;
+                el.textContent = item;
+                // Append to container (due to flex-col-reverse, last child is visually at TOP)
+                pdaStackContainer.appendChild(el);
+            });
+        }
+
+        function pdaPush(symbol) {
+            if (pdaStack.length < 5) { // Limit stack height
+                pdaStack.push(symbol);
+                renderPdaStack();
+            }
+        }
+
+        function pdaPop() {
+            if (pdaStack.length > 0) {
+                pdaStack.pop();
+                renderPdaStack();
+            }
+        }
+
+        // --- Regex Matcher ---
+        const regexInput = document.getElementById('regex-input');
+        const regexTestStr = document.getElementById('regex-test-str');
+        const regexResult = document.getElementById('regex-result');
+        const regexError = document.getElementById('regex-error');
+
+        function checkRegex() {
+            const pattern = regexInput.value;
+            const text = regexTestStr.value;
+            regexError.textContent = '';
+            try {
+                const re = new RegExp(pattern);
+
+                // Strict Full Match Check for Automata Theory Context
+                // Does the entire string match the pattern?
+                const match = text.match(re);
+                const isFullMatch = match && match[0] === text;
+
+                if (isFullMatch) {
+                    regexResult.textContent = "FULL MATCH";
+                    regexResult.className = "text-xs font-bold px-2 py-0.5 rounded bg-green-100 text-green-700 border border-green-200";
+                } else if (match) {
+                    regexResult.textContent = `PARTIAL: "${match[0]}"`;
+                    regexResult.className = "text-xs font-bold px-2 py-0.5 rounded bg-yellow-100 text-yellow-800 border border-yellow-200";
+                } else {
+                    regexResult.textContent = "NO MATCH";
+                    regexResult.className = "text-xs font-bold px-2 py-0.5 rounded bg-red-100 text-red-700 border border-red-200";
+                }
+            } catch (e) {
+                regexResult.textContent = "ERROR";
+                regexResult.className = "text-xs font-bold px-2 py-0.5 rounded bg-gray-200 text-gray-500";
+                regexError.textContent = "Invalid Regex Pattern";
+            }
+        }
+
+        if (regexInput && regexTestStr) {
+            regexInput.addEventListener('input', checkRegex);
+            regexTestStr.addEventListener('input', checkRegex);
+            checkRegex();
+        }
+
+    </script>
+
+    <!-- Quizzes -->
+    <!-- Quizzes -->
+    <script src="js/script.js"></script>
+    <script>
+        // Define Quizzes for Computation
+
+        const quizAutomataQuestions = [
+            {
+                question: "What is a Regular Language?",
+                options: [
+                    "Any language accepted by a DFA/NFA",
+                    "Any human spoken language",
+                    "Only languages with infinite strings",
+                    "Languages that require a stack"
+                ],
+                answer: 0,
+                explanation: "Regular languages are the simplest class, defined by Finite Automata or Regular Expressions."
+            },
+            {
+                question: "Can an NFA solve problems that a DFA cannot?",
+                options: ["Yes, it solves NP problems", "No, they have equal power", "Yes, NFA is nondeterministic", "No, DFA is stronger"],
+                answer: 1,
+                explanation: "NFA and DFA are equivalent in power. Any NFA can be converted to a DFA (though the DFA might be larger)."
+            }
+        ];
+
+        const quizGrammarsQuestions = [
+            {
+                question: "What feature does a Pushdown Automaton add to a Finite Automaton?",
+                options: ["A Tape", "A Stack", "Random Access Memory", "Parallelism"],
+                answer: 1,
+                explanation: "PDAs use a stack (LIFO) to handle nesting, like matching parentheses."
+            },
+            {
+                question: "Which language is Context-Free but NOT Regular?",
+                options: ["Even number of 0s", "Strings starting with 'a'", "a^n b^n (Equal a's followed by equal b's)", "Empty string"],
+                answer: 2,
+                explanation: "Counting and matching 'n' occurrences requires memory (stack), which Regular languages don't have."
+            }
+        ];
+
+        const quizTuringQuestions = [
+            {
+                question: "What is the Halting Problem?",
+                options: ["Ideally optimizing code", "Determining if a program will stop or run forever", "Pausing a CPU", "Debugging infinite loops"],
+                answer: 1,
+                explanation: "The Halting Problem asks if we can algorithmically decide if *any* given program stops. Answer: Undecidable."
+            }
+        ];
+
+        const quizFinalQuestions = [
+            {
+                question: "Where do Regular Languages sit in the Chomsky Hierarchy?",
+                options: ["Level 0 (Top)", "Level 1", "Level 2", "Level 3 (Bottom/Simplest)"],
+                answer: 3,
+                explanation: "Regular languages are the most restricted (Level 3), contained within Context-Free, etc."
+            },
+            {
+                question: "A Universal Turing Machine is capable of...",
+                options: ["Simulating any other Turing Machine", "Running faster than light", "Solving the Halting Problem", "Generating infinite energy"],
+                answer: 0,
+                explanation: "It is a machine that can take another machine's description as input and simulate it."
+            },
+            {
+                question: "What is 'P' in Complexity Theory?",
+                options: ["Polynomial Time (Efficient)", "Probabilistic", "Possible", "Parallel"],
+                answer: 0,
+                explanation: "P represents problems solvable in useful time (Polynomial time)."
+            },
+            {
+                question: "If a problem is in NP, it means...",
+                options: ["It is impossible to solve", "Its solution can be VERIFIED quickly", "It takes Non-Polynomial time", "It is Next Priority"],
+                answer: 1,
+                explanation: "NP problems are easy to check (like a Sudoku), but usually hard to find the solution."
+            },
+            {
+                question: "Which of these is a Regular Expression?",
+                options: ["S -> aSb", "for (i=0; i<10; i++)", "[a-z]+@[a-z]+\.com", "O(n^2)"],
+                answer: 2,
+                explanation: "This is a regex pattern for matching email-like strings."
+            },
+            {
+                question: "What does the Church-Turing Thesis state?",
+                options: ["Computers can feel emotions", "Turing Machines capture the intuitive notion of 'algorithm'", "Quantum computers are impossible", "Humans are faster than machines"],
+                answer: 1,
+                explanation: "It proposes that any 'calculable' problem can be computed by a Turing Machine."
+            },
+            {
+                question: "Which technique proved that uncomputable problems exist?",
+                options: ["Binary Search", "Cantor's Diagonalization", "Dynamic Programming", "QuickSort"],
+                answer: 1,
+                explanation: "Cantor showed that Real numbers are uncountable, implying there are more problems than programs (which are countable)."
+            },
+            {
+                question: "Which is an example of a Context-Sensitive Language?",
+                options: ["a^n b^n", "a^n b^n c^n", "Regular Expressions", "Palindromes"],
+                answer: 1,
+                explanation: "Matching three dependent counts (a, b, and c) requires more power than a Stack (Context-Free)."
+            },
+            {
+                question: "What does O(1) mean in Complexity?",
+                options: ["Linear Time", "Constant Time", "Exponential Time", "Infinite Time"],
+                answer: 1,
+                explanation: "The operation takes the exact same amount of time regardless of the input size."
+            },
+            {
+                question: "What makes a problem 'NP-Complete'?",
+                options: ["It is the hardest type of problem in NP", "It is impossible to solve", "It is solvable in Polynomial time", "It requires a quantum computer"],
+                answer: 0,
+                explanation: "NP-Complete problems are the hardest in NP. If you solve one efficiently, you can solve ALL NP problems efficiently."
+            }
+        ];
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            // Quick Checks (InlineQuiz)
+            if (typeof InlineQuiz !== 'undefined') {
+                quizAutomataQuestions.forEach(q => new InlineQuiz('quiz-automata', q));
+                quizGrammarsQuestions.forEach(q => new InlineQuiz('quiz-grammars', q));
+                quizTuringQuestions.forEach(q => new InlineQuiz('quiz-turing', q));
+            }
+
+            // Final Quiz (QuizManager)
+            if (typeof QuizManager !== 'undefined') {
+                new QuizManager('quiz-computation-final', quizFinalQuestions, () => {
+                    const cert = document.getElementById('certificate');
+                    cert.classList.remove('hidden');
+                    setTimeout(() => {
+                        cert.scrollIntoView({ behavior: 'smooth' });
+                    }, 100);
+                });
+            }
+        });
+
+        // Certificate Logic
+        // We use the same CertificateGenerator class from script.js
+        const certGen = typeof CertificateGenerator !== 'undefined' ?
+            new CertificateGenerator('cert-canvas', 'Theory of Computation') : null;
+
+        function generateCert() {
+            if (!certGen) return;
+            const nameInput = document.getElementById('cert-name');
+            const errorMsg = document.getElementById('cert-error');
+            const name = nameInput.value.trim();
+            const nameRegex = /^[a-zA-Z\s\-\.'’]+$/;
+
+            // Reset error state
+            errorMsg.classList.add('hidden');
+            nameInput.classList.remove('border-red-500');
+
+            if (!name) {
+                errorMsg.textContent = "Please enter your name.";
+                errorMsg.classList.remove('hidden');
+                nameInput.classList.add('border-red-500');
+                return;
+            }
+
+            if (name.length < 3 || name.length > 35) {
+                errorMsg.textContent = "Name must be between 3 and 35 characters.";
+                errorMsg.classList.remove('hidden');
+                nameInput.classList.add('border-red-500');
+                return;
+            } if (!nameRegex.test(name)) {
+                errorMsg.textContent = "Name cannot contain numbers or special characters.";
+                errorMsg.classList.remove('hidden');
+                nameInput.classList.add('border-red-500');
+                return;
+            }
+
+            certGen.generate(name);
+            document.getElementById('btn-download').classList.remove('hidden');
+        }
+
+        function downloadCert() {
+            if (!certGen) return;
+            const name = document.getElementById('cert-name').value.trim();
+            certGen.download(`Undrstanding_Computation_Certificate_${name.replace(/\s+/g, '_')}.png`);
+        }
+    </script>
+</body>
+
+</html>

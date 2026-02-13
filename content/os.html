@@ -1,0 +1,2831 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Operating Systems</title>
+    <link rel="icon" type="image/svg+xml" href="../assests/undrlogo.svg">
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Roboto+Mono:wght@400;500&display=swap');
+
+        /* Global Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #a3a3a3;
+            border-radius: 3px;
+        }
+
+        :root {
+            /* Rams Palette - Sage Edition */
+            --bg-color: #f4f4f4;
+            --card-bg: #ffffff;
+            --text-main: #111111;
+            --text-muted: #737373;
+
+            /* Accent: Sage Green */
+            --accent: #ACBFA4;
+            --accent-dark: #8A9E82;
+            --accent-hover: #9BAE93;
+
+            --danger: #ef4444;
+            --border: #e5e5e5;
+            --line: #d4d4d4;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            -webkit-font-smoothing: antialiased;
+            line-height: 1.5;
+        }
+
+        h1,
+        h2,
+        h3,
+        h4,
+        h5 {
+            font-weight: 600;
+            letter-spacing: -0.03em;
+            color: var(--text-main);
+        }
+
+        .mono {
+            font-family: 'Roboto Mono', monospace;
+        }
+
+        /* Industrial Grid Layout */
+        .rams-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .rams-card:hover {
+            border-color: #a3a3a3;
+        }
+
+        @media (min-width: 768px) {
+            .rams-card {
+                padding: 2rem;
+            }
+        }
+
+        .rams-label {
+            font-family: 'Inter', sans-serif;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+            margin-bottom: 1rem;
+            display: block;
+        }
+
+        /* Controls */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.5rem 1.25rem;
+            font-size: 0.85rem;
+            font-weight: 500;
+            border-radius: 2px;
+            transition: all 0.1s ease;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            white-space: nowrap;
+        }
+
+        .btn-primary {
+            background-color: var(--accent);
+            color: #1a2e1a;
+            /* Dark text for contrast on sage */
+            border: 1px solid var(--accent);
+        }
+
+        .btn-primary:hover {
+            background-color: var(--accent-hover);
+            color: #1a2e1a;
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn-secondary {
+            background-color: transparent;
+            color: var(--text-main);
+            border: 1px solid #a3a3a3;
+        }
+
+        .btn-secondary:hover {
+            background-color: #e5e5e5;
+            border-color: #737373;
+        }
+
+        /* Navigation */
+        .nav-link {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            padding: 0.5rem 0;
+            display: block;
+            transition: color 0.2s;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            color: var(--text-main);
+            font-weight: 500;
+        }
+
+        .nav-link.active::before {
+            content: "• ";
+            color: var(--accent-dark);
+        }
+
+        /* Mobile Menu */
+        .mobile-nav-link {
+            font-size: 1.25rem;
+            font-weight: 500;
+            color: var(--text-main);
+            padding: 1rem 0;
+            border-bottom: 1px solid #e5e5e5;
+            display: block;
+        }
+
+        .divider {
+            height: 1px;
+            background-color: var(--border);
+            width: 100%;
+            margin: 3rem 0;
+        }
+
+        .thin-scrollbar::-webkit-scrollbar {
+            width: 1px;
+        }
+
+        .thin-scrollbar::-webkit-scrollbar-thumb {
+            background: #d4d4d4;
+        }
+
+        .section-reveal {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .section-reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Process Bar Animation */
+        .process-bar {
+            transition: width 0.3s ease;
+        }
+    </style>
+</head>
+
+<body class="overflow-x-hidden">
+
+    <div class="flex min-h-screen flex-col lg:flex-row">
+
+        <!-- Mobile Header (Fixed) -->
+        <header
+            class="lg:hidden fixed top-0 w-full bg-[#f4f4f4] border-b border-[#e5e5e5] z-[100] px-6 py-4 flex justify-between items-center h-16">
+            <div>
+                <h1 class="text-sm font-semibold tracking-wide uppercase text-black leading-tight">
+                    Operating<br>Systems</h1>
+            </div>
+            <button onclick="toggleMobileMenu()"
+                class="text-black focus:outline-none p-2 border border-transparent active:bg-gray-200 rounded">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+            </button>
+        </header>
+
+        <!-- Mobile Menu Overlay -->
+        <div id="mobile-menu" class="fixed inset-0 bg-[#f4f4f4] z-[90] hidden flex-col pt-20 px-6 overflow-y-auto">
+            <nav class="flex flex-col">
+                <span class="text-[10px] text-gray-400 font-bold uppercase tracking-wider px-0 py-2">01. Basics</span>
+                <a href="#intro" class="mobile-nav-link" onclick="toggleMobileMenu()">Introduction</a>
+                <a href="#kernel" class="mobile-nav-link" onclick="toggleMobileMenu()">The Kernel</a>
+
+                <span class="text-[10px] text-gray-400 font-bold uppercase tracking-wider px-0 py-2 mt-4">02.
+                    Core</span>
+                <a href="#processes" class="mobile-nav-link" onclick="toggleMobileMenu()">Processes & Threads</a>
+                <a href="#scheduling" class="mobile-nav-link" onclick="toggleMobileMenu()">Scheduling</a>
+                <a href="#concurrency" class="mobile-nav-link" onclick="toggleMobileMenu()">Concurrency</a>
+
+                <span class="text-[10px] text-gray-400 font-bold uppercase tracking-wider px-0 py-2 mt-4">03.
+                    Resources</span>
+                <a href="#memory" class="mobile-nav-link" onclick="toggleMobileMenu()">Memory (RAM)</a>
+                <a href="#storage" class="mobile-nav-link" onclick="toggleMobileMenu()">File Systems</a>
+            </nav>
+        </div>
+
+        <!-- Sidebar (Desktop) -->
+        <aside
+            class="hidden lg:block w-64 fixed h-screen bg-[#f4f4f4] border-r border-[#e5e5e5] z-50 overflow-y-auto thin-scrollbar">
+            <div class="p-8 h-full flex flex-col justify-between">
+                <div>
+                    <a href="../index.html"
+                        class="inline-flex items-center gap-2 px-4 py-2 mb-8 text-[10px] font-mono uppercase tracking-wider text-gray-600 border border-gray-300 hover:bg-black hover:text-white hover:border-black transition-all duration-200">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                        </svg>
+                        Back to Home
+                    </a>
+                    <div class="mb-12">
+                        <h1 class="text-sm font-semibold tracking-wide uppercase text-black">Operating<br>Systems
+                        </h1>
+                        <p class="text-[10px] text-gray-400 mt-1 uppercase tracking-wider font-bold">System Software
+                        </p>
+                    </div>
+
+                    <nav class="space-y-1">
+                        <div class="pt-0 pb-1 text-[10px] text-gray-400 font-bold uppercase tracking-wider">01. Basics
+                        </div>
+                        <a href="#intro" class="nav-link">Introduction</a>
+                        <a href="#kernel" class="nav-link">The Kernel</a>
+
+                        <div class="pt-4 pb-1 text-[10px] text-gray-400 font-bold uppercase tracking-wider">02. Core
+                        </div>
+                        <a href="#processes" class="nav-link">Process</a>
+                        <a href="#sync" class="nav-link">Concurrency</a>
+                        <a href="#memory" class="nav-link">Memory</a>
+                        <a href="#storage" class="nav-link">Storage</a>
+                        <a href="#glossary" class="nav-link">Glossary</a>
+                        <a href="#quiz" class="nav-link">Knowledge Check</a>
+                    </nav>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 lg:ml-64 bg-white w-full">
+            <div class="max-w-3xl mx-auto px-4 sm:px-8 py-24 lg:py-20">
+
+                <!-- Hero Section -->
+                <section id="intro" class="mb-16 md:mb-24">
+                    <h2 class="text-3xl md:text-5xl font-semibold mb-6 text-black tracking-tight leading-tight">
+                        The Conductor of<br>Digital Chaos
+                    </h2>
+                    <p class="text-base md:text-lg text-[#555] max-w-xl font-light leading-relaxed mb-4">
+                        An Operating System (OS) is the software that manages computer hardware and software resources.
+                        It provides common services for computer programs.
+                    </p>
+                    <p class="text-sm text-gray-500 max-w-lg leading-relaxed">
+                        Without it, every application would need to know how to talk to the hard drive, send pixels to
+                        the
+                        screen, and manage its own memory. The OS abstracts this complexity.
+                    </p>
+                </section>
+
+                <div class="divider hidden md:block"></div>
+
+                <!-- 01. The Kernel -->
+                <section id="kernel" class="mb-16">
+                    <span class="rams-label">01 / The Core</span>
+                    <h3 class="text-xl font-medium mb-6">Kernel vs User Mode</h3>
+                    <div class="rams-card mb-6">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                            <div>
+                                <h4 class="font-bold text-sm mb-2 text-[#5c6b55]">User Mode</h4>
+                                <p class="text-xs text-gray-600 mb-4">Where your apps run (Browser, Word, Games).
+                                    Restricted access to hardware.</p>
+                                <div class="bg-gray-100 p-2 rounded text-center text-[10px] text-gray-500">Unprivileged
+                                </div>
+                            </div>
+                            <div class="border-l border-gray-200 pl-8">
+                                <h4 class="font-bold text-sm mb-2 text-[#5c6b55]">Kernel Mode</h4>
+                                <p class="text-xs text-gray-600 mb-4">Where the OS core runs. Full access to hardware
+                                    (CPU, RAM, Disk).</p>
+                                <div class="bg-[#ACBFA4] p-2 rounded text-center text-[10px] text-gray-900 font-bold">
+                                    Privileged</div>
+                            </div>
+                        </div>
+                        <div class="mt-8 border-t border-gray-100 pt-4 text-center">
+                            <span class="text-[10px] uppercase font-bold text-gray-400 block mb-2">The Bridge</span>
+                            <div
+                                class="inline-block bg-gray-50 border border-gray-200 px-4 py-2 rounded text-xs font-mono text-gray-700">
+                                System Call (syscall)
+                            </div>
+                            <p class="text-[10px] text-gray-500 mt-2">Apps ask the Kernel to do things (e.g., "Read
+                                File") via System Calls.</p>
+                        </div>
+                    </div>
+                    <div id="qc-kernel"></div>
+                </section>
+
+                <!-- 02. Processes -->
+                <section id="processes" class="mb-16">
+                    <span class="rams-label">02.1 / Execution</span>
+                    <h3 class="text-xl font-medium mb-6">Processes & Threads</h3>
+                    <p class="text-sm text-gray-600 mb-8 max-w-lg">
+                        A Process is a program in execution. A Thread is the smallest unit of execution within a
+                        process.
+                    </p>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="rams-card mb-0 p-5">
+                            <h4 class="font-bold text-sm mb-3">Process Control Block (PCB)</h4>
+                            <p class="text-xs text-gray-600 mb-3">The data structure storing all info about a process.
+                            </p>
+                            <ul class="list-disc list-inside text-[10px] text-gray-500 space-y-1">
+                                <li>Process ID (PID)</li>
+                                <li>Process State (Ready, Run, Wait)</li>
+                                <li>CPU Registers (Program Counter)</li>
+                                <li>Memory Limits</li>
+                            </ul>
+                        </div>
+                        <div class="rams-card mb-0 p-5">
+                            <h4 class="font-bold text-sm mb-3">Context Switching</h4>
+                            <p class="text-xs text-gray-600 mb-3">
+                                Saving the state of the old process and loading the state of the new one.
+                            </p>
+                            <div class="text-[10px] bg-red-50 text-red-800 p-2 rounded border border-red-100">
+                                Info: Context switching is pure overhead. The CPU does no "useful" work during the
+                                switch.
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 02.2 Scheduling -->
+                <section id="scheduling" class="mb-20 md:mb-24">
+                    <div class="mb-8">
+                        <span class="rams-label">02.2 / Logic</span>
+                        <h3 class="text-xl font-medium mb-4">CPU Scheduling Algorithms</h3>
+                        <p class="text-sm text-gray-600 mb-6 max-w-2xl text-justify">
+                            The CPU Scheduler is the part of the OS that decides which process runs next. Its goal is to
+                            maximize CPU utilization and throughput while minimizing waiting time.
+                        </p>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-xs mb-8">
+                            <div class="bg-gray-50 p-4 border border-gray-200">
+                                <h5 class="font-bold text-[#5c6b55] uppercase mb-2">Preemptive vs Non-Preemptive</h5>
+                                <ul class="list-disc pl-4 space-y-2 text-gray-600">
+                                    <li><b>Non-Preemptive:</b> Once a process starts, it keeps the CPU until it
+                                        voluntarily releases it (finishes or waits for I/O). (e.g., FCFS, SJF)</li>
+                                    <li><b>Preemptive:</b> The OS can interrupt a running process and move it to the
+                                        ready queue if a higher-priority process arrives. (e.g., SRTF, RR)</li>
+                                </ul>
+                            </div>
+                            <div class="bg-gray-50 p-4 border border-gray-200">
+                                <h5 class="font-bold text-[#5c6b55] uppercase mb-2">Key Metrics</h5>
+                                <ul class="list-disc pl-4 space-y-1 text-gray-600">
+                                    <li><b>Arrival Time (AT):</b> When a process enters the ready queue.</li>
+                                    <li><b>Burst Time (BT):</b> Time required by a process to execute.</li>
+                                    <li><b>Completion Time (CT):</b> When a process finishes execution.</li>
+                                    <li><b>Turnaround Time (TAT):</b> CT - AT (Total time spent in system).</li>
+                                    <li><b>Waiting Time (WT):</b> TAT - BT (Total time spent waiting).</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div class="relative">
+
+                        <div>
+                            <div class="border-2 border-black bg-white p-3 md:p-4 font-mono rounded-none">
+                                <div class="flex justify-between items-end mb-6 border-b-2 border-black pb-2">
+                                    <div>
+                                        <h4 class="font-bold text-xl text-black leading-none">
+                                            CPU Scheduler</h4>
+                                        <p class="text-[10px] text-gray-500 mt-1 uppercase">Sys_Time: <span
+                                                id="sys-timer-display">0</span> // Status: <span
+                                                id="sys-status-display">READY</span></p>
+                                    </div>
+                                    <div id="sched-notification" class="text-xs font-bold text-right h-4"></div>
+                                </div>
+
+                                <!-- Controls -->
+                                <div class="mb-8 p-4 border border-black bg-gray-50">
+                                    <div class="flex flex-wrap gap-6 items-end">
+                                        <div class="flex flex-col gap-1 w-full md:w-auto">
+                                            <label
+                                                class="text-[9px] uppercase font-bold text-gray-400">Algorithm</label>
+                                            <select id="algo-select"
+                                                class="h-8 border border-black rounded-none bg-white text-xs px-2 focus:ring-0 focus:outline-none cursor-pointer w-full md:w-auto md:min-w-[180px]">
+                                                <option value="FCFS">FCFS (Non-Preemptive)</option>
+                                                <option value="SJF">SJF (Non-Preemptive)</option>
+                                                <option value="SRTF">SRTF (Preemptive)</option>
+                                                <option value="PRIORITY">PRIORITY (Non-Preemptive)</option>
+                                                <option value="RR">ROUND ROBIN (Preemptive)</option>
+                                            </select>
+                                        </div>
+
+                                        <div class="flex gap-2">
+                                            <div class="flex flex-col gap-1">
+                                                <label
+                                                    class="text-[9px] uppercase font-bold text-gray-400">Arrival</label>
+                                                <input type="number" id="arrival-in"
+                                                    class="h-8 w-14 border border-black rounded-none px-2 text-xs text-center focus:ring-0 focus:outline-none"
+                                                    value="0" min="0">
+                                            </div>
+                                            <div class="flex flex-col gap-1">
+                                                <label
+                                                    class="text-[9px] uppercase font-bold text-gray-400">Burst</label>
+                                                <input type="number" id="burst-in"
+                                                    class="h-8 w-14 border border-black rounded-none px-2 text-xs text-center focus:ring-0 focus:outline-none"
+                                                    value="5" min="1">
+                                            </div>
+                                            <div id="priority-container" class="flex flex-col gap-1 hidden">
+                                                <label
+                                                    class="text-[9px] uppercase font-bold text-gray-400">Priority</label>
+                                                <input type="number" id="priority-in"
+                                                    class="h-8 w-14 border border-black rounded-none px-2 text-xs text-center focus:ring-0 focus:outline-none"
+                                                    value="1" min="1">
+                                            </div>
+                                            <div id="quantum-container" class="flex flex-col gap-1 hidden">
+                                                <label
+                                                    class="text-[9px] uppercase font-bold text-gray-400">Quantum</label>
+                                                <input type="number" id="quantum-in"
+                                                    class="h-8 w-14 border border-black rounded-none px-2 text-xs text-center focus:ring-0 focus:outline-none"
+                                                    value="2" min="1">
+                                            </div>
+                                        </div>
+
+                                        <button onclick="scheduler.add()"
+                                            class="h-8 px-4 bg-black text-white text-xs font-bold uppercase hover:bg-gray-800 active:translate-y-px transition-none">
+                                            + Add Process
+                                        </button>
+
+                                        <div class="h-8 w-px bg-gray-300 mx-2"></div>
+
+                                        <div class="flex gap-2">
+                                            <button onclick="scheduler.start()"
+                                                class="h-8 px-6 border border-black bg-[#ACBFA4] text-black text-xs font-bold uppercase hover:bg-[#9cb094] active:translate-y-px transition-none">
+                                                Run
+                                            </button>
+                                            <button onclick="scheduler.reset()"
+                                                class="h-8 px-4 border border-red-500 text-red-600 bg-white text-xs font-bold uppercase hover:bg-red-50 active:translate-y-px transition-none">
+                                                Reset
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <!-- Dynamic Algorithm Info -->
+                                    <div id="algo-info-box" class="mt-4 border-t border-gray-300 pt-4 hidden">
+                                        <p id="algo-desc"
+                                            class="text-[11px] leading-tight text-gray-700 mb-2 font-sans"></p>
+                                        <div class="grid grid-cols-2 gap-4 text-[10px] font-sans">
+                                            <div>
+                                                <span class="font-bold text-green-700 uppercase block">Pros</span>
+                                                <ul id="algo-pros" class="list-disc pl-3 text-gray-600 leading-tight">
+                                                </ul>
+                                            </div>
+                                            <div>
+                                                <span class="font-bold text-red-700 uppercase block">Cons</span>
+                                                <ul id="algo-cons" class="list-disc pl-3 text-gray-600 leading-tight">
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Visualization Grid -->
+                                <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-8">
+                                    <!-- Left: Queues -->
+                                    <div class="lg:col-span-8 flex flex-col gap-6">
+
+                                        <!-- Job Queue (Pending) -->
+                                        <div class="flex flex-col">
+                                            <h5 class="text-[10px] uppercase font-bold text-gray-400 mb-2">Job Queue
+                                                (Planned Arrivals)</h5>
+                                            <div id="job-queue"
+                                                class="h-12 border border-black bg-gray-50 flex items-center px-4 gap-4 overflow-x-auto">
+                                                <span class="text-[10px] text-gray-400 italic">No pending jobs</span>
+                                            </div>
+                                        </div>
+
+                                        <!-- Ready Queue -->
+                                        <div class="flex flex-col">
+                                            <h5 class="text-[10px] uppercase font-bold text-gray-400 mb-2">Ready Queue
+                                                (Memory)</h5>
+                                            <div id="ready-queue"
+                                                class="h-24 border border-black p-2 flex gap-2 items-center overflow-x-auto bg-white">
+                                                <span
+                                                    class="text-xs text-gray-300 italic w-full text-center">Empty</span>
+                                            </div>
+                                        </div>
+
+                                        <!-- Completed (Compact) -->
+                                        <div>
+                                            <h5 class="text-[10px] uppercase font-bold text-gray-400 mb-2">Completed
+                                            </h5>
+                                            <div
+                                                class="h-12 border border-black bg-gray-50 flex items-center justify-between px-4">
+                                                <span class="text-xs font-bold">Count: <span
+                                                        id="completed-count">0</span></span>
+                                                <span class="text-[10px] text-gray-400">View table below</span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Right: CPU -->
+                                    <div class="lg:col-span-4">
+                                        <h5 class="text-[10px] uppercase font-bold text-gray-400 mb-2">Central
+                                            Processing Unit</h5>
+                                        <div class="border-2 border-black h-44 flex flex-col relative">
+                                            <!-- CPU Header -->
+                                            <div class="bg-black text-white text-[10px] px-2 py-1 flex justify-between">
+                                                <span>CORE_01</span>
+                                                <span id="cpu-status-text">IDLE</span>
+                                            </div>
+
+                                            <!-- CPU Body -->
+                                            <div
+                                                class="flex-1 flex flex-col items-center justify-center bg-white relative overflow-hidden">
+                                                <!-- Active Process Box -->
+                                                <div id="cpu-active-process"
+                                                    class="w-20 h-20 border-2 border-dashed border-gray-300 flex flex-col items-center justify-center mb-2 z-10 transition-none">
+                                                    <span class="text-2xl font-bold text-gray-200">-</span>
+                                                </div>
+                                                <div id="cpu-progress-bg"
+                                                    class="absolute bottom-0 left-0 h-1 w-full bg-gray-100">
+                                                    <div id="cpu-progress-bar" class="h-full bg-black w-0"></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Bottom: Gantt & Data -->
+                                <div class="grid grid-cols-1 gap-8">
+                                    <div>
+                                        <div class="flex justify-between items-end mb-2">
+                                            <h5 class="text-[10px] uppercase font-bold text-gray-400">Gantt Chart
+                                                (Timeline)</h5>
+                                            <span class="text-[10px] text-gray-400">Scale: 20px / unit</span>
+                                        </div>
+                                        <!-- Gantt Container: Fixed Height, Scrollable X -->
+                                        <div class="border border-black p-1 bg-gray-50">
+                                            <div id="gantt-container"
+                                                class="h-16 w-full overflow-x-auto overflow-y-hidden bg-white border border-gray-200 relative flex flex-nowrap">
+                                                <!-- Gantt Blocks injected here -->
+                                            </div>
+
+                                        </div>
+                                    </div>
+
+                                    <!-- Metrics Table -->
+                                    <div>
+                                        <h5 class="text-[10px] uppercase font-bold text-gray-400 mb-2">Process Metrics
+                                        </h5>
+                                        <div class="border border-black overflow-x-auto">
+                                            <table class="w-full text-xs text-left min-w-[300px]">
+                                                <thead class="bg-black text-white uppercase text-[9px]">
+                                                    <tr>
+                                                        <th class="p-2 font-normal whitespace-nowrap">Process</th>
+                                                        <th class="p-2 font-normal whitespace-nowrap">Arrival (AT)</th>
+                                                        <th class="p-2 font-normal whitespace-nowrap">Burst (BT)</th>
+                                                        <th class="p-2 font-normal whitespace-nowrap">Completion (CT)
+                                                        </th>
+                                                        <th class="p-2 font-normal whitespace-nowrap">Turnaround (TAT)
+                                                        </th>
+                                                        <th class="p-2 font-normal whitespace-nowrap">Waiting (WT)</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody id="metrics-table-body"
+                                                    class="divide-y divide-gray-200 bg-white">
+                                                    <tr>
+                                                        <td colspan="6" class="p-2 text-center text-gray-400 italic">No
+                                                            data available</td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Log Console -->
+                                <div class="mt-8 border-t-2 border-black pt-4">
+                                    <h5 class="text-[10px] uppercase font-bold text-gray-400 mb-2">System Log</h5>
+                                    <div id="sched-log"
+                                        class="h-24 overflow-y-auto font-mono text-[10px] p-2 bg-gray-50 border border-black">
+                                        <div class="text-gray-400">> System Initialized.</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 02.1 Algorithm Details (Merged) -->
+                        <div class="mt-8 pt-8 border-t border-black">
+                            <span class="rams-label">02.1 / Deep Dive</span>
+                            <h3 class="text-xl font-medium mb-6">Algorithm Analysis</h3>
+                            <div class="grid grid-cols-1 gap-6">
+
+                                <!-- FCFS -->
+                                <div class="border border-black p-6 bg-white">
+                                    <h4 class="font-bold text-lg mb-2">First-Come, First-Served (FCFS)</h4>
+                                    <p class="text-sm text-gray-600 mb-4 text-justify">
+                                        The simplest scheduling algorithm. Processes are executed in the exact order
+                                        they arrive
+                                        in the ready queue. It is non-preemptive, meaning once a process starts, it runs
+                                        until
+                                        completion.
+                                    </p>
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+                                        <div>
+                                            <span
+                                                class="font-bold text-green-700 uppercase block mb-1">Advantages</span>
+                                            <ul class="list-disc pl-4 space-y-1 text-gray-600">
+                                                <li>Simple to understand and implement.</li>
+                                                <li>Fair in the sense that early arrivals are served first.</li>
+                                                <li>No starvation (every process eventually runs).</li>
+                                            </ul>
+                                        </div>
+                                        <div>
+                                            <span
+                                                class="font-bold text-red-700 uppercase block mb-1">Disadvantages</span>
+                                            <ul class="list-disc pl-4 space-y-1 text-gray-600">
+                                                <li><b>Convoy Effect:</b> Short processes stuck waiting behind a long
+                                                    process
+                                                    suffer from high waiting times.</li>
+                                                <li>Poor average Waiting Time and Turnaround Time.</li>
+                                                <li>Not suitable for time-sharing systems.</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- SJF -->
+                                <div class="border border-black p-6 bg-white">
+                                    <h4 class="font-bold text-lg mb-2">Shortest Job First (SJF)</h4>
+                                    <p class="text-sm text-gray-600 mb-4 text-justify">
+                                        Selects the process with the smallest execution (burst) time. This version is
+                                        non-preemptive. If two processes have the same burst time, FCFS is used to break
+                                        the
+                                        tie.
+                                    </p>
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+                                        <div>
+                                            <span
+                                                class="font-bold text-green-700 uppercase block mb-1">Advantages</span>
+                                            <ul class="list-disc pl-4 space-y-1 text-gray-600">
+                                                <li>Optimal: Gives the minimum average waiting time for a given set of
+                                                    processes.</li>
+                                                <li>Maximizes system throughput.</li>
+                                            </ul>
+                                        </div>
+                                        <div>
+                                            <span
+                                                class="font-bold text-red-700 uppercase block mb-1">Disadvantages</span>
+                                            <ul class="list-disc pl-4 space-y-1 text-gray-600">
+                                                <li><b>Starvation:</b> Long processes may never run if short processes
+                                                    keep
+                                                    arriving.</li>
+                                                <li>Impossible to implement in general OS since future burst time is
+                                                    unknown
+                                                    (requires prediction).</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- SRTF -->
+                                <div class="border border-black p-6 bg-white">
+                                    <h4 class="font-bold text-lg mb-2">Shortest Remaining Time First (SRTF)</h4>
+                                    <p class="text-sm text-gray-600 mb-4 text-justify">
+                                        The preemptive version of SJF. The OS constantly monitors the ready queue. If a
+                                        new
+                                        process arrives with a burst time shorter than the remaining time of the current
+                                        process, the CPU preempts the current one.
+                                    </p>
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+                                        <div>
+                                            <span
+                                                class="font-bold text-green-700 uppercase block mb-1">Advantages</span>
+                                            <ul class="list-disc pl-4 space-y-1 text-gray-600">
+                                                <li>Even lower average waiting time than non-preemptive SJF.</li>
+                                                <li>Short jobs are handled very quickly.</li>
+                                            </ul>
+                                        </div>
+                                        <div>
+                                            <span
+                                                class="font-bold text-red-700 uppercase block mb-1">Disadvantages</span>
+                                            <ul class="list-disc pl-4 space-y-1 text-gray-600">
+                                                <li>High context switching overhead due to frequent preemption.</li>
+                                                <li>Complex to implement.</li>
+                                                <li>Subject to starvation of long processes.</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Priority -->
+                                <div class="border border-black p-6 bg-white">
+                                    <h4 class="font-bold text-lg mb-2">Priority Scheduling</h4>
+                                    <p class="text-sm text-gray-600 mb-4 text-justify">
+                                        Processes are assigned a priority number (in this sim, lower number = higher
+                                        priority).
+                                        The CPU is allocated to the process with the highest priority.
+                                    </p>
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+                                        <div>
+                                            <span
+                                                class="font-bold text-green-700 uppercase block mb-1">Advantages</span>
+                                            <ul class="list-disc pl-4 space-y-1 text-gray-600">
+                                                <li>Allows the OS to handle urgent tasks (e.g., system errors, I/O)
+                                                    immediately.
+                                                </li>
+                                                <li>Flexible: Can act like FCFS (if priorities equal) or SJF (if
+                                                    priority ~
+                                                    1/burst).</li>
+                                            </ul>
+                                        </div>
+                                        <div>
+                                            <span
+                                                class="font-bold text-red-700 uppercase block mb-1">Disadvantages</span>
+                                            <ul class="list-disc pl-4 space-y-1 text-gray-600">
+                                                <li><b>Indefinite Blocking (Starvation):</b> Low priority processes may
+                                                    wait
+                                                    forever.</li>
+                                                <li>Solution: <b>Aging</b> (gradually increasing priority of waiting
+                                                    processes).
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Round Robin -->
+                                <div class="border border-black p-6 bg-white">
+                                    <h4 class="font-bold text-lg mb-2">Round Robin (RR)</h4>
+                                    <p class="text-sm text-gray-600 mb-4 text-justify">
+                                        Designed for time-sharing systems. The CPU is assigned to the process for a
+                                        small time
+                                        unit called a <b>Time Quantum</b>. Once the quantum expires, the process is
+                                        preempted
+                                        and added to the end of the ready queue.
+                                    </p>
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+                                        <div>
+                                            <span
+                                                class="font-bold text-green-700 uppercase block mb-1">Advantages</span>
+                                            <ul class="list-disc pl-4 space-y-1 text-gray-600">
+                                                <li>Fair: Every process gets an equal share of CPU.</li>
+                                                <li>Responsive: Good for interactive systems; no process waits too long
+                                                    for its
+                                                    first turn.</li>
+                                            </ul>
+                                        </div>
+                                        <div>
+                                            <span
+                                                class="font-bold text-red-700 uppercase block mb-1">Disadvantages</span>
+                                            <ul class="list-disc pl-4 space-y-1 text-gray-600">
+                                                <li>Performance depends heavily on Quantum size.</li>
+                                                <li>Small Quantum = High Context Switching overhead.</li>
+                                                <li>Large Quantum = Degenerates into FCFS.</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                            <!-- End Algorithm Analysis Grid -->
+                        </div>
+                        <div id="qc-scheduling"></div>
+                </section>
+
+                <!-- 02.3 Synchronization -->
+                <section id="synchronization" class="mb-20">
+                    <span class="rams-label">02.3 / Coordination</span>
+                    <h3 class="text-xl font-medium mb-6">Process Synchronization</h3>
+
+                    <div class="mb-12">
+                        <p class="text-sm text-gray-600 mb-6 max-w-2xl text-justify">
+                            When multiple processes execute concurrently and share data, they must be synchronized to
+                            avoid <b>Race Conditions</b>—where the output depends on the specific order of execution.
+                        </p>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                            <!-- Critical Section -->
+                            <div class="border border-black p-6 bg-white">
+                                <h4 class="font-bold text-lg mb-3">The Critical Section Problem</h4>
+                                <p class="text-sm text-gray-600 mb-4 text-justify">
+                                    The "Critical Section" is the part of the code where a process accesses shared
+                                    resources. The goal is to ensure only one process executes in its critical section
+                                    at a time.
+                                </p>
+                                <div class="bg-gray-50 p-3 border border-gray-200">
+                                    <h5 class="font-bold text-[#5c6b55] uppercase text-xs mb-2">3 Requirements</h5>
+                                    <ul class="list-disc pl-4 space-y-1 text-xs text-gray-600">
+                                        <li><b>Mutual Exclusion:</b> If one process is in CS, no other can be.</li>
+                                        <li><b>Progress:</b> If no one is in CS, selection of the next process cannot be
+                                            postponed indefinitely.</li>
+                                        <li><b>Bounded Waiting:</b> Limit on how many times others can enter CS before a
+                                            requesting process is granted access.</li>
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <!-- Peterson's Solution -->
+                            <div class="border border-black p-6 bg-white">
+                                <h4 class="font-bold text-lg mb-3">Peterson's Solution</h4>
+                                <p class="text-sm text-gray-600 mb-4 text-justify">
+                                    A classic software-based solution for 2 processes. It uses two shared variables:
+                                    <code class="bg-gray-100 px-1 rounded">turn</code> and <code
+                                        class="bg-gray-100 px-1 rounded">flag[]</code>.
+                                </p>
+                                <div
+                                    class="font-mono text-[10px] bg-gray-900 text-gray-300 p-3 rounded border border-gray-700">
+                                    <span class="text-[#ACBFA4]">// Process i</span><br>
+                                    flag[i] = true;<br>
+                                    turn = j;<br>
+                                    <span class="text-purple-400">while</span> (flag[j] && turn == j);<br>
+                                    <span class="text-yellow-500">/* CRITICAL SECTION */</span><br>
+                                    flag[i] = false;<br>
+                                    <span class="text-gray-500">/* REMAINDER SECTION */</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Visualization: Mutual Exclusion -->
+                    <div class="mb-12 border border-black p-4 bg-gray-50">
+                        <h4 class="font-bold text-sm mb-4 uppercase text-gray-500 tracking-wider">Interactive: Mutual
+                            Exclusion Demo</h4>
+                        <div class="flex flex-col items-center gap-8 py-4">
+                            <!-- Resource -->
+                            <div class="relative">
+                                <div id="sync-resource"
+                                    class="w-24 h-24 border-2 border-dashed border-gray-300 bg-white flex items-center justify-center rounded-full transition-all duration-300">
+                                    <div class="text-center">
+                                        <i class="fas fa-lock-open text-gray-300 text-xl mb-1"></i>
+                                        <div class="text-[10px] font-bold text-gray-400 uppercase">Unlocked</div>
+                                    </div>
+                                </div>
+                                <!-- Connection Lines (Visual Only) -->
+                                <div class="hidden md:block absolute top-1/2 -left-12 w-12 h-px bg-gray-300 -z-10">
+                                </div>
+                                <div class="hidden md:block absolute top-1/2 -right-12 w-12 h-px bg-gray-300 -z-10">
+                                </div>
+                            </div>
+
+                            <!-- Processes -->
+                            <div class="flex flex-col md:flex-row gap-8 md:gap-24 w-full justify-center">
+                                <!-- P0 -->
+                                <div class="flex flex-col items-center gap-3">
+                                    <span id="p0-status" class="text-[10px] font-mono text-gray-500">Non-Critical</span>
+                                    <div id="p0-box"
+                                        class="w-20 h-20 border border-black bg-white flex items-center justify-center transition-all duration-300 relative">
+                                        <span class="font-mono font-bold text-lg">P0</span>
+                                        <div id="p0-indicator"
+                                            class="absolute top-1 right-1 w-2 h-2 rounded-full bg-gray-200"></div>
+                                    </div>
+                                    <div class="flex gap-1">
+                                        <button onclick="syncDemo.enter(0)"
+                                            class="px-3 py-1 bg-black text-white text-[10px] font-bold uppercase hover:bg-gray-800 transition-colors">Acquire</button>
+                                        <button onclick="syncDemo.exit(0)"
+                                            class="px-3 py-1 border border-black text-[10px] font-bold uppercase hover:bg-gray-100 transition-colors">Release</button>
+                                    </div>
+                                </div>
+
+                                <!-- P1 -->
+                                <div class="flex flex-col items-center gap-3">
+                                    <span id="p1-status" class="text-[10px] font-mono text-gray-500">Non-Critical</span>
+                                    <div id="p1-box"
+                                        class="w-20 h-20 border border-black bg-white flex items-center justify-center transition-all duration-300 relative">
+                                        <span class="font-mono font-bold text-lg">P1</span>
+                                        <div id="p1-indicator"
+                                            class="absolute top-1 right-1 w-2 h-2 rounded-full bg-gray-200"></div>
+                                    </div>
+                                    <div class="flex gap-1">
+                                        <button onclick="syncDemo.enter(1)"
+                                            class="px-3 py-1 bg-black text-white text-[10px] font-bold uppercase hover:bg-gray-800 transition-colors">Acquire</button>
+                                        <button onclick="syncDemo.exit(1)"
+                                            class="px-3 py-1 border border-black text-[10px] font-bold uppercase hover:bg-gray-100 transition-colors">Release</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="sync-msg"
+                                class="h-6 text-xs font-mono text-red-600 bg-red-50 px-2 py-1 rounded hidden"></div>
+                        </div>
+                    </div>
+
+                    <h3 class="text-xl font-medium mb-6">Synchronization Tools & Problems</h3>
+
+                    <!-- Semaphores -->
+                    <div class="mb-8 border border-black p-6 bg-white">
+                        <h4 class="font-bold text-lg mb-3">Semaphores</h4>
+                        <p class="text-sm text-gray-600 mb-4 text-justify">
+                            A synchronization tool that provides a more sophisticated way (than Mutex locks) for process
+                            to synchronize their activities. A semaphore <code class="bg-gray-100 px-1 rounded">S</code>
+                            is an integer variable accessed only through two atomic operations:
+                        </p>
+                        <div
+                            class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs font-mono bg-gray-50 p-4 border border-gray-200">
+                            <div>
+                                <strong class="text-[#5c6b55] block mb-1">wait(S) [P operation]</strong>
+                                while (S <= 0); // busy wait<br>
+                                    S--;
+                            </div>
+                            <div>
+                                <strong class="text-[#5c6b55] block mb-1">signal(S) [V operation]</strong>
+                                S++;
+                            </div>
+                        </div>
+                        <div class="mt-4 text-xs text-gray-500">
+                            Types: <b>Binary Semaphore</b> (0 or 1, same as Mutex) vs <b>Counting Semaphore</b>
+                            (unrestricted domain, for resource management).
+                        </div>
+                    </div>
+
+                    <!-- Classical Problems -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+                        <div class="border border-black p-4 bg-white">
+                            <h5 class="font-bold text-sm mb-2">Bounded-Buffer</h5>
+                            <p class="text-[11px] text-gray-600 leading-tight">
+                                (Producer-Consumer): Producers generate data to a specific size buffer. Consumers remove
+                                it. Must ensure producer doesn't add to full buffer and consumer doesn't remove from
+                                empty one.
+                            </p>
+                        </div>
+                        <div class="border border-black p-4 bg-white">
+                            <h5 class="font-bold text-sm mb-2">Readers-Writers</h5>
+                            <p class="text-[11px] text-gray-600 leading-tight">
+                                Multiple readers can read simultaneously. But if a writer is writing, no other process
+                                (reader or writer) can access the database. Problem: ensuring no starvation.
+                            </p>
+                        </div>
+                        <div class="border border-black p-4 bg-white">
+                            <h5 class="font-bold text-sm mb-2">Dining Philosophers</h5>
+                            <p class="text-[11px] text-gray-600 leading-tight">
+                                5 philosophers sit at a table with 5 chopsticks. Need 2 to eat. Classic
+                                deadlock/starvation example if not handled correctly (e.g., using semaphores or
+                                monitors).
+                            </p>
+                        </div>
+                    </div>
+
+
+                    <!-- Comprehensive Deadlock Section -->
+                    <div class="mt-12 border-t border-gray-200 pt-8">
+                        <h3 class="text-xl font-medium mb-6">Deadlocks</h3>
+                        <p class="text-sm text-gray-600 mb-8 max-w-lg">
+                            A situation where a set of processes are blocked because each process is holding a resource
+                            and waiting for another resource acquired by some other process.
+                        </p>
+
+                        <!-- 1. Characterization -->
+                        <div class="bg-gray-50 border border-black p-6 mb-8">
+                            <h4 class="font-bold text-sm mb-4 uppercase tracking-wider text-gray-500">Deadlock
+                                Characterization</h4>
+                            <p class="text-xs text-gray-600 mb-4">Deadlock can arise if four conditions hold
+                                simultaneously (Coffman Conditions):</p>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+                                <div class="bg-white p-3 border border-gray-200">
+                                    <strong class="block mb-1 text-red-700">1. Mutual Exclusion</strong>
+                                    At least one resource must be held in a non-sharable mode.
+                                </div>
+                                <div class="bg-white p-3 border border-gray-200">
+                                    <strong class="block mb-1 text-red-700">2. Hold to Wait</strong>
+                                    Process holds at least one resource and is waiting for others.
+                                </div>
+                                <div class="bg-white p-3 border border-gray-200">
+                                    <strong class="block mb-1 text-red-700">3. No Preemption</strong>
+                                    Resources cannot be preempted; must be released voluntarily.
+                                </div>
+                                <div class="bg-white p-3 border border-gray-200">
+                                    <strong class="block mb-1 text-red-700">4. Circular Wait</strong>
+                                    P0 waits for P1, P1 waits for P2, ..., Pn waits for P0.
+                                </div>
+                            </div>
+                        </div>
+
+
+                        <!-- Quick Check: Synchronization -->
+                        <div id="qc-sync" class="mb-12"></div>
+
+                        <!-- 2. Methods of Handling -->
+                        <div class="mb-8">
+                            <h4 class="font-bold text-sm mb-4">Methods for Handling Deadlocks</h4>
+                            <div class="flex flex-col gap-3 text-xs">
+                                <div class="p-3 border-l-4 border-gray-400 bg-white">
+                                    <span class="font-bold block mb-1">Deadlock Ignorance (Ostrich Algorithm)</span>
+                                    Pretend deadlock never occurs. Used by most OS (Unix, Windows) because deadlocks are
+                                    rare and handling is expensive.
+                                </div>
+                                <div class="p-3 border-l-4 border-blue-500 bg-white">
+                                    <span class="font-bold block mb-1">Deadlock Prevention</span>
+                                    Ensure at least one of the 4 conditions cannot hold.
+                                </div>
+                                <div class="p-3 border-l-4 border-purple-500 bg-white">
+                                    <span class="font-bold block mb-1">Deadlock Avoidance</span>
+                                    OS assesses if allocating a resource will leave the system in a safe state (e.g.,
+                                    Banker's Algorithm).
+                                </div>
+                                <div class="p-3 border-l-4 border-red-500 bg-white">
+                                    <span class="font-bold block mb-1">Deadlock Detection & Recovery</span>
+                                    Allow deadlock to occur, detect it, and recover.
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 3. Details Grid -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+                            <!-- Prevention Details -->
+                            <div class="border border-black p-5 bg-white">
+                                <h4 class="font-bold text-sm mb-3">Deadlock Prevention</h4>
+                                <ul class="list-disc pl-4 text-[10px] text-gray-600 space-y-2">
+                                    <li><strong>Mutual Exclusion:</strong> Make resources sharable (e.g., Read-only
+                                        files).</li>
+                                    <li><strong>Hold and Wait:</strong> Process must request all resources
+                                        <em>before</em> execution.
+                                    </li>
+                                    <li><strong>No Preemption:</strong> If a process requests a resource that isn't
+                                        available, preempt all its held resources.</li>
+                                    <li><strong>Circular Wait:</strong> Impose a total ordering of all resource types.
+                                    </li>
+                                </ul>
+                            </div>
+
+                            <!-- Avoidance Details -->
+                            <div class="border border-black p-5 bg-white">
+                                <h4 class="font-bold text-sm mb-3">Deadlock Avoidance</h4>
+                                <p class="text-[10px] text-gray-600 mb-2">Requires the OS to know in advance the maximum
+                                    resources a process will need.</p>
+                                <div class="bg-purple-50 p-2 rounded border border-purple-100">
+                                    <span class="font-bold text-[10px] text-purple-800 block mb-1">Banker's
+                                        Algorithm</span>
+                                    <p class="text-[9px] text-purple-700">
+                                        Before allocation, check if the system remains in a <strong>Safe State</strong>
+                                        (there exists a sequence to satisfy all requests). If unsafe, process must wait.
+                                    </p>
+                                </div>
+                            </div>
+
+                            <!-- Detection -->
+                            <div class="border border-black p-5 bg-white">
+                                <h4 class="font-bold text-sm mb-3">Deadlock Detection</h4>
+                                <ul class="list-disc pl-4 text-[10px] text-gray-600 space-y-2">
+                                    <li><strong>Single Instance:</strong> Use a Wait-for Graph. If cycle exists &rarr;
+                                        Deadlock.</li>
+                                    <li><strong>Multiple Instances:</strong> Use algorithm similar to Banker's to track
+                                        Available, Allocation, and Request matrices.</li>
+                                </ul>
+                            </div>
+
+                            <!-- Recovery -->
+                            <div class="border border-black p-5 bg-white">
+                                <h4 class="font-bold text-sm mb-3">Recovery from Deadlock</h4>
+                                <div class="space-y-2">
+                                    <div class="flex items-start gap-2">
+                                        <div class="mt-1 w-1.5 h-1.5 bg-red-500 rounded-full flex-shrink-0"></div>
+                                        <div class="text-[10px]"><strong>Process Termination:</strong> Abort all
+                                            deadlocked processes OR abort one at a time until cycle breaks.</div>
+                                    </div>
+                                    <div class="flex items-start gap-2">
+                                        <div class="mt-1 w-1.5 h-1.5 bg-red-500 rounded-full flex-shrink-0"></div>
+                                        <div class="text-[10px]"><strong>Resource Preemption:</strong> Select a victim,
+                                            rollback process to safe state, and starve the victim if needed.</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- Quick Check: Deadlocks -->
+                    <div id="qc-deadlock" class="mt-8 mb-12"></div>
+                </section>
+
+                <!-- 02.1 Algorithm Details -->
+
+
+                <!-- 03. Memory -->
+                <section id="memory" class="mb-16">
+                    <span class="rams-label">03 / Space</span>
+                    <h3 class="text-xl font-medium mb-6">Memory Management</h3>
+                    <p class="text-sm text-gray-600 mb-8 max-w-lg">
+                        Managing RAM. The OS must trick programs into thinking they have continuous, unlimited
+                        memory
+                        (Virtual Memory).
+                    </p>
+
+                    <!-- Detailed Memory Management Strategies -->
+                    <div class="space-y-8 mb-12">
+
+                        <!-- 1. Swapping -->
+                        <div class="border border-black p-5 bg-white">
+                            <h4 class="font-bold text-sm mb-3 flex items-center gap-2">
+                                <span class="w-2 h-2 bg-[#5c6b55] rounded-full"></span>
+                                Background Swapping
+                            </h4>
+                            <p class="text-xs text-gray-600 mb-4">
+                                When RAM is insufficient, the OS temporarily moves idle processes from memory to a
+                                backing store (Disk) and brings them back when needed.
+                            </p>
+                            <!-- Visual: Swapping -->
+                            <div
+                                class="flex items-center justify-center gap-6 bg-gray-50 p-4 border border-gray-100 rounded">
+                                <div
+                                    class="w-16 h-20 border-2 border-dashed border-gray-400 bg-white flex flex-col items-center justify-center text-[10px] font-mono shadow-sm">
+                                    <span>RAM</span>
+                                    <span class="text-[8px] text-gray-400 mt-1">(Full)</span>
+                                </div>
+                                <div class="flex flex-col gap-2 text-[9px] font-bold uppercase tracking-wide">
+                                    <span class="text-red-500 animate-pulse">&rarr; Swap Out</span>
+                                    <span class="text-green-600">&larr; Swap In</span>
+                                </div>
+                                <div
+                                    class="w-16 h-20 border-2 border-gray-800 bg-gray-800 text-white flex flex-col items-center justify-center text-[10px] font-mono shadow-lg">
+                                    <span>DISK</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 2. Contiguous Allocation -->
+                        <div class="border border-black p-5 bg-white">
+                            <h4 class="font-bold text-sm mb-3 flex items-center gap-2">
+                                <span class="w-2 h-2 bg-blue-600 rounded-full"></span>
+                                Contiguous Memory Allocation
+                            </h4>
+                            <p class="text-xs text-gray-600 mb-4">
+                                Each process is contained in a single, continuous section of memory.
+                            </p>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div class="bg-gray-50 p-3 rounded border-l-4 border-blue-400">
+                                    <span class="font-bold text-xs block mb-1">Fixed Partition</span>
+                                    <p class="text-[10px] text-gray-500">Memory is divided into fixed-size partitions.
+                                        Leads to <strong class="text-gray-700">Internal Fragmentation</strong> (Process
+                                        smaller than partition).</p>
+                                </div>
+                                <div class="bg-gray-50 p-3 rounded border-l-4 border-blue-600">
+                                    <span class="font-bold text-xs block mb-1">Variable Partition</span>
+                                    <p class="text-[10px] text-gray-500">OS allocates exactly the size needed. Leads to
+                                        <strong class="text-gray-700">External Fragmentation</strong> (Holes between
+                                        processes).
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 3. Paging & Page Table -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <!-- Paging -->
+                            <div class="border border-black p-5 bg-white">
+                                <h4 class="font-bold text-sm mb-3">Paging</h4>
+                                <p class="text-xs text-gray-600 mb-3">
+                                    Eliminates external fragmentation by dividing physical memory into fixed-size blocks
+                                    called <strong>Frames</strong> and logical memory into blocks of the same size
+                                    called <strong>Pages</strong>.
+                                </p>
+                                <ul class="list-disc pl-4 text-[10px] text-gray-600 space-y-1">
+                                    <li><strong>Physical Address Space</strong>: Non-contiguous.</li>
+                                    <li><strong>Logical Address Space</strong>: Contiguous view for the process.</li>
+                                </ul>
+                            </div>
+
+                            <!-- Page Table Structure -->
+                            <div class="border border-black p-5 bg-white">
+                                <h4 class="font-bold text-sm mb-3">Structure of Page Table</h4>
+                                <p class="text-xs text-gray-600 mb-3">
+                                    The data structure used to map Logical Pages to Physical Frames.
+                                </p>
+                                <div class="space-y-2">
+                                    <div class="flex items-start gap-2">
+                                        <div class="mt-1 w-1.5 h-1.5 bg-gray-400 rounded-full flex-shrink-0"></div>
+                                        <div class="text-[10px]"><strong>Hierarchical</strong>: Break table into smaller
+                                            tables (e.g., Two-Level) to save contiguous RAM.</div>
+                                    </div>
+                                    <div class="flex items-start gap-2">
+                                        <div class="mt-1 w-1.5 h-1.5 bg-gray-400 rounded-full flex-shrink-0"></div>
+                                        <div class="text-[10px]"><strong>Hashed</strong>: Use hash map for large address
+                                            spaces (> 32-bit).</div>
+                                    </div>
+                                    <div class="flex items-start gap-2">
+                                        <div class="mt-1 w-1.5 h-1.5 bg-gray-400 rounded-full flex-shrink-0"></div>
+                                        <div class="text-[10px]"><strong>Inverted</strong>: One entry per Physical Frame
+                                            instead of per Logical Page. Saves memory.</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 4. Segmentation -->
+                        <div class="border border-black p-5 bg-white">
+                            <h4 class="font-bold text-sm mb-3 flex items-center gap-2">
+                                <span class="w-2 h-2 bg-purple-600 rounded-full"></span>
+                                Segmentation
+                            </h4>
+                            <p class="text-xs text-gray-600 mb-4">
+                                Supports the user view of memory. A program is a collection of segments rather than a
+                                linear stream of bytes.
+                            </p>
+
+                            <!-- Visual: Segments -->
+                            <div class="flex items-center gap-1 h-12 w-full max-w-md mx-auto">
+                                <div
+                                    class="h-full bg-purple-100 border border-purple-300 flex-1 flex items-center justify-center text-[9px] font-bold text-purple-800 rounded-l relative group cursor-help">
+                                    Main()
+                                    <span
+                                        class="hidden group-hover:block absolute -bottom-6 bg-black text-white px-2 py-1 rounded text-[8px] whitespace-nowrap">Code
+                                        Segment</span>
+                                </div>
+                                <div
+                                    class="h-full bg-yellow-100 border border-yellow-300 w-16 flex items-center justify-center text-[9px] font-bold text-yellow-800 relative group cursor-help">
+                                    Stack
+                                    <span
+                                        class="hidden group-hover:block absolute -bottom-6 bg-black text-white px-2 py-1 rounded text-[8px] whitespace-nowrap">LIFO
+                                        Structure</span>
+                                </div>
+                                <div class="h-full bg-gray-100 border border-gray-300 w-8"></div>
+                                <div
+                                    class="h-full bg-green-100 border border-green-300 flex-1 flex items-center justify-center text-[9px] font-bold text-green-800 relative group cursor-help">
+                                    Heap
+                                    <span
+                                        class="hidden group-hover:block absolute -bottom-6 bg-black text-white px-2 py-1 rounded text-[8px] whitespace-nowrap">Dynamic
+                                        Memory</span>
+                                </div>
+                                <div
+                                    class="h-full bg-blue-100 border border-blue-300 w-24 flex items-center justify-center text-[9px] font-bold text-blue-800 rounded-r">
+                                    Global Vars
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Paging Visualizer -->
+                    <div class="rams-card p-6">
+                        <h4 class="font-bold text-sm mb-4">Virtual to Physical Address Translator</h4>
+                        <div class="flex flex-col md:flex-row items-stretch md:items-center gap-4 text-xs font-mono">
+                            <div class="flex-1">
+                                <label class="block text-gray-400 text-[10px] mb-1">Page Table (Map)</label>
+                                <div class="bg-gray-50 border border-gray-200 p-2 rounded" id="page-table-display">
+                                    <!-- Populated by JS -->
+                                    <div class="flex justify-between border-b border-gray-100"><span>Page
+                                            0</span><span>-> Frame 5</span></div>
+                                    <div class="flex justify-between border-b border-gray-100"><span>Page
+                                            1</span><span>-> Frame 2</span></div>
+                                    <div class="flex justify-between border-b border-gray-100"><span>Page
+                                            2</span><span>-> Frame 8</span></div>
+                                    <div class="flex justify-between"><span>Page 3</span><span>-> Frame 1</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="flex-1">
+                                <label class="block text-gray-400 text-[10px] mb-1">Instruction</label>
+                                <div class="text-[10px] text-gray-500 mb-2">Virtual Addr = Page + Offset</div>
+                                <div class="flex gap-2">
+                                    <input type="number" id="v-page" placeholder="Page #"
+                                        class="w-16 border p-1 rounded" min="0" max="3">
+                                    <input type="number" id="v-offset" placeholder="Offset"
+                                        class="w-16 border p-1 rounded" disabled value="102">
+                                </div>
+                                <button onclick="translateAddr()"
+                                    class="mt-2 btn btn-primary w-full text-[10px] h-8">Translate</button>
+                            </div>
+                            <div class="flex-1 text-center">
+                                <label class="block text-gray-400 text-[10px] mb-1">Result</label>
+                                <div id="phys-addr-res" class="p-3 bg-gray-100 rounded font-bold text-[#5c6b55]">-
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Virtual Memory Section -->
+                    <div class="mt-12 pt-8 border-t border-gray-200">
+                        <h3 class="text-xl font-medium mb-6">Virtual Memory Management</h3>
+                        <p class="text-sm text-gray-600 mb-8 max-w-lg">
+                            Technique that separates user logical memory from physical memory, allowing execution of
+                            processes not completely in memory.
+                        </p>
+
+                        <!-- Concepts Grid -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
+                            <!-- Background & Demand Paging -->
+                            <div class="border border-black p-5 bg-white">
+                                <h4 class="font-bold text-sm mb-3">Demand Paging</h4>
+                                <p class="text-xs text-gray-600 mb-3">
+                                    Pages are loaded into RAM only when they are needed during execution.
+                                </p>
+                                <div class="bg-gray-50 p-2 border border-gray-100 rounded text-[10px] space-y-2">
+                                    <div class="flex items-center gap-2">
+                                        <div class="w-2 h-2 rounded-full bg-green-500"></div>
+                                        <span><strong>Page Hit</strong>: Page is in RAM.</span>
+                                    </div>
+                                    <div class="flex items-center gap-2">
+                                        <div class="w-2 h-2 rounded-full bg-red-500"></div>
+                                        <span><strong>Page Fault</strong>: Page not in RAM &rarr; Trap OS &rarr; Read
+                                            Disk.</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Copy-on-Write -->
+                            <div class="border border-black p-5 bg-white">
+                                <h4 class="font-bold text-sm mb-3">Copy-on-Write (CoW)</h4>
+                                <p class="text-xs text-gray-600 mb-3">
+                                    Parent and Child processes share the same pages initially. If either writes to a
+                                    page, a copy is made.
+                                </p>
+                                <div class="flex justify-center gap-2 text-[9px] font-mono mt-2">
+                                    <div class="p-1 border border-gray-300">Proc A</div>
+                                    <div class="p-1 border-dashed border-gray-400 text-gray-400">&rarr; Shared &larr;
+                                    </div>
+                                    <div class="p-1 border border-gray-300">Proc B</div>
+                                </div>
+                            </div>
+
+                            <!-- Allocation of Frames -->
+                            <div class="border border-black p-5 bg-white">
+                                <h4 class="font-bold text-sm mb-3">Allocation of Frames</h4>
+                                <p class="text-xs text-gray-600 mb-3">
+                                    How to distribute fixed RAM frames among processes?
+                                </p>
+                                <ul class="list-disc pl-4 text-[10px] text-gray-600 space-y-1">
+                                    <li><strong>Equal</strong>: Every process gets same number of frames.</li>
+                                    <li><strong>Proportional</strong>: Frames allocated based on process size.</li>
+                                    <li><strong>Global vs Local</strong>: Can a process steal a frame from another?</li>
+                                </ul>
+                            </div>
+
+                            <!-- Thrashing -->
+                            <div class="border border-black p-5 bg-red-50">
+                                <h4 class="font-bold text-sm mb-3 text-red-800 flex items-center gap-2">
+                                    Thrashing
+                                    <span class="text-xs bg-red-200 text-red-800 px-1 rounded">Critical</span>
+                                </h4>
+                                <p class="text-xs text-red-900 mb-3">
+                                    System spends more time paging (I/O) than executing. CPU utilization drops
+                                    effectively to zero.
+                                </p>
+                                <!-- Multi-progress bar visual -->
+                                <div class="space-y-2">
+                                    <div>
+                                        <div
+                                            class="flex justify-between text-[8px] font-bold uppercase text-red-800 mb-0.5">
+                                            <span>Disk I/O (Paging)</span>
+                                            <span>99%</span>
+                                        </div>
+                                        <div class="w-full bg-red-200 h-1.5 rounded-full overflow-hidden">
+                                            <div class="bg-red-600 w-[99%] h-full"></div>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <div
+                                            class="flex justify-between text-[8px] font-bold uppercase text-gray-500 mb-0.5">
+                                            <span>CPU Usage</span>
+                                            <span>1%</span>
+                                        </div>
+                                        <div class="w-full bg-gray-200 h-1.5 rounded-full overflow-hidden">
+                                            <div class="bg-gray-400 w-[1%] h-full"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Page Replacement Visualization -->
+                        <div class="rams-card p-6 border-2 border-black">
+                            <h4 class="font-bold text-sm mb-4 flex items-center gap-2">
+                                <span class="w-2 h-2 bg-blue-600 rounded-full"></span>
+                                Page Replacement Simulator
+                            </h4>
+                            <p class="text-xs text-gray-600 mb-6 max-w-2xl">
+                                When a Page Fault occurs and memory is full, the OS must choose a "victim" frame to
+                                replace.
+                                <br>
+                                <span class="font-bold">Algorithms:</span> FIFO (First-In-First-Out), LRU (Least
+                                Recently Used), Optimal (Replace page needed furthest in future).
+                            </p>
+
+                            <!-- Controls -->
+                            <div class="bg-gray-50 border border-gray-200 p-4 mb-6 rounded-sm">
+                                <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
+                                    <div class="md:col-span-2">
+                                        <label
+                                            class="block text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-1">Reference
+                                            String (Space separated)</label>
+                                        <input type="text" id="pr-string"
+                                            value="7 0 1 2 0 3 0 4 2 3 0 3 2 1 2 0 1 7 0 1"
+                                            class="w-full text-xs font-mono border border-gray-300 p-2 rounded-sm focus:border-black focus:ring-0 outline-none">
+                                    </div>
+                                    <div>
+                                        <label
+                                            class="block text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-1">Frames</label>
+                                        <input type="number" id="pr-frames" value="3" min="1" max="7"
+                                            class="w-full text-xs font-mono border border-gray-300 p-2 rounded-sm focus:border-black focus:ring-0 outline-none">
+                                    </div>
+                                    <div>
+                                        <label
+                                            class="block text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-1">Algorithm</label>
+                                        <select id="pr-algo"
+                                            class="w-full text-xs font-mono border border-gray-300 p-2 rounded-sm focus:border-black focus:ring-0 outline-none bg-white">
+                                            <option value="FIFO">FIFO</option>
+                                            <option value="LRU">LRU</option>
+                                            <option value="OPTIMAL">Optimal</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="mt-4 flex flex-col md:flex-row gap-4 justify-between items-center relative">
+                                    <div
+                                        class="flex gap-4 text-[10px] w-full md:w-auto justify-center md:justify-start">
+                                        <span class="flex items-center gap-1"><span
+                                                class="w-2 h-2 bg-green-100 border border-green-500"></span> Hit</span>
+                                        <span class="flex items-center gap-1"><span
+                                                class="w-2 h-2 bg-red-100 border border-red-500"></span> Fault</span>
+                                    </div>
+                                    <span id="pr-error-msg"
+                                        class="hidden md:absolute md:left-1/2 md:transform md:-translate-x-1/2 text-red-600 text-[10px] font-bold uppercase tracking-wider animate-pulse text-center">
+                                        Please check inputs
+                                    </span>
+                                    <div class="flex gap-2 w-full md:w-auto">
+                                        <button onclick="resetPageReplacement()"
+                                            class="flex-1 md:flex-none px-4 py-2 border border-gray-300 text-gray-600 text-xs font-bold rounded-sm hover:bg-gray-100 transition-colors">
+                                            Reset
+                                        </button>
+                                        <button onclick="runPageReplacement()"
+                                            class="flex-1 md:flex-none px-4 py-2 bg-[#5c6b55] text-white text-xs font-bold rounded-sm hover:bg-[#4a5644] transition-colors">
+                                            Simulate
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Visualization -->
+                            <div id="pr-output" class="overflow-x-auto pb-4 mb-4 hidden">
+                                <div class="flex gap-1 min-w-max" id="pr-steps">
+                                    <!-- Steps injected here -->
+                                </div>
+                            </div>
+
+                            <!-- Metrics -->
+                            <div id="pr-metrics"
+                                class="hidden grid grid-cols-2 md:grid-cols-4 gap-4 bg-gray-50 p-3 border-t border-gray-200">
+                                <div>
+                                    <span class="block text-[10px] text-gray-500 uppercase">Total Accesses</span>
+                                    <span class="text-lg font-bold" id="pr-total">0</span>
+                                </div>
+                                <div>
+                                    <span class="block text-[10px] text-gray-500 uppercase">Page Faults</span>
+                                    <span class="text-lg font-bold text-red-600" id="pr-faults">0</span>
+                                </div>
+                                <div>
+                                    <span class="block text-[10px] text-gray-500 uppercase">Page Hits</span>
+                                    <span class="text-lg font-bold text-green-600" id="pr-hits">0</span>
+                                </div>
+                                <div>
+                                    <span class="block text-[10px] text-gray-500 uppercase">Hit Ratio</span>
+                                    <span class="text-lg font-bold text-blue-600" id="pr-ratio">0%</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 03.2 Algorithm Details (FIFO, LRU, Optimal) -->
+                        <div class="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <!-- FIFO -->
+                            <div class="border border-black p-4 bg-white">
+                                <h5 class="font-bold text-sm mb-2 flex items-center gap-2">
+                                    FIFO
+                                    <span class="text-[9px] bg-gray-100 px-1 rounded text-gray-500 font-normal">First-In
+                                        First-Out</span>
+                                </h5>
+                                <p class="text-[10px] text-gray-600 mb-3 leading-relaxed">
+                                    The oldest page in memory is selected for replacement. It treats memory like a
+                                    queue.
+                                </p>
+                                <ul class="list-disc pl-3 text-[9px] text-gray-500 space-y-1.5">
+                                    <li><strong class="text-green-700">Pros:</strong> Simple to understand and
+                                        implement. Low overhead.</li>
+                                    <li><strong class="text-red-700">Cons:</strong> Suffers from <strong>Belady's
+                                            Anomaly</strong> (increasing frames can increase faults).</li>
+                                    <li><strong class="text-blue-700">Best for:</strong> Simple systems where
+                                        performance is not critical.</li>
+                                </ul>
+                            </div>
+
+                            <!-- LRU -->
+                            <div class="border border-black p-4 bg-white">
+                                <h5 class="font-bold text-sm mb-2 flex items-center gap-2">
+                                    LRU
+                                    <span class="text-[9px] bg-gray-100 px-1 rounded text-gray-500 font-normal">Least
+                                        Recently Used</span>
+                                </h5>
+                                <p class="text-[10px] text-gray-600 mb-3 leading-relaxed">
+                                    Replaces the page that has not been used for the longest period of time. Assumes
+                                    recent past predicts near future.
+                                </p>
+                                <ul class="list-disc pl-3 text-[9px] text-gray-500 space-y-1.5">
+                                    <li><strong class="text-green-700">Pros:</strong> Good approximation of Optimal. No
+                                        Belady's Anomaly.</li>
+                                    <li><strong class="text-red-700">Cons:</strong> Requires hardware support
+                                        (timestamp/counter). High overhead.</li>
+                                    <li><strong class="text-blue-700">Best for:</strong> General purpose systems
+                                        (industry standard).</li>
+                                </ul>
+                            </div>
+
+                            <!-- Optimal -->
+                            <div class="border border-black p-4 bg-white">
+                                <h5 class="font-bold text-sm mb-2 flex items-center gap-2">
+                                    Optimal
+                                    <span
+                                        class="text-[9px] bg-gray-100 px-1 rounded text-gray-500 font-normal">Theoretical</span>
+                                </h5>
+                                <p class="text-[10px] text-gray-600 mb-3 leading-relaxed">
+                                    Replaces the page that will not be used for the longest period of time in the
+                                    future.
+                                </p>
+                                <ul class="list-disc pl-3 text-[9px] text-gray-500 space-y-1.5">
+                                    <li><strong class="text-green-700">Pros:</strong> Lowest possible page-fault rate.
+                                        Used as a benchmark.</li>
+                                    <li><strong class="text-red-700">Cons:</strong> Impossible to implement in real-time
+                                        (requires future knowledge).</li>
+                                    <li><strong class="text-blue-700">Use:</strong> To measure how well other algorithms
+                                        perform.</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Quick Check: Virtual Memory -->
+                <div id="qc-vm" class="mb-20"></div>
+
+                <!-- 04. Storage -->
+                <section id="storage" class="mb-20">
+                    <span class="rams-label">04 / Persistence</span>
+                    <h3 class="text-xl font-medium mb-6">File Systems</h3>
+                    <p class="text-sm text-gray-600 mb-8 max-w-lg">
+                        How data is stored and retrieved. The OS organizes bytes into Files and Directories.
+                    </p>
+                    <div class="rams-card">
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left text-xs">
+                                <thead class="bg-gray-50 border-b border-gray-200 uppercase text-gray-400 font-bold">
+                                    <tr>
+                                        <th class="p-3">Method</th>
+                                        <th class="p-3">Structure</th>
+                                        <th class="p-3">Pros/Cons</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-gray-100 font-mono text-gray-700">
+                                    <tr>
+                                        <td class="p-3 font-bold">Contiguous</td>
+                                        <td class="p-3">File stored in continuous blocks.</td>
+                                        <td class="p-3">Fast read, but hard to grow files.</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="p-3 font-bold">Linked</td>
+                                        <td class="p-3">Blocks point to next block (Linked List).</td>
+                                        <td class="p-3">No fragmentation, but slow random access.</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="p-3 font-bold text-[#5c6b55]">Indexed (inodes)</td>
+                                        <td class="p-3">Index block holds pointers to all data blocks.</td>
+                                        <td class="p-3">Best of both. Used in Unix/Linux.</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 05. Glossary -->
+                <section id="glossary" class="mb-20 md:mb-24 border-t border-gray-200 pt-12">
+                    <span class="rams-label">05 / Glossary</span>
+                    <h3 class="text-xl font-medium mb-6">Key Terms</h3>
+                    <p class="text-sm text-gray-600 mb-8 max-w-lg">
+                        Essential terminology for understanding Operating Systems.
+                    </p>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <!-- Terms -->
+                        <div class="p-4 border border-gray-200 bg-gray-50">
+                            <span class="block font-bold text-xs mb-1">Kernel</span>
+                            <p class="text-[10px] text-gray-600">The core component of the OS that has complete control
+                                over everything in the system. It manages resources and communicates with hardware.</p>
+                        </div>
+                        <div class="p-4 border border-gray-200 bg-gray-50">
+                            <span class="block font-bold text-xs mb-1">Process</span>
+                            <p class="text-[10px] text-gray-600">A program in execution. It includes the program code,
+                                current activity (program counter), stack, data, and heap.</p>
+                        </div>
+                        <div class="p-4 border border-gray-200 bg-gray-50">
+                            <span class="block font-bold text-xs mb-1">Thread</span>
+                            <p class="text-[10px] text-gray-600">The smallest unit of processing that can be scheduled
+                                by an OS. A process can have multiple threads sharing the same resources.</p>
+                        </div>
+                        <div class="p-4 border border-gray-200 bg-gray-50">
+                            <span class="block font-bold text-xs mb-1">Deadlock</span>
+                            <p class="text-[10px] text-gray-600">A situation where a set of processes are blocked
+                                because each process is holding a resource and waiting for another resource acquired by
+                                some other process.</p>
+                        </div>
+                        <div class="p-4 border border-gray-200 bg-gray-50">
+                            <span class="block font-bold text-xs mb-1">Semaphore</span>
+                            <p class="text-[10px] text-gray-600">A synchronization object (integer variable) used to
+                                control access to a common resource by multiple processes in a concurrent system.</p>
+                        </div>
+                        <div class="p-4 border border-gray-200 bg-gray-50">
+                            <span class="block font-bold text-xs mb-1">Mutex</span>
+                            <p class="text-[10px] text-gray-600">Short for Mutual Exclusion. A locking mechanism that
+                                ensures only one thread can acquire the lock/enter a critical section at a time.</p>
+                        </div>
+                        <div class="p-4 border border-gray-200 bg-gray-50">
+                            <span class="block font-bold text-xs mb-1">Paging</span>
+                            <p class="text-[10px] text-gray-600">A memory management scheme that eliminates external
+                                fragmentation by allowing a process's physical address space to be non-contiguous.</p>
+                        </div>
+                        <div class="p-4 border border-gray-200 bg-gray-50">
+                            <span class="block font-bold text-xs mb-1">Virtual Memory</span>
+                            <p class="text-[10px] text-gray-600">A technique that allows the execution of processes that
+                                are not completely in memory, creating an illusion of a very large main memory.</p>
+                        </div>
+                        <div class="p-4 border border-gray-200 bg-gray-50">
+                            <span class="block font-bold text-xs mb-1">Context Switch</span>
+                            <p class="text-[10px] text-gray-600">The process of storing the state of a process or
+                                thread, so that it can be restored and resume execution from the same point later.</p>
+                        </div>
+                        <div class="p-4 border border-gray-200 bg-gray-50">
+                            <span class="block font-bold text-xs mb-1">System Call</span>
+                            <p class="text-[10px] text-gray-600">The programmatic way in which a computer program
+                                requests a service from the kernel of the operating system it is executed on.</p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Final Knowledge Check -->
+                <!-- 06. Quiz -->
+                <section id="quiz" class="mb-20 md:mb-24 border-t border-gray-200 pt-12">
+                    <span class="rams-label">06 / Knowledge Check</span>
+                    <h3 class="text-xl font-medium mb-6">Knowledge Check</h3>
+                    <p class="text-sm text-gray-600 mb-8 max-w-lg">
+                        Verify your understanding of Operating Systems. Pass the exam with a perfect score to earn your
+                        completion certificate.
+                    </p>
+
+                    <div id="quiz-container" class="rams-card mb-12">
+                        <!-- Dynamic Quiz Content -->
+                    </div>
+
+                    <!-- Certificate (Initially Hidden) -->
+                    <div id="certificate" class="hidden">
+                        <span class="rams-label mb-4 block">06.1 / Certification</span>
+                        <h3 class="text-xl font-medium mb-6">Completion Certificate</h3>
+
+                        <div class="rams-card !p-0 overflow-hidden">
+                            <div class="p-6 md:p-8">
+                                <div class="flex flex-col md:flex-row gap-8 items-start">
+                                    <div class="w-full md:w-1/3 space-y-4">
+                                        <p class="text-sm text-gray-600">
+                                            Enter your name below to generate your personalized certificate of
+                                            completion for the Operating Systems series.
+                                        </p>
+                                        <div>
+                                            <label for="cert-name"
+                                                class="block text-xs font-bold text-gray-500 uppercase mb-1">Full
+                                                Name</label>
+                                            <input type="text" id="cert-name"
+                                                class="w-full border border-gray-300 p-2 font-mono text-sm focus:border-black outline-none"
+                                                placeholder="Gray Kildall">
+                                            <p id="cert-error" class="text-red-500 text-xs mt-2 hidden">Please enter
+                                                your name.</p>
+                                        </div>
+                                        <button onclick="generateCert()"
+                                            class="btn btn-primary bg-black border-black text-white w-full hover:bg-gray-800 py-3 font-bold uppercase text-xs rounded-sm">Generate
+                                            Certificate</button>
+                                        <button onclick="downloadCert()" id="btn-download"
+                                            class="btn btn-secondary w-full hidden py-3 font-bold uppercase text-xs border border-black rounded-sm hover:bg-gray-50">Download
+                                            PNG</button>
+                                    </div>
+
+                                    <div
+                                        class="w-full md:w-2/3 bg-gray-50 border border-gray-200 p-4 flex items-center justify-center">
+                                        <canvas id="cert-canvas" class="w-full shadow-lg bg-white"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="bg-gray-50 px-6 py-3 border-t border-gray-100 text-center">
+                                <p class="text-[10px] text-gray-400 italic">
+                                    This certificate confirms successful completion of learning and assessment on this
+                                    platform and is not an accredited or government-recognized qualification.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <footer class="w-full mt-12 mb-12">
+                    <div class="border-t border-gray-200 pt-8 flex justify-between items-center">
+                        <span class="text-[10px] mono uppercase text-gray-400">Undrstanding</span>
+                        <span class="text-[10px] mono uppercase text-gray-400">For Humans, From Humans</span>
+                    </div>
+                </footer>
+
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // --- Mobile Nav ---
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobile-menu');
+            if (menu.classList.contains('hidden')) {
+                menu.classList.remove('hidden');
+                menu.classList.add('flex');
+            } else {
+                menu.classList.add('hidden');
+                menu.classList.remove('flex');
+            }
+        }
+
+        // --- Observer ---
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('active');
+                    const id = entry.target.id;
+                    document.querySelectorAll('.nav-link').forEach(link => {
+                        link.classList.remove('active');
+                        if (link.getAttribute('href') === `#${id}`) {
+                            link.classList.add('active');
+                        }
+                    });
+                }
+            });
+        }, { threshold: 0.1 });
+
+        document.querySelectorAll('section').forEach(section => {
+            section.classList.add('section-reveal');
+            observer.observe(section);
+        });
+
+        // --- VISUAL: Scheduler Logic (Industrial V2) ---
+        const scheduler = {
+            jobQueue: [],
+            readyQueue: [],
+            runningProcess: null,
+            completed: [],
+            ganttData: [], // {id, start, duration, color}
+
+            // System Config
+            algorithm: 'FCFS',
+            quantum: 2,
+            timer: 0,
+            isRunning: false,
+            intervalId: null,
+            pidCounter: 1,
+
+            // Helpers
+            quantumCounter: 0,
+            currentBlock: null,
+
+            // Industrial Palette: High Contrast 600/700 shades
+            colors: ['#dc2626', '#ea580c', '#ca8a04', '#16a34a', '#0891b2', '#2563eb', '#7c3aed', '#db2777'],
+
+            init() {
+                this.updateUI();
+                this.toggleInputs();
+
+                // Event Listener for Algo Change
+                document.getElementById('algo-select').addEventListener('change', () => {
+                    this.toggleInputs();
+                });
+
+                this.log('System initialized. Waiting for jobs...');
+            },
+
+            toggleInputs() {
+                const algo = document.getElementById('algo-select').value;
+                const priContainer = document.getElementById('priority-container');
+                const quantContainer = document.getElementById('quantum-container');
+
+                // Hide all first
+                priContainer.classList.add('hidden');
+                quantContainer.classList.add('hidden');
+
+                if (algo === 'RR') {
+                    quantContainer.classList.remove('hidden');
+                } else if (algo === 'PRIORITY') {
+                    priContainer.classList.remove('hidden');
+                }
+
+                // Update Info Box
+                const infoBox = document.getElementById('algo-info-box');
+                const descEl = document.getElementById('algo-desc');
+                const prosEl = document.getElementById('algo-pros');
+                const consEl = document.getElementById('algo-cons');
+
+                const data = {
+                    'FCFS': {
+                        desc: "Processes are executed in the exact order they arrive. Non-preemptive: once started, it runs to completion.",
+                        pros: ["Simple to implement.", "Fair (early arrivals served first).", "No starvation."],
+                        cons: ["Convoy Effect (short jobs wait for long ones).", "Poor average waiting time.", "Not for time-sharing."]
+                    },
+                    'SJF': {
+                        desc: "Selects the process with the smallest burst time. Non-preemptive. If burst times are equal, FCFS is used.",
+                        pros: ["Optimal average waiting time.", "Maximizes throughput."],
+                        cons: ["Starvation of long processes.", "Requires knowing burst time in advance.", "Not practical for general OS."]
+                    },
+                    'SRTF': {
+                        desc: "Preemptive version of SJF. If a new job arrives with a shorter remaining time than current, it takes over.",
+                        pros: ["Lowest possible average waiting time.", "Fast response for short jobs."],
+                        cons: ["High overhead (frequent context switches).", "Complex to implement.", "Starvation of long processes."]
+                    },
+                    'PRIORITY': {
+                        desc: "CPU assigned to process with highest priority (lowest number). Non-preemptive in this simulation.",
+                        pros: ["Handles urgent tasks immediately.", "Flexible (can mimic FCFS or SJF)."],
+                        cons: ["Indefinite blocking (Starvation).", "Solution: Aging (not implemented here)."]
+                    },
+                    'RR': {
+                        desc: "CPU assigned for a fixed Time Quantum. When time expires, process goes to back of ready queue.",
+                        pros: ["Fair (equal CPU share).", "Responsive (good for interactive systems)."],
+                        cons: ["Performance depends on Quantum.", "Small Q = High overhead.", "Large Q = Behave like FCFS."]
+                    }
+                };
+
+                if (infoBox && data[algo]) {
+                    infoBox.classList.remove('hidden');
+                    descEl.textContent = data[algo].desc;
+                    prosEl.innerHTML = data[algo].pros.map(p => `<li>${p}</li>`).join('');
+                    consEl.innerHTML = data[algo].cons.map(c => `<li>${c}</li>`).join('');
+                }
+            },
+
+            notify(msg, isError = true) {
+                const el = document.getElementById('sched-notification');
+                el.textContent = msg;
+                el.className = isError ? "text-xs font-bold text-red-600 h-4" : "text-xs font-bold text-black h-4";
+                setTimeout(() => { el.textContent = ""; }, 3000);
+            },
+
+            add() {
+                if (this.isRunning) return this.notify("RESET SYSTEM FIRST", true);
+                if (this.jobQueue.length + this.readyQueue.length >= 8) return this.notify("MAX PROCESS LIMIT (8)", true);
+
+                const burst = parseInt(document.getElementById('burst-in').value) || 5;
+                const arrival = parseInt(document.getElementById('arrival-in').value) || 0;
+
+                // Priority specific
+                let priority = 1;
+                const algo = document.getElementById('algo-select').value;
+                if (algo === 'PRIORITY') {
+                    priority = parseInt(document.getElementById('priority-in').value) || 1;
+                }
+
+                const p = {
+                    id: 'P' + this.pidCounter++,
+                    burst: burst,
+                    remaining: burst,
+                    priority: priority,
+                    arrivalTime: arrival,
+                    color: this.colors[(this.pidCounter - 2) % this.colors.length],
+                    startTime: -1,
+                    finishTime: -1,
+                    ct: 0, tat: 0, wt: 0
+                };
+
+                this.jobQueue.push(p);
+                // Sort Job Queue by Arrival Time immediately to keep it ordered
+                this.jobQueue.sort((a, b) => a.arrivalTime - b.arrivalTime);
+
+                this.log(`JOB ADDED: ${p.id} [Bur:${burst} Arr:${arrival}]`);
+                this.updateUI();
+            },
+
+            start() {
+                if (this.isRunning) return;
+
+                // Allow starting even if no jobs, but maybe warn? 
+                if (this.jobQueue.length === 0 && this.readyQueue.length === 0) {
+                    this.notify("NO JOBS TO SCHEDULE", true);
+                    return;
+                }
+
+                this.algorithm = document.getElementById('algo-select').value;
+
+                // Round Robin Quantum
+                if (this.algorithm === 'RR') {
+                    this.quantum = parseInt(document.getElementById('quantum-in').value) || 2;
+                }
+
+                this.isRunning = true;
+                document.getElementById('sys-status-display').textContent = "RUNNING";
+                document.getElementById('sys-status-display').classList.add('text-green-600');
+
+                this.log(`EXECUTION STARTED [ALGO: ${this.algorithm}]`);
+
+                // 1 second tick
+                this.intervalId = setInterval(() => this.tick(), 1000);
+            },
+
+            stop() {
+                this.isRunning = false;
+                if (this.intervalId) clearInterval(this.intervalId);
+                this.intervalId = null;
+
+                // Flush last block
+                if (this.currentBlock) {
+                    this.ganttData.push(this.currentBlock);
+                    this.currentBlock = null;
+                    this.updateGantt();
+                }
+
+                document.getElementById('sys-status-display').textContent = "STOPPED";
+                document.getElementById('sys-status-display').classList.remove('text-green-600');
+            },
+
+            reset() {
+                this.stop();
+                this.jobQueue = [];
+                this.readyQueue = [];
+                this.runningProcess = null;
+                this.completed = [];
+                this.ganttData = [];
+                this.timer = 0;
+                this.pidCounter = 1;
+                this.quantumCounter = 0;
+                this.currentBlock = null;
+
+                document.getElementById('sys-status-display').textContent = "READY";
+                document.getElementById('sys-timer-display').textContent = "0";
+                document.getElementById('sched-log').innerHTML = "";
+                document.getElementById('gantt-container').innerHTML = "";
+                document.getElementById('metrics-table-body').innerHTML = '<tr><td colspan="6" class="p-2 text-center text-gray-400 italic">No data available</td></tr>';
+
+                this.log("System Reset.");
+                this.updateUI();
+            },
+
+            tick() {
+                // 1. Move Jobs from JobQueue to ReadyQueue (Arrivals)
+                // Use while loop to shift all eligible jobs in order (preserves arrival sequence)
+                let arrivalCount = 0;
+                while (this.jobQueue.length > 0 && this.jobQueue[0].arrivalTime <= this.timer) {
+                    const job = this.jobQueue.shift();
+                    this.readyQueue.push(job);
+                    arrivalCount++;
+                    this.log(`ARRIVED: ${job.id}`);
+                }
+
+                // Note: We DO NOT sort readyQueue here arbitrarily. 
+                // RR and FCFS rely on the FIFO order established by arrival + preemption.
+                // SJF/SRTF/Priority will search the queue for the best candidate regardless of order.
+
+                // 2. Logic Check (Preemption, Finishing)
+                this.handleGantt(); // Record history for [T, T+1)
+
+                // Advance Time
+                const prevTime = this.timer;
+                // document.getElementById('gantt-end-time').textContent = this.timer;
+                this.timer++;
+                document.getElementById('sys-timer-display').textContent = this.timer;
+
+                // PROCESS EXECUTION
+                if (this.runningProcess) {
+                    if (this.runningProcess.startTime === -1) this.runningProcess.startTime = prevTime;
+                    this.runningProcess.remaining--;
+                    this.quantumCounter++;
+                }
+
+                // SCHEDULER DECISIONS
+                this.schedulerLogic();
+
+                // UI UPDATE
+                this.updateUI();
+                this.updateGantt();
+
+                // STOP CONDITION
+                if (!this.runningProcess && this.readyQueue.length === 0 && this.jobQueue.length === 0) {
+                    this.log("ALL JOBS COMPLETED.");
+                    this.stop();
+                }
+            },
+
+            handleGantt() {
+                let status = 'IDLE';
+                let color = '#f3f4f6';
+
+                if (this.runningProcess) {
+                    status = this.runningProcess.id;
+                    color = this.runningProcess.color;
+                } else {
+                    // Start/Continue Idle Block
+                    // Only record idle if not finished
+                    if (this.jobQueue.length === 0 && this.readyQueue.length === 0 && this.completed.length > 0) {
+                        return;
+                    }
+                }
+
+                if (this.currentBlock && this.currentBlock.id === status) {
+                    this.currentBlock.duration++;
+                } else {
+                    if (this.currentBlock) this.ganttData.push(this.currentBlock);
+                    this.currentBlock = {
+                        id: status,
+                        start: this.timer,
+                        duration: 1,
+                        color: color
+                    };
+                }
+            },
+
+            schedulerLogic() {
+                // 1. Check if running process finished
+                if (this.runningProcess && this.runningProcess.remaining <= 0) {
+                    const p = this.runningProcess;
+                    p.finishTime = this.timer;
+                    p.ct = p.finishTime;
+                    p.tat = p.ct - p.arrivalTime;
+                    p.wt = p.tat - p.burst;
+
+                    this.completed.push(p);
+                    this.log(`FINISHED: ${p.id} (TAT:${p.tat}, WT:${p.wt})`);
+                    this.runningProcess = null;
+                    this.quantumCounter = 0;
+                }
+
+                // 2. Preemption / Quantum checks
+                if (this.runningProcess) {
+                    if (this.algorithm === 'RR' && this.quantumCounter >= this.quantum) {
+                        this.log(`TIME QUANTUM EXPIRED: ${this.runningProcess.id}`);
+                        this.readyQueue.push(this.runningProcess); // Push to back
+                        this.runningProcess = null;
+                        this.quantumCounter = 0;
+                    }
+                    else if (this.algorithm === 'SRTF') {
+                        // Check if better candidate exists in Ready Queue
+                        const best = this.getBestCandidate(this.readyQueue);
+                        // Strict inequality: only switch if strictly shorter remaining time
+                        if (best && best.remaining < this.runningProcess.remaining) {
+                            this.log(`PREEMPTION: ${best.id} replaces ${this.runningProcess.id}`);
+                            this.readyQueue.push(this.runningProcess); // Back to pool
+                            this.runningProcess = null;
+                            this.quantumCounter = 0;
+                        }
+                    }
+                    // PRIORITY is Non-Preemptive here (Standard). 
+                    // To make it Preemptive, add 'else if (this.algorithm === 'PRIORITY') { check priorities }'
+                }
+
+                // 3. Selection (If CPU is free)
+                if (!this.runningProcess && this.readyQueue.length > 0) {
+                    if (this.algorithm === 'FCFS' || this.algorithm === 'RR') {
+                        // Pick first in queue (FIFO)
+                        this.runningProcess = this.readyQueue.shift();
+                    } else {
+                        // Search for best candidate based on strategy
+                        const idx = this.getBestCandidateIndex(this.readyQueue);
+                        this.runningProcess = this.readyQueue.splice(idx, 1)[0];
+                    }
+                    this.log(`CONTEXT SWITCH -> ${this.runningProcess.id}`);
+                    this.quantumCounter = 0;
+                }
+            },
+
+            getBestCandidate(queue) {
+                if (queue.length === 0) return null;
+                return queue[this.getBestCandidateIndex(queue)];
+            },
+
+            getBestCandidateIndex(queue) {
+                if (queue.length === 0) return -1;
+                let bestIdx = 0;
+                for (let i = 1; i < queue.length; i++) {
+                    const curr = queue[i];
+                    const best = queue[bestIdx];
+
+                    if (this.algorithm === 'SJF') {
+                        // Non-Preemptive SJF usually based on BURST time, but since remaining == burst at start,
+                        // and it never preempts, using 'remaining' is equivalent and handles 'generic' cases if we added preemption later.
+                        // However, strictly SJF uses burst. Let's use remaining as proxy since they are same before start.
+                        if (curr.remaining < best.remaining) bestIdx = i;
+                        // Tie-breaking: FCFS (implied by < vs <=)
+                    }
+                    else if (this.algorithm === 'SRTF') {
+                        if (curr.remaining < best.remaining) bestIdx = i;
+                    }
+                    else if (this.algorithm === 'PRIORITY') {
+                        // Lower number = Higher Priority
+                        if (curr.priority < best.priority) bestIdx = i;
+                    }
+                }
+                return bestIdx;
+            },
+
+            log(msg) {
+                const box = document.getElementById('sched-log');
+                const div = document.createElement('div');
+                div.textContent = `[${this.timer}s] ${msg}`;
+                box.appendChild(div);
+                box.scrollTop = box.scrollHeight;
+            },
+
+            updateUI() {
+                // 1. Ready Queue
+                const rqBox = document.getElementById('ready-queue');
+                rqBox.innerHTML = '';
+                if (this.readyQueue.length === 0) {
+                    rqBox.innerHTML = '<span class="text-xs text-gray-300 italic w-full text-center">Empty</span>';
+                } else {
+                    this.readyQueue.forEach(p => {
+                        const el = document.createElement('div');
+                        el.className = "flex-shrink-0 w-8 h-full bg-white border border-black flex flex-col items-center justify-between py-1 relative";
+                        // Progress bar inside?
+                        const pct = ((p.burst - p.remaining) / p.burst) * 100;
+                        el.innerHTML = `
+                             <div class="absolute bottom-0 left-0 w-full bg-gray-200 z-0" style="height:${pct}%"></div>
+                             <span class="z-10 font-bold text-[10px]">${p.id}</span>
+                             <span class="z-10 text-[9px] font-bold text-gray-500">${p.remaining}</span>
+                        `;
+                        el.style.borderBottom = `4px solid ${p.color}`;
+                        rqBox.appendChild(el);
+                    });
+                }
+
+                // 2. Job Queue (Restored)
+                const jqBox = document.getElementById('job-queue');
+                jqBox.innerHTML = '';
+                if (this.jobQueue.length === 0) {
+                    jqBox.innerHTML = '<span class="text-[10px] text-gray-400 italic">No pending jobs</span>';
+                } else {
+                    this.jobQueue.forEach(p => {
+                        const el = document.createElement('div');
+                        el.className = "flex-shrink-0 px-2 py-1 border border-black bg-white text-[10px] font-mono shadow-none";
+                        el.innerHTML = `<b>${p.id}</b> <span class="text-gray-500">@${p.arrivalTime}</span>`;
+                        // Visual indicator if it's the next to arrive?
+                        jqBox.appendChild(el);
+                    });
+                }
+
+                // 3. CPU
+                const cpuStatus = document.getElementById('cpu-status-text');
+                const cpuBox = document.getElementById('cpu-active-process');
+                const cpuDisp = cpuBox.querySelector('span');
+                const cpuBar = document.getElementById('cpu-progress-bar');
+
+                if (this.runningProcess) {
+                    cpuStatus.textContent = "BUSY";
+                    cpuStatus.className = "text-green-400 font-bold";
+
+                    cpuBox.className = "w-20 h-20 border-2 border-black bg-black flex flex-col items-center justify-center mb-2 z-10 text-white shadow-none transition-none";
+                    cpuBox.style.backgroundColor = this.runningProcess.color;
+
+                    cpuDisp.textContent = this.runningProcess.id;
+                    cpuDisp.className = "text-2xl font-bold text-white";
+
+                    // Total progress based on Burst
+                    const pct = ((this.runningProcess.burst - this.runningProcess.remaining) / this.runningProcess.burst) * 100;
+                    cpuBar.style.width = `${pct}%`;
+                    cpuBar.parentElement.classList.remove('opacity-0');
+
+                } else {
+                    cpuStatus.textContent = "IDLE";
+                    cpuStatus.className = "text-gray-400";
+
+                    cpuBox.className = "w-20 h-20 border-2 border-dashed border-gray-300 flex flex-col items-center justify-center mb-2 z-10 bg-transparent";
+                    cpuBox.style.backgroundColor = '';
+
+                    cpuDisp.textContent = "-";
+                    cpuDisp.className = "text-2xl font-bold text-gray-200";
+
+                    cpuBar.style.width = '0%';
+                }
+
+                // 4. Metrics Table
+                const tbody = document.getElementById('metrics-table-body');
+                tbody.innerHTML = '';
+                if (this.completed.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="6" class="p-2 text-center text-gray-400 italic text-[10px]">No completed processes yet</td></tr>';
+                } else {
+                    document.getElementById('completed-count').textContent = this.completed.length;
+                    this.completed.forEach(p => {
+                        const tr = document.createElement('tr');
+                        tr.className = "hover:bg-gray-50 text-[10px] font-mono";
+                        tr.innerHTML = `
+                            <td class="p-2 border-r border-gray-100 font-bold" style="color:${p.color}">${p.id}</td>
+                            <td class="p-2 border-r border-gray-100">${p.arrivalTime}</td>
+                            <td class="p-2 border-r border-gray-100">${p.burst}</td>
+                            <td class="p-2 border-r border-gray-100 font-bold">${p.ct}</td>
+                            <td class="p-2 border-r border-gray-100">${p.tat}</td>
+                            <td class="p-2">${p.wt}</td>
+                        `;
+                        tbody.appendChild(tr);
+                    });
+                }
+            },
+
+            updateGantt() {
+                const container = document.getElementById('gantt-container');
+                container.innerHTML = '';
+
+                // Combine historical data + current pending block
+                let dataToRender = [...this.ganttData];
+                if (this.currentBlock) {
+                    dataToRender.push(this.currentBlock);
+                }
+
+                const PIXELS_PER_UNIT = 20;
+
+                dataToRender.forEach(block => {
+                    const w = block.duration * PIXELS_PER_UNIT;
+
+                    // Main Unit Wrapper
+                    const el = document.createElement('div');
+                    el.className = "flex-shrink-0 flex flex-col items-start justify-start relative group transition-none";
+                    el.style.width = `${w}px`;
+                    el.style.height = "100%"; // Container height (should be around 4rem/16)
+
+                    // 1. The Colored Bar (Top)
+                    const bar = document.createElement('div');
+                    bar.className = "h-8 w-full flex items-center justify-center text-[9px] font-bold text-white border-r border-white/20";
+
+                    if (block.id === 'IDLE') {
+                        bar.style.backgroundColor = '#f3f4f6';
+                        bar.style.backgroundImage = 'repeating-linear-gradient(45deg, #e5e7eb, #e5e7eb 5px, #f3f4f6 5px, #f3f4f6 10px)';
+                        bar.innerHTML = '<span class="text-gray-400 rotate-90 transform text-[8px]">IDLE</span>';
+                    } else {
+                        bar.style.backgroundColor = block.color;
+                        bar.innerHTML = `<span>${block.id}</span>`;
+                        // Tooltip on hover still useful
+                        bar.title = `${block.id} (${block.start} - ${block.start + block.duration})`;
+                    }
+
+                    // 2. The Time Label (Bottom)
+                    // We place the label at the START of the block.
+                    const labelContainer = document.createElement('div');
+                    labelContainer.className = "h-6 w-full relative border-l border-gray-300"; // Border L acts as tick mark
+
+                    const label = document.createElement('span');
+                    label.className = "absolute top-0 -left-1 text-[9px] font-mono text-gray-500 bg-white px-0.5";
+                    label.textContent = block.start;
+
+                    labelContainer.appendChild(label);
+
+                    el.appendChild(bar);
+                    el.appendChild(labelContainer);
+                    container.appendChild(el);
+                });
+
+                // Add a final 'closing' time marker?
+                // It's tricky with flexbox, but we can append a tiny 0-width div with just the label at the end.
+                const endMarker = document.createElement('div');
+                endMarker.className = "flex-shrink-0 w-0 h-full relative flex flex-col";
+                endMarker.innerHTML = `
+                    <div class="h-8 w-px bg-transparent"></div>
+                    <div class="h-6 w-0 relative border-l border-gray-300">
+                        <span class="absolute top-0 -left-1 text-[9px] font-mono text-gray-500 bg-white px-0.5">${this.timer}</span>
+                    </div>
+                `;
+                container.appendChild(endMarker);
+
+                // Auto Scroll
+                if (this.isRunning) {
+                    container.scrollLeft = container.scrollWidth;
+                }
+            }
+        };
+
+        // Initialize
+        scheduler.init();
+    </script>
+    <script>
+        const syncDemo = {
+            lock: false,
+            owner: null,
+            waitingProcess: null,
+
+            enter: function (id) {
+                const msgEl = document.getElementById('sync-msg');
+                const statusEl = document.getElementById(`p${id}-status`);
+                const boxEl = document.getElementById(`p${id}-box`);
+                const indEl = document.getElementById(`p${id}-indicator`);
+
+                // Reset previous messages
+                msgEl.textContent = "";
+
+                // Check if locked by other
+                if (this.lock && this.owner !== id) {
+                    this.waitingProcess = id; // Register as waiting
+
+                    statusEl.textContent = "Waiting for Lock...";
+                    statusEl.className = "text-[10px] font-mono text-yellow-600 font-bold";
+                    // msgEl.classList.remove('hidden');
+
+                    boxEl.classList.remove('bg-white');
+                    boxEl.classList.add('bg-yellow-50');
+                    indEl.className = "absolute top-1 right-1 w-2 h-2 rounded-full bg-yellow-400 animate-pulse";
+
+                    this.showMessage(`P${id} is waiting for P${this.owner} to release...`);
+                    return;
+                }
+
+                // Check if already locked by self
+                if (this.lock && this.owner === id) {
+                    this.showMessage(`P${id} is already in Critical Section.`);
+                    return;
+                }
+
+                // Acquire Lock
+                this.lock = true;
+                this.owner = id;
+                this.waitingProcess = null; // Clear if we were waiting
+
+                // Update Process Visuals
+                statusEl.textContent = "IN CRITICAL SECTION";
+                statusEl.className = "text-[10px] font-mono text-green-700 font-bold";
+
+                boxEl.className = "w-20 h-20 border-2 border-green-600 bg-green-50 flex items-center justify-center transition-all duration-300 relative shadow-lg transform scale-105";
+                indEl.className = "absolute top-1 right-1 w-2 h-2 rounded-full bg-green-500";
+
+                // Update Resource Visuals
+                const resEl = document.getElementById('sync-resource');
+                resEl.className = "w-24 h-24 border-2 border-red-500 bg-red-50 flex items-center justify-center rounded-full transition-all duration-300 shadow-inner";
+                resEl.innerHTML = `
+                    <div class="text-center">
+                        <div class="text-red-500 text-2xl mb-1">🔒</div>
+                        <div class="text-[10px] font-bold text-red-600 uppercase">Locked by P${id}</div>
+                    </div>
+                `;
+
+                this.showMessage(`P${id} has acquired the lock.`);
+            },
+
+            exit: function (id) {
+                if (!this.lock || this.owner !== id) {
+                    this.showMessage(`P${id} cannot release a lock it doesn't hold!`);
+                    return;
+                }
+
+                this.lock = false;
+                this.owner = null;
+
+                // Reset Process Visuals
+                const statusEl = document.getElementById(`p${id}-status`);
+                statusEl.textContent = "Non-Critical";
+                statusEl.className = "text-[10px] font-mono text-gray-500";
+
+                const boxEl = document.getElementById(`p${id}-box`);
+                boxEl.className = "w-20 h-20 border border-black bg-white flex items-center justify-center transition-all duration-300 relative";
+
+                const indEl = document.getElementById(`p${id}-indicator`);
+                indEl.className = "absolute top-1 right-1 w-2 h-2 rounded-full bg-gray-200";
+
+                // Reset Resource Visuals
+                const resEl = document.getElementById('sync-resource');
+                resEl.className = "w-24 h-24 border-2 border-dashed border-gray-300 bg-white flex items-center justify-center rounded-full transition-all duration-300";
+                resEl.innerHTML = `
+                    <div class="text-center">
+                        <div class="text-gray-300 text-xl mb-1">🔓</div>
+                        <div class="text-[10px] font-bold text-gray-400 uppercase">Unlocked</div>
+                    </div>
+                `;
+
+                this.showMessage(`P${id} released the lock.`);
+
+                // Handoff: Check if someone is waiting
+                if (this.waitingProcess !== null) {
+                    const nextPid = this.waitingProcess;
+                    setTimeout(() => {
+                        this.enter(nextPid);
+                    }, 800); // Short delay for visual clarity
+                }
+            },
+
+            showMessage: function (text) {
+                const el = document.getElementById('sync-msg');
+                if (text) {
+                    el.textContent = text;
+                    el.classList.remove('hidden');
+                } else {
+                    el.classList.add('hidden');
+                }
+            }
+        };
+
+        // --- Page Replacement Simulator ---
+        function runPageReplacement() {
+            const refStrRaw = document.getElementById('pr-string').value.trim();
+            const frameCount = parseInt(document.getElementById('pr-frames').value);
+            const algo = document.getElementById('pr-algo').value;
+
+            if (!refStrRaw || isNaN(frameCount) || frameCount < 1) {
+                document.getElementById('pr-error-msg').classList.remove('hidden');
+                return;
+            }
+
+            // Hide error if valid
+            document.getElementById('pr-error-msg').classList.add('hidden');
+
+            const refs = refStrRaw.split(/\s+/).map(n => parseInt(n)).filter(n => !isNaN(n));
+            const container = document.getElementById('pr-steps');
+            container.innerHTML = '';
+            document.getElementById('pr-output').classList.remove('hidden');
+            document.getElementById('pr-metrics').classList.remove('hidden');
+
+            let frames = new Array(frameCount).fill(null);
+            // FIFO Ptr
+            let fifoPtr = 0;
+            // LRU Tracker (Map: Page -> LastIndex)
+            let lastAccess = new Map();
+
+            let faults = 0;
+            let hits = 0;
+
+            // Store steps data for animation
+            const stepsData = [];
+
+            refs.forEach((page, currentIdx) => {
+                let status = ''; // HIT or FAULT
+                let isHit = false;
+
+                // 1. Check if in Frames
+                const existingIdx = frames.indexOf(page);
+
+                if (existingIdx !== -1) {
+                    isHit = true;
+                    hits++;
+                    status = 'HIT';
+                    // Update LRU tracking on Hit
+                    lastAccess.set(page, currentIdx);
+                } else {
+                    faults++;
+                    status = 'FAULT';
+
+                    // Find victim
+                    let replaceIdx = -1;
+
+                    // Empty slot?
+                    const emptyIdx = frames.indexOf(null);
+                    if (emptyIdx !== -1) {
+                        replaceIdx = emptyIdx;
+                    } else {
+                        // Replacement Algo
+                        if (algo === 'FIFO') {
+                            replaceIdx = fifoPtr;
+                            fifoPtr = (fifoPtr + 1) % frameCount;
+                        } else if (algo === 'LRU') {
+                            // Find frame holding page with oldest access
+                            let minTime = Infinity;
+                            let minFrameIdx = 0;
+
+                            frames.forEach((p, fIdx) => {
+                                const lastSeen = lastAccess.get(p);
+                                if (lastSeen < minTime) {
+                                    minTime = lastSeen;
+                                    minFrameIdx = fIdx;
+                                }
+                            });
+                            replaceIdx = minFrameIdx;
+                        } else if (algo === 'OPTIMAL') {
+                            // Look ahead
+                            let maxDist = -1;
+                            let maxFrameIdx = 0;
+
+                            frames.forEach((p, fIdx) => {
+                                const nextRef = refs.slice(currentIdx + 1).indexOf(p);
+                                if (nextRef === -1) {
+                                    maxDist = Infinity;
+                                    maxFrameIdx = fIdx;
+                                } else {
+                                    if (nextRef > maxDist && maxDist !== Infinity) {
+                                        maxDist = nextRef;
+                                        maxFrameIdx = fIdx;
+                                    }
+                                }
+                            });
+                            replaceIdx = maxFrameIdx;
+                        }
+                    }
+                    frames[replaceIdx] = page;
+                }
+
+                // Record Hit/Access time
+                lastAccess.set(page, currentIdx);
+
+                // Render Step Data
+                const cellClass = isHit ? "bg-green-100 border-green-500 text-green-700" : "bg-red-100 border-red-500 text-red-700";
+
+                let framesHtml = frames.map(f => {
+                    if (f === null) return `<div class="w-6 h-6 border border-gray-200 bg-gray-50"></div>`;
+                    const isFocus = (f === page);
+                    return `<div class="w-6 h-6 flex items-center justify-center border ${isFocus ? 'border-black bg-white font-bold' : 'border-gray-300 text-gray-500'} text-[9px] transition-all duration-300 transform ${isFocus ? 'scale-110' : ''}">${f}</div>`;
+                }).join('');
+
+                stepsData.push({
+                    html: `
+                        <div class="flex flex-col items-center opacity-0 transform translate-y-4 transition-all duration-500 ease-out" id="step-${currentIdx}">
+                            <div class="mb-1 text-[10px] font-bold text-gray-700">${page}</div>
+                            <div class="flex flex-col gap-1 p-1 bg-gray-100 rounded-sm mb-1 shadow-sm">
+                                ${framesHtml}
+                            </div>
+                            <div class="text-[8px] font-bold px-1 rounded ${cellClass}">${status}</div>
+                        </div>
+                    `,
+                    hits: hits,
+                    faults: faults
+                });
+            });
+
+            // Animation Loop
+            let stepIndex = 0;
+            const speed = 200; // ms per step
+
+            function playStep() {
+                if (stepIndex >= stepsData.length) return;
+
+                const step = stepsData[stepIndex];
+
+                // Append hidden element
+                const tempDiv = document.createElement('div');
+                tempDiv.innerHTML = step.html;
+                const newEl = tempDiv.firstElementChild;
+                container.appendChild(newEl);
+
+                // Trigger reflow/anim
+                requestAnimationFrame(() => {
+                    newEl.classList.remove('opacity-0', 'translate-y-4');
+                });
+
+                // Update Metrics Live
+                document.getElementById('pr-total').textContent = stepIndex + 1;
+                document.getElementById('pr-faults').textContent = step.faults;
+                document.getElementById('pr-hits').textContent = step.hits;
+                document.getElementById('pr-ratio').textContent = Math.round((step.hits / (stepIndex + 1)) * 100) + "%";
+
+                stepIndex++;
+                setTimeout(playStep, speed);
+            }
+
+            playStep();
+        }
+
+        function resetPageReplacement() {
+            // Reset Inputs to Defaults
+            document.getElementById('pr-string').value = "7 0 1 2 0 3 0 4 2 3 0 3 2 1 2 0 1 7 0 1";
+            document.getElementById('pr-frames').value = "3";
+            document.getElementById('pr-algo').value = "FIFO";
+
+            // Hide Outputs
+            document.getElementById('pr-output').classList.add('hidden');
+            document.getElementById('pr-metrics').classList.add('hidden');
+            document.getElementById('pr-steps').innerHTML = '';
+
+            // hide error if open
+            document.getElementById('pr-error-msg').classList.add('hidden');
+        }
+    </script>
+    <script src="js/script.js"></script>
+    <script>
+        // --- Virtual Memory Translator Logic ---
+        const pageTableData = [
+            { page: 0, frame: 5 },
+            { page: 1, frame: 2 },
+            { page: 2, frame: 8 },
+            { page: 3, frame: 1 },
+        ];
+
+        function renderPageTable() {
+            const container = document.getElementById('page-table-display');
+            if (!container) return;
+            container.innerHTML = pageTableData.map(item => `
+                <div class="flex justify-between border-b border-gray-100 last:border-0 p-1">
+                    <span>Page ${item.page}</span>
+                    <span class="font-bold">&rarr; Frame ${item.frame}</span>
+                </div>
+            `).join('');
+        }
+
+        function translateAddr() {
+            const vPageInput = document.getElementById('v-page');
+            const vOffsetInput = document.getElementById('v-offset');
+            const resDisplay = document.getElementById('phys-addr-res');
+
+            const pageNum = parseInt(vPageInput.value);
+            const offset = parseInt(vOffsetInput.value);
+
+            if (isNaN(pageNum)) {
+                resDisplay.textContent = "Enter Page #";
+                resDisplay.className = "p-3 bg-yellow-100 rounded font-bold text-yellow-700";
+                return;
+            }
+
+            const entry = pageTableData.find(e => e.page === pageNum);
+
+            if (entry) {
+                resDisplay.innerHTML = `Frame <span class="text-black">${entry.frame}</span> | Offset <span class="text-black">${offset}</span>`;
+                resDisplay.className = "p-3 bg-green-100 rounded font-bold text-green-700";
+            } else {
+                resDisplay.textContent = "Page Fault (Invalid Page)";
+                resDisplay.className = "p-3 bg-red-100 rounded font-bold text-red-600";
+            }
+        }
+
+        // --- Knowledge Checks Initialization ---
+        document.addEventListener('DOMContentLoaded', () => {
+            // Init Page Table
+            renderPageTable();
+
+
+            // 1. Kernel QC
+            new InlineQuiz('qc-kernel', {
+                question: "Which execution mode has unrestricted access to system hardware?",
+                options: [
+                    "User Mode",
+                    "Kernel Mode",
+                    "Safe Mode",
+                    "Gamer Mode"
+                ],
+                answer: 1,
+                explanation: "<strong>Kernel Mode</strong> (Privileged Mode) executes with full access to hardware resources. User Mode is restricted to protect the system."
+            });
+
+            // 2. Scheduling QC
+            new InlineQuiz('qc-scheduling', {
+                question: "Which scheduling algorithm is best for minimizing average waiting time?",
+                options: [
+                    "First-Come, First-Served (FCFS)",
+                    "Round Robin (RR)",
+                    "Shortest Job First (SJF)",
+                    "Priority Scheduling"
+                ],
+                answer: 2,
+                explanation: "<strong>SJF (Shortest Job First)</strong> is provably optimal for minimizing average waiting time for a given set of processes."
+            });
+
+            // 3. Sync QC
+            new InlineQuiz('qc-sync', {
+                question: "What is a 'Race Condition'?",
+                options: [
+                    "When two processes try to write to same file",
+                    "When processes compete for CPU time",
+                    "When program output depends on the timing/ordering of events",
+                    "When a process runs faster than expected"
+                ],
+                answer: 2,
+                explanation: "A <strong>Race Condition</strong> occurs when multiple threads/processes access shared data concurrently, and the outcome depends on the particular order of execution."
+            });
+
+            // 4. Deadlock QC
+            new InlineQuiz('qc-deadlock', {
+                question: "Which condition for Deadlock implies that resources cannot be forcibly taken from a process?",
+                options: [
+                    "Mutual Exclusion",
+                    "Hold and Wait",
+                    "No Preemption",
+                    "Circular Wait"
+                ],
+                answer: 2,
+                explanation: "<strong>No Preemption</strong> means a resource can be released only voluntarily by the process holding it."
+            });
+
+            // 5. VM QC
+            new InlineQuiz('qc-vm', {
+                question: "Thrashing occurs when the system spends more time ______ than executing processes.",
+                options: [
+                    "Computing",
+                    "Paging (Swapping pages in/out)",
+                    "Waiting for user input",
+                    "Booting up"
+                ],
+                answer: 1,
+                explanation: "<strong>Thrashing</strong> happens when the OS is constantly swapping pages between RAM and Disk because memory is overcommitted, leaving little CPU time for actual work."
+            });
+
+            // 6. Final Knowledge Check
+            const finalQuestions = [
+                {
+                    question: "What is the main function of the Process Control Block (PCB)?",
+                    options: ["To store the code of the program", "To store metadata about the process (PID, State, Registers)", "To manage disk storage", "To compile the code"],
+                    answer: 1
+                },
+                {
+                    question: "Context Switching is considered overhead because:",
+                    options: ["It uses too much memory", "The system must reboot", "The CPU does no useful application work during the switch", "It deletes process data"],
+                    answer: 2
+                },
+                {
+                    question: "Which algorithm suffers from the 'Convoy Effect'?",
+                    options: ["Round Robin", "SJF", "FCFS", "SRTF"],
+                    answer: 2
+                },
+                {
+                    question: "In Round Robin, if the Time Quantum is very large, the algorithm behaves like:",
+                    options: ["SJF", "FCFS", "LIFO", "Priority"],
+                    answer: 1
+                },
+                {
+                    question: "A Semaphore is primarily used for:",
+                    options: ["Memory Management", "Process Synchronization", "File Storage", "Network Routing"],
+                    answer: 1
+                },
+                {
+                    question: "The 'Banker's Algorithm' is used for:",
+                    options: ["Deadlock Prevention", "Deadlock Avoidance", "Deadlock Detection", "Deadlock Recovery"],
+                    answer: 1
+                },
+                {
+                    question: "Internal Fragmentation is a common issue in:",
+                    options: ["Fixed Partitioning", "Dynamic Partitioning", "Segmentation", "Linked Allocation"],
+                    answer: 0
+                },
+                {
+                    question: "What is the solution to External Fragmentation?",
+                    options: ["Context Switching", "Compaction / Defragmentation", "Increasing Quantum", "Disabling Interrupts"],
+                    answer: 1
+                },
+                {
+                    question: "Virtual Memory allows the execution of processes that are:",
+                    options: ["Smaller than RAM", "Not completely in memory", "Written in Java", "Running on the GPU"],
+                    answer: 1
+                },
+                {
+                    question: "What hardware device maps Virtual Addresses to Physical Addresses?",
+                    options: ["ALU", "MMU (Memory Management Unit)", "GPU", "SSD Controller"],
+                    answer: 1
+                }
+            ];
+
+            // Global instance to allow access from buttons
+            window.cert = null;
+
+            new QuizManager('quiz-container', finalQuestions, () => {
+                // On Success
+                const certSection = document.getElementById('certificate');
+                certSection.classList.remove('hidden');
+
+                // Initialize Generator
+                window.cert = new CertificateGenerator('cert-canvas', 'Operating Systems');
+
+                // Scroll to cert area
+                setTimeout(() => {
+                    certSection.scrollIntoView({ behavior: 'smooth' });
+                }, 100);
+            });
+        });
+
+        // Certificate Functions
+        function generateCert() {
+            const nameInput = document.getElementById('cert-name');
+            const errorMsg = document.getElementById('cert-error');
+            const name = nameInput.value.trim();
+            const nameRegex = /^[a-zA-Z\s\-\.'’]+$/;
+
+            // Reset error state
+            errorMsg.classList.add('hidden');
+            nameInput.classList.remove('border-red-500');
+
+            if (!name) {
+                errorMsg.textContent = "Please enter your name.";
+                errorMsg.classList.remove('hidden');
+                nameInput.classList.add('border-red-500');
+                return;
+            }
+
+            if (name.length < 3 || name.length > 35) {
+                errorMsg.textContent = "Name must be between 3 and 35 characters.";
+                errorMsg.classList.remove('hidden');
+                nameInput.classList.add('border-red-500');
+                return;
+            }
+
+            if (!nameRegex.test(name)) {
+                errorMsg.textContent = "Name cannot contain numbers or special characters.";
+                errorMsg.classList.remove('hidden');
+                nameInput.classList.add('border-red-500');
+                return;
+            }
+
+            if (window.cert) {
+                window.cert.generate(name);
+                document.getElementById('btn-download').classList.remove('hidden');
+            }
+        }
+
+        function downloadCert() {
+            if (window.cert) {
+                // Use the name for the filename if available
+                const name = document.getElementById('cert-name').value.trim() || 'Student';
+                window.cert.download(`Undrstanding_OS_${name.replace(/\s+/g, '_')}.png`);
+            }
+        }
+    </script>
+</body>
+
+</html>

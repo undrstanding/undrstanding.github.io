@@ -1,0 +1,2278 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Big Data Analytics</title>
+    <link rel="icon" type="image/svg+xml" href="../assests/undrlogo.svg">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Roboto+Mono:wght@400;500&display=swap');
+
+        /* Global Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #a3a3a3;
+            border-radius: 3px;
+        }
+
+        :root {
+            /* Rams Palette - Big Data Edition */
+            --bg-color: #f4f4f4;
+            --card-bg: #ffffff;
+            --text-main: #111111;
+            --text-muted: #737373;
+
+            /* Accents - #85193C */
+            --accent: #85193C;
+            --accent-hover: #5e112b;
+            --accent-light: #fbeef3;
+
+            --border: #e5e5e5;
+            --connection-width: 80px;
+        }
+
+        @media (min-width: 640px) {
+            :root {
+                --connection-width: 100px;
+            }
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            -webkit-font-smoothing: antialiased;
+            line-height: 1.6;
+        }
+
+        h1,
+        h2,
+        h3,
+        h4,
+        h5 {
+            font-weight: 600;
+            letter-spacing: -0.02em;
+            color: var(--text-main);
+        }
+
+        p {
+            color: #404040;
+        }
+
+        .mono {
+            font-family: 'Roboto Mono', monospace;
+        }
+
+        /* Industrial Grid Layout */
+        .rams-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            transition: all 0.3s ease;
+        }
+
+        .rams-card:hover {
+            border-color: var(--accent);
+            box-shadow: none;
+        }
+
+        @media (min-width: 768px) {
+            .rams-card {
+                padding: 2.5rem;
+            }
+        }
+
+        .rams-label {
+            font-family: 'Inter', sans-serif;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        /* Nav */
+        .nav-link {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            padding: 0.5rem 0;
+            display: block;
+            transition: color 0.2s;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            color: var(--text-main);
+            font-weight: 500;
+        }
+
+        .nav-link.active::before {
+            content: "• ";
+            color: var(--accent);
+        }
+
+        /* Mobile Menu */
+        .mobile-nav-link {
+            font-size: 1.25rem;
+            font-weight: 500;
+            color: var(--text-main);
+            padding: 1rem 0;
+            border-bottom: 1px solid #e5e5e5;
+            display: block;
+        }
+
+        /* Section Reveal Animation */
+        .section-reveal {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+        }
+
+        .section-reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .terminal {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 1.5rem;
+            border-radius: 4px;
+            font-family: 'Roboto Mono', monospace;
+            font-size: 0.85rem;
+            margin: 1rem 0;
+            border-left: 3px solid var(--accent);
+        }
+
+        .thin-scrollbar::-webkit-scrollbar {
+            width: 1px;
+        }
+
+        .thin-scrollbar::-webkit-scrollbar-thumb {
+            background: #d4d4d4;
+        }
+
+        .divider {
+            height: 1px;
+            background-color: var(--border);
+            width: 100%;
+            margin: 3rem 0;
+        }
+
+        /* Buttons */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.75rem 1.5rem;
+            font-size: 0.875rem;
+            font-weight: 600;
+            border-radius: 6px;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            white-space: nowrap;
+            letter-spacing: 0.01em;
+            box-shadow: none;
+        }
+
+        .btn-primary {
+            background-color: var(--accent);
+            color: white;
+            border: 1px solid var(--accent);
+        }
+
+        .btn-primary:hover {
+            background-color: var(--accent-hover);
+            border-color: var(--accent-hover);
+            box-shadow: none;
+            transform: translateY(-1px);
+        }
+
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+
+        .btn-secondary {
+            background-color: white;
+            color: var(--text-main);
+            border: 1px solid var(--border);
+        }
+
+        .btn-secondary:hover {
+            background-color: #f9f9f9;
+            border-color: #d1d1d1;
+            box-shadow: none;
+        }
+
+        /* Quiz Internal Styles (for dynamic elements) */
+        .quiz-option-btn {
+            width: 100%;
+            text-align: left;
+            padding: 1rem;
+            border-radius: 6px;
+            background: white;
+            border: 1px solid var(--border);
+            margin-bottom: 0.5rem;
+            font-size: 0.875rem;
+            transition: all 0.2s;
+        }
+
+        .quiz-option-btn:hover:not(:disabled) {
+            border-color: var(--accent);
+            background-color: var(--accent-light);
+        }
+
+        /* Visualizations */
+        .node-box {
+            transition: all 0.3s ease;
+        }
+
+        .node-box.dead {
+            background-color: #fee2e2;
+            border-color: #ef4444;
+            opacity: 0.7;
+        }
+
+        /* Redesigned MapReduce Styles */
+        .mr-stage-card {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            border: 2px dashed #e5e5e5;
+            position: relative;
+            min-height: 100px;
+            transition: all 0.5s ease;
+        }
+
+        .mr-stage-label {
+            position: absolute;
+            top: 0.25rem;
+            left: 0.5rem;
+            font-size: 8px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            opacity: 0.4;
+        }
+
+        .mr-stage-content {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.375rem;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: 100%;
+            padding: 0.5rem;
+        }
+
+        .mr-p {
+            background-color: white;
+            border: 1px solid #e5e5e5;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+            box-shadow: none;
+            font-size: 9px;
+            font-family: 'Roboto Mono', monospace;
+            animation: mr-fade-in 0.3s ease-out forwards;
+        }
+
+        @keyframes mr-fade-in {
+            from {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .mr-p.mapped {
+            border-color: #e9d5ff;
+            background-color: #f3e8ff;
+            color: #7e22ce;
+        }
+
+        .mr-p.shuffled {
+            border-color: #fed7aa;
+            background-color: #fff7ed;
+            color: #c2410c;
+        }
+
+        .mr-p.reduced {
+            border-color: #bbf7d0;
+            background-color: #f0fdf4;
+            color: #15803d;
+            font-weight: 700;
+            transform: scale(1.1);
+            box-shadow: none;
+        }
+
+        .mr-stage-connector {
+            display: none;
+        }
+
+        @media (min-width: 768px) {
+            .mr-stage-connector {
+                display: block;
+                position: absolute;
+                right: -0.75rem;
+                top: 50%;
+                transform: translateY(-50%) rotate(45deg);
+                width: 0.5rem;
+                height: 0.5rem;
+                border-top: 2px solid #d1d5db;
+                border-right: 2px solid #d1d5db;
+                z-index: 10;
+            }
+        }
+
+        /* Spark Animation */
+        .spark-rdd {
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .spark-rdd.processing {
+            background-color: #fbeef3;
+            border-color: #85193C;
+            transform: scale(1.05);
+        }
+
+        .spark-arrow {
+            transition: width 0.5s ease;
+        }
+
+        /* Storm Animation */
+        @keyframes tuple-flow {
+            0% {
+                left: 3.5rem;
+                opacity: 0;
+            }
+
+            10% {
+                opacity: 1;
+            }
+
+            90% {
+                opacity: 1;
+            }
+
+            100% {
+                left: calc(100% - 4.5rem);
+                opacity: 0;
+            }
+        }
+
+        .storm-tuple {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 0.75rem;
+            height: 0.75rem;
+            background-color: #60a5fa;
+            border-radius: 9999px;
+            z-index: 20;
+            opacity: 0;
+        }
+
+        .storm-tuple.animating {
+            animation: tuple-flow 1.5s linear forwards;
+        }
+
+        /* Redesigned YARN Styles */
+        .yarn-actor-card {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 1.25rem;
+            border-radius: 1rem;
+            border: 1px solid #e5e5e5;
+            background-color: white;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+            box-shadow: none;
+        }
+
+        .yarn-actor-card:hover {
+            transform: translateY(-4px);
+            box-shadow: none;
+        }
+
+        .yarn-icon {
+            width: 3rem;
+            height: 3rem;
+            border-radius: 0.75rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 0.75rem;
+        }
+
+        .yarn-ping {
+            position: absolute;
+            top: 0.75rem;
+            right: 0.75rem;
+            width: 0.75rem;
+            height: 0.75rem;
+            border-radius: 9999px;
+            background-color: #e5e7eb;
+            transition: all 0.3s;
+        }
+
+        .yarn-ping.active {
+            background-color: #22c55e;
+            box-shadow: none;
+            animation: yarn-ping-pulse 0.8s infinite alternate;
+        }
+
+        @keyframes yarn-ping-pulse {
+            from {
+                transform: scale(1);
+                opacity: 1;
+            }
+
+            to {
+                transform: scale(1.4);
+                opacity: 0.6;
+            }
+        }
+
+        .resource-bar {
+            transition: width 1s ease-out;
+        }
+
+        /* Text Mining Styles */
+        .tm-pipeline {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            position: relative;
+        }
+
+        @media (min-width: 1024px) {
+            .tm-pipeline {
+                flex-direction: row;
+                justify-content: space-between;
+                align-items: flex-start;
+            }
+        }
+
+        .tm-stage {
+            flex: 1;
+            background: #fff;
+            border: 1px solid var(--border);
+            padding: 1rem;
+            border-radius: 0.75rem;
+            min-height: 120px;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .tm-stage.active {
+            border-color: var(--accent);
+            background-color: var(--accent-light);
+        }
+
+        .tm-stage-title {
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin-bottom: 0.75rem;
+            display: block;
+            letter-spacing: 0.05em;
+        }
+
+        .tm-token-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            min-height: 40px;
+        }
+
+        .tm-token {
+            background: #f3f4f6;
+            border: 1px solid #e5e7eb;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-family: 'Roboto Mono', monospace;
+            font-size: 10px;
+            animation: tm-pop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+
+        .tm-token.removed {
+            background: #fee2e2;
+            border-color: #fca5a5;
+            color: #b91c1c;
+            text-decoration: line-through;
+            opacity: 0.6;
+        }
+
+        .tm-token.root {
+            background: #dcfce7;
+            border-color: #86efac;
+            color: #166534;
+            font-weight: 600;
+        }
+
+        .tm-token.vector {
+            background: #1e1e1e;
+            color: #10b981;
+            border: none;
+        }
+
+        @keyframes tm-pop {
+            from {
+                transform: scale(0.5);
+                opacity: 0;
+            }
+
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .tm-connector {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #d1d5db;
+        }
+
+        @media (min-width: 1024px) {
+            .tm-connector {
+                padding-top: 3rem;
+            }
+
+            .tm-connector svg {
+                transform: rotate(-90deg);
+            }
+        }
+    </style>
+</head>
+
+<body class="overflow-x-hidden">
+
+    <div class="flex min-h-screen flex-col lg:flex-row">
+
+        <!-- Mobile Header -->
+        <header
+            class="lg:hidden fixed top-0 w-full bg-[#f4f4f4] border-b border-[#e5e5e5] z-[100] px-6 py-4 flex justify-between items-center h-16">
+            <div>
+                <h1 class="text-sm font-semibold tracking-wide uppercase text-black leading-tight">Big<br>Data</h1>
+            </div>
+            <button onclick="toggleMobileMenu()"
+                class="text-black focus:outline-none p-2 border border-transparent active:bg-gray-200 rounded">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+            </button>
+        </header>
+
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="fixed inset-0 bg-[#f4f4f4] z-[90] hidden flex-col pt-20 px-6 overflow-y-auto">
+            <nav class="flex flex-col">
+                <a href="../index.html"
+                    class="inline-flex items-center gap-2 px-4 py-2 mb-8 text-[10px] font-mono uppercase tracking-wider text-gray-600 border border-gray-300 hover:bg-black hover:text-white hover:border-black transition-all duration-200">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                    </svg>
+                    Back to Home
+                </a>
+
+                <span class="text-[10px] text-gray-400 font-bold uppercase tracking-wider px-0 py-2">00. Overview</span>
+                <a href="#overview" class="mobile-nav-link" onclick="toggleMobileMenu()">What is Big Data?</a>
+
+                <span class="text-[10px] text-gray-400 font-bold uppercase tracking-wider px-0 py-2 mt-4">01.
+                    Foundation</span>
+                <a href="#hadoop" class="mobile-nav-link" onclick="toggleMobileMenu()">Hadoop</a>
+                <a href="#hdfs" class="mobile-nav-link" onclick="toggleMobileMenu()">HDFS</a>
+                <a href="#mapreduce" class="mobile-nav-link" onclick="toggleMobileMenu()">MapReduce</a>
+                <a href="#yarn" class="mobile-nav-link" onclick="toggleMobileMenu()">YARN</a>
+
+                <span class="text-[10px] text-gray-400 font-bold uppercase tracking-wider px-0 py-2 mt-4">02.
+                    Ecosystem</span>
+                <a href="#spark" class="mobile-nav-link" onclick="toggleMobileMenu()">Spark</a>
+                <a href="#storm" class="mobile-nav-link" onclick="toggleMobileMenu()">Storm</a>
+                <a href="#hive" class="mobile-nav-link" onclick="toggleMobileMenu()">Hive</a>
+                <a href="#pig" class="mobile-nav-link" onclick="toggleMobileMenu()">Pig</a>
+
+                <span class="text-[10px] text-gray-400 font-bold uppercase tracking-wider px-0 py-2 mt-4">03.
+                    Appendix</span>
+                <a href="#text-mining" class="mobile-nav-link" onclick="toggleMobileMenu()">Text Mining</a>
+                <a href="#glossary" class="mobile-nav-link" onclick="toggleMobileMenu()">Glossary</a>
+                <a href="#exam" class="mobile-nav-link border-b-0" onclick="toggleMobileMenu()">Knowledge Check</a>
+            </nav>
+        </div>
+
+        <!-- Sidebar -->
+        <aside
+            class="hidden lg:block w-64 fixed h-screen bg-[#f4f4f4] border-r border-[#e5e5e5] z-50 overflow-y-auto thin-scrollbar">
+            <div class="p-8 h-full flex flex-col justify-between">
+                <div>
+                    <a href="../index.html"
+                        class="inline-flex items-center gap-2 px-4 py-2 mb-8 text-[10px] font-mono uppercase tracking-wider text-gray-600 border border-gray-300 hover:bg-black hover:text-white hover:border-black transition-all duration-200">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                        </svg>
+                        Back to Home
+                    </a>
+                    <div class="mb-12">
+                        <h1 class="text-sm font-semibold tracking-wide uppercase text-black">Big<br>Data</h1>
+                        <p class="text-[10px] text-gray-400 mt-1 uppercase tracking-wider font-bold">
+                            Analytics</p>
+                    </div>
+
+                    <nav class="space-y-1">
+                        <a href="#intro" class="nav-link font-medium text-black">Introduction</a>
+
+                        <div class="pt-4 pb-1 text-[10px] text-gray-400 font-bold uppercase tracking-wider">00. Overview
+                        </div>
+                        <a href="#overview" class="nav-link">Definition & 6Vs</a>
+
+                        <div class="pt-4 pb-1 text-[10px] text-gray-400 font-bold uppercase tracking-wider">01.
+                            Foundation</div>
+                        <a href="#hadoop" class="nav-link">Hadoop</a>
+                        <a href="#hdfs" class="nav-link">HDFS</a>
+                        <a href="#mapreduce" class="nav-link">MapReduce</a>
+                        <a href="#yarn" class="nav-link">YARN</a>
+
+                        <div class="pt-4 pb-1 text-[10px] text-gray-400 font-bold uppercase tracking-wider">02.
+                            Ecosystem</div>
+                        <a href="#spark" class="nav-link">Spark</a>
+                        <a href="#storm" class="nav-link">Storm</a>
+                        <a href="#hive" class="nav-link">Hive</a>
+                        <a href="#pig" class="nav-link">Pig</a>
+
+                        <div class="pt-4 pb-1 text-[10px] text-gray-400 font-bold uppercase tracking-wider">03. Appendix
+                        </div>
+                        <a href="#text-mining" class="nav-link">Text Mining</a>
+                        <a href="#glossary" class="nav-link">Glossary</a>
+                        <a href="#exam" class="nav-link border-b-0">Knowledge Check</a>
+                    </nav>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 lg:ml-64 bg-white w-full">
+            <div class="max-w-3xl mx-auto px-4 sm:px-8 py-24 lg:py-20">
+
+                <!-- Hero -->
+                <section id="intro" class="mb-16 md:mb-24 section-reveal">
+                    <h2 class="text-3xl md:text-5xl font-semibold mb-6 text-black tracking-tight leading-tight">
+                        Distributed
+                        Foundations</h2>
+                    <p class="text-base md:text-lg text-gray-600 max-w-xl font-light leading-relaxed mb-6">
+                        Processing massive datasets that traditional databases cannot handle. The architecture of
+                        distributed storage and parallel computation.
+                    </p>
+                </section>
+
+                <div class="divider hidden md:block border-t border-gray-100 mb-16"></div>
+
+                <!-- 00. Overview -->
+                <section id="overview" class="mb-20 md:mb-24 section-reveal">
+                    <span class="rams-label">00 / Overview</span>
+                    <h3 class="text-xl font-medium mb-4">What is Big Data?</h3>
+                    <p class="text-sm text-gray-600 mb-6 max-w-2xl">
+                        Big Data refers to datasets that are too large, complex, or grow too fast to be handled by
+                        traditional data management tools (like RDBMS). It's not just about size; it's about the ability
+                        to extract value from data that was previously discarded or ignored.
+                    </p>
+
+                    <!-- The 6 Vs -->
+                    <div class="mb-10">
+                        <h4 class="text-sm font-bold uppercase mb-4 text-gray-500">The 6 Vs of Big Data</h4>
+                        <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+                            <div class="p-4 bg-gray-50 border border-gray-200 rounded">
+                                <span class="block text-[#85193C] font-bold mb-1">1. Volume</span>
+                                <p class="text-[10px] text-gray-600">The sheer amount of data (Terabytes to Zettabytes).
+                                    Generated by IoT, logs, transactions.</p>
+                            </div>
+                            <div class="p-4 bg-gray-50 border border-gray-200 rounded">
+                                <span class="block text-[#85193C] font-bold mb-1">2. Velocity</span>
+                                <p class="text-[10px] text-gray-600">The speed at which data is generated and processed
+                                    (Real-time streams, sensors).</p>
+                            </div>
+                            <div class="p-4 bg-gray-50 border border-gray-200 rounded">
+                                <span class="block text-[#85193C] font-bold mb-1">3. Variety</span>
+                                <p class="text-[10px] text-gray-600">Different forms of data: Structured (SQL),
+                                    Semi-structured (JSON/XML), Unstructured (Video/Text).</p>
+                            </div>
+                            <div class="p-4 bg-gray-50 border border-gray-200 rounded">
+                                <span class="block text-[#85193C] font-bold mb-1">4. Veracity</span>
+                                <p class="text-[10px] text-gray-600">The quality and trustworthiness of data. Handling
+                                    noise, bias, and abnormalities.</p>
+                            </div>
+                            <div class="p-4 bg-gray-50 border border-gray-200 rounded">
+                                <span class="block text-[#85193C] font-bold mb-1">5. Value</span>
+                                <p class="text-[10px] text-gray-600">The usefulness of data. Data is useless unless it
+                                    turns into actionable insights/profit.</p>
+                            </div>
+                            <div class="p-4 bg-gray-50 border border-gray-200 rounded">
+                                <span class="block text-[#85193C] font-bold mb-1">6. Variability</span>
+                                <p class="text-[10px] text-gray-600">Inconsistency in data flows. Managing peaks,
+                                    troughs, and changing meanings over time.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Comparison Table -->
+                    <div class="mb-10 overflow-x-auto">
+                        <h4 class="text-sm font-bold uppercase mb-4 text-gray-500">Big Data vs Traditional Data</h4>
+                        <table class="w-full text-xs text-left text-gray-600 border border-gray-200">
+                            <thead class="bg-gray-100 text-gray-700 font-bold uppercase">
+                                <tr>
+                                    <th class="px-4 py-2 border-r border-gray-200">Feature</th>
+                                    <th class="px-4 py-2 border-r border-gray-200">Traditional Data</th>
+                                    <th class="px-4 py-2">Big Data</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-200">
+                                <tr>
+                                    <td class="px-4 py-2 font-bold bg-gray-50 border-r border-gray-200">Volume</td>
+                                    <td class="px-4 py-2 border-r border-gray-200">Gigabytes (GB)</td>
+                                    <td class="px-4 py-2">Petabytes (PB), Exabytes (EB)</td>
+                                </tr>
+                                <tr>
+                                    <td class="px-4 py-2 font-bold bg-gray-50 border-r border-gray-200">Architecture
+                                    </td>
+                                    <td class="px-4 py-2 border-r border-gray-200">Centralized</td>
+                                    <td class="px-4 py-2">Distributed</td>
+                                </tr>
+                                <tr>
+                                    <td class="px-4 py-2 font-bold bg-gray-50 border-r border-gray-200">Structure</td>
+                                    <td class="px-4 py-2 border-r border-gray-200">Structured (Tables)</td>
+                                    <td class="px-4 py-2">Semi/Unstructured</td>
+                                </tr>
+                                <tr>
+                                    <td class="px-4 py-2 font-bold bg-gray-50 border-r border-gray-200">Access</td>
+                                    <td class="px-4 py-2 border-r border-gray-200">Interactive</td>
+                                    <td class="px-4 py-2">Batch or Stream</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <div>
+                            <h4 class="text-sm font-bold uppercase mb-2 text-gray-500">Necessity & Applications</h4>
+                            <p class="text-xs text-gray-600 mb-2">We reached a limit where vertical scaling (adding
+                                CPU/RAM to one machine) became too expensive. Horizontal scaling (adding more cheap
+                                machines) was the solution.</p>
+                            <ul class="list-disc pl-4 text-xs text-gray-600 space-y-1">
+                                <li><strong>Healthcare:</strong> Predicting epidemics, personalized medicine.</li>
+                                <li><strong>Finance:</strong> Real-time fraud detection, high-frequency trading.</li>
+                                <li><strong>Retail:</strong> Recommendation engines (Amazon/Netflix), inventory
+                                    optimization.</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h4 class="text-sm font-bold uppercase mb-2 text-gray-500">Challenges & Critique</h4>
+                            <ul class="list-disc pl-4 text-xs text-gray-600 space-y-1">
+                                <li><strong>Data Privacy:</strong> Risk of exposing sensitive user info.</li>
+                                <li><strong>Skill Gap:</strong> Shortage of data scientists and engineers.</li>
+                                <li><strong>"Data Swamp":</strong> Dumping data without governance leads to unusable,
+                                    messy reservoirs.</li>
+                                <li><strong>Hype:</strong> Companies collecting data "just in case" without a clear ROI
+                                    strategy.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 01. Hadoop -->
+                <section id="hadoop" class="mb-20 md:mb-24 section-reveal">
+                    <span class="rams-label">01 / Foundation</span>
+                    <h3 class="text-xl font-medium mb-4">Apache Hadoop</h3>
+                    <p class="text-sm text-gray-600 mb-6 max-w-xl">
+                        An open-source software framework used for distributed storage and processing of dataset of big
+                        data using the <strong>MapReduce</strong> programming model. It runs on clusters of commodity
+                        hardware (inexpensive computers).
+                    </p>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                        <div class="rams-card mb-0 h-full">
+                            <h4 class="text-sm font-bold uppercase mb-4 text-gray-500">Core Modules</h4>
+                            <ul class="list-disc pl-5 space-y-2 text-xs text-gray-600">
+                                <li><strong>Hadoop Common:</strong> The libraries and utilities needed by other Hadoop
+                                    modules.</li>
+                                <li><strong>HDFS:</strong> A distributed file system that stores data on commodity
+                                    machines, providing very high aggregate bandwidth across the cluster.</li>
+                                <li><strong>Hadoop YARN:</strong> A resource-management platform responsible for
+                                    managing computing resources in clusters and using them for scheduling users'
+                                    applications.</li>
+                                <li><strong>Hadoop MapReduce:</strong> An implementation of the MapReduce programming
+                                    model for large-scale data processing.</li>
+                            </ul>
+                        </div>
+                        <div class="rams-card mb-0 h-full bg-gray-50 border-dashed">
+                            <h4 class="text-sm font-bold uppercase mb-4 text-gray-500">Key Features</h4>
+                            <ul class="space-y-3 text-xs text-gray-600">
+                                <li class="flex gap-2">
+                                    <span class="text-[#85193C] font-bold">●</span>
+                                    <span><strong>Reliability:</strong> Assumes hardware failure is the norm. It handles
+                                        failures automatically by maintaining multiple copies of data.</span>
+                                </li>
+                                <li class="flex gap-2">
+                                    <span class="text-[#85193C] font-bold">●</span>
+                                    <span><strong>Scalability:</strong> Designed to scale linearly from a single server
+                                        to thousands of machines, each expanding local computation and storage.</span>
+                                </li>
+                                <li class="flex gap-2">
+                                    <span class="text-[#85193C] font-bold">●</span>
+                                    <span><strong>Cost-Effective:</strong> Runs on commodity hardware rather than
+                                        expensive specialized servers.</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 02. HDFS -->
+                <section id="hdfs" class="mb-20 md:mb-24 section-reveal">
+                    <span class="rams-label">02 / Storage</span>
+                    <h3 class="text-xl font-medium mb-4">HDFS (Hadoop Distributed File System)</h3>
+                    <p class="text-sm text-gray-600 mb-6 max-w-xl">
+                        A highly fault-tolerant distributed file system designed to run on low-cost hardware. It
+                        provides
+                        high throughput access to application data and is suitable for applications that have large data
+                        sets.
+                    </p>
+
+                    <div class="mb-8 p-4 bg-gray-50 border border-gray-200 rounded text-xs text-gray-600 space-y-2">
+                        <p><strong>Architecture:</strong> Master/Slave architecture.</p>
+                        <p><strong>Blocks:</strong> Files are split into blocks (default 128MB). Each block is stored as
+                            a separate file on the local file system of a DataNode.</p>
+                        <p><strong>Replication Factor:</strong> To ensure fault tolerance, each block is replicated
+                            across multiple DataNodes (default 3x).</p>
+                    </div>
+
+                    <!-- HDFS Interactive Visualization -->
+                    <div class="rams-card bg-gray-50 border-none mb-8">
+                        <div class="flex justify-between items-center mb-4">
+                            <h4 class="font-bold text-sm uppercase text-gray-500">Replication Simulator (Factor: 3)</h4>
+                            <button onclick="resetHDFS()" class="text-xs text-[#85193C] font-bold hover:underline">Reset
+                                System</button>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4" id="hdfs-cluster">
+                            <!-- Node 1 -->
+                            <div id="node-1"
+                                class="node-box bg-white border border-gray-200 p-4 rounded relative group">
+                                <div class="flex justify-between items-start mb-2">
+                                    <span class="text-xs font-bold text-gray-500">DataNode 1</span>
+                                    <button onclick="killNode(1)"
+                                        class="w-2 h-2 rounded-full bg-green-500 hover:bg-red-500 transition-colors"
+                                        title="Toggle Status"></button>
+                                </div>
+                                <div class="flex gap-1 flex-wrap" id="store-1">
+                                    <div
+                                        class="w-6 h-6 bg-[#85193C] text-white text-[10px] flex items-center justify-center rounded">
+                                        A</div>
+                                    <div
+                                        class="w-6 h-6 bg-gray-300 text-gray-600 text-[10px] flex items-center justify-center rounded">
+                                        B</div>
+                                </div>
+                            </div>
+                            <!-- Node 2 -->
+                            <div id="node-2"
+                                class="node-box bg-white border border-gray-200 p-4 rounded relative group">
+                                <div class="flex justify-between items-start mb-2">
+                                    <span class="text-xs font-bold text-gray-500">DataNode 2</span>
+                                    <button onclick="killNode(2)"
+                                        class="w-2 h-2 rounded-full bg-green-500 hover:bg-red-500 transition-colors"
+                                        title="Toggle Status"></button>
+                                </div>
+                                <div class="flex gap-1 flex-wrap" id="store-2">
+                                    <div
+                                        class="w-6 h-6 bg-[#85193C] text-white text-[10px] flex items-center justify-center rounded">
+                                        A</div>
+                                    <div
+                                        class="w-6 h-6 bg-gray-800 text-white text-[10px] flex items-center justify-center rounded">
+                                        C</div>
+                                </div>
+                            </div>
+                            <!-- Node 3 -->
+                            <div id="node-3"
+                                class="node-box bg-white border border-gray-200 p-4 rounded relative group">
+                                <div class="flex justify-between items-start mb-2">
+                                    <span class="text-xs font-bold text-gray-500">DataNode 3</span>
+                                    <button onclick="killNode(3)"
+                                        class="w-2 h-2 rounded-full bg-green-500 hover:bg-red-500 transition-colors"
+                                        title="Toggle Status"></button>
+                                </div>
+                                <div class="flex gap-1 flex-wrap" id="store-3">
+                                    <div
+                                        class="w-6 h-6 bg-gray-300 text-gray-600 text-[10px] flex items-center justify-center rounded">
+                                        B</div>
+                                    <div
+                                        class="w-6 h-6 bg-gray-800 text-white text-[10px] flex items-center justify-center rounded">
+                                        C</div>
+                                </div>
+                            </div>
+                        </div>
+                        <p class="text-xs text-center text-gray-400" id="hdfs-status">System Healthy. Click status light
+                            to simulate node failure.</p>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="rams-card">
+                            <h4 class="text-sm font-bold uppercase mb-2 text-[#85193C]">NameNode (Master)</h4>
+                            <p class="text-xs text-gray-600 mb-2">The centerpiece of an HDFS file system. It keeps the
+                                directory tree of all files in the file system, and tracks where across the cluster the
+                                file data is kept.</p>
+                            <ul class="list-disc pl-4 text-[10px] text-gray-500">
+                                <li>Manages File System Namespace.</li>
+                                <li>Regulates client access to files.</li>
+                                <li>Executes operations like opening, closing, and renaming files/directories.</li>
+                            </ul>
+                        </div>
+                        <div class="rams-card">
+                            <h4 class="text-sm font-bold uppercase mb-2 text-[#85193C]">DataNode (Slave)</h4>
+                            <p class="text-xs text-gray-600 mb-2">Stores the actual data in blocks. There are usually
+                                one per node in the cluster.</p>
+                            <ul class="list-disc pl-4 text-[10px] text-gray-500">
+                                <li>Responsible for serving read and write requests from file system clients.</li>
+                                <li>Performs block creation, deletion, and replication upon instruction from the
+                                    NameNode.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Quick Check 1 -->
+                <div id="check-hdfs" class="mb-20 md:mb-24 section-reveal"></div>
+
+                <!-- 03. MapReduce -->
+                <section id="mapreduce" class="mb-20 md:mb-24 section-reveal">
+                    <span class="rams-label">03 / Compute</span>
+                    <h3 class="text-xl font-medium mb-4">MapReduce</h3>
+                    <p class="text-sm text-gray-600 mb-6 max-w-xl">
+                        A core component of the Hadoop ecosystem that provides a paradigm for processing massive data
+                        across distributed clusters. It abstracts the complexity of parallel computing, fault tolerance,
+                        and data locality.
+                    </p>
+
+                    <div class="mb-6 p-4 bg-gray-50 border border-gray-200 rounded text-xs text-gray-600">
+                        <h4 class="font-bold mb-2">Key Concepts</h4>
+                        <ul class="list-disc pl-5 space-y-1">
+                            <li><strong>Data Locality:</strong> Moving computation to the data (cheaper) rather than
+                                moving data to computation (expensive network I/O).</li>
+                            <li><strong>Scalability:</strong> Tasks are independent, allowing valid parallelization
+                                across thousands of nodes.</li>
+                        </ul>
+                    </div>
+
+                    <!-- New MapReduce Redesigned Visualization -->
+                    <div class="rams-card bg-white border border-gray-200 mb-6 p-4 sm:p-6 overflow-hidden">
+                        <div
+                            class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4 border-b border-gray-100 pb-4">
+                            <div>
+                                <h4 class="font-bold text-sm uppercase text-gray-500">Pipeline Visualization</h4>
+                                <p class="text-[10px] text-gray-400 font-mono mt-1">Status: <span id="mr-status"
+                                        class="text-black">Idle</span></p>
+                            </div>
+                            <button onclick="startMapReduce()"
+                                class="w-full sm:w-auto bg-[#85193C] text-white text-xs font-bold px-6 py-2 rounded-full hover:bg-[#5e112b] transition-all active:scale-95"
+                                id="mr-btn">Process Data Stream</button>
+                        </div>
+
+                        <!-- Pipeline Container: Vertically stacked on mobile, Row on desktop -->
+                        <div id="mr-pipeline"
+                            class="grid grid-cols-1 md:grid-cols-5 gap-2 sm:gap-4 relative min-h-[400px] sm:min-h-[250px]">
+                            <!-- Input Stage -->
+                            <div class="mr-stage-card border-none bg-blue-50/50" data-stage="INPUT">
+                                <span class="mr-stage-label text-blue-600">INPUT</span>
+                                <div class="mr-stage-content" id="mr-stage-1"></div>
+                            </div>
+                            <!-- Map Stage -->
+                            <div class="mr-stage-card border-none bg-purple-50/50" data-stage="MAP">
+                                <span class="mr-stage-label text-purple-600">MAP</span>
+                                <div class="mr-stage-content" id="mr-stage-2"></div>
+                                <div class="mr-stage-connector"></div>
+                            </div>
+                            <!-- Shuffle Stage -->
+                            <div class="mr-stage-card border-none bg-orange-50/50" data-stage="SHUFFLE">
+                                <span class="mr-stage-label text-orange-600">SHUFFLE</span>
+                                <div class="mr-stage-content" id="mr-stage-3"></div>
+                                <div class="mr-stage-connector"></div>
+                            </div>
+                            <!-- Reduce Stage -->
+                            <div class="mr-stage-card border-none bg-green-50/50" data-stage="REDUCE">
+                                <span class="mr-stage-label text-green-600">REDUCE</span>
+                                <div class="mr-stage-content" id="mr-stage-4"></div>
+                                <div class="mr-stage-connector"></div>
+                            </div>
+                            <!-- Output Stage -->
+                            <div class="mr-stage-card border-none bg-gray-50/50" data-stage="OUTPUT">
+                                <span class="mr-stage-label text-gray-600">HDFS</span>
+                                <div class="mr-stage-content" id="mr-stage-5"></div>
+                                <div class="mr-stage-connector"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div class="rams-card mb-0">
+                            <h4 class="text-sm font-bold uppercase mb-2 text-[#85193C]">1. Map Phase</h4>
+                            <p class="text-[10px] text-gray-600 dark:text-gray-400">
+                                Converts input data into key-value pairs.
+                            </p>
+                            <ul class="list-disc pl-4 mt-2 text-[10px] text-gray-500 space-y-1">
+                                <li><strong>InputSplits:</strong> Logic splits of data.</li>
+                                <li><strong>Mapping:</strong> Processing record by record.</li>
+                            </ul>
+                        </div>
+                        <div class="rams-card mb-0">
+                            <h4 class="text-sm font-bold uppercase mb-2 text-orange-600">2. Shuffle Phase</h4>
+                            <p class="text-[10px] text-gray-600 dark:text-gray-400">
+                                Transfers data from Mappers to Reducers.
+                            </p>
+                            <ul class="list-disc pl-4 mt-2 text-[10px] text-gray-500 space-y-1">
+                                <li><strong>Sorting:</strong> Groups values by key.</li>
+                                <li><strong>Partitioner:</strong> Decides which Reducer gets which key.</li>
+                            </ul>
+                        </div>
+                        <div class="rams-card mb-0">
+                            <h4 class="text-sm font-bold uppercase mb-2 text-green-600">3. Reduce Phase</h4>
+                            <p class="text-[10px] text-gray-600 dark:text-gray-400">
+                                Aggregates the grouped data.
+                            </p>
+                            <ul class="list-disc pl-4 mt-2 text-[10px] text-gray-500 space-y-1">
+                                <li><strong>Reducing:</strong> Summarizes the list of values for each key.</li>
+                                <li><strong>Output:</strong> Writes final result to HDFS.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </section>
+
+                <div class="divider hidden md:block border-t border-gray-100 mb-16"></div>
+
+                <!-- 04. YARN -->
+                <section id="yarn" class="mb-20 md:mb-24 section-reveal">
+                    <span class="rams-label">04 / Management</span>
+                    <h3 class="text-xl font-medium mb-4">YARN (Yet Another Resource Negotiator)</h3>
+                    <p class="text-sm text-gray-600 mb-6 max-w-xl">
+                        Introduced in Hadoop 2.0 to solve the scalability issues of MapReduce v1. It separates the
+                        resource management layer from the processing layer, allowing other engines (like Spark) to run
+                        on the same cluster.
+                    </p>
+
+                    <!-- New YARN Redesigned Visualization -->
+                    <div class="rams-card bg-white border border-gray-200 mb-8 p-4 sm:p-6 overflow-hidden">
+                        <div
+                            class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4 border-b border-gray-100 pb-4">
+                            <div>
+                                <h4 class="font-bold text-sm uppercase text-gray-500">Resource Dashboard</h4>
+                                <p class="text-[10px] text-gray-400 font-mono mt-1">Status: <span id="yarn-status-msg"
+                                        class="text-black">Ready</span></p>
+                            </div>
+                            <button onclick="runYarnDemo()"
+                                class="w-full sm:w-auto bg-[#85193C] text-white text-xs font-bold px-6 py-2 rounded-full hover:bg-[#5e112b] transition-all active:scale-95">Allocate
+                                Resources</button>
+                        </div>
+
+                        <!-- Dashboard Grid -->
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 relative">
+                            <!-- Client -->
+                            <div class="yarn-actor-card" id="yarn-client">
+                                <div class="yarn-ping" id="ping-client"></div>
+                                <div class="yarn-icon bg-blue-100 text-blue-600">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z">
+                                        </path>
+                                    </svg>
+                                </div>
+                                <h5 class="font-bold text-xs">Client</h5>
+                                <p class="text-[9px] text-gray-400">Job Submission</p>
+                            </div>
+
+                            <!-- Resource Manager -->
+                            <div class="yarn-actor-card border-[#85193C]/20 bg-[#85193C]/5" id="yarn-rm">
+                                <div class="yarn-ping" id="ping-rm"></div>
+                                <div class="yarn-icon bg-[#85193C] text-white">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10">
+                                        </path>
+                                    </svg>
+                                </div>
+                                <h5 class="font-bold text-xs text-[#85193C]">Resource Manager</h5>
+                                <p class="text-[9px] text-gray-400">Global Scheduler</p>
+                            </div>
+
+                            <!-- Node Manager -->
+                            <div class="yarn-actor-card" id="yarn-nm">
+                                <div class="yarn-icon bg-green-100 text-green-600">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z">
+                                        </path>
+                                    </svg>
+                                </div>
+                                <h5 class="font-bold text-xs">Node Manager</h5>
+                                <div class="w-full mt-2 space-y-1">
+                                    <div class="flex justify-between text-[8px] uppercase font-bold text-gray-400">
+                                        <span>RAM Usage</span>
+                                        <span id="yarn-ram-val">0%</span>
+                                    </div>
+                                    <div class="w-full h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                                        <div id="yarn-resource-bar"
+                                            class="h-full bg-green-500 w-0 transition-all duration-1000"></div>
+                                    </div>
+                                </div>
+                                <div id="yarn-container-slot"
+                                    class="mt-2 text-[9px] py-1 px-2 bg-gray-50 border border-dashed border-gray-200 rounded text-gray-400 animate-pulse hidden">
+                                    Allocating...</div>
+                            </div>
+                        </div>
+
+                        <!-- Mobile Connectors -->
+                        <div class="md:hidden flex flex-col items-center gap-1 my-2 py-2">
+                            <div class="w-1 h-1 bg-gray-200 rounded-full"></div>
+                            <div class="w-1 h-1 bg-gray-200 rounded-full"></div>
+                        </div>
+                    </div>
+
+                    <div class="rams-card mb-0">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                            <div>
+                                <h4 class="font-bold mb-2">ResourceManager (Master)</h4>
+                                <p class="text-xs text-gray-600 mb-2">The ultimate authority that arbitrates
+                                    resources
+                                    among all the applications in the system.</p>
+                                <ul class="list-disc pl-4 text-[10px] text-gray-500">
+                                    <li><strong>Scheduler:</strong> Allocates resources.</li>
+                                    <li><strong>ApplicationsManager:</strong> Accepts job submissions.</li>
+                                </ul>
+                            </div>
+                            <div>
+                                <h4 class="font-bold mb-2">NodeManager (Slave)</h4>
+                                <p class="text-xs text-gray-600 mb-2">The per-machine framework agent that is
+                                    responsible for containers, monitoring their resource usage (CPU, memory, disk,
+                                    network) and reporting to the ResourceManager.</p>
+                            </div>
+                            <div class="md:col-span-2 border-t pt-4">
+                                <h4 class="font-bold mb-2">ApplicationMaster (Per-App)</h4>
+                                <p class="text-xs text-gray-600">A framework-specific library that negotiates
+                                    resources
+                                    from the ResourceManager and works with the NodeManager(s) to execute and
+                                    monitor
+                                    the tasks.</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Quick Check 2 -->
+                <div id="check-yarn" class="mb-20 md:mb-24 section-reveal"></div>
+
+                <!-- 05. Spark -->
+                <section id="spark" class="mb-20 md:mb-24 section-reveal">
+                    <span class="rams-label">05 / Speed</span>
+                    <h3 class="text-xl font-medium mb-4">Apache Spark</h3>
+                    <p class="text-sm text-gray-600 mb-6 max-w-xl">
+                        A unified analytics engine for large-scale data processing. Known for being 100x faster than
+                        Hadoop MapReduce in memory by reducing the number of read/write operations to disk.
+                    </p>
+
+                    <div class="mb-6 p-4 bg-gray-50 border border-gray-200 rounded text-xs text-gray-600 space-y-2">
+                        <p><strong>RDD (Resilient Distributed Dataset):</strong> The fundamental data structure of
+                            Spark. It is an immutable distributed collection of objects.</p>
+                        <p><strong>DAG (Directed Acyclic Graph):</strong> Spark creates a graph of tasks to execute.
+                            This allows for optimization (like pipelining map tasks).</p>
+                        <p><strong>Lazy Evaluation:</strong> Transformations (like map, filter) are not executed until
+                            an Action (like count, collect) is called.</p>
+                    </div>
+
+                    <!-- Spark Visualization -->
+                    <div class="rams-card bg-white border border-gray-200 mb-8">
+                        <div class="flex items-center justify-between mb-8 border-b border-gray-100 pb-4">
+                            <h4 class="font-bold text-sm uppercase text-gray-500">DAG Execution Pipeline</h4>
+                            <button onclick="runSparkDemo()"
+                                class="text-xs text-[#85193C] font-bold hover:underline">Run Transformation</button>
+                        </div>
+                        <div class="flex justify-between items-center relative h-24 px-4">
+                            <!-- RDD 1 -->
+                            <div id="rdd-1"
+                                class="spark-rdd w-16 h-16 sm:w-20 sm:h-20 bg-gray-50 border border-gray-300 rounded flex flex-col items-center justify-center text-center z-10 relative">
+                                <span class="text-[10px] text-gray-400 font-mono mb-1">RDD 1</span>
+                                <span class="text-xs font-bold">Load</span>
+                            </div>
+                            <!-- Arrow 1 -->
+                            <div class="flex-1 h-0.5 bg-gray-200 relative mx-2">
+                                <div id="spark-arrow-1"
+                                    class="absolute top-0 left-0 h-full bg-[#85193C] w-0 transition-all duration-700">
+                                </div>
+                            </div>
+                            <!-- RDD 2 -->
+                            <div id="rdd-2"
+                                class="spark-rdd w-16 h-16 sm:w-20 sm:h-20 bg-gray-50 border border-gray-300 rounded flex flex-col items-center justify-center text-center z-10 relative">
+                                <span class="text-[10px] text-gray-400 font-mono mb-1">RDD 2</span>
+                                <span class="text-xs font-bold">Map</span>
+                            </div>
+                            <!-- Arrow 2 -->
+                            <div class="flex-1 h-0.5 bg-gray-200 relative mx-2">
+                                <div id="spark-arrow-2"
+                                    class="absolute top-0 left-0 h-full bg-[#85193C] w-0 transition-all duration-700">
+                                </div>
+                            </div>
+                            <!-- RDD 3 -->
+                            <div id="rdd-3"
+                                class="spark-rdd w-16 h-16 sm:w-20 sm:h-20 bg-gray-50 border border-gray-300 rounded flex flex-col items-center justify-center text-center z-10 relative">
+                                <span class="text-[10px] text-gray-400 font-mono mb-1">RDD 3</span>
+                                <span class="text-xs font-bold">Reduce</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="rams-card border-[#85193C] border-l-4">
+                        <h4 class="text-lg font-bold mb-4">The Spark Ecosystem</h4>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <h5 class="text-sm font-bold mb-1">Spark SQL</h5>
+                                <p class="text-xs text-gray-600">Module for working with structured data. Allows
+                                    querying via SQL or DataFrame API.</p>
+                            </div>
+                            <div>
+                                <h5 class="text-sm font-bold mb-1">Spark Streaming</h5>
+                                <p class="text-xs text-gray-600">Scalable, high-throughput, fault-tolerant stream
+                                    processing of live data streams.</p>
+                            </div>
+                            <div>
+                                <h5 class="text-sm font-bold mb-1">MLlib (Machine Learning)</h5>
+                                <p class="text-xs text-gray-600">Scalable machine learning library (Classification,
+                                    Regression, Clustering, etc.).</p>
+                            </div>
+                            <div>
+                                <h5 class="text-sm font-bold mb-1">GraphX</h5>
+                                <p class="text-xs text-gray-600">API for graphs and graph-parallel computation.</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 06. Storm -->
+                <section id="storm" class="mb-20 md:mb-24 section-reveal">
+                    <span class="rams-label">06 / Real-time</span>
+                    <h3 class="text-xl font-medium mb-4">Apache Storm</h3>
+                    <p class="text-sm text-gray-600 mb-6 max-w-xl">
+                        A free and open source distributed realtime computation system. Unlike Hadoop (which runs "Jobs"
+                        that end), Storm runs "Topologies" that process data forever until killed.
+                    </p>
+
+                    <!-- Storm Visualization -->
+                    <div
+                        class="rams-card bg-gray-900 border-none mb-8 text-center relative h-48 overflow-hidden rounded-lg">
+                        <div class="absolute top-4 left-4 text-xs font-mono text-gray-400">TOPOLOGY VISUALIZER</div>
+
+                        <!-- Spout -->
+                        <div
+                            class="absolute top-1/2 left-4 sm:left-12 -translate-y-1/2 flex flex-col items-center z-10">
+                            <div
+                                class="w-12 h-12 sm:w-14 sm:h-14 bg-[#85193C] rounded-full flex items-center justify-center text-white text-[10px] sm:text-xs font-bold ring-4 ring-gray-800">
+                                Spout</div>
+                        </div>
+
+                        <!-- Bolt -->
+                        <div
+                            class="absolute top-1/2 right-4 sm:right-12 -translate-y-1/2 flex flex-col items-center z-10">
+                            <div
+                                class="w-12 h-12 sm:w-14 sm:h-14 bg-gray-700 rounded-full flex items-center justify-center text-white text-[10px] sm:text-xs font-bold ring-4 ring-gray-800">
+                                Bolt</div>
+                        </div>
+
+                        <!-- Connection Line -->
+                        <div class="absolute top-1/2 left-24 right-24 h-0.5 bg-gray-700 -translate-y-1/2"></div>
+
+                        <!-- Moving Tuple Container -->
+                        <div id="storm-anim-area" class="absolute inset-0 pointer-events-none"></div>
+
+                        <button onclick="runStormDemo()"
+                            class="absolute bottom-4 left-1/2 -translate-x-1/2 text-[10px] text-gray-400 hover:text-white uppercase tracking-widest border border-gray-600 px-3 py-1 rounded hover:bg-gray-800 transition-colors">Emit
+                            Tuple</button>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="p-4 bg-white border border-gray-200 rounded">
+                            <span class="block text-lg font-bold text-[#85193C] mb-2">Core Concepts</span>
+                            <ul class="list-disc pl-4 text-xs text-gray-600 space-y-2">
+                                <li><strong>Spouts:</strong> Source of streams in a topology (e.g., reads from Kafka).
+                                </li>
+                                <li><strong>Bolts:</strong> Processes input streams (filter, aggregate, join) and
+                                    produces new streams.</li>
+                                <li><strong>Nimbus:</strong> Master node (like JobTracker).</li>
+                                <li><strong>Supervisor:</strong> Worker nodes.</li>
+                            </ul>
+                        </div>
+                        <div class="p-4 bg-white border border-gray-200 rounded">
+                            <span class="block text-lg font-bold text-[#85193C] mb-2">Stream Groupings</span>
+                            <p class="text-xs text-gray-600 mb-2">How tuples are routed between components:</p>
+                            <ul class="list-disc pl-4 text-xs text-gray-600 space-y-1">
+                                <li><strong>Shuffle:</strong> Equal random distribution.</li>
+                                <li><strong>Fields:</strong> Tuples with same field value go to same task.</li>
+                                <li><strong>All:</strong> Send to all tasks (replication).</li>
+                                <li><strong>Global:</strong> Send to task with lowest ID.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </section>
+
+                <div class="divider hidden md:block border-t border-gray-100 mb-16"></div>
+
+                <!-- 07. Hive -->
+                <section id="hive" class="mb-20 md:mb-24 section-reveal">
+                    <span class="rams-label">07 / SQL Interface</span>
+                    <h3 class="text-xl font-medium mb-4">Apache Hive</h3>
+                    <p class="text-sm text-gray-600 mb-6 max-w-xl">
+                        A data warehouse software project built on top of Apache Hadoop for providing data query and
+                        analysis. Hive gives an SQL-like interface to query data stored in HDFS and other compatible
+                        systems.
+                    </p>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                        <div class="rams-card mb-0">
+                            <h4 class="text-sm font-bold uppercase mb-2 text-gray-500">How it works</h4>
+                            <p class="text-xs text-gray-600">Hive translates <strong>HiveQL</strong> (an SQL-like
+                                language) into MapReduce, Tez, or Spark jobs that run on the Hadoop cluster.</p>
+                        </div>
+                        <div class="rams-card mb-0">
+                            <h4 class="text-sm font-bold uppercase mb-2 text-gray-500">Key Feature</h4>
+                            <p class="text-xs text-gray-600"><strong>Metastore:</strong> A central repository that
+                                stores the structure (metadata) of the tables, allowing SQL-on-HDFS.</p>
+                        </div>
+                    </div>
+
+                    <div class="terminal">
+                        <div class="mb-2 text-gray-500"># HiveQL vs SQL</div>
+                        <div class="text-[#85193C] font-bold">CREATE TABLE logs (ip STRING, url STRING)</div>
+                        <div class="text-[#85193C] font-bold">ROW FORMAT DELIMITED FIELDS TERMINATED BY ',';</div>
+                        <div class="text-white">-- Simple Aggregation</div>
+                        <div class="text-white">SELECT url, COUNT(*) FROM logs GROUP BY url;</div>
+                        <div class="text-green-400"># Running MapReduce Job...</div>
+                    </div>
+                </section>
+
+                <div class="divider hidden md:block border-t border-gray-100 mb-16"></div>
+
+                <!-- 08. Pig -->
+                <section id="pig" class="mb-20 md:mb-24 section-reveal">
+                    <span class="rams-label">08 / Scripting</span>
+                    <h3 class="text-xl font-medium mb-4">Apache Pig</h3>
+                    <p class="text-sm text-gray-600 mb-6 max-w-xl">
+                        A high-level platform for creating MapReduce programs used with Hadoop. The language for this
+                        platform is called <strong>Pig Latin</strong>. It abstracts the Java complexity of MapReduce.
+                    </p>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                        <div class="rams-card mb-0">
+                            <h4 class="text-sm font-bold uppercase mb-2 text-gray-500">Why Pig?</h4>
+                            <ul class="list-disc pl-4 text-xs text-gray-600 space-y-2">
+                                <li><strong>Ease of Programming:</strong> 10 lines of Pig Latin = 200 lines of Java
+                                    MapReduce.</li>
+                                <li><strong>Optimization:</strong> Automatically optimizes execution.</li>
+                                <li><strong>Extensibility:</strong> Users can create custom functions (UDFs).</li>
+                            </ul>
+                        </div>
+                        <div class="rams-card mb-0">
+                            <h4 class="text-sm font-bold uppercase mb-2 text-gray-500">Key Feature</h4>
+                            <p class="text-xs text-gray-600"><strong>Schema-on-Read:</strong> Unlike RDBMS
+                                (Schema-on-Write), Pig loads data without a predefined schema and applies schema only
+                                when reading.</p>
+                        </div>
+                    </div>
+
+                    <div class="terminal">
+                        <div class="mb-2 text-gray-500"># Pig Latin ETL Example</div>
+                        <div class="text-[#85193C] font-bold">visits = LOAD '/data/visits' USING PigStorage(',');</div>
+                        <div class="text-white">-- Filter for US User</div>
+                        <div class="text-white">us_visits = FILTER visits BY country == 'US';</div>
+                        <div class="text-white">-- Group by URL</div>
+                        <div class="text-white">grouped = GROUP us_visits BY url;</div>
+                        <div class="text-white">-- Count visits</div>
+                        <div class="text-white">total = FOREACH grouped GENERATE group as url, COUNT(us_visits);</div>
+                        <div class="text-green-400">STORE total INTO '/data/us_url_counts';</div>
+                    </div>
+                </section>
+
+                <!-- Quick Check 3 -->
+                <div id="check-ecosystem" class="mb-20 md:mb-24 section-reveal"></div>
+
+                <!-- Text Mining Section -->
+                <section id="text-mining" class="mb-20 md:mb-24 section-reveal">
+                    <span class="rams-label">09 / NLP Process</span>
+                    <h3 class="text-xl font-medium mb-4">Text Mining & NLP Pipeline</h3>
+                    <p class="text-sm text-gray-600 mb-8 max-w-xl">
+                        Text mining is the process of deriving high-quality information from text. It involves
+                        preprocessing raw text into a structured format that can be analyzed by machine learning
+                        algorithms.
+                    </p>
+
+                    <div class="rams-card bg-white border border-gray-200 mb-8 p-4 sm:p-6">
+                        <div
+                            class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4 border-b border-gray-100 pb-4">
+                            <div>
+                                <h4 class="font-bold text-sm uppercase text-gray-500">Preprocessing Simulation
+                                </h4>
+                                <p class="text-[10px] text-gray-400 font-mono mt-1">Status: <span id="tm-status"
+                                        class="text-black">Ready</span></p>
+                            </div>
+                            <button onclick="startTextMining()" id="tm-btn"
+                                class="w-full sm:w-auto bg-[#85193C] text-white text-xs font-bold px-6 py-2 rounded-full hover:bg-[#5e112b] transition-all active:scale-95">Run
+                                Analysis</button>
+                        </div>
+
+                        <!-- Text Mining Pipeline -->
+                        <div class="tm-pipeline">
+                            <!-- Input -->
+                            <div class="tm-stage" id="tm-stage-1">
+                                <span class="tm-stage-title">Raw Text</span>
+                                <div class="tm-token-container" id="tm-input-box">
+                                    <div class="text-[10px] text-gray-400 italic">"The players are running fast"
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="tm-connector"><svg class="w-4 h-4" fill="none" stroke="currentColor"
+                                    viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M19 9l-7 7-7-7"></path>
+                                </svg></div>
+
+                            <!-- Tokenization -->
+                            <div class="tm-stage" id="tm-stage-2">
+                                <span class="tm-stage-title">Tokenization</span>
+                                <div class="tm-token-container" id="tm-tokens-box"></div>
+                            </div>
+
+                            <div class="tm-connector"><svg class="w-4 h-4" fill="none" stroke="currentColor"
+                                    viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M19 9l-7 7-7-7"></path>
+                                </svg></div>
+
+                            <!-- Processing -->
+                            <div class="tm-stage" id="tm-stage-3">
+                                <span class="tm-stage-title">Refining</span>
+                                <div class="tm-token-container" id="tm-refining-box"></div>
+                            </div>
+
+                            <div class="tm-connector"><svg class="w-4 h-4" fill="none" stroke="currentColor"
+                                    viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M19 9l-7 7-7-7"></path>
+                                </svg></div>
+
+                            <!-- Vectorization -->
+                            <div class="tm-stage" id="tm-stage-4">
+                                <span class="tm-stage-title">Vectorization</span>
+                                <div class="tm-token-container" id="tm-vector-box"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                        <div class="rams-card mb-0 p-4">
+                            <h4 class="text-xs font-bold uppercase mb-2 text-blue-600">1. Tokenization</h4>
+                            <p class="text-[10px] text-gray-500">Breaking text into individual units like words
+                                or
+                                phrases (tokens).</p>
+                        </div>
+                        <div class="rams-card mb-0 p-4">
+                            <h4 class="text-xs font-bold uppercase mb-2 text-red-600">2. Stopwords</h4>
+                            <p class="text-[10px] text-gray-500">Removing common words (the, a, is) that don't
+                                add
+                                significant meaning.</p>
+                        </div>
+                        <div class="rams-card mb-0 p-4">
+                            <h4 class="text-xs font-bold uppercase mb-2 text-green-600">3. Stemming</h4>
+                            <p class="text-[10px] text-gray-500">Reducing words to their base root form (e.g.,
+                                'running'
+                                to 'run').</p>
+                        </div>
+                        <div class="rams-card mb-0 p-4">
+                            <h4 class="text-xs font-bold uppercase mb-2 text-black">4. Vectorization</h4>
+                            <p class="text-[10px] text-gray-500">Converting text into numerical vectors that
+                                computers
+                                can process.</p>
+                        </div>
+                    </div>
+                </section>
+
+                <div class="divider hidden md:block border-t border-gray-100 mb-16"></div>
+
+                <!-- 10. Glossary -->
+                <section id="glossary" class="mb-20 md:mb-24 section-reveal">
+                    <span class="rams-label">10 / Appendix</span>
+                    <h3 class="text-xl font-medium mb-8">Big Data Glossary</h3>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                        <div
+                            class="p-4 bg-white border border-gray-200 rounded hover:border-[#85193C] transition-colors group">
+                            <span class="block font-bold text-xs mb-1 group-hover:text-[#85193C]">HDFS</span>
+                            <p class="text-[10px] text-gray-500 leading-relaxed">Hadoop Distributed File System;
+                                provides high-throughput access to application data.</p>
+                        </div>
+                        <div
+                            class="p-4 bg-white border border-gray-200 rounded hover:border-[#85193C] transition-colors group">
+                            <span class="block font-bold text-xs mb-1 group-hover:text-[#85193C]">MapReduce</span>
+                            <p class="text-[10px] text-gray-500 leading-relaxed">Software framework for easily
+                                writing applications which process vast amounts of data in-parallel.</p>
+                        </div>
+                        <div
+                            class="p-4 bg-white border border-gray-200 rounded hover:border-[#85193C] transition-colors group">
+                            <span class="block font-bold text-xs mb-1 group-hover:text-[#85193C]">YARN</span>
+                            <p class="text-[10px] text-gray-500 leading-relaxed">Yet Another Resource
+                                Negotiator;
+                                the cluster management layer of Hadoop.</p>
+                        </div>
+                        <div
+                            class="p-4 bg-white border border-gray-200 rounded hover:border-[#85193C] transition-colors group">
+                            <span class="block font-bold text-xs mb-1 group-hover:text-[#85193C]">Spark</span>
+                            <p class="text-[10px] text-gray-500 leading-relaxed">A fast and general-purpose
+                                cluster
+                                computing system for big data processing.</p>
+                        </div>
+                        <div
+                            class="p-4 bg-white border border-gray-200 rounded hover:border-[#85193C] transition-colors group">
+                            <span class="block font-bold text-xs mb-1 group-hover:text-[#85193C]">RDD</span>
+                            <p class="text-[10px] text-gray-500 leading-relaxed">Resilient Distributed Dataset;
+                                fundamental data structure of Apache Spark.</p>
+                        </div>
+                        <div
+                            class="p-4 bg-white border border-gray-200 rounded hover:border-[#85193C] transition-colors group">
+                            <span class="block font-bold text-xs mb-1 group-hover:text-[#85193C]">NameNode</span>
+                            <p class="text-[10px] text-gray-500 leading-relaxed">The centerpiece of HDFS that
+                                keeps
+                                the directory tree and tracks where data is kept.</p>
+                        </div>
+                        <div
+                            class="p-4 bg-white border border-gray-200 rounded hover:border-[#85193C] transition-colors group">
+                            <span class="block font-bold text-xs mb-1 group-hover:text-[#85193C]">DataNode</span>
+                            <p class="text-[10px] text-gray-500 leading-relaxed">Responsible for storing the
+                                actual
+                                data blocks in HDFS.</p>
+                        </div>
+                        <div
+                            class="p-4 bg-white border border-gray-200 rounded hover:border-[#85193C] transition-colors group">
+                            <span class="block font-bold text-xs mb-1 group-hover:text-[#85193C]">ResourceManager</span>
+                            <p class="text-[10px] text-gray-500 leading-relaxed">The ultimate authority that
+                                arbitrates resources among all applications in YARN.</p>
+                        </div>
+                        <div
+                            class="p-4 bg-white border border-gray-200 rounded hover:border-[#85193C] transition-colors group">
+                            <span class="block font-bold text-xs mb-1 group-hover:text-[#85193C]">NodeManager</span>
+                            <p class="text-[10px] text-gray-500 leading-relaxed">The per-machine agent
+                                responsible
+                                for containers and monitoring resource usage in YARN.</p>
+                        </div>
+                        <div
+                            class="p-4 bg-white border border-gray-200 rounded hover:border-[#85193C] transition-colors group">
+                            <span
+                                class="block font-bold text-xs mb-1 group-hover:text-[#85193C]">ApplicationMaster</span>
+                            <p class="text-[10px] text-gray-500 leading-relaxed">A framework-specific library
+                                that
+                                negotiates resources from ResourceManager for a single job.</p>
+                        </div>
+                        <div
+                            class="p-4 bg-white border border-gray-200 rounded hover:border-[#85193C] transition-colors group">
+                            <span class="block font-bold text-xs mb-1 group-hover:text-[#85193C]">Container</span>
+                            <p class="text-[10px] text-gray-500 leading-relaxed">A logical bundle of resources
+                                (CPU,
+                                RAM) on a single node where tasks run.</p>
+                        </div>
+                        <div
+                            class="p-4 bg-white border border-gray-200 rounded hover:border-[#85193C] transition-colors group">
+                            <span class="block font-bold text-xs mb-1 group-hover:text-[#85193C]">Spout</span>
+                            <p class="text-[10px] text-gray-500 leading-relaxed">A source of streams in an
+                                Apache
+                                Storm topology.</p>
+                        </div>
+                        <div
+                            class="p-4 bg-white border border-gray-200 rounded hover:border-[#85193C] transition-colors group">
+                            <span class="block font-bold text-xs mb-1 group-hover:text-[#85193C]">Bolt</span>
+                            <p class="text-[10px] text-gray-500 leading-relaxed">Processes input streams and
+                                produces new streams in Apache Storm.</p>
+                        </div>
+                        <div
+                            class="p-4 bg-white border border-gray-200 rounded hover:border-[#85193C] transition-colors group">
+                            <span class="block font-bold text-xs mb-1 group-hover:text-[#85193C]">Topology</span>
+                            <p class="text-[10px] text-gray-500 leading-relaxed">A network of spouts and bolts
+                                that
+                                defines a real-time computation in Storm.</p>
+                        </div>
+                        <div
+                            class="p-4 bg-white border border-gray-200 rounded hover:border-[#85193C] transition-colors group">
+                            <span class="block font-bold text-xs mb-1 group-hover:text-[#85193C]">Pig
+                                Latin</span>
+                            <p class="text-[10px] text-gray-500 leading-relaxed">A data flow language used in
+                                Apache
+                                Pig to analyze large datasets.</p>
+                        </div>
+                        <div
+                            class="p-4 bg-white border border-gray-200 rounded hover:border-[#85193C] transition-colors group">
+                            <span class="block font-bold text-xs mb-1 group-hover:text-[#85193C]">ETL</span>
+                            <p class="text-[10px] text-gray-500 leading-relaxed">Extract, Transform, Load; the
+                                general process of data movement and refinement.</p>
+                        </div>
+                        <div
+                            class="p-4 bg-white border border-gray-200 rounded hover:border-[#85193C] transition-colors group">
+                            <span class="block font-bold text-xs mb-1 group-hover:text-[#85193C]">DAG</span>
+                            <p class="text-[10px] text-gray-500 leading-relaxed">Directed Acyclic Graph; a
+                                representation of data processing steps with no loops.</p>
+                        </div>
+                        <div
+                            class="p-4 bg-white border border-gray-200 rounded hover:border-[#85193C] transition-colors group">
+                            <span class="block font-bold text-xs mb-1 group-hover:text-[#85193C]">In-Memory</span>
+                            <p class="text-[10px] text-gray-500 leading-relaxed">Storing data in RAM for faster
+                                access compared to disk storage.</p>
+                        </div>
+                        <div
+                            class="p-4 bg-white border border-gray-200 rounded hover:border-[#85193C] transition-colors group">
+                            <span class="block font-bold text-xs mb-1 group-hover:text-[#85193C]">Fault
+                                Tolerance</span>
+                            <p class="text-[10px] text-gray-500 leading-relaxed">The ability of a system to
+                                continue
+                                functioning after a component failure.</p>
+                        </div>
+                        <div
+                            class="p-4 bg-white border border-gray-200 rounded hover:border-[#85193C] transition-colors group">
+                            <span class="block font-bold text-xs mb-1 group-hover:text-[#85193C]">Data
+                                Locality</span>
+                            <p class="text-[10px] text-gray-500 leading-relaxed">Moving the computation to where
+                                the
+                                data is stored to reduce network traffic.</p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Knowledge Check -->
+                <section id="exam" class="mb-20 md:mb-24 section-reveal">
+                    <span class="rams-label">11 / Verification</span>
+                    <h3 class="text-xl font-medium mb-6">Knowledge Check</h3>
+                    <p class="text-sm text-gray-600 mb-8 max-w-lg">
+                        Verify your understanding of Big Data Analytics. Pass the exam with a perfect score to
+                        earn
+                        your
+                        completion certificate.
+                    </p>
+
+                    <div id="quiz-container" class="rams-card mb-12">
+                        <!-- Dynamic Quiz Content -->
+                    </div>
+                </section>
+
+                <!-- Certificate Section -->
+                <section id="certificate" class="mb-20 md:mb-24 hidden section-reveal">
+                    <span class="rams-label">05 / Certification</span>
+                    <h3 class="text-xl font-medium mb-6">Completion Certificate</h3>
+
+                    <div class="rams-card !p-0 overflow-hidden">
+                        <div class="p-6 md:p-8">
+                            <div class="flex flex-col md:flex-row gap-8 items-start">
+                                <div class="w-full md:w-1/3 space-y-4">
+                                    <p class="text-sm text-gray-600">
+                                        Enter your name below to generate your personalized certificate of
+                                        completion
+                                        for the Big Data Analytics series.
+                                    </p>
+                                    <div>
+                                        <label for="cert-name"
+                                            class="block text-xs font-bold text-gray-500 uppercase mb-1">Full
+                                            Name</label>
+                                        <input type="text" id="cert-name"
+                                            class="w-full border border-gray-300 p-2 font-mono text-sm focus:border-[#85193C] outline-none"
+                                            maxlength="35" placeholder="John Mashey">
+                                        <p id="cert-error" class="text-red-500 text-xs mt-2 hidden">Please enter
+                                            your name.</p>
+                                    </div>
+                                    <button onclick="generateCert()" id="btn-generate-cert"
+                                        class="btn btn-primary w-full py-3">Generate
+                                        Certificate</button>
+                                    <button onclick="downloadCert()" id="btn-download"
+                                        class="btn btn-secondary w-full hidden">Download PNG</button>
+                                </div>
+
+                                <div
+                                    class="w-full md:w-2/3 bg-gray-50 border border-gray-200 p-4 flex items-center justify-center">
+                                    <canvas id="cert-canvas" class="w-full bg-white"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="bg-gray-50 px-6 py-3 border-t border-gray-100 text-center">
+                            <p class="text-[10px] text-gray-400 italic">
+                                This certificate confirms successful completion of learning and assessment on
+                                this
+                                platform
+                                and is not an accredited or government-recognized qualification.
+                            </p>
+                        </div>
+                    </div>
+                </section>
+
+                <footer class="w-full mt-12 mb-12">
+                    <div class="border-t border-gray-200 pt-8 flex justify-between items-center">
+                        <span class="text-[10px] mono uppercase text-gray-400">Undrstanding</span>
+                        <span class="text-[10px] mono uppercase text-gray-400">For Humans, From Humans</span>
+                    </div>
+                </footer>
+            </div>
+        </main>
+    </div>
+
+    <script src="js/script.js"></script>
+    <script>
+        // --- Mobile Menu ---
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobile-menu');
+            if (menu.classList.contains('hidden')) {
+                menu.classList.remove('hidden');
+                menu.classList.add('flex');
+                document.body.style.overflow = 'hidden';
+            } else {
+                menu.classList.add('hidden');
+                menu.classList.remove('flex');
+                document.body.style.overflow = 'auto';
+            }
+        }
+
+        // --- Scroll Reveal Init ---
+        const revealObserver = new IntersectionObserver((entries, observer) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('active');
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, {
+            threshold: 0.1,
+            rootMargin: "0px 0px -50px 0px"
+        });
+
+        document.querySelectorAll('.section-reveal').forEach(section => {
+            revealObserver.observe(section);
+        });
+
+        // --- Active Nav Link on Scroll ---
+        const navLinks = document.querySelectorAll('.nav-link');
+        const sections = document.querySelectorAll('section');
+
+        window.addEventListener('scroll', () => {
+            let current = '';
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                const sectionHeight = section.clientHeight;
+                if (scrollY >= (sectionTop - 200)) {
+                    current = section.getAttribute('id');
+                }
+            });
+
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href').includes(current)) {
+                    link.classList.add('active');
+                }
+            });
+        });
+
+        // --- Visualizations ---
+
+        // 1. HDFS Replication
+        let nodes = [true, true, true]; // True = Alive
+
+        function killNode(id) {
+            const idx = id - 1;
+            nodes[idx] = !nodes[idx];
+
+            const nodeEl = document.getElementById(`node-${id}`);
+            const statusEl = document.getElementById('hdfs-status');
+
+            if (!nodes[idx]) {
+                // Kill Node
+                nodeEl.classList.add('dead');
+                document.getElementById(`store-${id}`).style.opacity = '0.2';
+                statusEl.innerHTML = `<span class="text-red-600 font-bold">ALERT: DataNode ${id} Failure!</span> Replicating lost blocks...`;
+
+                // Simulate Replication (Visual Only)
+                setTimeout(() => {
+                    const healthyNodes = nodes.map((n, i) => n ? i + 1 : null).filter(n => n);
+                    if (healthyNodes.length > 0) {
+                        statusEl.innerHTML += ` <span class="text-green-600"> Done.</span>`;
+                    } else {
+                        statusEl.innerHTML = "CRITICAL FAILURE: Cluster Down.";
+                    }
+                }, 1500);
+
+            } else {
+                // Revive Node
+                nodeEl.classList.remove('dead');
+                document.getElementById(`store-${id}`).style.opacity = '1';
+                statusEl.innerText = "System Healthy. Node rejoined cluster.";
+            }
+        }
+
+        function resetHDFS() {
+            nodes = [true, true, true];
+            for (let i = 1; i <= 3; i++) {
+                document.getElementById(`node-${i}`).classList.remove('dead');
+                document.getElementById(`store-${i}`).style.opacity = '1';
+            }
+            document.getElementById('hdfs-status').innerText = "System Healthy.";
+        }
+
+        // 2. MapReduce (Enhanced Animation - Responsive)
+        function startMapReduce() {
+            const btn = document.getElementById('mr-btn');
+            const status = document.getElementById('mr-status');
+            const stages = [
+                document.getElementById('mr-stage-1'),
+                document.getElementById('mr-stage-2'),
+                document.getElementById('mr-stage-3'),
+                document.getElementById('mr-stage-4'),
+                document.getElementById('mr-stage-5')
+            ];
+
+            if (btn.classList.contains('opacity-50')) return;
+
+            // Reset Stages
+            stages.forEach(s => s.innerHTML = '');
+            btn.classList.add('opacity-50');
+            btn.innerText = "Processing...";
+
+            const data = ['apple', 'banana', 'apple', 'orange'];
+
+            // Stage 1: Input
+            status.innerText = "Loading raw data...";
+            data.forEach((text, i) => {
+                setTimeout(() => {
+                    const p = document.createElement('div');
+                    p.className = 'mr-p';
+                    p.innerText = text;
+                    stages[0].appendChild(p);
+                }, i * 200);
+            });
+
+            // Stage 2: Map
+            setTimeout(() => {
+                status.innerText = "Mapping keys...";
+                stages[0].innerHTML = '';
+                data.forEach((text, i) => {
+                    setTimeout(() => {
+                        const p = document.createElement('div');
+                        p.className = 'mr-p mapped';
+                        p.innerText = `(${text}, 1)`;
+                        stages[1].appendChild(p);
+                    }, i * 200);
+                });
+            }, 1500);
+
+            // Stage 3: Shuffle
+            setTimeout(() => {
+                status.innerText = "Shuffling & Sorting...";
+                stages[1].innerHTML = '';
+                const grouped = {
+                    'apple': ['(apple, 1)', '(apple, 1)'],
+                    'banana': ['(banana, 1)'],
+                    'orange': ['(orange, 1)']
+                };
+                Object.entries(grouped).forEach(([key, vals], i) => {
+                    setTimeout(() => {
+                        const groupDiv = document.createElement('div');
+                        groupDiv.className = 'flex flex-col gap-0.5 border border-orange-200 bg-orange-50/50 p-1 rounded';
+                        vals.forEach(v => {
+                            const p = document.createElement('div');
+                            p.className = 'mr-p shuffled';
+                            p.innerText = v;
+                            groupDiv.appendChild(p);
+                        });
+                        stages[2].appendChild(groupDiv);
+                    }, i * 300);
+                });
+            }, 3500);
+
+            // Stage 4: Reduce
+            setTimeout(() => {
+                status.innerText = "Reducing values...";
+                stages[2].innerHTML = '';
+                const reduced = { 'apple': 2, 'banana': 1, 'orange': 1 };
+                Object.entries(reduced).forEach(([key, val], i) => {
+                    setTimeout(() => {
+                        const p = document.createElement('div');
+                        p.className = 'mr-p reduced';
+                        p.innerText = `${key}: ${val}`;
+                        stages[3].appendChild(p);
+                    }, i * 300);
+                });
+            }, 5500);
+
+            // Stage 5: Output
+            setTimeout(() => {
+                status.innerText = "Writing to HDFS...";
+                stages[3].innerHTML = '';
+                const p = document.createElement('div');
+                p.className = 'mr-p bg-gray-800 text-white border-none px-4 py-2 font-bold';
+                p.innerText = "results.txt";
+                stages[4].appendChild(p);
+
+                status.innerText = "Job Complete!";
+                btn.innerText = "Process Data Stream";
+                btn.classList.remove('opacity-50');
+            }, 7500);
+        }
+
+        // 3. YARN Negotiation (Enhanced - Responsive)
+        function runYarnDemo() {
+            const status = document.getElementById('yarn-status-msg');
+            const bar = document.getElementById('yarn-resource-bar');
+            const ramVal = document.getElementById('yarn-ram-val');
+            const slot = document.getElementById('yarn-container-slot');
+            const pingClient = document.getElementById('ping-client');
+            const pingRM = document.getElementById('ping-rm');
+
+            const btn = event.currentTarget;
+            if (btn.classList.contains('opacity-50')) return;
+
+            // Reset
+            btn.classList.add('opacity-50');
+            status.innerText = "Initializing negotiation...";
+            bar.style.width = '0%';
+            ramVal.innerText = '0%';
+            slot.classList.add('hidden');
+            pingClient.classList.remove('active');
+            pingRM.classList.remove('active');
+
+            // 1. Client Submission
+            setTimeout(() => {
+                pingClient.classList.add('active');
+                status.innerText = "Step 1: Client submits job to Resource Manager";
+            }, 500);
+
+            // 2. Resource Manager Scheduling
+            setTimeout(() => {
+                pingRM.classList.add('active');
+                status.innerText = "Step 2: RM identifies resources and schedules Job";
+            }, 2000);
+
+            // 3. Node Manager Allocation
+            setTimeout(() => {
+                status.innerText = "Step 3: NM allocates container and launches Application Master";
+                bar.style.width = '70%';
+                let counter = 0;
+                const interval = setInterval(() => {
+                    if (counter >= 70) clearInterval(interval);
+                    ramVal.innerText = counter + '%';
+                    counter += 2;
+                }, 20);
+
+                slot.classList.remove('hidden');
+            }, 3500);
+
+            // 4. Job Running
+            setTimeout(() => {
+                status.innerText = "Step 4: Job running in isolated container";
+                pingClient.classList.remove('active');
+                pingRM.classList.remove('active');
+                btn.classList.remove('opacity-50');
+                btn.innerText = "Allocate Resources";
+            }, 5500);
+        }
+
+        // 4. Spark DAG
+        function runSparkDemo() {
+            const rdd1 = document.getElementById('rdd-1');
+            const rdd2 = document.getElementById('rdd-2');
+            const rdd3 = document.getElementById('rdd-3');
+            const arrow1 = document.getElementById('spark-arrow-1');
+            const arrow2 = document.getElementById('spark-arrow-2');
+
+            // Reset
+            [rdd1, rdd2, rdd3].forEach(el => el.classList.remove('processing'));
+            arrow1.style.width = '0';
+            arrow2.style.width = '0';
+
+            // Animate
+            setTimeout(() => rdd1.classList.add('processing'), 200);
+
+            setTimeout(() => {
+                arrow1.style.width = '100%';
+            }, 1000);
+
+            setTimeout(() => {
+                rdd2.classList.add('processing');
+            }, 1800);
+
+            setTimeout(() => {
+                arrow2.style.width = '100%';
+            }, 2600);
+
+            setTimeout(() => {
+                rdd3.classList.add('processing');
+            }, 3400);
+        }
+
+        // 5. Storm Stream
+        function runStormDemo() {
+            const container = document.getElementById('storm-anim-area');
+
+            // Create Tuple
+            const tuple = document.createElement('div');
+            tuple.className = 'storm-tuple';
+            container.appendChild(tuple);
+
+            // Trigger Anim
+            requestAnimationFrame(() => {
+                tuple.classList.add('animating');
+            });
+
+            // Cleanup
+            setTimeout(() => {
+                tuple.remove();
+            }, 1600);
+        }
+
+        // 6. Text Mining Pipeline Simulation
+        function startTextMining() {
+            const btn = document.getElementById('tm-btn');
+            const status = document.getElementById('tm-status');
+            const tokensBox = document.getElementById('tm-tokens-box');
+            const refiningBox = document.getElementById('tm-refining-box');
+            const vectorBox = document.getElementById('tm-vector-box');
+
+            if (btn.classList.contains('opacity-50')) return;
+            btn.classList.add('opacity-50');
+
+            // Reset
+            tokensBox.innerHTML = '';
+            refiningBox.innerHTML = '';
+            vectorBox.innerHTML = '';
+            document.querySelectorAll('.tm-stage').forEach(s => s.classList.remove('active'));
+
+            const sentence = "The players are running fast";
+            const rawTokens = ["The", "players", "are", "running", "fast"];
+            const stopwords = ["The", "are"];
+            const stemming = { "players": "play", "running": "run", "fast": "fast" };
+
+            // Step 1: Tokenization
+            status.innerText = "Tokenizing sentence...";
+            document.getElementById('tm-stage-2').classList.add('active');
+
+            rawTokens.forEach((t, i) => {
+                setTimeout(() => {
+                    const el = document.createElement('div');
+                    el.className = 'tm-token';
+                    el.innerText = t;
+                    tokensBox.appendChild(el);
+                }, i * 400);
+            });
+
+            // Step 2: Stopword Removal & Stemming
+            setTimeout(() => {
+                status.innerText = "Removing stopwords & Stemming roots...";
+                document.getElementById('tm-stage-2').classList.remove('active');
+                document.getElementById('tm-stage-3').classList.add('active');
+
+                rawTokens.forEach((t, i) => {
+                    setTimeout(() => {
+                        const el = document.createElement('div');
+                        if (stopwords.includes(t)) {
+                            el.className = 'tm-token removed';
+                            el.innerText = t;
+                        } else {
+                            el.className = 'tm-token root';
+                            el.innerText = stemming[t] || t;
+                        }
+                        refiningBox.appendChild(el);
+                    }, i * 400);
+                });
+            }, 3000);
+
+            // Step 3: Vectorization
+            setTimeout(() => {
+                status.innerText = "Converting to feature vectors...";
+                document.getElementById('tm-stage-3').classList.remove('active');
+                document.getElementById('tm-stage-4').classList.add('active');
+
+                const finalTokens = ["play", "run", "fast"];
+                finalTokens.forEach((t, i) => {
+                    setTimeout(() => {
+                        const el = document.createElement('div');
+                        el.className = 'tm-token vector';
+                        el.innerText = (Math.random()).toFixed(2);
+                        vectorBox.appendChild(el);
+                    }, i * 500);
+                });
+            }, 6500);
+
+            // Complete
+            setTimeout(() => {
+                status.innerText = "Analysis Complete!";
+                document.getElementById('tm-stage-4').classList.remove('active');
+                btn.classList.remove('opacity-50');
+            }, 9000);
+        }
+
+        // --- Knowledge Check Logic ---
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // 1. Quick Checks
+            new InlineQuiz('check-hdfs', {
+                question: "Which component in HDFS is responsible for storing the actual data blocks?",
+                options: ["NameNode", "DataNode", "Secondary NameNode", "ResourceManager"],
+                answer: 1,
+                explanation: "DataNodes are the worker nodes in HDFS that store the actual data blocks on their local disks."
+            });
+
+            new InlineQuiz('check-yarn', {
+                question: "In YARN, which component is responsible for negotiating resources from the ResourceManager for a specific job?",
+                options: ["NodeManager", "Container", "ApplicationMaster", "JobTracker"],
+                answer: 2,
+                explanation: "The ApplicationMaster is a framework-specific library that negotiates resources from the ResourceManager and works with the NodeManager(s) to execute and monitor tasks."
+            });
+
+            new InlineQuiz('check-ecosystem', {
+                question: "Which Apache Spark structure is an immutable distributed collection of objects that Spark processes in memory?",
+                options: ["DataFrame", "RDD", "Dataset", "DAG"],
+                answer: 1,
+                explanation: "RDD (Resilient Distributed Dataset) is the fundamental data structure of Spark, providing an immutable distributed collection of objects."
+            });
+
+            // 2. Final Exam (QuizManager)
+            const examQuestions = [
+                {
+                    question: "What are the core '3 Vs' commonly used to define Big Data?",
+                    options: ["Volume, Velocity, Variety", "Volume, Value, Veracity", "Velocity, Variety, Variability", "Value, Veracity, Variability"],
+                    answer: 0
+                },
+                {
+                    question: "True or False: HDFS is optimized for high-throughput access rather than low-latency access.",
+                    options: ["True", "False"],
+                    answer: 0
+                },
+                {
+                    question: "What is the default replication factor for data blocks in HDFS?",
+                    options: ["1", "2", "3", "5"],
+                    answer: 2
+                },
+                {
+                    question: "Which MapReduce phase groups values by key and prepares them for the Reducers?",
+                    options: ["Map", "Shuffle & Sort", "Reduce", "InputFormat"],
+                    answer: 1
+                },
+                {
+                    question: "In YARN, which component arbitrates resources among all applications in the system?",
+                    options: ["NodeManager", "ApplicationMaster", "ResourceManager", "Container"],
+                    answer: 2
+                },
+                {
+                    question: "Apache Spark is known for being up to ___ faster than MapReduce for in-memory processing.",
+                    options: ["10x", "50x", "100x", "500x"],
+                    answer: 2
+                },
+                {
+                    question: "Which Spark concept involves delaying the execution of transformations until an action is called?",
+                    options: ["Caching", "Pipelining", "Lazy Evaluation", "Persistence"],
+                    answer: 2
+                },
+                {
+                    question: "Which system uses 'Spouts' and 'Bolts' to define real-time data processing 'Topologies'?",
+                    options: ["Hadoop", "Spark", "Storm", "Pig"],
+                    answer: 2
+                },
+                {
+                    question: "What is the primary language used to write scripts for Apache Pig?",
+                    options: ["SQL", "Pig Latin", "Python", "Java"],
+                    answer: 1
+                },
+                {
+                    question: "Which principle involves moving the computation code to the node where data resides?",
+                    options: ["Data Replication", "Data Locality", "Load Balancing", "Resource Negotiation"],
+                    answer: 1
+                }
+            ];
+
+            const certGen = new CertificateGenerator('cert-canvas', 'Big Data Analytics');
+
+            new QuizManager('quiz-container', examQuestions, () => {
+                // On Success: Show Certificate Section
+                const certSection = document.getElementById('certificate');
+                certSection.classList.remove('hidden');
+                certSection.scrollIntoView({ behavior: 'smooth' });
+
+                // Initialize canvas with empty name
+                certGen.generate('');
+            });
+
+            // Expose cert functions globally
+            window.generateCert = () => {
+                const nameInput = document.getElementById('cert-name');
+                const error = document.getElementById('cert-error');
+                const downloadBtn = document.getElementById('btn-download');
+                const name = nameInput.value.trim();
+                const nameRegex = /^[a-zA-Z\s\-\.'’]+$/;
+
+                // Reset
+                error.classList.add('hidden');
+                nameInput.classList.remove('border-red-500');
+
+                if (!name) {
+                    error.textContent = "Please enter your name.";
+                    error.classList.remove('hidden');
+                    nameInput.classList.add('border-red-500');
+                    return;
+                }
+
+                if (name.length < 3 || name.length > 35) {
+                    error.textContent = "Name must be between 3 and 35 characters.";
+                    error.classList.remove('hidden');
+                    nameInput.classList.add('border-red-500');
+                    return;
+                }
+
+                if (!nameRegex.test(name)) {
+                    error.textContent = "Name cannot contain numbers or special characters.";
+                    error.classList.remove('hidden');
+                    nameInput.classList.add('border-red-500');
+                    return;
+                }
+
+                certGen.generate(name);
+                downloadBtn.classList.remove('hidden');
+            };
+
+            window.downloadCert = () => {
+                const name = document.getElementById('cert-name').value.trim();
+                certGen.download(`BigData_Certificate_${name.replace(/\s+/g, '_')}.png`);
+            };
+        });
+    </script>
+</body>
+
+</html>
