@@ -1,0 +1,2933 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DBMS</title>
+    <link rel="icon" type="image/svg+xml" href="../assests/undrlogo.svg">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Roboto+Mono:wght@400;500&display=swap');
+
+        /* Global Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #a3a3a3;
+            border-radius: 3px;
+        }
+
+        :root {
+            /* Rams Palette - Grey Edition */
+            --bg-color: #f4f4f4;
+            --card-bg: #ffffff;
+            --text-main: #111111;
+            --text-muted: #737373;
+
+            /* Accents - Grey/Monochrome */
+            --accent: #404040;
+            /* Neutral-700 */
+            --accent-hover: #171717;
+            /* Neutral-900 */
+            --accent-light: #e5e5e5;
+            /* Neutral-200 */
+
+            /* Functional Colors */
+            --compare: #d4d4d4;
+            /* Light Grey for checking */
+            --compare-active: #a3a3a3;
+            --success: #111111;
+            /* Black for success/commit */
+            --error: #ef4444;
+            /* Keep red only for distinct errors/rollbacks */
+            --border: #e5e5e5;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            -webkit-font-smoothing: antialiased;
+            line-height: 1.6;
+        }
+
+        h1,
+        h2,
+        h3,
+        h4,
+        h5 {
+            font-weight: 600;
+            letter-spacing: -0.02em;
+            color: var(--text-main);
+        }
+
+        p {
+            color: #404040;
+        }
+
+        .mono {
+            font-family: 'Roboto Mono', monospace;
+        }
+
+        /* Industrial Grid Layout */
+        .rams-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            transition: all 0.3s ease;
+        }
+
+        .rams-card:hover {
+            border-color: #a3a3a3;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        }
+
+        @media (min-width: 768px) {
+            .rams-card {
+                padding: 2.5rem;
+            }
+        }
+
+        .rams-card .overflow-x-auto {
+            /* Enable momentum scrolling on iOS */
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .rams-label {
+            font-family: 'Inter', sans-serif;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        /* Controls */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.5rem 1.25rem;
+            font-size: 0.85rem;
+            font-weight: 500;
+            border-radius: 2px;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            white-space: nowrap;
+        }
+
+        .btn-primary {
+            background-color: var(--accent);
+            color: white;
+            border: 1px solid var(--accent);
+        }
+
+        .btn-primary:hover {
+            background-color: var(--accent-hover);
+            border-color: var(--accent-hover);
+        }
+
+        .btn-secondary {
+            background-color: transparent;
+            color: var(--text-main);
+            border: 1px solid #a3a3a3;
+        }
+
+        .btn-secondary:hover {
+            background-color: #e5e5e5;
+        }
+
+        .btn-ghost {
+            color: var(--text-muted);
+        }
+
+        .btn-ghost:hover {
+            color: var(--text-main);
+            text-decoration: underline;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 0;
+            overflow-x: auto;
+        }
+
+        .btn-group .btn {
+            border-radius: 0;
+            border-right: 0;
+        }
+
+        .btn-group .btn:first-child {
+            border-top-left-radius: 2px;
+            border-bottom-left-radius: 2px;
+        }
+
+        .btn-group .btn:last-child {
+            border-top-right-radius: 2px;
+            border-bottom-right-radius: 2px;
+            border-right: 1px solid #a3a3a3;
+        }
+
+        .btn-group .btn.active {
+            background-color: #e5e5e5;
+            color: black;
+            font-weight: 600;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        /* Nav */
+        .nav-link {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            padding: 0.5rem 0;
+            display: block;
+            transition: color 0.2s;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            color: var(--text-main);
+            font-weight: 500;
+        }
+
+        .nav-link.active::before {
+            content: "• ";
+            color: var(--accent);
+        }
+
+        /* Animation Classes */
+        .section-reveal {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+        }
+
+        .section-reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Visual Specifics */
+        .db-table {
+            border-collapse: collapse;
+            width: 100%;
+            font-family: 'Roboto Mono', monospace;
+            font-size: 0.75rem;
+        }
+
+        .db-table th {
+            text-align: left;
+            padding: 8px;
+            border-bottom: 2px solid #000;
+            color: #737373;
+            text-transform: uppercase;
+            font-size: 0.65rem;
+        }
+
+        .db-table td {
+            padding: 8px;
+            border-bottom: 1px solid #e5e5e5;
+            transition: background-color 0.3s;
+        }
+
+        .row-highlight {
+            background-color: var(--accent-light);
+        }
+
+        .row-match {
+            background-color: #404040;
+            color: white;
+        }
+
+        /* Transaction Box */
+        .transaction-log {
+            font-family: 'Roboto Mono', monospace;
+            font-size: 0.7rem;
+            color: #555;
+            border-left: 2px solid #e5e5e5;
+            padding-left: 1rem;
+            height: 150px;
+            overflow-y: auto;
+        }
+
+        .log-entry {
+            margin-bottom: 4px;
+            opacity: 0;
+            animation: fadeIn 0.3s forwards;
+        }
+
+        .log-success {
+            color: #111;
+            font-weight: bold;
+        }
+
+        .log-error {
+            color: #ef4444;
+        }
+
+        /* Index Tree */
+        .tree-node {
+            transition: all 0.3s ease;
+            background: white;
+            border: 1px solid #a3a3a3;
+        }
+
+        .tree-node.active {
+            background: var(--accent);
+            color: white;
+            border-color: var(--accent);
+            transform: scale(1.1);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .tree-node.checked {
+            background: #e5e5e5;
+            color: #555;
+        }
+
+        /* Deep Dive Box */
+        .deep-dive {
+            background-color: #f9fafb;
+            border: 1px solid #e5e5e5;
+            padding: 1.5rem;
+            margin-top: 1.5rem;
+            font-size: 0.9rem;
+            line-height: 1.7;
+            color: #4b5563;
+        }
+
+        .deep-dive h4 {
+            color: #111;
+            font-weight: 600;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .deep-dive h4::before {
+            content: "";
+            display: inline-block;
+            width: 4px;
+            height: 4px;
+            background: var(--accent);
+            border-radius: 50%;
+        }
+
+        .deep-dive strong {
+            color: #111;
+            font-weight: 500;
+        }
+
+        /* CAP Theorem SVG Styles */
+        #svg-line-ca.active,
+        #svg-line-cp.active,
+        #svg-line-ap.active {
+            stroke: #111;
+            stroke-width: 6;
+            filter: drop-shadow(0px 2px 3px rgba(0, 0, 0, 0.2));
+        }
+
+        .json-block {
+            font-family: 'Roboto Mono', monospace;
+            font-size: 0.75rem;
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 1rem;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        /* Architecture Animation */
+        @keyframes flowPacket {
+            0% {
+                offset-distance: 0%;
+                opacity: 1;
+            }
+
+            95% {
+                opacity: 1;
+            }
+
+            100% {
+                offset-distance: 100%;
+                opacity: 0;
+            }
+        }
+
+        .arch-node {
+            transition: all 0.3s ease;
+        }
+
+        .arch-node.active {
+            border-color: #111;
+            background-color: #f5f5f5;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        @keyframes fadeIn {
+            to {
+                opacity: 1;
+            }
+        }
+
+        .lock-icon {
+            transition: all 0.3s;
+        }
+
+        .lock-active {
+            color: #ef4444;
+            transform: scale(1.1);
+        }
+
+        /* Replication Packet */
+        .packet {
+            width: 8px;
+            height: 8px;
+            background: #111;
+            border-radius: 50%;
+            position: absolute;
+            pointer-events: none;
+            z-index: 50;
+        }
+
+        /* Mobile Menu */
+        .mobile-nav-link {
+            font-size: 1.25rem;
+            font-weight: 500;
+            color: var(--text-main);
+            padding: 1rem 0;
+            border-bottom: 1px solid #e5e5e5;
+            display: block;
+        }
+
+        .divider {
+            height: 1px;
+            background-color: var(--border);
+            width: 100%;
+            margin: 3rem 0;
+        }
+
+        .thin-scrollbar::-webkit-scrollbar {
+            width: 1px;
+        }
+
+        .thin-scrollbar::-webkit-scrollbar-thumb {
+            background: #d4d4d4;
+        }
+    </style>
+</head>
+
+<body class="overflow-x-hidden">
+
+    <div class="flex min-h-screen flex-col lg:flex-row">
+
+        <!-- Mobile Header -->
+        <header
+            class="lg:hidden fixed top-0 w-full bg-[#f4f4f4] border-b border-[#e5e5e5] z-[100] px-6 py-4 flex justify-between items-center h-16">
+            <div>
+                <h1 class="text-sm font-semibold tracking-wide uppercase text-black leading-tight">Data<br>Base</h1>
+            </div>
+            <button onclick="toggleMobileMenu()"
+                class="text-black focus:outline-none p-2 border border-transparent active:bg-gray-200 rounded">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+            </button>
+        </header>
+
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="fixed inset-0 bg-[#f4f4f4] z-[90] hidden flex-col pt-20 px-6 overflow-y-auto">
+            <nav class="flex flex-col">
+                <span class="text-[10px] text-gray-400 font-bold uppercase tracking-wider px-0 py-2">01.
+                    Structure</span>
+                <a href="#sql-basics" class="mobile-nav-link" onclick="toggleMobileMenu()">SQL Queries (Basic)</a>
+                <a href="#joins" class="mobile-nav-link" onclick="toggleMobileMenu()">SQL Joins</a>
+                <a href="#indexing" class="mobile-nav-link" onclick="toggleMobileMenu()">Indexing (B-Tree)</a>
+                <a href="#normalization" class="mobile-nav-link" onclick="toggleMobileMenu()">Normalization</a>
+                <span class="text-[10px] text-gray-400 font-bold uppercase tracking-wider px-0 py-2 mt-4">02.
+                    Integrity</span>
+                <a href="#acid" class="mobile-nav-link" onclick="toggleMobileMenu()">ACID Transactions</a>
+                <a href="#locking" class="mobile-nav-link" onclick="toggleMobileMenu()">Concurrency & Locking</a>
+                <span class="text-[10px] text-gray-400 font-bold uppercase tracking-wider px-0 py-2 mt-4">03. Scale &
+                    Logic</span>
+                <a href="#arch" class="mobile-nav-link" onclick="toggleMobileMenu()">Architectures</a>
+                <a href="#sharding" class="mobile-nav-link" onclick="toggleMobileMenu()">Sharding</a>
+                <a href="#replication" class="mobile-nav-link" onclick="toggleMobileMenu()">Replication</a>
+                <a href="#nosql" class="mobile-nav-link" onclick="toggleMobileMenu()">SQL vs NoSQL</a>
+                <a href="#cap" class="mobile-nav-link" onclick="toggleMobileMenu()">CAP Theorem</a>
+                <a href="#glossary" class="mobile-nav-link" onclick="toggleMobileMenu()">Glossary</a>
+
+                <span class="text-[10px] text-gray-400 font-bold uppercase tracking-wider px-0 py-2 mt-4">04.
+                    Assessment</span>
+                <a href="#quiz" class="mobile-nav-link border-b-0" onclick="toggleMobileMenu()">Knowledge Check</a>
+            </nav>
+        </div>
+
+        <!-- Sidebar -->
+        <aside
+            class="hidden lg:block w-64 fixed h-screen bg-[#f4f4f4] border-r border-[#e5e5e5] z-50 overflow-y-auto thin-scrollbar">
+            <div class="p-8 h-full flex flex-col justify-between">
+                <div>
+                    <a href="../index.html"
+                        class="inline-flex items-center gap-2 px-4 py-2 mb-8 text-[10px] font-mono uppercase tracking-wider text-gray-600 border border-gray-300 hover:bg-black hover:text-white hover:border-black transition-all duration-200">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                        </svg>
+                        Back to Home
+                    </a>
+                    <div class="mb-12">
+                        <h1 class="text-sm font-semibold tracking-wide uppercase text-black">Data<br>Base</h1>
+                        <p class="text-[10px] text-gray-400 mt-1 uppercase tracking-wider font-bold">
+                            Database Systems</p>
+                    </div>
+                    <nav class="space-y-1">
+                        <a href="#intro" class="nav-link font-medium text-black">Introduction</a>
+
+                        <div class="pt-4 pb-1 text-[10px] text-gray-400 font-bold uppercase tracking-wider">01.
+                            Structure</div>
+                        <a href="#sql-basics" class="nav-link">SQL Queries (Basic)</a>
+                        <a href="#joins" class="nav-link">SQL Joins</a>
+                        <a href="#indexing" class="nav-link">Indexing (B-Tree)</a>
+                        <a href="#normalization" class="nav-link">Normalization</a>
+
+                        <div class="pt-4 pb-1 text-[10px] text-gray-400 font-bold uppercase tracking-wider">02.
+                            Integrity</div>
+                        <a href="#acid" class="nav-link">ACID Transactions</a>
+                        <a href="#locking" class="nav-link">Concurrency / Locking</a>
+
+                        <div class="pt-4 pb-1 text-[10px] text-gray-400 font-bold uppercase tracking-wider">03. Scale &
+                            Logic</div>
+                        <a href="#arch" class="nav-link">Architectures</a>
+                        <a href="#sharding" class="nav-link">Sharding</a>
+                        <a href="#replication" class="nav-link">Replication</a>
+                        <a href="#nosql" class="nav-link">SQL vs NoSQL</a>
+                        <a href="#cap" class="nav-link">CAP Theorem</a>
+                        <a href="#glossary" class="nav-link">Glossary</a>
+
+                        <div class="pt-4 pb-1 text-[10px] text-gray-400 font-bold uppercase tracking-wider">04.
+                            Assessment</div>
+                        <a href="#quiz" class="nav-link">Knowledge Check</a>
+                    </nav>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 lg:ml-64 bg-white w-full">
+            <div class="max-w-3xl mx-auto px-4 sm:px-8 py-24 lg:py-20">
+
+                <!-- Hero -->
+                <section id="intro" class="mb-16 md:mb-24">
+                    <h2 class="text-3xl md:text-5xl font-semibold mb-6 text-black tracking-tight leading-tight">Engines
+                        of <br>Information</h2>
+                    <p class="text-base md:text-lg text-gray-600 max-w-xl font-light leading-relaxed mb-6">
+                        A Database Management System (DBMS) is the software that interacts with end users, applications,
+                        and the database itself to capture and analyze data. This guide visualizes the hidden mechanics
+                        of storage, retrieval, and integrity.
+                    </p>
+                </section>
+
+                <div class="divider hidden md:block border-t border-gray-100 mb-16"></div>
+
+                <!-- 00. SQL Basics -->
+                <section id="sql-basics" class="mb-20 md:mb-24">
+                    <span class="rams-label">00 / Foundation</span>
+                    <h3 class="text-xl font-medium mb-4">SQL Queries</h3>
+                    <p class="text-sm text-gray-600 mb-6 max-w-xl">
+                        Structured Query Language (SQL) is the standard for communicating with databases. The four basic
+                        operations are <strong>CRUD</strong>: Create (INSERT), Read (SELECT), Update (UPDATE), and
+                        Delete (DELETE). Records are often identified by a <strong>Primary Key</strong> (a unique ID).
+                    </p>
+
+                    <div class="rams-card">
+                        <div class="flex flex-col gap-6">
+
+                            <!-- 1. Toolbar Region -->
+                            <div class="flex flex-col items-start border-b border-gray-100 pb-6 gap-6">
+
+                                <!-- Basics Group -->
+                                <div class="flex flex-col gap-2 w-full md:w-auto">
+                                    <span class="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Statement
+                                        Type</span>
+                                    <div class="btn-group w-full">
+                                        <button onclick="runSqlDemo('select')"
+                                            class="btn btn-secondary text-xs flex-1 active"
+                                            id="btn-sql-select">SELECT</button>
+                                        <button onclick="runSqlDemo('insert')" class="btn btn-secondary text-xs flex-1"
+                                            id="btn-sql-insert">INSERT</button>
+                                        <button onclick="runSqlDemo('update')" class="btn btn-secondary text-xs flex-1"
+                                            id="btn-sql-update">UPDATE</button>
+                                        <button onclick="runSqlDemo('delete')" class="btn btn-secondary text-xs flex-1"
+                                            id="btn-sql-delete">DELETE</button>
+                                    </div>
+                                </div>
+
+                                <!-- Advanced Group -->
+                                <div class="flex flex-col gap-2 w-full md:w-auto">
+                                    <span class="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Analysis
+                                        Functions</span>
+                                    <div class="flex flex-wrap gap-1">
+                                        <button onclick="runSqlDemo('count')"
+                                            class="btn btn-secondary text-xs px-3 py-1"
+                                            id="btn-sql-count">COUNT</button>
+                                        <button onclick="runSqlDemo('sum')" class="btn btn-secondary text-xs px-3 py-1"
+                                            id="btn-sql-sum">SUM</button>
+                                        <button onclick="runSqlDemo('avg')" class="btn btn-secondary text-xs px-3 py-1"
+                                            id="btn-sql-avg">AVG</button>
+                                        <button onclick="runSqlDemo('min')" class="btn btn-secondary text-xs px-3 py-1"
+                                            id="btn-sql-min">MIN</button>
+                                        <button onclick="runSqlDemo('max')" class="btn btn-secondary text-xs px-3 py-1"
+                                            id="btn-sql-max">MAX</button>
+                                    </div>
+                                    <div class="flex flex-wrap gap-1 mt-1">
+                                        <button onclick="runSqlDemo('second-max')"
+                                            class="btn btn-secondary text-[10px] px-2" id="btn-sql-second-max">2nd
+                                            MAX</button>
+                                        <button onclick="runSqlDemo('third-max')"
+                                            class="btn btn-secondary text-[10px] px-2" id="btn-sql-third-max">3rd
+                                            MAX</button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 2. Workspace Region -->
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
+
+                                <!-- Left: Terminal -->
+                                <div class="flex flex-col gap-3">
+                                    <div class="flex justify-between items-center">
+                                        <h5 class="text-[10px] font-bold uppercase text-gray-400">Terminal Output</h5>
+                                        <span id="sql-result-status"
+                                            class="font-mono text-[10px] text-green-600 font-bold transition-opacity duration-300 opacity-0">//
+                                            Ready</span>
+                                    </div>
+
+                                    <div
+                                        class="bg-[#1e1e1e] rounded p-4 font-mono text-xs h-40 flex flex-col relative overflow-hidden group shadow-inner">
+                                        <div class="absolute top-3 right-3 flex gap-1.5 opacity-50">
+                                            <div class="w-2 h-2 rounded-full bg-red-500"></div>
+                                            <div class="w-2 h-2 rounded-full bg-yellow-500"></div>
+                                            <div class="w-2 h-2 rounded-full bg-green-500"></div>
+                                        </div>
+
+                                        <!-- Code Content -->
+                                        <div class="mt-4 flex-1">
+                                            <div id="sql-terminal"
+                                                class="text-green-400 transition-all duration-300 leading-relaxed">
+                                                <span class="text-purple-400">SELECT</span> * <span
+                                                    class="text-purple-400">FROM</span> Students <span
+                                                    class="text-purple-400">WHERE</span> gpa > 3.5;
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div
+                                        class="bg-gray-50 border border-gray-100 p-3 rounded text-xs text-gray-500 h-16 flex items-center">
+                                        <p id="sql-desc">
+                                            Retrieves data from the database. This query finds all students with a high
+                                            GPA.
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <!-- Right: Table -->
+                                <div class="flex flex-col gap-3">
+                                    <h5 class="text-[10px] font-bold uppercase text-gray-400">Live Database (Table:
+                                        Students)</h5>
+                                    <div
+                                        class="border border-gray-200 bg-white shadow-sm rounded relative overflow-x-auto">
+                                        <table class="db-table min-w-full" id="table-sql-demo">
+                                            <thead>
+                                                <tr>
+                                                    <th class="bg-gray-50 text-gray-500 border-b border-gray-200">ID
+                                                    </th>
+                                                    <th class="bg-gray-50 text-gray-500 border-b border-gray-200">Name
+                                                    </th>
+                                                    <th class="bg-gray-50 text-gray-500 border-b border-gray-200">GPA
+                                                    </th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="sql-tbody">
+                                                <tr id="row-1">
+                                                    <td>1</td>
+                                                    <td>Alice</td>
+                                                    <td>3.9</td>
+                                                </tr>
+                                                <tr id="row-2">
+                                                    <td>2</td>
+                                                    <td>Bob</td>
+                                                    <td>3.2</td>
+                                                </tr>
+                                                <tr id="row-3">
+                                                    <td>3</td>
+                                                    <td>Charlie</td>
+                                                    <td>3.7</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                        <!-- Overlay for row updates -->
+                                        <div id="sql-overlay"
+                                            class="absolute inset-0 bg-white/50 hidden flex items-center justify-center pointer-events-none transition-opacity duration-300">
+                                            <div class="bg-black text-white px-3 py-1 rounded text-xs font-bold shadow-lg transform scale-90 opacity-0 transition-all"
+                                                id="sql-toast">
+                                                Updated
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="text-[10px] text-gray-400 text-right italic">
+                                        * Updates are transient for demo purposes.
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+
+                </section>
+                <!-- Check: SQL -->
+                <div id="quiz-dbms-sql"></div>
+
+                <div class="divider hidden md:block border-t border-gray-100 mb-16"></div>
+
+                <!-- 01. SQL Joins -->
+                <section id="joins" class="mb-20 md:mb-24">
+                    <span class="rams-label">01 / Relations</span>
+                    <h3 class="text-xl font-medium mb-4">SQL Joins</h3>
+                    <p class="text-sm text-gray-600 mb-6 max-w-xl">
+                        Visualizing how data from two distinct tables is combined based on a related column (Foreign
+                        Key).
+                    </p>
+
+                    <!-- Concept Visuals -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
+                        <!-- Inner Join -->
+                        <div
+                            class="border border-gray-200 p-4 bg-white rounded hover:border-gray-400 transition-colors">
+                            <h4 class="text-xs font-bold uppercase text-gray-500 mb-3 text-center">Inner Join</h4>
+                            <div class="flex justify-center mb-3">
+                                <svg width="80" height="60" viewBox="0 0 100 60" xmlns="http://www.w3.org/2000/svg">
+                                    <defs>
+                                        <clipPath id="clip-inner">
+                                            <circle cx="35" cy="30" r="25" />
+                                        </clipPath>
+                                    </defs>
+                                    <!-- Intersection Fill -->
+                                    <circle cx="65" cy="30" r="25" fill="#404040" clip-path="url(#clip-inner)"
+                                        stroke="none" />
+                                    <!-- Borders -->
+                                    <circle cx="35" cy="30" r="25" fill="none" stroke="#404040" stroke-width="2" />
+                                    <circle cx="65" cy="30" r="25" fill="none" stroke="#404040" stroke-width="2" />
+                                </svg>
+                            </div>
+                            <p class="text-[10px] text-center text-gray-500 leading-tight">Returns records that have
+                                matching values in both tables.</p>
+                        </div>
+
+                        <!-- Left Join -->
+                        <div
+                            class="border border-gray-200 p-4 bg-white rounded hover:border-gray-400 transition-colors">
+                            <h4 class="text-xs font-bold uppercase text-gray-500 mb-3 text-center">Left Join</h4>
+                            <div class="flex justify-center mb-3">
+                                <svg width="80" height="60" viewBox="0 0 100 60" xmlns="http://www.w3.org/2000/svg">
+                                    <!-- Left Fill -->
+                                    <circle cx="35" cy="30" r="25" fill="#404040" stroke="none" />
+                                    <!-- Borders -->
+                                    <circle cx="35" cy="30" r="25" fill="none" stroke="#404040" stroke-width="2" />
+                                    <circle cx="65" cy="30" r="25" fill="none" stroke="#404040" stroke-width="2" />
+                                </svg>
+                            </div>
+                            <p class="text-[10px] text-center text-gray-500 leading-tight">Returns all records from the
+                                left table, and matched records from the right.</p>
+                        </div>
+
+                        <!-- Right Join -->
+                        <div
+                            class="border border-gray-200 p-4 bg-white rounded hover:border-gray-400 transition-colors">
+                            <h4 class="text-xs font-bold uppercase text-gray-500 mb-3 text-center">Right Join</h4>
+                            <div class="flex justify-center mb-3">
+                                <svg width="80" height="60" viewBox="0 0 100 60" xmlns="http://www.w3.org/2000/svg">
+                                    <!-- Right Fill -->
+                                    <circle cx="65" cy="30" r="25" fill="#404040" stroke="none" />
+                                    <!-- Borders -->
+                                    <circle cx="35" cy="30" r="25" fill="none" stroke="#404040" stroke-width="2" />
+                                    <circle cx="65" cy="30" r="25" fill="none" stroke="#404040" stroke-width="2" />
+                                </svg>
+                            </div>
+                            <p class="text-[10px] text-center text-gray-500 leading-tight">Returns all records from the
+                                right table, and matched records from the left.</p>
+                        </div>
+
+                        <!-- Full Join -->
+                        <div
+                            class="border border-gray-200 p-4 bg-white rounded hover:border-gray-400 transition-colors">
+                            <h4 class="text-xs font-bold uppercase text-gray-500 mb-3 text-center">Full Outer Join</h4>
+                            <div class="flex justify-center mb-3">
+                                <svg width="80" height="60" viewBox="0 0 100 60" xmlns="http://www.w3.org/2000/svg">
+                                    <!-- Both Fill -->
+                                    <circle cx="35" cy="30" r="25" fill="#404040" stroke="none" />
+                                    <circle cx="65" cy="30" r="25" fill="#404040" stroke="none" />
+                                    <!-- Borders -->
+                                    <circle cx="35" cy="30" r="25" fill="none" stroke="#404040" stroke-width="2" />
+                                    <circle cx="65" cy="30" r="25" fill="none" stroke="#404040" stroke-width="2" />
+                                </svg>
+                            </div>
+                            <p class="text-[10px] text-center text-gray-500 leading-tight">Returns all records when
+                                there is a match in either left or right table.</p>
+                        </div>
+
+                        <!-- Self Join -->
+                        <div
+                            class="border border-gray-200 p-4 bg-white rounded hover:border-gray-400 transition-colors">
+                            <h4 class="text-xs font-bold uppercase text-gray-500 mb-3 text-center">Self Join</h4>
+                            <div class="flex justify-center mb-3">
+                                <svg width="80" height="60" viewBox="0 0 100 60" xmlns="http://www.w3.org/2000/svg">
+                                    <defs>
+                                        <clipPath id="clip-inner-self-v2">
+                                            <circle cx="35" cy="30" r="25" />
+                                        </clipPath>
+                                    </defs>
+                                    <!-- A Intersect B (T1 and T1') -->
+                                    <circle cx="65" cy="30" r="25" fill="#404040" clip-path="url(#clip-inner-self-v2)"
+                                        stroke="none" />
+                                    <!-- Borders -->
+                                    <circle cx="35" cy="30" r="25" fill="none" stroke="#404040" stroke-width="2" />
+                                    <circle cx="65" cy="30" r="25" fill="none" stroke="#404040" stroke-width="2" />
+                                    <!-- Labels -->
+                                    <text x="25" y="33" font-size="8" font-family="sans-serif" fill="#737373"
+                                        font-weight="bold">T1</text>
+                                    <text x="68" y="33" font-size="8" font-family="sans-serif" fill="#737373"
+                                        font-weight="bold">T1'</text>
+                                </svg>
+                            </div>
+                            <p class="text-[10px] text-center text-gray-500 leading-tight">Joining a table with itself
+                                (e.g., matching employees to managers in the same table).</p>
+                        </div>
+                    </div>
+
+                    <div class="rams-card">
+                        <div class="flex flex-col gap-6">
+                            <!-- Visualization Area -->
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                <!-- Table A -->
+                                <div class="border border-gray-200 p-2 bg-gray-50 overflow-x-auto">
+                                    <h5 class="text-xs font-bold uppercase mb-2 text-gray-500">Users (T1)</h5>
+                                    <table class="db-table min-w-full" id="table-users">
+                                        <thead>
+                                            <tr>
+                                                <th>ID</th>
+                                                <th>Name</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr data-id="1">
+                                                <td>1</td>
+                                                <td>Alice</td>
+                                            </tr>
+                                            <tr data-id="2">
+                                                <td>2</td>
+                                                <td>Bob</td>
+                                            </tr>
+                                            <tr data-id="3">
+                                                <td>3</td>
+                                                <td>Charlie</td>
+                                            </tr>
+                                            <tr data-id="4">
+                                                <td>4</td>
+                                                <td>David</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <!-- Table B -->
+                                <div class="border border-gray-200 p-2 bg-gray-50 overflow-x-auto">
+                                    <h5 class="text-xs font-bold uppercase mb-2 text-gray-500">Orders (T2)</h5>
+                                    <table class="db-table min-w-full" id="table-orders">
+                                        <thead>
+                                            <tr>
+                                                <th>ID</th>
+                                                <th>User_ID</th>
+                                                <th>Item</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr data-uid="1">
+                                                <td>101</td>
+                                                <td>1</td>
+                                                <td>Laptop</td>
+                                            </tr>
+                                            <tr data-uid="2">
+                                                <td>102</td>
+                                                <td>2</td>
+                                                <td>Mouse</td>
+                                            </tr>
+                                            <tr data-uid="1">
+                                                <td>103</td>
+                                                <td>1</td>
+                                                <td>Monitor</td>
+                                            </tr>
+                                            <tr data-uid="5">
+                                                <td>104</td>
+                                                <td>5</td>
+                                                <td>Phone</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <!-- Result Table -->
+                                <!-- Result Table -->
+                                <div class="border border-gray-200 p-2 bg-gray-50 overflow-x-auto">
+                                    <h5 class="text-xs font-bold uppercase mb-2 text-gray-500">Result Set</h5>
+                                    <div class="bg-white rounded border border-gray-100">
+                                        <table class="db-table min-w-full" id="table-result">
+                                            <thead>
+                                                <tr>
+                                                    <th>Name</th>
+                                                    <th>Item</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="join-results-body">
+                                                <tr>
+                                                    <td colspan="2" class="text-gray-400 text-center py-4">Select Join
+                                                        Type</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Controls -->
+                            <div
+                                class="flex flex-col md:flex-row justify-between items-center gap-4 pt-4 border-t border-gray-100">
+                                <div class="btn-group w-full md:w-auto">
+                                    <button onclick="runJoin('inner')" id="btn-inner"
+                                        class="btn btn-secondary text-xs flex-1">Inner
+                                        Join</button>
+                                    <button onclick="runJoin('left')" id="btn-left"
+                                        class="btn btn-secondary text-xs flex-1">Left Join</button>
+                                    <button onclick="runJoin('right')" id="btn-right"
+                                        class="btn btn-secondary text-xs flex-1">Right Join</button>
+                                    <button onclick="runJoin('full')" id="btn-full"
+                                        class="btn btn-secondary text-xs flex-1">Full Join</button>
+                                    <button onclick="runJoin('self')" id="btn-self"
+                                        class="btn btn-secondary text-xs flex-1">Self Join</button>
+                                </div>
+                                <div class="text-xs font-mono text-gray-500 text-right w-full md:w-auto"
+                                    id="join-status">
+                                    Waiting for query...
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                <!-- Check: Joins -->
+                <div id="quiz-dbms-joins"></div>
+
+                <!-- 02. Indexing -->
+                <section id="indexing" class="mb-20 md:mb-24">
+                    <span class="rams-label">02 / Optimization</span>
+                    <h3 class="text-xl font-medium mb-4">Indexing (B-Tree)</h3>
+                    <p class="text-sm text-gray-600 mb-6 max-w-xl">
+                        Without an index, the database must perform a "Full Table Scan" (O(N)). A B-Tree Index allows
+                        logarithmic time search (O(log N)).
+                    </p>
+
+                    <div class="rams-card">
+                        <div class="flex flex-col gap-8">
+                            <!-- Visualization -->
+                            <div class="h-64 border border-gray-100 bg-gray-50 relative flex justify-center items-center overflow-x-auto"
+                                id="tree-container">
+                                <!-- Tree Nodes Generated via JS -->
+                            </div>
+
+                            <!-- Controls -->
+                            <div class="flex flex-col sm:flex-row gap-4 items-center border-t border-gray-100 pt-4">
+                                <input type="number" id="search-val" placeholder="Value (1-100)"
+                                    class="w-full sm:w-24 border border-gray-300 p-2 text-sm font-mono focus:outline-none focus:border-gray-600 rounded-sm">
+                                <div class="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+                                    <button onclick="searchIndex()"
+                                        class="btn btn-primary text-xs flex-1 sm:flex-none justify-center">Search
+                                        Index</button>
+                                    <button onclick="fullScan()"
+                                        class="btn btn-secondary text-xs flex-1 sm:flex-none justify-center">Full Scan
+                                        (Slow)</button>
+                                </div>
+                            </div>
+                            <div class="text-xs font-mono text-gray-500" id="index-status">Tree Idle.</div>
+                        </div>
+                    </div>
+                </section>
+                <!-- Check: Indexing -->
+                <div id="quiz-dbms-indexing"></div>
+
+                <!-- 08. Normalization (Updated to Stepper) -->
+                <section id="normalization" class="mb-20 md:mb-24">
+                    <span class="rams-label">08 / Structure</span>
+                    <h3 class="text-xl font-medium mb-4">Normalization</h3>
+                    <p class="text-sm text-gray-600 mb-6 max-w-xl">
+                        Normalization is the process of organizing data to minimize redundancy. Move through the stages
+                        from Unnormalized (UNF) to Third Normal Form (3NF).
+                    </p>
+
+                    <div class="rams-card">
+                        <div class="flex flex-col gap-6">
+                            <div class="flex justify-center mb-4">
+                                <div class="btn-group">
+                                    <button onclick="setNormStep(0)" id="btn-norm-0"
+                                        class="btn btn-primary text-xs active px-4">UNF</button>
+                                    <button onclick="setNormStep(1)" id="btn-norm-1"
+                                        class="btn btn-secondary text-xs px-4">1NF</button>
+                                    <button onclick="setNormStep(2)" id="btn-norm-2"
+                                        class="btn btn-secondary text-xs px-4">2NF</button>
+                                    <button onclick="setNormStep(3)" id="btn-norm-3"
+                                        class="btn btn-secondary text-xs px-4">3NF</button>
+                                </div>
+                            </div>
+
+                            <div id="norm-container" class="min-h-[200px] flex items-center justify-center">
+                                <!-- Content Injected JS -->
+                            </div>
+
+                            <div id="norm-desc"
+                                class="text-xs text-gray-500 text-center font-mono border-t border-gray-100 pt-4">
+                                <!-- Desc -->
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                <!-- Check: Normalization -->
+                <div id="quiz-dbms-norm"></div>
+
+                <!-- 03. ACID -->
+                <section id="acid" class="mb-20 md:mb-24">
+                    <span class="rams-label">03 / Integrity</span>
+                    <h3 class="text-xl font-medium mb-4">ACID Transactions</h3>
+                    <p class="text-sm text-gray-600 mb-6 max-w-xl">
+                        To ensure data validity, transactions must be <strong>Atomic</strong> (all or nothing),
+                        <strong>Consistent</strong> (valid state), <strong>Isolated</strong> (independent), and
+                        <strong>Durable</strong> (saved permanently).
+                    </p>
+
+                    <div class="rams-card">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                            <!-- Visual Logic -->
+                            <div class="flex flex-col gap-4">
+                                <div
+                                    class="flex justify-between items-center p-4 border border-gray-200 bg-white shadow-sm overflow-x-auto">
+                                    <div class="text-center min-w-[80px]">
+                                        <div class="text-[10px] uppercase text-gray-400 font-bold mb-1">Account A</div>
+                                        <div id="acc-a" class="text-2xl font-mono font-bold">$1000</div>
+                                    </div>
+                                    <div class="text-gray-300 text-2xl mx-4">&rarr;</div>
+                                    <div class="text-center min-w-[80px]">
+                                        <div class="text-[10px] uppercase text-gray-400 font-bold mb-1">Account B</div>
+                                        <div id="acc-b" class="text-2xl font-mono font-bold">$500</div>
+                                    </div>
+                                </div>
+                                <div class="flex gap-2">
+                                    <button onclick="startTransaction(true)" id="btn-commit"
+                                        class="btn btn-primary text-xs w-full">Transfer & Commit</button>
+                                    <button onclick="startTransaction(false)" id="btn-fail"
+                                        class="btn btn-secondary text-xs w-full text-red-600 border-red-200 hover:bg-red-50">Fail
+                                        & Rollback</button>
+                                </div>
+                            </div>
+
+                            <!-- Log -->
+                            <div class="flex flex-col gap-2">
+                                <h5 class="text-[10px] font-bold uppercase text-gray-400">Transaction Log (WAL)</h5>
+                                <div class="transaction-log bg-gray-50" id="acid-log">
+                                    <div class="log-entry">System Ready.</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                <!-- Check: ACID -->
+                <div id="quiz-dbms-acid"></div>
+
+                <!-- 04. Locking -->
+                <section id="locking" class="mb-20 md:mb-24">
+                    <span class="rams-label">04 / Concurrency</span>
+                    <h3 class="text-xl font-medium mb-4">Row-Level Locking</h3>
+                    <div class="rams-card">
+                        <div class="flex flex-col gap-6">
+                            <!-- Resource -->
+                            <div class="flex justify-center">
+                                <div class="w-full md:w-1/2 p-6 border-2 border-dashed border-gray-300 rounded flex flex-col items-center justify-center transition-colors"
+                                    id="shared-resource">
+                                    <div class="mb-2 text-gray-400 lock-icon" id="lock-icon">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none"
+                                            viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                                        </svg>
+                                    </div>
+                                    <div class="text-sm font-bold font-mono">Row #42</div>
+                                    <div class="text-xs text-gray-500 mt-1" id="resource-status">Status: Available</div>
+                                </div>
+                            </div>
+
+                            <!-- Users -->
+                            <div class="flex flex-col sm:flex-row justify-between gap-4">
+                                <div class="flex-1 flex flex-col gap-2">
+                                    <button onclick="requestLock(1)" class="btn btn-secondary text-xs w-full"
+                                        id="btn-user1">User 1
+                                        Request Update</button>
+                                    <div class="h-1 bg-gray-200 w-full overflow-hidden">
+                                        <div class="h-full bg-gray-800 w-0 transition-all duration-1000" id="prog-1">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="flex-1 flex flex-col gap-2">
+                                    <button onclick="requestLock(2)" class="btn btn-secondary text-xs w-full"
+                                        id="btn-user2">User 2
+                                        Request Update</button>
+                                    <div class="h-1 bg-gray-200 w-full overflow-hidden">
+                                        <div class="h-full bg-gray-800 w-0 transition-all duration-1000" id="prog-2">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="text-center text-xs text-gray-500 font-mono" id="lock-msg">Click a user to
+                                attempt a transaction.</div>
+                        </div>
+                    </div>
+                </section>
+                <!-- Check: Locking -->
+                <div id="quiz-dbms-locking"></div>
+
+                <!-- 10. Architectures (New) -->
+                <section id="arch" class="mb-20 md:mb-24">
+                    <span class="rams-label">10 / System Design</span>
+                    <h3 class="text-xl font-medium mb-4">Architectures</h3>
+                    <p class="text-sm text-gray-600 mb-6 max-w-xl">
+                        How clients connect to the database. <strong>2-Tier</strong> connects directly (e.g., Desktop
+                        App). <strong>3-Tier</strong> uses an Application Server (e.g., Web App).
+                    </p>
+
+                    <div class="rams-card">
+                        <div class="flex flex-col gap-8">
+                            <div class="flex justify-center gap-4">
+                                <div class="btn-group">
+                                    <button onclick="setArch('2tier')" id="btn-arch-2"
+                                        class="btn btn-secondary text-xs active px-4">2-Tier (Client-DB)</button>
+                                    <button onclick="setArch('3tier')" id="btn-arch-3"
+                                        class="btn btn-secondary text-xs px-4">3-Tier
+                                        (Web-App-DB)</button>
+                                </div>
+                            </div>
+
+                            <div class="overflow-x-auto">
+                                <div class="relative h-40 bg-gray-50 border border-gray-200 flex items-center justify-around overflow-hidden min-w-[600px]"
+                                    id="arch-container">
+                                    <!-- Client -->
+                                    <div class="flex flex-col items-center z-10 arch-node p-2 rounded" id="node-client">
+                                        <div
+                                            class="w-12 h-12 bg-white border border-gray-400 rounded-lg flex items-center justify-center mb-2">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-600"
+                                                fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                                            </svg>
+                                        </div>
+                                        <span class="text-[10px] font-bold uppercase text-gray-500">Client</span>
+                                    </div>
+
+                                    <!-- App Server (Hidden in 2-Tier) -->
+                                    <div class="flex flex-col items-center z-10 arch-node p-2 rounded transition-all duration-500"
+                                        id="node-app">
+                                        <div
+                                            class="w-12 h-12 bg-white border border-gray-400 rounded-lg flex items-center justify-center mb-2">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-600"
+                                                fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2m-2-4h.01M17 16h.01" />
+                                            </svg>
+                                        </div>
+                                        <span class="text-[10px] font-bold uppercase text-gray-500">App Server</span>
+                                    </div>
+
+                                    <!-- DB -->
+                                    <div class="flex flex-col items-center z-10 arch-node p-2 rounded" id="node-db">
+                                        <div
+                                            class="w-12 h-12 bg-white border border-gray-400 rounded-full flex items-center justify-center mb-2 shadow-sm">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-600"
+                                                fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4" />
+                                            </svg>
+                                        </div>
+                                        <span class="text-[10px] font-bold uppercase text-gray-500">Database</span>
+                                    </div>
+
+                                    <!-- Connection Lines Canvas -->
+                                    <div id="arch-lines"
+                                        class="absolute top-0 left-0 w-full h-full pointer-events-none">
+                                    </div>
+                                </div>
+
+                                <div class="flex justify-center">
+                                    <button onclick="simulateRequest()" id="btn-sim-req"
+                                        class="btn btn-primary text-xs">Simulate
+                                        Request</button>
+                                </div>
+                            </div>
+                        </div>
+                </section>
+                <!-- Check: Arch -->
+                <div id="quiz-dbms-arch"></div>
+
+                <!-- 05. Sharding -->
+                <section id="sharding" class="mb-20 md:mb-24">
+                    <span class="rams-label">05 / Horizontal Scaling</span>
+                    <h3 class="text-xl font-medium mb-4">Sharding</h3>
+                    <div class="rams-card">
+                        <div class="flex flex-col gap-6">
+                            <!-- Input -->
+                            <div class="flex flex-col sm:flex-row items-center gap-4 justify-center">
+                                <button onclick="addShardData()"
+                                    class="btn btn-primary text-xs w-full sm:w-auto">Simulate Incoming
+                                    Data</button>
+                                <button onclick="clearShards()"
+                                    class="btn btn-ghost text-xs w-full sm:w-auto">Reset</button>
+                            </div>
+
+                            <!-- Shards -->
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 h-auto">
+                                <div class="border border-gray-300 p-2 bg-gray-50 relative">
+                                    <div
+                                        class="absolute top-0 right-0 bg-gray-200 text-[10px] px-2 py-1 font-bold text-gray-600">
+                                        Shard 0</div>
+                                    <div class="mt-6 flex flex-wrap gap-1 content-start" id="shard-0"></div>
+                                </div>
+                                <div class="border border-gray-300 p-2 bg-gray-50 relative">
+                                    <div
+                                        class="absolute top-0 right-0 bg-gray-200 text-[10px] px-2 py-1 font-bold text-gray-600">
+                                        Shard 1</div>
+                                    <div class="mt-6 flex flex-wrap gap-1 content-start" id="shard-1"></div>
+                                </div>
+                                <div class="border border-gray-300 p-2 bg-gray-50 relative">
+                                    <div
+                                        class="absolute top-0 right-0 bg-gray-200 text-[10px] px-2 py-1 font-bold text-gray-600">
+                                        Shard 2</div>
+                                    <div class="mt-6 flex flex-wrap gap-1 content-start" id="shard-2"></div>
+                                </div>
+                            </div>
+                            <div class="text-center text-xs text-gray-500 font-mono">
+                                Partition Key: ID % 3
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                <!-- Check: Sharding -->
+                <div id="quiz-dbms-sharding"></div>
+
+                <!-- 09. Replication (New) -->
+                <section id="replication" class="mb-20 md:mb-24">
+                    <span class="rams-label">09 / Redundancy</span>
+                    <h3 class="text-xl font-medium mb-4">Master-Slave Replication</h3>
+                    <p class="text-sm text-gray-600 mb-6 max-w-xl">
+                        Writes are sent to the Master node. The Master then copies (replicates) data to Read Replicas.
+                        This allows scaling reads but introduces replication lag.
+                    </p>
+                    <div class="rams-card">
+                        <div class="flex flex-col gap-8">
+                            <div class="overflow-x-auto pb-4">
+                                <div class="flex justify-center gap-12 items-center relative h-32 min-w-[500px]">
+                                    <!-- Master -->
+                                    <div class="relative z-10">
+                                        <div
+                                            class="w-20 h-20 border-2 border-black bg-white flex flex-col items-center justify-center z-10 relative shadow-lg">
+                                            <span class="font-bold text-lg">M</span>
+                                            <span class="text-[9px] uppercase mt-1">Master</span>
+                                        </div>
+                                        <div id="master-log"
+                                            class="absolute -bottom-6 w-full text-center text-[9px] font-mono text-gray-500">
+                                            Writes: 0</div>
+                                    </div>
+
+                                    <!-- Connection Lines -->
+                                    <div
+                                        class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-48 h-[1px] bg-gray-300 z-0">
+                                    </div>
+
+                                    <!-- Slaves Container -->
+                                    <div class="flex flex-col gap-4 z-10">
+                                        <div
+                                            class="w-16 h-16 border border-gray-300 bg-gray-50 flex flex-col items-center justify-center relative">
+                                            <span class="font-bold text-gray-600">R1</span>
+                                            <span class="text-[8px] uppercase mt-1 text-gray-400">Replica</span>
+                                            <div id="r1-val"
+                                                class="absolute -right-8 text-xs font-mono font-bold text-black opacity-0 transition-opacity">
+                                            </div>
+                                        </div>
+                                        <div
+                                            class="w-16 h-16 border border-gray-300 bg-gray-50 flex flex-col items-center justify-center relative">
+                                            <span class="font-bold text-gray-600">R2</span>
+                                            <span class="text-[8px] uppercase mt-1 text-gray-400">Replica</span>
+                                            <div id="r2-val"
+                                                class="absolute -right-8 text-xs font-mono font-bold text-black opacity-0 transition-opacity">
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Packet Animation Container -->
+                                    <div id="repl-anim-area"
+                                        class="absolute top-0 left-0 w-full h-full pointer-events-none"></div>
+                                </div>
+
+                                <div class="flex justify-center gap-4">
+                                    <button onclick="writeToMaster()" class="btn btn-primary text-xs"
+                                        id="btn-write-master">Write Data
+                                        to Master</button>
+                                </div>
+                            </div>
+                        </div>
+                </section>
+                <!-- Check: Replication -->
+                <div id="quiz-dbms-repl"></div>
+
+                <!-- 06. SQL vs NoSQL -->
+                <section id="nosql" class="mb-20 md:mb-24">
+                    <span class="rams-label">06 / Paradigms</span>
+                    <h3 class="text-xl font-medium mb-4">SQL vs NoSQL</h3>
+                    <p class="text-sm text-gray-600 mb-6 max-w-xl">
+                        SQL (Relational) databases enforce strict schemas. NoSQL (Document) databases allow flexible,
+                        dynamic data structures.
+                    </p>
+
+                    <div class="rams-card">
+                        <div class="flex flex-col gap-6">
+                            <!-- Toggle -->
+                            <div class="flex justify-center mb-2">
+                                <div class="btn-group">
+                                    <button onclick="setDbMode('sql')" id="btn-mode-sql"
+                                        class="btn btn-secondary text-xs active px-6">SQL (Strict)</button>
+                                    <button onclick="setDbMode('nosql')" id="btn-mode-nosql"
+                                        class="btn btn-secondary text-xs px-6">NoSQL (Flexible)</button>
+                                </div>
+                            </div>
+
+                            <!-- Input Area -->
+                            <div
+                                class="flex flex-col sm:flex-row items-center justify-center gap-2 bg-gray-50 p-4 border border-gray-200">
+                                <span class="text-xs font-mono text-gray-500">New Data:</span>
+                                <input type="text" value='{"name": "Eve", "age": 25}' disabled
+                                    class="w-40 border border-gray-300 bg-gray-100 p-2 text-xs font-mono text-gray-500">
+                                <span class="text-xs font-mono text-gray-500">+</span>
+                                <input type="text" id="nosql-extra-field" placeholder='{"hobby": "chess"}'
+                                    class="w-40 border border-gray-300 p-2 text-xs font-mono focus:outline-none focus:border-gray-600">
+                                <button onclick="insertData()" class="btn btn-primary text-xs">Insert</button>
+                            </div>
+
+                            <!-- Visual Display -->
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                <!-- Schema Definition -->
+                                <div>
+                                    <h5 class="text-[10px] font-bold uppercase text-gray-400 mb-2">Schema / Structure
+                                    </h5>
+                                    <div class="json-block h-32" id="schema-display">
+                                        <!-- JS Populated -->
+                                    </div>
+                                </div>
+                                <!-- Data Store -->
+                                <div>
+                                    <h5 class="text-[10px] font-bold uppercase text-gray-400 mb-2">Data Store</h5>
+                                    <div class="json-block h-32 overflow-y-auto thin-scrollbar" id="store-display">
+                                        <!-- JS Populated -->
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="text-center text-xs font-mono h-4" id="nosql-status">Ready.</div>
+                        </div>
+                    </div>
+
+                    <div class="deep-dive">
+                        <h4>Choosing the Right Tool</h4>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mt-4">
+                            <div>
+                                <strong class="block mb-2 text-sm uppercase tracking-wider">SQL (Relational)</strong>
+                                <ul class="list-disc list-inside text-xs space-y-2 text-gray-600">
+                                    <li><strong>Structure:</strong> Table-based with strict, pre-defined schemas.</li>
+                                    <li><strong>Scaling:</strong> Vertical (Scale Up - adding RAM/CPU to one server).
+                                    </li>
+                                    <li><strong>Query Language:</strong> SQL (Structured Query Language).</li>
+                                    <li><strong>Best For:</strong> Complex queries, multi-row transactions, ensuring
+                                        data integrity (ACID).</li>
+                                    <li class="pt-1 text-gray-400">Examples: MySQL, PostgreSQL, Oracle, SQL Server.</li>
+                                </ul>
+                            </div>
+                            <div>
+                                <strong class="block mb-2 text-sm uppercase tracking-wider">NoSQL
+                                    (Non-Relational)</strong>
+                                <ul class="list-disc list-inside text-xs space-y-2 text-gray-600">
+                                    <li><strong>Structure:</strong> Flexible. Document (JSON), Key-Value, Graph, or
+                                        Wide-Column.</li>
+                                    <li><strong>Scaling:</strong> Horizontal (Scale Out - adding more servers/sharding).
+                                    </li>
+                                    <li><strong>Query Language:</strong> Dynamic schemas, often API-based.</li>
+                                    <li><strong>Best For:</strong> Unstructured data, rapid prototyping, massive data
+                                        volume, real-time apps.</li>
+                                    <li class="pt-1 text-gray-400">Examples: MongoDB (Document), Redis (Key-Value),
+                                        Cassandra (Wide-Column), Neo4j (Graph).</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                <!-- Check: NoSQL -->
+                <div id="quiz-dbms-nosql"></div>
+
+                <!-- 07. CAP Theorem -->
+                <section id="cap" class="mb-12">
+                    <span class="rams-label">07 / Distributed Limits</span>
+                    <h3 class="text-xl font-medium mb-4">CAP Theorem</h3>
+                    <p class="text-sm text-gray-600 mb-6 max-w-xl">
+                        In a distributed data store, you can only simultaneously guarantee two out of three:
+                        <strong>Consistency</strong>, <strong>Availability</strong>, and <strong>Partition
+                            Tolerance</strong>.
+                    </p>
+
+                    <div class="rams-card relative">
+                        <div class="flex flex-col items-center gap-8">
+                            <!-- SVG Visualization -->
+                            <svg class="w-64 h-56 mx-auto overflow-visible" viewBox="0 0 300 260">
+                                <!-- Lines -->
+                                <line id="svg-line-ca" x1="150" y1="40" x2="50" y2="220" stroke="#e5e5e5"
+                                    stroke-width="4" stroke-linecap="round" class="transition-all duration-500" />
+                                <line id="svg-line-cp" x1="150" y1="40" x2="250" y2="220" stroke="#e5e5e5"
+                                    stroke-width="4" stroke-linecap="round" class="transition-all duration-500" />
+                                <line id="svg-line-ap" x1="50" y1="220" x2="250" y2="220" stroke="#e5e5e5"
+                                    stroke-width="4" stroke-linecap="round" class="transition-all duration-500" />
+
+                                <!-- Vertices -->
+                                <!-- C -->
+                                <circle cx="150" cy="40" r="20" fill="#111" />
+                                <text x="150" y="45" text-anchor="middle" fill="white" font-size="12"
+                                    font-weight="bold">C</text>
+
+                                <!-- A -->
+                                <circle cx="50" cy="220" r="20" fill="#111" />
+                                <text x="50" y="225" text-anchor="middle" fill="white" font-size="12"
+                                    font-weight="bold">A</text>
+
+                                <!-- P -->
+                                <circle cx="250" cy="220" r="20" fill="#111" />
+                                <text x="250" y="225" text-anchor="middle" fill="white" font-size="12"
+                                    font-weight="bold">P</text>
+
+                                <!-- Center Text -->
+                                <text x="150" y="150" text-anchor="middle" fill="#404040" font-size="14"
+                                    font-weight="bold" id="cap-svg-text">Pick 2</text>
+                            </svg>
+
+                            <!-- Controls -->
+                            <div class="flex flex-wrap justify-center gap-2 mt-4 text-center">
+                                <button onclick="toggleCap('c')" id="btn-c"
+                                    class="btn btn-secondary text-xs w-28">Consistency</button>
+                                <button onclick="toggleCap('a')" id="btn-a"
+                                    class="btn btn-secondary text-xs w-28">Availability</button>
+                                <button onclick="toggleCap('p')" id="btn-p"
+                                    class="btn btn-secondary text-xs w-28">Partition
+                                    Tol.</button>
+                            </div>
+
+                            <!-- Explanation Box -->
+                            <div
+                                class="bg-gray-50 border border-gray-200 p-4 w-full text-center min-h-[100px] flex flex-col justify-center items-center gap-2">
+                                <h4 class="text-sm font-bold uppercase" id="cap-result-title">Select two properties</h4>
+                                <p class="text-xs text-gray-500 max-w-md" id="cap-result-desc">
+                                    Consistency: Every read receives the most recent write.<br>
+                                    Availability: Every request receives a (non-error) response.<br>
+                                    Partition Tolerance: The system continues to operate despite an arbitrary number of
+                                    messages being dropped or delayed by the network between nodes.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                <!-- Check: CAP -->
+                <div id="quiz-dbms-cap"></div>
+
+
+                <!-- Glossary Section -->
+                <section id="glossary" class="mb-20">
+                    <span class="rams-label">Glossary</span>
+                    <h3 class="text-xl font-medium mb-8">Key Definitions</h3>
+                    <div class="rams-card">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <h4 class="font-bold text-sm mb-2">DBMS</h4>
+                                <p class="text-xs text-gray-600">Database Management System software that interacts with
+                                    end users, applications, and the database.</p>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-sm mb-2">SQL</h4>
+                                <p class="text-xs text-gray-600">Structured Query Language, the standard for
+                                    communicating with relational databases.</p>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-sm mb-2">CRUD</h4>
+                                <p class="text-xs text-gray-600">Create, Read, Update, Delete - the four basic
+                                    operations of persistent storage.</p>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-sm mb-2">Primary Key</h4>
+                                <p class="text-xs text-gray-600">A unique identifier for a record in a table.</p>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-sm mb-2">Foreign Key</h4>
+                                <p class="text-xs text-gray-600">A field that links to the primary key of another table,
+                                    creating a relationship.</p>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-sm mb-2">Normalization</h4>
+                                <p class="text-xs text-gray-600">Organizing data to minimize redundancy and dependency
+                                    (e.g., 1NF, 2NF, 3NF).</p>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-sm mb-2">ACID</h4>
+                                <p class="text-xs text-gray-600">Atomicity, Consistency, Isolation, Durability -
+                                    properties that guarantee reliable transactions.</p>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-sm mb-2">Index</h4>
+                                <p class="text-xs text-gray-600">A data structure (like B-Tree) that improves the speed
+                                    of data retrieval operations.</p>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-sm mb-2">Sharding</h4>
+                                <p class="text-xs text-gray-600">Horizontal scaling by splitting a database into smaller
+                                    parts across multiple servers.</p>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-sm mb-2">CAP Theorem</h4>
+                                <p class="text-xs text-gray-600">It is impossible for a distributed data store to
+                                    simultaneously provide more than two out of three: Consistency, Availability,
+                                    Partition Tolerance.</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 08. Quiz -->
+                <section id="quiz" class="mb-20 md:mb-24">
+                    <span class="rams-label">08 / Knowledge Check</span>
+                    <div id="quiz-container" class="rams-card">
+                        <!-- Quiz loads here -->
+                    </div>
+                </section>
+
+                <!-- 09. Certificate (Initially Hidden) -->
+                <section id="certificate" class="mb-20 md:mb-24 hidden">
+                    <span class="rams-label">09 / Certification</span>
+                    <h3 class="text-xl font-medium mb-6">Completion Certificate</h3>
+
+                    <div class="rams-card !p-0 overflow-hidden">
+                        <div class="p-6 md:p-8">
+                            <div class="flex flex-col md:flex-row gap-8 items-start">
+                                <div class="w-full md:w-1/3 space-y-4">
+                                    <p class="text-sm text-gray-600">
+                                        Enter your name below to generate your personalized certificate of completion
+                                        for
+                                        the Database Systems series.
+                                    </p>
+                                    <div>
+                                        <label for="cert-name"
+                                            class="block text-xs font-bold text-gray-500 uppercase mb-1">Full
+                                            Name</label>
+                                        <input type="text" id="cert-name"
+                                            class="w-full border border-gray-300 p-2 font-mono text-sm focus:border-black outline-none"
+                                            placeholder="Ada Lovelace">
+                                        <p id="cert-error" class="text-red-500 text-xs mt-2 hidden">Please enter your
+                                            name.
+                                        </p>
+                                    </div>
+                                    <button onclick="generateCert()"
+                                        class="btn btn-primary bg-black border-black text-white w-full hover:bg-gray-800">Generate
+                                        Certificate</button>
+                                    <button onclick="downloadCert()" id="btn-download"
+                                        class="btn btn-secondary w-full hidden">Download PNG</button>
+
+                                </div>
+
+                                <div
+                                    class="w-full md:w-2/3 bg-gray-50 border border-gray-200 p-4 flex items-center justify-center">
+                                    <canvas id="cert-canvas" class="w-full shadow-lg bg-white"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="bg-gray-50 px-6 py-3 border-t border-gray-100 text-center">
+                            <p class="text-[10px] text-gray-400 italic">
+                                This certificate confirms successful completion of learning and assessment on this
+                                platform
+                                and is not an accredited or government-recognized qualification.
+                            </p>
+                        </div>
+                    </div>
+                </section>
+
+                <script src="js/script.js"></script>
+                <script>
+                    document.addEventListener('DOMContentLoaded', () => {
+                        new InlineQuiz('quiz-dbms-sql', {
+                            question: "Which SQL command is used to retrieve data?",
+                            options: ["SELECT", "INSERT", "UPDATE", "DELETE"],
+                            answer: 0,
+                            explanation: "SELECT is the standard command to read and retrieve data from a database table."
+                        });
+
+                        new InlineQuiz('quiz-dbms-joins', {
+                            question: "What is the result of an INNER JOIN?",
+                            options: ["Only matching rows from both tables", "Left table + matches", "Right table + matches", "Cartesian product"],
+                            answer: 0,
+                            explanation: "INNER JOIN returns only the rows where there is a match in both the joined tables."
+                        });
+
+                        new InlineQuiz('quiz-dbms-indexing', {
+                            question: "How does a B-Tree Index improve performance?",
+                            options: ["Reduces storage", "Reduces search complexity to O(log N)", "Automatically deletes old data", "Encrypts data"],
+                            answer: 1,
+                            explanation: "Indexes create a sorted data structure (like a tree) that allows the database to find records without scanning the entire table."
+                        });
+
+                        new InlineQuiz('quiz-dbms-norm', {
+                            question: "What is the primary goal of Normalization?",
+                            options: ["Increase redundancy", "Reduce redundancy and dependency", "Make tables larger", "Remove all keys"],
+                            answer: 1,
+                            explanation: "Normalization organizes data to minimize duplicate data (redundancy) and ensure logical dependencies."
+                        });
+
+                        new InlineQuiz('quiz-dbms-acid', {
+                            question: "In ACID, what does 'Atomicity' guarantee?",
+                            options: ["Transactions are isolated", "Transactions are all-or-nothing", "Data is durable", "Data is consistent"],
+                            answer: 1,
+                            explanation: "Atomicity ensures that a transaction is treated as a single unit; either it executes entirely or not at all."
+                        });
+
+                        new InlineQuiz('quiz-dbms-locking', {
+                            question: "Why is 'Row-Level Locking' used?",
+                            options: ["To prevent concurrent write conflicts", "To delete rows", "To speed up reads", "To backup data"],
+                            answer: 0,
+                            explanation: "Locking prevents two users from modifying the same record simultaneously, which could lead to data corruption."
+                        });
+
+                        new InlineQuiz('quiz-dbms-arch', {
+                            question: "Which architecture typically uses a web server?",
+                            options: ["1-Tier", "2-Tier", "3-Tier", "Zero-Tier"],
+                            answer: 2,
+                            explanation: "3-Tier Architecture adds an Application Layer (Web Server) between the Client and the Database."
+                        });
+
+                        new InlineQuiz('quiz-dbms-sharding', {
+                            question: "What is Sharding?",
+                            options: ["Vertical Scaling (CPU)", "Horizontal Scaling (Splitting data)", "Backup strategy", "Compression technique"],
+                            answer: 1,
+                            explanation: "Sharding splits a large database into smaller, faster, more easily managed parts called data shards across multiple servers."
+                        });
+
+                        new InlineQuiz('quiz-dbms-repl', {
+                            question: "What is the main benefit of Read Replicas?",
+                            options: ["Handling write traffic", "Offloading read traffic from Master", "Storing backups only", "Encrypting data"],
+                            answer: 1,
+                            explanation: "Read Replicas handle SELECT queries, allowing the Master node to focus on WRITE operations, improving overall performance."
+                        });
+
+                        new InlineQuiz('quiz-dbms-nosql', {
+                            question: "When is NoSQL preferred over SQL?",
+                            options: ["For strict financial data", "For unstructured/flexible data", "When using simple queries", "When ACID is critical"],
+                            answer: 1,
+                            explanation: "NoSQL databases (like MongoDB) are designed for flexible, schema-less data models, making them ideal for unstructured data."
+                        });
+
+                        new InlineQuiz('quiz-dbms-cap', {
+                            question: "According to the CAP Theorem, which combination is impossible?",
+                            options: ["CA", "CP", "AP", "CAP (All three simultaneously)"],
+                            answer: 3,
+                            explanation: "It is impossible for a distributed system to simultaneously provide Consistency, Availability, and Partition Tolerance."
+                        });
+                    });
+                </script>
+                <script>
+                    // Quiz Data
+                    const questions = [
+                        {
+                            question: "What does SQL stand for?",
+                            options: ["Structured Query Language", "Simple Query Language", "Structured Question Language", "System Query Logic"],
+                            answer: 0
+                        },
+                        {
+                            question: "Which property ensures database transactions are processed reliably?",
+                            options: ["BASE", "SOLID", "ACID", "CAP"],
+                            answer: 2
+                        },
+                        {
+                            question: "What is a Primary Key?",
+                            options: ["A key that sorts data", "A unique identifier for each record in a table", "A password for the database", "The first column in every table"],
+                            answer: 1
+                        },
+                        {
+                            question: "Which normal form removes transitive dependencies?",
+                            options: ["1NF", "2NF", "3NF", "BCNF"],
+                            answer: 2
+                        },
+                        {
+                            question: "What refers to the ability to database system to grow?",
+                            options: ["Reliability", "Scalability", "Durability", "Consistency"],
+                            answer: 1
+                        },
+                        {
+                            question: "Which of these is a NoSQL database?",
+                            options: ["PostgreSQL", "MySQL", "MongoDB", "Oracle"],
+                            answer: 2
+                        },
+                        {
+                            question: "What is the result of a LEFT JOIN?",
+                            options: ["Start with left table, match records from right", "Start with right table, match left", "Only matching records from both", "Cartesian product"],
+                            answer: 0
+                        },
+                        {
+                            question: "What helps speed up data retrieval operations on a database table?",
+                            options: ["Trigger", "View", "Index", "Cursor"],
+                            answer: 2
+                        },
+                        {
+                            question: "In ACID, what does 'I' stand for?",
+                            options: ["Integrity", "Isolation", "Identity", "Immediate"],
+                            answer: 1
+                        },
+                        {
+                            question: "Which SQL command is used to modify existing data?",
+                            options: ["ALTER", "MODIFY", "CHANGE", "UPDATE"],
+                            answer: 3
+                        }
+                    ];
+
+                    // Init Quiz
+                    new QuizManager('quiz-container', questions, () => {
+                        document.getElementById('certificate').classList.remove('hidden');
+                        setTimeout(() => {
+                            document.getElementById('certificate').scrollIntoView({ behavior: 'smooth' });
+                        }, 100);
+                    });
+
+                    // Certificate Logic
+                    const certGen = new CertificateGenerator('cert-canvas', 'Database Systems');
+
+                    function generateCert() {
+                        const nameInput = document.getElementById('cert-name');
+                        const errorMsg = document.getElementById('cert-error');
+                        const name = nameInput.value.trim();
+                        const nameRegex = /^[a-zA-Z\s\-\.'’]+$/;
+
+                        // Reset error state
+                        errorMsg.classList.add('hidden');
+                        nameInput.classList.remove('border-red-500');
+
+                        if (!name) {
+                            errorMsg.textContent = "Please enter your name.";
+                            errorMsg.classList.remove('hidden');
+                            nameInput.classList.add('border-red-500');
+                            return;
+                        }
+
+                        if (name.length < 3 || name.length > 35) {
+                            errorMsg.textContent = "Name must be between 3 and 35 characters.";
+                            errorMsg.classList.remove('hidden');
+                            nameInput.classList.add('border-red-500');
+                            return;
+                        }
+
+                        if (!nameRegex.test(name)) {
+                            errorMsg.textContent = "Name cannot contain numbers or special characters.";
+                            errorMsg.classList.remove('hidden');
+                            nameInput.classList.add('border-red-500');
+                            return;
+                        }
+
+                        certGen.generate(name);
+                        document.getElementById('btn-download').classList.remove('hidden');
+                    }
+
+                    function downloadCert() {
+                        const name = document.getElementById('cert-name').value.trim();
+                        certGen.download(`Undrstanding_DBMS_Certificate_${name.replace(/\s+/g, '_')}.png`);
+                    }
+                </script>
+
+                <footer class="w-full mt-12 mb-12">
+                    <div class="border-t border-gray-200 pt-8 flex justify-between items-center">
+                        <span class="text-[10px] mono uppercase text-gray-400">Undrstanding</span>
+                        <span class="text-[10px] mono uppercase text-gray-400">For Humans, From Humans</span>
+                    </div>
+                </footer>
+
+            </div>
+        </main>
+    </div>
+
+    <script>
+        function sleep(ms) { return new Promise(resolve => setTimeout(resolve, ms)); }
+
+        // --- 01. Joins Logic ---
+        const users = [
+            { id: 1, name: 'Alice' }, { id: 2, name: 'Bob' }, { id: 3, name: 'Charlie' }, { id: 4, name: 'David' }
+        ];
+        const orders = [
+            { uid: 1, item: 'Laptop' }, { uid: 2, item: 'Mouse' }, { uid: 1, item: 'Monitor' }, { uid: 5, item: 'Phone' }
+        ];
+
+        // --- 01. SQL Joins ---
+        async function runJoin(type) {
+            const tableA = document.querySelector('#table-users tbody');
+            const tableB = document.querySelector('#table-orders tbody');
+            const tableRes = document.querySelector('#join-results-body');
+            const status = document.getElementById('join-status');
+
+            // Reset UI Types
+            ['inner', 'left', 'right', 'full', 'self'].forEach(t => {
+                const b = document.getElementById('btn-' + t);
+                if (b) b.classList.remove('active', 'bg-gray-100', 'font-bold');
+            });
+            document.getElementById('btn-' + type).classList.add('active', 'bg-gray-100', 'font-bold');
+
+            // --- DATA MODE SWITCH ---
+            // If Self Join, we use Employees table. Else, Users/Orders.
+            const isSelf = (type === 'self');
+
+            // HEADERS Update
+            const headerA = document.querySelector('#table-users').closest('div').querySelector('h5');
+            const headerB = document.querySelector('#table-orders').closest('div').querySelector('h5');
+            const tableAHead = document.querySelector('#table-users thead tr');
+            const tableBHead = document.querySelector('#table-orders thead tr');
+            const resHead = document.querySelector('#table-result thead tr');
+
+            if (isSelf) {
+                headerA.textContent = "Employees (E1)";
+                headerB.textContent = "Employees (E2) - Copy";
+                tableAHead.innerHTML = `<th>ID</th><th>Name</th><th>Mgr_ID</th>`;
+                tableBHead.innerHTML = `<th>ID</th><th>Name</th>`;
+                resHead.innerHTML = `<th>Employee</th><th>Manager</th>`;
+
+                // Inject Employee Data
+                // Alice (1, null), Bob (2, 1), Charlie (3, 1), David (4, 2)
+                tableA.innerHTML = `
+                    <tr data-id="1"><td>1</td><td>Alice</td><td>-</td></tr>
+                    <tr data-id="2"><td>2</td><td>Bob</td><td>1</td></tr>
+                    <tr data-id="3"><td>3</td><td>Charlie</td><td>1</td></tr>
+                    <tr data-id="4"><td>4</td><td>David</td><td>2</td></tr>
+                `;
+                tableB.innerHTML = `
+                    <tr data-uid="1"><td>1</td><td>Alice</td></tr>
+                    <tr data-uid="2"><td>2</td><td>Bob</td></tr>
+                    <tr data-uid="3"><td>3</td><td>Charlie</td></tr>
+                    <tr data-uid="4"><td>4</td><td>David</td></tr>
+                `;
+
+            } else {
+                // RESTORE Standard Data
+                if (headerA.textContent !== "Users (T1)") {
+                    headerA.textContent = "Users (T1)";
+                    headerB.textContent = "Orders (T2)";
+                    tableAHead.innerHTML = `<th>ID</th><th>Name</th>`;
+                    tableBHead.innerHTML = `<th>ID</th><th>User_ID</th><th>Item</th>`;
+                    resHead.innerHTML = `<th>Name</th><th>Item</th>`;
+
+                    tableA.innerHTML = `
+                    <tr data-id="1"><td>1</td><td>Alice</td></tr>
+                    <tr data-id="2"><td>2</td><td>Bob</td></tr>
+                    <tr data-id="3"><td>3</td><td>Charlie</td></tr>
+                    <tr data-id="4"><td>4</td><td>David</td></tr>
+                   `;
+                    tableB.innerHTML = `
+                    <tr data-uid="1"><td>101</td><td>1</td><td>Laptop</td></tr>
+                    <tr data-uid="2"><td>102</td><td>2</td><td>Mouse</td></tr>
+                    <tr data-uid="1"><td>103</td><td>1</td><td>Monitor</td></tr>
+                    <tr data-uid="5"><td>104</td><td>5</td><td>Phone</td></tr>
+                   `;
+                }
+            }
+
+
+            status.textContent = "Processing Join...";
+            tableRes.innerHTML = "";
+
+            // --- ANIMATION & LOGIC ---
+            const rowsA = Array.from(tableA.children);
+            const rowsB = Array.from(tableB.children);
+            const matchedBIndices = new Set(); // Track matched B rows for Full/Right join
+
+            // Helper to add Result
+            const addRes = (c1, c2, highlight = false) => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `<td>${c1}</td><td>${c2}</td>`;
+                if (highlight) tr.className = "row-match";
+                tableRes.appendChild(tr);
+                // Auto scroll
+                tableRes.parentElement.scrollTop = tableRes.parentElement.scrollHeight;
+            };
+
+            await sleep(200);
+
+            // LOGIC
+            for (let rA of rowsA) {
+                // Reset styles
+                rowsA.forEach(r => r.className = "");
+                rowsB.forEach(r => r.className = "");
+
+                rA.className = "row-highlight";
+                const idA = rA.children[0].textContent;
+
+                let matchFound = false;
+
+                if (isSelf) {
+                    // SELF JOIN: E1.Mgr_ID = E2.ID
+                    const mgrId = rA.children[2].textContent;
+                    const empName = rA.children[1].textContent;
+
+                    if (mgrId === '-') {
+                        // Root
+                    } else {
+                        // Find Manager in B
+                        for (let i = 0; i < rowsB.length; i++) {
+                            const rB = rowsB[i];
+                            rB.className = "row-highlight";
+                            await sleep(100);
+
+                            const mgrIdB = rB.children[0].textContent; // B.ID
+
+                            if (mgrId === mgrIdB) {
+                                rB.className = "row-match";
+                                const mgrName = rB.children[1].textContent;
+                                addRes(empName, mgrName, true);
+                                matchFound = true;
+                                matchedBIndices.add(i);
+                                await sleep(300);
+                            }
+                            rB.className = "";
+                        }
+                    }
+
+                } else {
+                    // STANDARD JOIN
+                    const name = rA.children[1].textContent;
+
+                    for (let i = 0; i < rowsB.length; i++) {
+                        const rB = rowsB[i];
+                        rB.className = "row-highlight";
+                        await sleep(50); // Faster scan
+
+                        const fk = rB.children[1].textContent;
+
+                        if (idA === fk) {
+                            rB.className = "row-match";
+                            const item = rB.children[2].textContent;
+                            addRes(name, item, true);
+                            matchFound = true;
+                            matchedBIndices.add(i);
+                            await sleep(200);
+                        }
+                        rB.className = "";
+                    }
+
+                    // Handle Non-Matches based on Type (Left or Full)
+                    if (!matchFound) {
+                        if (type === 'left' || type === 'full') {
+                            addRes(name, "NULL");
+                        }
+                    }
+                }
+            }
+
+            // Right / Full Join: Add unmatched rows from B
+            if ((type === 'right' || type === 'full') && !isSelf) {
+                for (let i = 0; i < rowsB.length; i++) {
+                    if (!matchedBIndices.has(i)) {
+                        const rB = rowsB[i];
+                        const item = rB.children[2].textContent;
+                        addRes("NULL", item);
+                    }
+                }
+            }
+
+            status.textContent = "Query Complete.";
+            document.querySelectorAll('tr').forEach(r => r.className = "");
+        }
+
+        function highlightRow(tbody, index) {
+            Array.from(tbody.children).forEach(r => r.classList.remove('row-highlight'));
+            if (tbody.children[index]) tbody.children[index].classList.add('row-highlight');
+        }
+        function highlightMatch(tbody, index) {
+            if (tbody.children[index]) tbody.children[index].classList.add('row-match');
+        }
+
+        // --- 02. Indexing Logic (B-Tree Visual) ---
+        const treeData = {
+            val: 50,
+            left: { val: 25, left: { val: 10 }, right: { val: 30 } },
+            right: { val: 75, left: { val: 60 }, right: { val: 90 } }
+        };
+
+        function renderTree() {
+            const container = document.getElementById('tree-container');
+            container.innerHTML = `
+                <div class="flex flex-col items-center gap-4 w-full">
+                    <div class="tree-node w-10 h-10 rounded-full flex items-center justify-center font-bold text-xs z-10" id="node-50">50</div>
+                    <div class="flex gap-16">
+                        <div class="flex flex-col items-center gap-4">
+                            <div class="tree-node w-10 h-10 rounded-full flex items-center justify-center font-bold text-xs z-10" id="node-25">25</div>
+                            <div class="flex gap-4">
+                                <div class="tree-node w-10 h-10 rounded-full flex items-center justify-center font-bold text-xs" id="node-10">10</div>
+                                <div class="tree-node w-10 h-10 rounded-full flex items-center justify-center font-bold text-xs" id="node-30">30</div>
+                            </div>
+                        </div>
+                        <div class="flex flex-col items-center gap-4">
+                            <div class="tree-node w-10 h-10 rounded-full flex items-center justify-center font-bold text-xs z-10" id="node-75">75</div>
+                            <div class="flex gap-4">
+                                <div class="tree-node w-10 h-10 rounded-full flex items-center justify-center font-bold text-xs" id="node-60">60</div>
+                                <div class="tree-node w-10 h-10 rounded-full flex items-center justify-center font-bold text-xs" id="node-90">90</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+        renderTree();
+
+        async function searchIndex() {
+            const val = parseInt(document.getElementById('search-val').value);
+            if (!val) return;
+            resetNodes();
+            const status = document.getElementById('index-status');
+
+            let current = treeData;
+            let found = false;
+            let steps = 0;
+
+            while (current) {
+                steps++;
+                const el = document.getElementById(`node-${current.val}`);
+                if (el) {
+                    el.classList.add('active');
+                    await sleep(600);
+                }
+
+                if (val === current.val) {
+                    found = true;
+                    status.innerHTML = `<span class="text-black font-bold">Found ${val}</span> in ${steps} steps (O(log n)).`;
+                    break;
+                } else if (val < current.val) {
+                    if (el) el.classList.remove('active');
+                    if (el) el.classList.add('checked');
+                    current = current.left;
+                } else {
+                    if (el) el.classList.remove('active');
+                    if (el) el.classList.add('checked');
+                    current = current.right;
+                }
+            }
+            if (!found) status.textContent = `Value ${val} not found in index.`;
+        }
+
+        async function fullScan() {
+            resetNodes();
+            const nodes = [10, 30, 25, 60, 90, 75, 50]; // Arbitrary linear order
+            const status = document.getElementById('index-status');
+            const val = parseInt(document.getElementById('search-val').value);
+
+            for (let i = 0; i < nodes.length; i++) {
+                const el = document.getElementById(`node-${nodes[i]}`);
+                if (el) el.classList.add('active');
+                await sleep(300);
+                if (nodes[i] === val) {
+                    status.innerHTML = `<span class="text-black font-bold">Found ${val}</span> in ${i + 1} steps (O(n)).`;
+                    return;
+                }
+                if (el) {
+                    el.classList.remove('active');
+                    el.classList.add('checked');
+                }
+            }
+            status.textContent = "Full scan complete. Value not found.";
+        }
+
+        function resetNodes() {
+            document.querySelectorAll('.tree-node').forEach(n => n.classList.remove('active', 'checked'));
+        }
+
+        // --- Normalization Logic (Updated) ---
+        function setNormStep(step) {
+            const container = document.getElementById('norm-container');
+            const desc = document.getElementById('norm-desc');
+
+            // Toggle Buttons
+            [0, 1, 2, 3].forEach(i => {
+                const b = document.getElementById(`btn-norm-${i}`);
+                if (i === step) { b.classList.add('active', 'btn-primary'); b.classList.remove('btn-secondary'); }
+                else { b.classList.remove('active', 'btn-primary'); b.classList.add('btn-secondary'); }
+            });
+
+            container.innerHTML = '';
+            container.className = "flex items-center justify-center min-h-[200px] animate-[fadeIn_0.5s] overflow-x-auto";
+
+            if (step === 0) {
+                // UNF
+                container.innerHTML = `
+                    <div class="border border-gray-200 p-3 bg-gray-50">
+                        <div class="text-[9px] uppercase font-bold text-gray-400 mb-2">Student_Report (UNF)</div>
+                        <table class="db-table">
+                            <tr><th>Student</th><th>Courses (Repeating Group)</th><th>Advisor</th><th>Advisor_Loc</th></tr>
+                            <tr class="bg-red-50"><td>Alice (S1)</td><td>Math, Physics</td><td>Dr. Smith</td><td>Room 101</td></tr>
+                            <tr><td>Bob (S2)</td><td>Chemistry</td><td>Dr. Jones</td><td>Room 102</td></tr>
+                        </table>
+                    </div>`;
+                desc.textContent = "UNF: Contains repeating groups (Comma separated courses). Hard to query specific courses.";
+            } else if (step === 1) {
+                // 1NF
+                container.innerHTML = `
+                    <div class="border border-gray-200 p-3 bg-gray-50">
+                        <div class="text-[9px] uppercase font-bold text-gray-400 mb-2">Student_Grade_Report (1NF)</div>
+                        <table class="db-table">
+                            <tr><th>SID</th><th>Course</th><th>Advisor</th><th>Advisor_Loc</th></tr>
+                            <tr><td>S1</td><td>Math</td><td>Dr. Smith</td><td>Room 101</td></tr>
+                            <tr><td>S1</td><td>Physics</td><td>Dr. Smith</td><td>Room 101</td></tr>
+                            <tr><td>S2</td><td>Chemistry</td><td>Dr. Jones</td><td>Room 102</td></tr>
+                        </table>
+                    </div>`;
+                desc.innerHTML = "1NF: Atomic values. No repeating groups. <br>Problem: Redundancy. Advisor info repeats for every course S1 takes.";
+            } else if (step === 2) {
+                // 2NF
+                container.innerHTML = `
+                    <div class="flex gap-4 flex-wrap justify-center">
+                        <div class="border border-gray-200 p-3 bg-gray-50">
+                            <div class="text-[9px] uppercase font-bold text-gray-400 mb-2">Registration</div>
+                            <table class="db-table">
+                                <tr><th>SID</th><th>Course</th></tr>
+                                <tr><td>S1</td><td>Math</td></tr>
+                                <tr><td>S1</td><td>Physics</td></tr>
+                                <tr><td>S2</td><td>Chemistry</td></tr>
+                            </table>
+                        </div>
+                        <div class="border border-gray-200 p-3 bg-gray-50">
+                            <div class="text-[9px] uppercase font-bold text-gray-400 mb-2">Students</div>
+                            <table class="db-table">
+                                <tr><th>SID</th><th>Advisor</th><th>Advisor_Loc</th></tr>
+                                <tr><td>S1</td><td>Dr. Smith</td><td>Room 101</td></tr>
+                                <tr><td>S2</td><td>Dr. Jones</td><td>Room 102</td></tr>
+                            </table>
+                        </div>
+                    </div>`;
+                desc.innerHTML = "2NF: Removed Partial Dependencies. <br>Problem: Transitive Dependency. 'Advisor_Loc' depends on 'Advisor', not 'SID'.";
+            } else if (step === 3) {
+                // 3NF
+                container.innerHTML = `
+                    <div class="flex gap-4 flex-wrap justify-center">
+                        <div class="border border-gray-200 p-3 bg-gray-50">
+                            <div class="text-[9px] uppercase font-bold text-gray-400 mb-2">Registration</div>
+                            <table class="db-table"><tr><th>SID</th><th>Course</th></tr><tr><td>S1</td><td>Math</td></tr><tr><td>S1</td><td>Physics</td></tr></table>
+                        </div>
+                        <div class="border border-gray-200 p-3 bg-gray-50">
+                            <div class="text-[9px] uppercase font-bold text-gray-400 mb-2">Students</div>
+                            <table class="db-table"><tr><th>SID</th><th>Advisor_ID</th></tr><tr><td>S1</td><td>10</td></tr><tr><td>S2</td><td>20</td></tr></table>
+                        </div>
+                        <div class="border border-gray-200 p-3 bg-gray-50">
+                            <div class="text-[9px] uppercase font-bold text-gray-400 mb-2">Advisors</div>
+                            <table class="db-table"><tr><th>ID</th><th>Name</th><th>Loc</th></tr><tr><td>10</td><td>Smith</td><td>101</td></tr><tr><td>20</td><td>Jones</td><td>102</td></tr></table>
+                        </div>
+                    </div>`;
+                desc.textContent = "3NF: Removed Transitive Dependencies. Separate table for Advisors.";
+            }
+        }
+        setNormStep(0);
+
+        // --- 03. ACID Logic ---
+        let balanceA = 1000;
+        let balanceB = 500;
+        let inTransaction = false;
+
+        async function startTransaction(commit) {
+            if (inTransaction) return;
+            inTransaction = true;
+
+            const log = document.getElementById('acid-log');
+            const elA = document.getElementById('acc-a');
+            const elB = document.getElementById('acc-b');
+
+            // Clear Log
+            log.innerHTML = '';
+            const addLog = (msg, type = '') => {
+                const div = document.createElement('div');
+                div.className = `log-entry ${type}`;
+                div.textContent = `> ${msg}`;
+                log.appendChild(div);
+                log.scrollTop = log.scrollHeight;
+            }
+
+            addLog("BEGIN TRANSACTION");
+            await sleep(500);
+
+            // Step 1: Read A
+            addLog("READ Account_A ($1000)");
+            elA.classList.add('text-gray-400'); // lock visual
+            await sleep(500);
+
+            // Step 2: Deduct
+            addLog("WRITE Account_A (-$100)");
+            elA.textContent = "$900";
+            elA.classList.remove('text-gray-400');
+            elA.classList.add('text-black');
+            await sleep(500);
+
+            // Step 3: Read B
+            addLog("READ Account_B ($500)");
+            elB.classList.add('text-gray-400');
+            await sleep(500);
+
+            if (!commit) {
+                // FAILURE SIMULATION
+                addLog("ERROR: Connection Lost!", "log-error");
+                await sleep(500);
+                addLog("ROLLBACK initiated...", "log-error");
+                await sleep(800);
+
+                // Restore
+                elA.textContent = "$1000";
+                elB.classList.remove('text-gray-400');
+                elA.classList.remove('text-black');
+                addLog("State restored. A:$1000, B:$500");
+            } else {
+                // Step 4: Add
+                addLog("WRITE Account_B (+$100)");
+                elB.textContent = "$600";
+                elB.classList.remove('text-gray-400');
+                elB.classList.add('text-black');
+                await sleep(500);
+
+                addLog("COMMIT", "log-success");
+                balanceA = 900;
+                balanceB = 600;
+            }
+            inTransaction = false;
+        }
+
+        // --- 04. Locking Logic ---
+        let resourceLocked = false;
+
+        async function requestLock(user) {
+            const msg = document.getElementById('lock-msg');
+            const btn = document.getElementById(`btn-user${user}`);
+            const prog = document.getElementById(`prog-${user}`);
+            const resStatus = document.getElementById('resource-status');
+            const lockIcon = document.getElementById('lock-icon');
+            const resourceBox = document.getElementById('shared-resource');
+
+            if (resourceLocked) {
+                msg.textContent = `User ${user} is WAITING for lock...`;
+                btn.classList.add('animate-pulse');
+                return; // Simple blockage logic
+            }
+
+            // Acquire Lock
+            resourceLocked = true;
+            btn.disabled = true;
+            msg.textContent = `User ${user} acquired Exclusive Lock (X-Lock).`;
+
+            // Visuals
+            lockIcon.classList.add('lock-active');
+            resourceBox.classList.add('border-gray-800', 'bg-gray-50');
+            resStatus.textContent = `Status: LOCKED by User ${user}`;
+
+            // Simulate Work
+            prog.style.width = '100%';
+            await sleep(1500);
+
+            // Release
+            prog.style.width = '0%';
+            lockIcon.classList.remove('lock-active');
+            resourceBox.classList.remove('border-gray-800', 'bg-gray-50');
+            resStatus.textContent = `Status: Available`;
+            msg.textContent = `User ${user} released lock.`;
+
+            resourceLocked = false;
+            btn.disabled = false;
+            btn.classList.remove('animate-pulse');
+        }
+
+        // --- 05. Sharding Logic ---
+        function addShardData() {
+            const id = Math.floor(Math.random() * 9999);
+            const shardIndex = id % 3;
+            const container = document.getElementById(`shard-${shardIndex}`);
+
+            const el = document.createElement('div');
+            el.className = 'w-8 h-8 bg-black text-white text-[9px] flex items-center justify-center font-mono coin-drop';
+            el.textContent = id;
+
+            container.appendChild(el);
+        }
+
+        function clearShards() {
+            document.getElementById('shard-0').innerHTML = '';
+            document.getElementById('shard-1').innerHTML = '';
+            document.getElementById('shard-2').innerHTML = '';
+        }
+
+        // --- Architecture Logic ---
+        let archMode = '2tier';
+        function setArch(mode) {
+            archMode = mode;
+            document.getElementById('btn-arch-2').classList.toggle('active', mode === '2tier');
+            document.getElementById('btn-arch-2').classList.toggle('btn-primary', mode === '2tier');
+            document.getElementById('btn-arch-2').classList.toggle('btn-secondary', mode !== '2tier');
+
+            document.getElementById('btn-arch-3').classList.toggle('active', mode === '3tier');
+            document.getElementById('btn-arch-3').classList.toggle('btn-primary', mode === '3tier');
+            document.getElementById('btn-arch-3').classList.toggle('btn-secondary', mode !== '3tier');
+
+            const nodeApp = document.getElementById('node-app');
+            if (mode === '2tier') {
+                nodeApp.style.opacity = '0.2';
+                nodeApp.style.transform = 'scale(0.8)';
+            } else {
+                nodeApp.style.opacity = '1';
+                nodeApp.style.transform = 'scale(1)';
+            }
+        }
+        setArch('2tier');
+
+        async function simulateRequest() {
+            const container = document.getElementById('arch-lines');
+            const btn = document.getElementById('btn-sim-req');
+            if (btn.disabled) return;
+            btn.disabled = true;
+
+            // Client Node
+            const client = document.getElementById('node-client');
+            const app = document.getElementById('node-app');
+            const db = document.getElementById('node-db');
+
+            client.classList.add('active');
+            await sleep(300);
+
+            // Packet 1: Client -> Next
+            const p1 = document.createElement('div');
+            p1.className = 'packet';
+            p1.style.left = '20%'; p1.style.top = '50%';
+            container.appendChild(p1);
+
+            if (archMode === '2tier') {
+                // 2-Tier: Client -> DB
+                const anim = p1.animate([
+                    { left: '20%', opacity: 1 },
+                    { left: '80%', opacity: 1 }
+                ], { duration: 1000, fill: 'forwards' });
+                await anim.finished;
+                db.classList.add('active');
+                await sleep(300);
+                p1.remove();
+
+                // Response
+                const p2 = document.createElement('div');
+                p2.className = 'packet';
+                p2.style.background = '#404040';
+                p2.style.left = '80%'; p2.style.top = '50%';
+                container.appendChild(p2);
+
+                const anim2 = p2.animate([
+                    { left: '80%', opacity: 1 },
+                    { left: '20%', opacity: 1 }
+                ], { duration: 1000, fill: 'forwards' });
+                await anim2.finished;
+                db.classList.remove('active');
+                client.classList.remove('active');
+                p2.remove();
+
+            } else {
+                // 3-Tier: Client -> App
+                const anim1 = p1.animate([
+                    { left: '20%', opacity: 1 },
+                    { left: '50%', opacity: 1 }
+                ], { duration: 600, fill: 'forwards' });
+                await anim1.finished;
+                app.classList.add('active');
+                await sleep(200);
+                p1.remove();
+
+                // App -> DB
+                const p2 = document.createElement('div');
+                p2.className = 'packet';
+                p2.style.left = '50%'; p2.style.top = '50%';
+                container.appendChild(p2);
+                const anim2 = p2.animate([
+                    { left: '50%', opacity: 1 },
+                    { left: '80%', opacity: 1 }
+                ], { duration: 600, fill: 'forwards' });
+                await anim2.finished;
+                db.classList.add('active');
+                await sleep(300);
+                p2.remove();
+
+                // Return trip (simplified)
+                db.classList.remove('active');
+                app.classList.remove('active');
+                client.classList.remove('active');
+            }
+
+            btn.disabled = false;
+        }
+
+        // --- Replication Logic ---
+        let writeCount = 0;
+        let isReplicating = false;
+
+        async function writeToMaster() {
+            if (isReplicating) return;
+            isReplicating = true;
+
+            const btn = document.getElementById('btn-write-master');
+            btn.disabled = true;
+
+            writeCount++;
+            document.getElementById('master-log').textContent = `Writes: ${writeCount}`;
+
+            // Spawn Packets
+            const container = document.getElementById('repl-anim-area');
+            const p1 = document.createElement('div');
+            p1.className = 'packet';
+            p1.style.top = "20%"; // adjust for layout
+            p1.style.left = "40%";
+            container.appendChild(p1);
+
+            const p2 = document.createElement('div');
+            p2.className = 'packet';
+            p2.style.top = "20%";
+            p2.style.left = "40%";
+            container.appendChild(p2);
+
+            // Animate P1 -> R1
+            const anim1 = p1.animate([
+                { top: '25%', left: '30%', opacity: 1 },
+                { top: '60%', left: '38%', opacity: 1 }
+            ], { duration: 1000, fill: 'forwards' });
+
+            // Animate P2 -> R2
+            const anim2 = p2.animate([
+                { top: '25%', left: '30%', opacity: 1 },
+                { top: '80%', left: '38%', opacity: 1 }
+            ], { duration: 1500, fill: 'forwards' });
+
+            await anim1.finished;
+            const r1Val = document.getElementById('r1-val');
+            r1Val.textContent = `+${writeCount}`;
+            r1Val.style.opacity = '1';
+            setTimeout(() => r1Val.style.opacity = '0', 500);
+            p1.remove();
+
+            await anim2.finished;
+            const r2Val = document.getElementById('r2-val');
+            r2Val.textContent = `+${writeCount}`;
+            r2Val.style.opacity = '1';
+            setTimeout(() => r2Val.style.opacity = '0', 500);
+            p2.remove();
+
+            isReplicating = false;
+            btn.disabled = false;
+        }
+
+        // --- 06. SQL vs NoSQL Logic ---
+        let dbMode = 'sql';
+        const storeDisplay = document.getElementById('store-display');
+        const schemaDisplay = document.getElementById('schema-display');
+        const nosqlStatus = document.getElementById('nosql-status');
+
+        function setDbMode(mode) {
+            dbMode = mode;
+            document.getElementById('btn-mode-sql').classList.toggle('active', mode === 'sql');
+            document.getElementById('btn-mode-nosql').classList.toggle('active', mode === 'nosql');
+
+            if (mode === 'sql') {
+                schemaDisplay.innerHTML = `<div class="text-green-400">CREATE TABLE Users (</div><div class="pl-4">id INT PRIMARY KEY,</div><div class="pl-4">name VARCHAR(50),</div><div class="pl-4">age INT</div><div>);</div>`;
+                renderSqlStore();
+            } else {
+                schemaDisplay.innerHTML = `<div class="text-gray-500">// No strict schema enforced</div><div class="text-gray-500">// Collections created on the fly</div>`;
+                renderNoSqlStore();
+            }
+            nosqlStatus.textContent = `Mode: ${mode.toUpperCase()}`;
+        }
+
+        let sqlData = [{ id: 1, name: "Alice", age: 30 }, { id: 2, name: "Bob", age: 24 }];
+        let nosqlData = [{ _id: 1, name: "Alice", age: 30 }, { _id: 2, name: "Bob", age: 24, role: "admin" }];
+
+        function renderSqlStore() {
+            storeDisplay.innerHTML = '';
+            sqlData.forEach(row => {
+                storeDisplay.innerHTML += `<div>${row.id} | ${row.name} | ${row.age}</div>`;
+            });
+        }
+        function renderNoSqlStore() {
+            storeDisplay.innerHTML = '';
+            nosqlData.forEach(doc => {
+                storeDisplay.innerHTML += `<div class="mb-1 text-xs text-green-300">${JSON.stringify(doc)}</div>`;
+            });
+        }
+
+        function insertData() {
+            const extraInput = document.getElementById('nosql-extra-field').value;
+            let extraObj = {};
+            try {
+                if (extraInput) extraObj = JSON.parse(extraInput);
+            } catch (e) {
+                nosqlStatus.textContent = "Error: Invalid JSON syntax.";
+                return;
+            }
+
+            if (dbMode === 'sql') {
+                if (Object.keys(extraObj).length > 0) {
+                    nosqlStatus.textContent = `Error: Columns ${Object.keys(extraObj).join(', ')} do not exist in table schema.`;
+                    nosqlStatus.classList.add('text-red-600');
+                    setTimeout(() => nosqlStatus.classList.remove('text-red-600'), 2000);
+                } else {
+                    sqlData.push({ id: sqlData.length + 1, name: "Eve", age: 25 });
+                    renderSqlStore();
+                    nosqlStatus.textContent = "Inserted successfully.";
+                }
+            } else {
+                const newDoc = { _id: nosqlData.length + 1, name: "Eve", age: 25, ...extraObj };
+                nosqlData.push(newDoc);
+                renderNoSqlStore();
+                nosqlStatus.textContent = "Document inserted (Flexible Schema).";
+            }
+        }
+        setDbMode('sql');
+
+        // --- 07. CAP Logic ---
+        let capSelection = [];
+
+        function toggleCap(val) {
+            const btn = document.getElementById(`btn-${val}`);
+
+            if (capSelection.includes(val)) {
+                // Deselect
+                capSelection = capSelection.filter(item => item !== val);
+                btn.classList.remove('active', 'btn-primary');
+                btn.classList.add('btn-secondary');
+            } else {
+                // Select
+                if (capSelection.length >= 2) {
+                    // Remove first
+                    const removed = capSelection.shift();
+                    const rBtn = document.getElementById(`btn-${removed}`);
+                    rBtn.classList.remove('active', 'btn-primary');
+                    rBtn.classList.add('btn-secondary');
+                }
+                capSelection.push(val);
+                btn.classList.add('active', 'btn-primary');
+                btn.classList.remove('btn-secondary');
+            }
+            updateCapVisuals();
+        }
+
+        function updateCapVisuals() {
+            // Reset Lines
+            ['ca', 'cp', 'ap'].forEach(id => {
+                const line = document.getElementById(`svg-line-${id}`);
+                line.style.stroke = "#e5e5e5";
+                line.style.strokeWidth = "4";
+                line.style.filter = "none";
+            });
+
+            document.getElementById('cap-svg-text').innerHTML = 'Pick 2';
+            document.getElementById('cap-svg-text').setAttribute('fill', '#404040');
+
+            const title = document.getElementById('cap-result-title');
+            const desc = document.getElementById('cap-result-desc');
+            const hasC = capSelection.includes('c');
+            const hasA = capSelection.includes('a');
+            const hasP = capSelection.includes('p');
+
+            if (capSelection.length < 2) {
+                title.textContent = "Select two properties";
+                desc.textContent = "Consistency, Availability, Partition Tolerance.";
+                return;
+            }
+
+            if (hasC && hasA) {
+                // CA
+                const l = document.getElementById('svg-line-ca');
+                l.style.stroke = "#111"; l.style.strokeWidth = "6"; l.style.filter = "drop-shadow(0px 2px 3px rgba(0,0,0,0.2))";
+
+                document.getElementById('cap-svg-text').textContent = "CA";
+                document.getElementById('cap-svg-text').setAttribute('fill', '#111');
+
+                title.textContent = "CA (Consistency + Availability)";
+                desc.textContent = "Typical of RDBMS (MySQL, PostgreSQL). Data is consistent and available, but the system fails if the network partitions (cannot scale across split networks).";
+            } else if (hasC && hasP) {
+                // CP
+                const l = document.getElementById('svg-line-cp');
+                l.style.stroke = "#111"; l.style.strokeWidth = "6"; l.style.filter = "drop-shadow(0px 2px 3px rgba(0,0,0,0.2))";
+
+                document.getElementById('cap-svg-text').textContent = "CP";
+                document.getElementById('cap-svg-text').setAttribute('fill', '#111');
+
+                title.textContent = "CP (Consistency + Partition Tolerance)";
+                desc.textContent = "Examples: MongoDB, HBase, Redis. System waits for sync to ensure consistency. If a partition occurs, it may refuse requests (unavailable) to prevent inconsistent data.";
+            } else if (hasA && hasP) {
+                // AP
+                const l = document.getElementById('svg-line-ap');
+                l.style.stroke = "#111"; l.style.strokeWidth = "6"; l.style.filter = "drop-shadow(0px 2px 3px rgba(0,0,0,0.2))";
+
+                document.getElementById('cap-svg-text').textContent = "AP";
+                document.getElementById('cap-svg-text').setAttribute('fill', '#111');
+
+                title.textContent = "AP (Availability + Partition Tolerance)";
+                desc.textContent = "Examples: Cassandra, DynamoDB, CouchDB. System always responds, even if data is stale (Eventual Consistency). Prioritizes uptime over immediate correctness.";
+            }
+        }
+
+        // --- 00. SQL Queries (Basic + Advanced) ---
+        async function runSqlDemo(type) {
+            const terminal = document.getElementById('sql-terminal');
+            const desc = document.getElementById('sql-desc');
+            const status = document.getElementById('sql-result-status');
+            const tbody = document.getElementById('sql-tbody');
+            const allBtns = ['btn-sql-select', 'btn-sql-insert', 'btn-sql-update', 'btn-sql-delete', 'btn-sql-max', 'btn-sql-second-max', 'btn-sql-third-max', 'btn-sql-count', 'btn-sql-sum', 'btn-sql-avg', 'btn-sql-min'];
+
+            // 1. Reset UI
+            allBtns.forEach(id => document.getElementById(id).classList.remove('active', 'bg-gray-100', 'font-bold'));
+            document.getElementById(`btn-sql-${type}`).classList.add('active', 'bg-gray-100', 'font-bold');
+            status.style.opacity = '0';
+
+            // Clean table visuals
+            Array.from(tbody.children).forEach(row => {
+                row.style.backgroundColor = 'transparent';
+                row.style.opacity = '1';
+                row.classList.remove('hidden');
+                // Reset text content for GPA column if previously marked
+                if (row.children[2].textContent.includes('❌')) {
+                    row.children[2].textContent = row.children[2].textContent.replace(' ❌', '');
+                }
+                row.children[2].classList.remove('font-bold', 'text-blue-600', 'text-green-700', 'text-lg');
+            });
+
+            // Specific fixes for previous modification persistence (Insert/Delete/Update)
+            // Ensure Row 1 exists (Alice)
+            if (!document.getElementById('row-1')) {
+                const r1 = document.createElement('tr');
+                r1.id = 'row-1';
+                r1.innerHTML = '<td>1</td><td>Alice</td><td>3.9</td>';
+                tbody.prepend(r1);
+            }
+            // Ensure Row 2 value is reset (Bob)
+            const row2 = document.getElementById('row-2');
+            if (row2) row2.children[2].textContent = '3.2';
+            // Remove Inserted Row if not inserting
+            const insertedRow = document.getElementById('row-new');
+            if (insertedRow && type !== 'insert') insertedRow.remove();
+
+
+            // Helper: Sleep
+            const wait = (ms) => new Promise(r => setTimeout(r, ms));
+
+            // Helper: Highlight Column for scanning
+            const highlightGpaScan = async (rows) => {
+                for (let r of rows) {
+                    r.children[2].classList.add('font-bold', 'text-blue-600');
+                    await wait(200); // Scan speed
+                    r.children[2].classList.remove('font-bold', 'text-blue-600');
+                }
+            };
+
+            // 2. Logic Per Type
+            if (type === 'select') {
+                terminal.innerHTML = `<span class="text-purple-400">SELECT</span> * <span class="text-purple-400">FROM</span> Students <span class="text-purple-400">WHERE</span> gpa > 3.5;`;
+                desc.textContent = "Retrieves data. Finds students with GPA > 3.5.";
+
+                await wait(300);
+                document.getElementById('row-1').style.backgroundColor = '#d1fae5'; // green-100
+                document.getElementById('row-3').style.backgroundColor = '#d1fae5';
+                status.textContent = "// 2 rows returned";
+                status.style.opacity = '1';
+
+            } else if (type === 'insert') {
+                terminal.innerHTML = `<span class="text-purple-400">INSERT INTO</span> Students <span class="text-purple-400">VALUES</span> (4, 'Diana', 3.8);`;
+                desc.textContent = "Adds new data. Inserts Diana into the table.";
+
+                await wait(300);
+                if (!document.getElementById('row-new')) {
+                    const newRow = document.createElement('tr');
+                    newRow.id = 'row-new';
+                    newRow.className = "bg-green-100 transition-all duration-500";
+                    newRow.innerHTML = `<td>4</td><td>Diana</td><td>3.8</td>`;
+                    tbody.appendChild(newRow);
+
+                    await wait(1000);
+                    newRow.classList.remove('bg-green-100');
+                    status.textContent = "// 1 row inserted";
+                    status.style.opacity = '1';
+                }
+
+            } else if (type === 'update') {
+                terminal.innerHTML = `<span class="text-purple-400">UPDATE</span> Students <span class="text-purple-400">SET</span> gpa = 4.0 <span class="text-purple-400">WHERE</span> id = 2;`;
+                desc.textContent = "Modifies existing data. Updates Bob's GPA to 4.0.";
+
+                await wait(300);
+                const row = document.getElementById('row-2');
+                row.style.backgroundColor = '#fef3c7'; // yellow-100
+                await wait(600);
+                row.children[2].textContent = "4.0"; // Update value
+                row.style.backgroundColor = 'transparent';
+                status.textContent = "// 1 row updated";
+                status.style.opacity = '1';
+
+            } else if (type === 'delete') {
+                terminal.innerHTML = `<span class="text-purple-400">DELETE FROM</span> Students <span class="text-purple-400">WHERE</span> id = 1;`;
+                desc.textContent = "Removes data. Deletes Alice from the database.";
+
+                await wait(300);
+                const row = document.getElementById('row-1');
+                row.style.backgroundColor = '#fee2e2'; // red-100
+                row.style.transition = 'opacity 0.5s';
+                row.style.opacity = '0';
+                await wait(500);
+                row.remove();
+                status.textContent = "// 1 row deleted";
+                status.style.opacity = '1';
+
+            } else if (type === 'count') {
+                terminal.innerHTML = `<span class="text-purple-400">SELECT COUNT</span>(*) <span class="text-purple-400">FROM</span> Students;`;
+                desc.textContent = "Counts the total number of rows in the table.";
+
+                await wait(300);
+                const rows = Array.from(tbody.children);
+                for (let i = 0; i < rows.length; i++) {
+                    rows[i].style.backgroundColor = '#d1fae5'; // green-100
+                    status.textContent = `// Count: ${i + 1}`;
+                    await wait(400);
+                    rows[i].style.backgroundColor = 'transparent';
+                }
+                status.textContent = `// Result: ${rows.length} rows`;
+                status.style.opacity = '1';
+
+            } else if (type === 'sum') {
+                terminal.innerHTML = `<span class="text-purple-400">SELECT SUM</span>(gpa) <span class="text-purple-400">FROM</span> Students;`;
+                desc.textContent = "Calculates the total sum of the GPA column.";
+
+                await wait(300);
+                const rows = Array.from(tbody.children);
+                let sum = 0;
+                for (let r of rows) {
+                    r.children[2].classList.add('font-bold', 'text-blue-600');
+                    const val = parseFloat(r.children[2].textContent);
+                    if (!isNaN(val)) sum += val;
+                    status.textContent = `// Sum: ${sum.toFixed(1)}`;
+                    await wait(500);
+                    r.children[2].classList.remove('font-bold', 'text-blue-600');
+                }
+                status.textContent = `// Result: ${sum.toFixed(1)}`;
+                status.style.opacity = '1';
+
+            } else if (type === 'avg') {
+                terminal.innerHTML = `<span class="text-purple-400">SELECT AVG</span>(gpa) <span class="text-purple-400">FROM</span> Students;`;
+                desc.textContent = "Calculates the average GPA (Sum / Count).";
+
+                await wait(300);
+                const rows = Array.from(tbody.children);
+                let sum = 0;
+                // Visual Accumulation
+                for (let r of rows) {
+                    r.children[2].classList.add('font-bold', 'text-blue-600');
+                    const val = parseFloat(r.children[2].textContent);
+                    if (!isNaN(val)) sum += val;
+                    status.textContent = `// Sum: ${sum.toFixed(1)}`;
+                    await wait(300); // Faster scan for AVG
+                    r.children[2].classList.remove('font-bold', 'text-blue-600');
+                }
+                // Final Calc
+                const avg = (sum / rows.length).toFixed(2);
+                status.textContent = `// Result: ${avg}`;
+                status.style.opacity = '1';
+
+            } else if (type === 'min') {
+                terminal.innerHTML = `<span class="text-purple-400">SELECT MIN</span>(gpa) <span class="text-purple-400">FROM</span> Students;`;
+                desc.textContent = "Finds the lowest GPA value.";
+
+                await wait(300);
+                const rows = Array.from(tbody.children);
+                await highlightGpaScan(rows);
+
+                // Find Min Logic
+                let minVal = 10.0;
+                let minRow = null;
+
+                rows.forEach(r => {
+                    const val = parseFloat(r.children[2].textContent);
+                    if (val < minVal) {
+                        minVal = val;
+                        minRow = r;
+                    }
+                });
+
+                if (minRow) {
+                    minRow.style.backgroundColor = '#d1fae5';
+                    minRow.children[2].classList.add('font-bold', 'text-green-700', 'text-lg');
+                    status.textContent = `// Result: ${minVal} (${minRow.children[1].textContent})`;
+                    status.style.opacity = '1';
+                }
+
+            } else if (type === 'max') {
+                terminal.innerHTML = `<span class="text-purple-400">SELECT MAX</span>(gpa) <span class="text-purple-400">FROM</span> Students;`;
+                desc.textContent = "Finds the highest GPA value in the table.";
+
+                // Animation: Scan GPAs
+                await wait(300);
+                const rows = Array.from(tbody.children);
+                // Scan effect
+                await highlightGpaScan(rows);
+
+                // Highlight Max (Alice 3.9) - assuming default data
+                const alice = document.getElementById('row-1');
+                if (alice) {
+                    alice.style.backgroundColor = '#d1fae5'; // green bg
+                    alice.children[2].classList.add('font-bold', 'text-green-700', 'text-lg');
+                    status.textContent = "// Result: 3.9 (Alice)";
+                    status.style.opacity = '1';
+                }
+
+            } else if (type === 'second-max') {
+                // Query showing logic: Sort Descending, Skip 1, Take 1
+                terminal.innerHTML = `<span class="text-purple-400">SELECT</span> * <span class="text-purple-400">FROM</span> Students <span class="text-purple-400">ORDER BY</span> gpa DESC <span class="text-purple-400">LIMIT</span> 1 <span class="text-purple-400">OFFSET</span> 1;`;
+                desc.textContent = "Finds 2nd Highest. Logic: Find Max, ignore it, find next highest.";
+
+                await wait(500);
+                // 1. Identify Max (Alice)
+                const alice = document.getElementById('row-1');
+                if (alice) {
+                    alice.style.backgroundColor = '#fee2e2'; // red light
+                    alice.children[2].textContent += " ❌"; // Visual mark as excluded
+                }
+
+                await wait(800);
+                // 2. Scan remaining
+                // ... scan logic simplified ...
+
+                // 3. Highlight 2nd Max (Diana if Inserted 3.8, else Charlie 3.7)
+                // We check dynamically
+                const diana = document.getElementById('row-new');
+                const charlie = document.getElementById('row-3');
+
+                let winner = charlie;
+                let val = "3.7";
+                if (diana) { winner = diana; val = "3.8"; } // Diana 3.8 > Charlie 3.7
+
+                if (winner) {
+                    winner.style.backgroundColor = '#d1fae5';
+                    winner.children[2].classList.add('font-bold', 'text-green-700', 'text-lg');
+                    status.textContent = `// Result: ${val} (${winner.children[1].textContent})`;
+                    status.style.opacity = '1';
+                }
+
+            } else if (type === 'third-max') {
+                terminal.innerHTML = `<span class="text-purple-400">SELECT</span> * <span class="text-purple-400">FROM</span> Students <span class="text-purple-400">ORDER BY</span> gpa DESC <span class="text-purple-400">LIMIT</span> 1 <span class="text-purple-400">OFFSET</span> 2;`;
+                desc.textContent = "Finds 3rd Highest. Logic: Exclude 1st & 2nd Max.";
+
+                await wait(500);
+                // 1. Identify Max (Alice 3.9)
+                const alice = document.getElementById('row-1');
+                if (alice) {
+                    alice.style.backgroundColor = '#fee2e2';
+                    alice.children[2].textContent += " ❌";
+                }
+                await wait(500);
+
+                // 2. Identify 2nd Max (Diana 3.8 or Charlie 3.7)
+                const diana = document.getElementById('row-new');
+                const charlie = document.getElementById('row-3');
+
+                let second = charlie; // Default if no Diana
+                if (diana) second = diana;
+
+                if (second) {
+                    second.style.backgroundColor = '#fee2e2';
+                    second.children[2].textContent += " ❌";
+                }
+
+                await wait(800);
+
+                // 3. Highlight 3rd Max
+                // If Diana exists: 1.Alice(3.9), 2.Diana(3.8), 3.Charlie(3.7)
+                // If No Diana: 1.Alice(3.9), 2.Charlie(3.7), 3.Bob(3.2)
+
+                let third = document.getElementById('row-2'); // Bob (3.2) Default
+                let val = "3.2";
+
+                if (diana) {
+                    third = charlie; // Charlie becomes 3rd
+                    val = "3.7";
+                }
+
+                if (third) {
+                    third.style.backgroundColor = '#d1fae5';
+                    third.children[2].classList.add('font-bold', 'text-green-700', 'text-lg');
+                    status.textContent = `// Result: ${val} (${third.children[1].textContent})`;
+                    status.style.opacity = '1';
+                }
+            }
+        }
+
+        // --- Mobile Menu ---
+        function toggleMobileMenu() {
+            const menu = document.getElementById("mobile-menu");
+            if (menu.classList.contains("hidden")) {
+                menu.classList.remove("hidden");
+                menu.classList.add("flex");
+                document.body.style.overflow = "hidden";
+            } else {
+                menu.classList.add("hidden");
+                menu.classList.remove("flex");
+                document.body.style.overflow = "auto";
+            }
+        }
+
+        // Scroll Observer
+        const observer = new IntersectionObserver(entries => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add("active");
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.1 });
+
+        document.querySelectorAll("section").forEach(section => {
+            section.classList.add("section-reveal");
+            observer.observe(section);
+        });
+
+    </script>
+
+
+</body>
+
+</html>

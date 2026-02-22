@@ -1,0 +1,1391 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JavaScript</title>
+    <link rel="icon" type="image/svg+xml" href="../assests/undrlogo.svg">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Roboto+Mono:wght@400;500&display=swap');
+
+        /* Global Scrollbar */
+        ::-webkit-scrollbar {
+            width: 1px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #000;
+        }
+
+        :root {
+            /* Rams Palette - JS Variation */
+            --bg-color: #f4f4f4;
+            --card-bg: #ffffff;
+            --text-main: #111111;
+            --text-muted: #737373;
+            --accent: #F7DF1E;
+            /* Yellow-600 for contrast on light */
+            --accent-light: #F7DF1E;
+            /* Official JS Yellow */
+            --border: #e5e5e5;
+            --line: #d4d4d4;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            -webkit-font-smoothing: antialiased;
+            line-height: 1.5;
+        }
+
+        h1,
+        h2,
+        h3,
+        h4,
+        h5 {
+            font-weight: 600;
+            letter-spacing: -0.03em;
+            color: var(--text-main);
+        }
+
+        .mono {
+            font-family: 'Roboto Mono', monospace;
+        }
+
+        .rams-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        @media (min-width: 768px) {
+            .rams-card {
+                padding: 2rem;
+            }
+        }
+
+        .rams-label {
+            font-family: 'Inter', sans-serif;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+            margin-bottom: 1rem;
+            display: block;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.5rem 1.25rem;
+            font-size: 0.85rem;
+            font-weight: 500;
+            border-radius: 2px;
+            transition: all 0.1s ease;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            white-space: nowrap;
+        }
+
+        .btn-primary {
+            background-color: var(--accent);
+            color: #ffffff;
+            border: 1px solid var(--accent);
+            font-weight: 600;
+        }
+
+        .btn-primary:hover {
+            opacity: 0.9;
+        }
+
+        .btn-secondary {
+            background-color: transparent;
+            color: var(--text-main);
+            border: 1px solid #a3a3a3;
+        }
+
+        .btn-secondary:hover {
+            background-color: #e5e5e5;
+            border-color: #737373;
+        }
+
+        .nav-link {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            padding: 0.5rem 0;
+            display: block;
+            transition: color 0.2s;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            color: var(--text-main);
+            font-weight: 500;
+        }
+
+        .nav-link.active::before {
+            content: "• ";
+            color: var(--accent);
+        }
+
+        .mobile-nav-link {
+            font-size: 1.25rem;
+            font-weight: 500;
+            color: var(--text-main);
+            padding: 1rem 0;
+            border-bottom: 1px solid #e5e5e5;
+            display: block;
+        }
+
+        .divider {
+            height: 1px;
+            background-color: var(--border);
+            width: 100%;
+            margin: 3rem 0;
+        }
+
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        .thin-scrollbar::-webkit-scrollbar {
+            width: 1px;
+        }
+
+        .thin-scrollbar::-webkit-scrollbar-thumb {
+            background: #d4d4d4;
+        }
+
+        .section-reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 1s cubic-bezier(0.25, 1, 0.25, 1), transform 1s cubic-bezier(0.25, 1, 0.25, 1);
+        }
+
+        .section-reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Event Loop Visualizer Styles */
+        .component-box {
+            border: 1px solid var(--border);
+            background: white;
+            min-height: 120px;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            padding: 0.5rem;
+            overflow-y: auto;
+        }
+
+        .task-item {
+            font-size: 10px;
+            padding: 0.4rem;
+            background: #fef9c3;
+            border: 1px solid #fde047;
+            font-family: 'Roboto Mono', monospace;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        /* Event Loop Visualizer Styles */
+        .component-box {
+            border: 1px solid var(--border);
+            background: white;
+            min-height: 120px;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            padding: 0.5rem;
+            overflow-y: auto;
+        }
+
+        .task-item {
+            font-size: 10px;
+            padding: 0.4rem;
+            background: #fef9c3;
+            border: 1px solid #fde047;
+            font-family: 'Roboto Mono', monospace;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateY(5px);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        /* Code Block Styles */
+        pre {
+            background: #1e1e1e;
+            color: #abb2bf;
+            padding: 1rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            overflow-x: auto;
+            margin: 1rem 0;
+            line-height: 1.5;
+        }
+
+        /* Syntax Highlighting (One Dark inspired) */
+        .hl-kw {
+            color: #c678dd;
+        }
+
+        /* Keyword */
+        .hl-fn {
+            color: #61afef;
+        }
+
+        /* Function */
+        .hl-str {
+            color: #98c379;
+        }
+
+        /* String */
+        .hl-num {
+            color: #d19a66;
+        }
+
+        /* Number */
+        .hl-cm {
+            color: #5c6370;
+            font-style: italic;
+        }
+
+        /* Comment */
+        .hl-op {
+            color: #56b6c2;
+        }
+
+        /* Operator */
+        .hl-val {
+            color: #e5c07b;
+        }
+
+        /* Value/Built-in */
+    </style>
+</head>
+
+<body>
+
+    <div class="flex min-h-screen flex-col lg:flex-row">
+
+        <!-- Mobile Header -->
+        <header
+            class="lg:hidden fixed top-0 w-full bg-[#f4f4f4] border-b border-[#e5e5e5] z-[100] px-6 py-4 flex justify-between items-center h-16">
+            <div>
+                <h1 class="text-sm font-semibold tracking-wide uppercase text-black leading-tight">JavaScript</h1>
+            </div>
+            <button onclick="toggleMobileMenu()" class="text-black focus:outline-none p-2 rounded">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+            </button>
+        </header>
+
+        <!-- Mobile Menu Overlay -->
+        <div id="mobile-menu" class="fixed inset-0 bg-[#f4f4f4] z-[90] hidden flex-col pt-20 px-6 overflow-y-auto">
+            <nav class="flex flex-col">
+                <a href="#origins" class="mobile-nav-link" onclick="toggleMobileMenu()">The Origins</a>
+                <a href="#fundamentals" class="mobile-nav-link" onclick="toggleMobileMenu()">Fundamentals</a>
+                <a href="#data-structures" class="mobile-nav-link" onclick="toggleMobileMenu()">Objects & Arrays</a>
+                <a href="#engine" class="mobile-nav-link" onclick="toggleMobileMenu()">The Engine</a>
+                <a href="#functions" class="mobile-nav-link" onclick="toggleMobileMenu()">Functions & Logic</a>
+                <a href="#scopes" class="mobile-nav-link" onclick="toggleMobileMenu()">Scopes & Closures</a>
+                <a href="#dom" class="mobile-nav-link" onclick="toggleMobileMenu()">The DOM</a>
+                <a href="#async" class="mobile-nav-link" onclick="toggleMobileMenu()">Asynchronous JS</a>
+                <a href="#architecture" class="mobile-nav-link" onclick="toggleMobileMenu()">Event Loop & Modules</a>
+                <a href="#prototypes" class="mobile-nav-link" onclick="toggleMobileMenu()">OOP & Prototypes</a>
+                <a href="#modern" class="mobile-nav-link" onclick="toggleMobileMenu()">Modern Tooling</a>
+                <a href="#glossary" class="mobile-nav-link" onclick="toggleMobileMenu()">Glossary</a>
+                <a href="#quiz" class="mobile-nav-link border-b-0" onclick="toggleMobileMenu()">Knowledge Check</a>
+            </nav>
+        </div>
+
+        <!-- Sidebar -->
+        <aside
+            class="hidden lg:block w-64 fixed h-screen bg-[#f4f4f4] border-r border-[#e5e5e5] z-50 overflow-y-auto thin-scrollbar">
+            <div class="p-8 h-full flex flex-col justify-between">
+                <div>
+                    <a href="../index.html"
+                        class="inline-flex items-center gap-2 px-4 py-2 mb-8 text-[10px] font-mono uppercase tracking-wider text-gray-600 border border-gray-300 hover:bg-black hover:text-white hover:border-black transition-all duration-200">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                        </svg>
+                        Back to Home
+                    </a>
+                    <div class="mb-12">
+                        <h1 class="text-sm font-semibold tracking-wide uppercase text-black">JavaScript<br>The Web
+                            Engine</h1>
+                        <p class="text-[10px] text-gray-500 mt-1 uppercase tracking-wider">Dynamic Scripting</p>
+                    </div>
+
+                    <nav class="space-y-1">
+                        <a href="#origins" class="nav-link font-medium text-black">The Origins</a>
+                        <a href="#fundamentals" class="nav-link">Fundamentals</a>
+                        <a href="#data-structures" class="nav-link">Objects & Arrays</a>
+                        <a href="#engine" class="nav-link">The Engine</a>
+                        <a href="#functions" class="nav-link">Functions & Logic</a>
+                        <a href="#scopes" class="nav-link">Scopes & Closures</a>
+                        <a href="#dom" class="nav-link">The DOM</a>
+                        <a href="#async" class="nav-link">Asynchronous JS</a>
+                        <a href="#architecture" class="nav-link">Event Loop & Modules</a>
+                        <a href="#prototypes" class="nav-link">OOP & Prototypes</a>
+                        <a href="#modern" class="nav-link">Modern Tooling</a>
+                        <a href="#glossary" class="nav-link">Glossary</a>
+                        <div class="pt-4 pb-1 text-[10px] text-gray-400 font-bold uppercase tracking-wider">Assessment
+                        </div>
+                        <a href="#quiz" class="nav-link">Knowledge Check</a>
+                    </nav>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 lg:ml-64 bg-white w-full">
+            <div class="max-w-3xl mx-auto px-4 sm:px-8 py-24 lg:py-20">
+
+                <!-- Hero Section -->
+                <section id="intro" class="mb-16 md:mb-24">
+                    <h2 class="text-3xl md:text-5xl font-semibold mb-6 text-black tracking-tight leading-tight">
+                        The Physics of <br>Modern Interactions
+                    </h2>
+                    <p class="text-base md:text-lg text-[#555] max-w-xl font-light leading-relaxed mb-4">
+                        A deep dive into the world's most versatile language. From simple form validation to building
+                        complex server-side architectures, JavaScript powers the interactive web.
+                    </p>
+                    <p class="text-sm text-gray-500 max-w-lg leading-relaxed">
+                        This guide explores JavaScript not just as syntax, but as a <strong>runtime
+                            environment</strong>. We'll deconstruct how it handles memory, execution, and concurrency.
+                    </p>
+                </section>
+
+                <!-- 01. The Origins -->
+                <section id="origins" class="mb-20 md:mb-24">
+                    <span class="rams-label">01 / The Origins</span>
+                    <h3 class="text-xl font-medium mb-8">History & Evolution</h3>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-12">
+                        <!-- Main Narrative -->
+                        <div class="lg:col-span-2 space-y-6">
+                            <p class="text-sm text-gray-600 font-light leading-relaxed">
+                                Created in 1995 by <strong>Brendan Eich</strong> at Netscape in just 10 days, JavaScript
+                                was initially named Mocha, then LiveScript. It was designed to make the static web
+                                "alive."
+                            </p>
+
+                            <p
+                                class="text-[11px] text-gray-500 bg-blue-50/40 p-4 border-l-2 border-blue-200 leading-relaxed italic">
+                                <strong>The Name Trick:</strong> JavaScript has no relation to the Java language. It was
+                                named as a marketing tactic because Java was popular then. Think of it like
+                                <strong>"Grape" vs "Grapefruit"</strong>—completely different things sharing a name!
+                            </p>
+
+                            <p class="text-sm text-gray-600 font-light leading-relaxed">
+                                Following the 90s <strong>"Browser Wars"</strong> between Netscape and Microsoft, the
+                                language was formalized under the <strong>ECMAScript</strong> standard to ensure it
+                                worked the same everywhere. The 2015 "Modern Revolution" (ES6) transformed it into the
+                                enterprise-grade ecosystem we use today.
+                            </p>
+                        </div>
+
+                        <!-- Minimalist Timeline -->
+                        <div class="border-l border-gray-100 pl-8 space-y-8 relative">
+                            <div class="relative">
+                                <div
+                                    class="absolute -left-[37px] top-1 w-4 h-4 rounded-full bg-white border-2 border-accent">
+                                </div>
+                                <h4 class="text-[10px] font-bold uppercase tracking-widest text-accent mb-1">1997</h4>
+                                <p class="text-[11px] text-gray-500 font-light">First ECMAScript edition released.</p>
+                            </div>
+                            <div class="relative">
+                                <div
+                                    class="absolute -left-[37px] top-1 w-4 h-4 rounded-full bg-white border-2 border-gray-200">
+                                </div>
+                                <h4 class="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-1">2009</h4>
+                                <p class="text-[11px] text-gray-500 font-light">ES5: "Strict mode" and JSON support.</p>
+                            </div>
+                            <div class="relative">
+                                <div
+                                    class="absolute -left-[37px] top-1 w-4 h-4 rounded-full bg-white border-2 border-accent">
+                                </div>
+                                <h4 class="text-[10px] font-bold uppercase tracking-widest text-accent mb-1">2015+</h4>
+                                <p class="text-[11px] text-gray-500 font-light">The Modern Era: Classes, Modules, and
+                                    ES2024+.</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <div class="divider hidden md:block"></div>
+
+                <!-- 02. Fundamentals -->
+                <section id="fundamentals" class="mb-20 md:mb-24">
+                    <span class="rams-label">02 / Fundamentals</span>
+                    <h3 class="text-xl font-medium mb-4">Syntax, Variables & Control Flow</h3>
+                    <p class="text-sm text-gray-600 mb-8 font-light leading-relaxed">
+                        To a computer, a <strong>Variable</strong> is like a <strong>labeled box</strong>. You put a
+                        piece of data inside the box (like a number or a string of text) and slap a label on it so you
+                        can find it later.
+                    </p>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
+                        <div class="space-y-6">
+                            <div>
+                                <h4 class="text-sm font-bold mb-2">Variable Declaration</h4>
+                                <div class="space-y-2">
+                                    <div
+                                        class="flex justify-between items-center p-2 bg-gray-50 border border-gray-100 rounded">
+                                        <code class="text-xs font-bold text-gray-400">const</code>
+                                        <span class="text-[10px] text-gray-500">Block scoped, immutable binding.</span>
+                                    </div>
+                                    <div
+                                        class="flex justify-between items-center p-2 bg-gray-50 border border-gray-100 rounded">
+                                        <code class="text-xs font-bold text-gray-400">let</code>
+                                        <span class="text-[10px] text-gray-500">Block scoped, re-assignable.</span>
+                                    </div>
+                                    <div
+                                        class="flex justify-between items-center p-2 bg-gray-50 border border-gray-100 rounded opacity-50">
+                                        <code class="text-xs font-bold text-gray-400">var</code>
+                                        <span class="text-[10px] text-gray-500 italic">Function scoped, hoisted.
+                                            Avoid.</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div>
+                                <h4 class="text-sm font-bold mb-2">Operators</h4>
+                                <p class="text-xs text-gray-500 leading-relaxed mb-4">
+                                    Arithmetic (<code>+</code>, <code>-</code>, <code>*</code>, <code>/</code>), Logical
+                                    (<code>&&</code>, <code>||</code>, <code>!</code>), and Comparison (<code>===</code>
+                                    vs
+                                    <code>==</code>). Always prefer <strong>Strict Equality</strong> (<code>===</code>).
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="rams-card">
+                            <h4 class="text-[10px] uppercase tracking-widest text-gray-400 mb-4 font-bold italic">
+                                Control Flow</h4>
+                            <pre class="!m-0 text-[10px] leading-tight"><code><span class="hl-kw">if</span> (isUser) {
+  grantAccess();
+} <span class="hl-kw">else</span> {
+  deny();
+}
+
+<span class="hl-cm">// Ternary</span>
+isUser <span class="hl-op">?</span> grant() <span class="hl-op">:</span> deny();
+
+<span class="hl-cm">// Loops</span>
+<span class="hl-kw">for</span> (<span class="hl-kw">let</span> i <span class="hl-op">=</span> <span class="hl-num">0</span>; i <span class="hl-op">&lt;</span> <span class="hl-num">5</span>; i<span class="hl-op">++</span>) {
+  console.<span class="hl-fn">log</span>(i);
+}</code></pre>
+                        </div>
+                    </div>
+
+                    <div class="rams-card border-l-4 border-accent bg-yellow-50/30">
+                        <h4 class="text-xs font-bold mb-3 uppercase tracking-widest text-yellow-700">Deep Dive: The
+                            Temporal Dead Zone (TDZ)</h4>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                            <p class="text-[11px] text-gray-600 leading-relaxed">
+                                Unlike <code>var</code>, which is initialized with <code>undefined</code> when hoisted,
+                                <code>let</code> and <code>const</code> variables exist in a "Temporal Dead Zone" from
+                                the start of the block until their declaration is reached. Accessing them during this
+                                time results in a <code>ReferenceError</code>.
+                            </p>
+                            <pre class="!m-0 text-[9px] bg-gray-900 border-none"><code>{
+  console.<span class="hl-fn">log</span>(x); <span class="hl-cm">// ReferenceError! (TDZ)</span>
+  <span class="hl-kw">let</span> x <span class="hl-op">=</span> <span class="hl-num">10</span>;
+}</code></pre>
+                        </div>
+                    </div>
+                </section>
+
+                <div id="quiz-js-fundamentals" class="mb-20 md:mb-24"></div>
+                <div class="divider hidden md:block"></div>
+
+                <!-- 03. Data Structures -->
+                <section id="data-structures" class="mb-20 md:mb-24">
+                    <span class="rams-label">03 / Data Structures</span>
+                    <h3 class="text-xl font-medium mb-8">Objects and Arrays</h3>
+                    <p class="text-sm text-gray-600 mb-8 font-light">
+                        JavaScript is fundamentally built on top of objects. Think of an <strong>Array</strong> like a
+                        <strong>Shopping List</strong> (an ordered sequence of items) and an <strong>Object</strong>
+                        like a <strong>Contact Profile</strong> (specific pieces of information labeled with names like
+                        "email" or "phone").
+                    </p>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <div class="rams-card">
+                            <h4 class="text-xs font-bold mb-4 uppercase text-gray-400">Objects (Key-Value)</h4>
+                            <pre class="text-[10px]"><code><span class="hl-kw">const</span> user <span class="hl-op">=</span> {
+  name: <span class="hl-str">"Brendan"</span>,
+  role: <span class="hl-str">"Engineer"</span>,
+  <span class="hl-fn">greet</span>() {
+    <span class="hl-kw">return</span> <span class="hl-str">`Hi, ${<span class="hl-kw">this</span>.name}`</span>;
+  }
+};
+
+<span class="hl-cm">// Access</span>
+console.<span class="hl-fn">log</span>(user.name); 
+console.<span class="hl-fn">log</span>(user[<span class="hl-str">'role'</span>]);</code></pre>
+                        </div>
+                        <div class="rams-card">
+                            <h4 class="text-xs font-bold mb-4 uppercase text-gray-400">Arrays (Lists)</h4>
+                            <pre class="text-[10px]"><code><span class="hl-kw">const</span> tools <span class="hl-op">=</span> [<span class="hl-str">"Vite"</span>, <span class="hl-str">"React"</span>];
+tools.<span class="hl-fn">push</span>(<span class="hl-str">"Tailwind"</span>);
+
+<span class="hl-cm">// Transformation</span>
+<span class="hl-kw">const</span> upper <span class="hl-op">=</span> tools.<span class="hl-fn">map</span>((t) <span class="hl-op">=></span> 
+  t.<span class="hl-fn">toUpperCase</span>()
+);
+
+console.<span class="hl-fn">log</span>(tools.length); <span class="hl-cm">// 3</span></code></pre>
+                        </div>
+                    </div>
+
+                    <div class="p-6 bg-gray-50 border border-gray-200 mt-8">
+                        <h4 class="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-4">Under the Hood:
+                            Pass by Reference</h4>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                            <p class="text-[11px] text-gray-600 leading-relaxed font-light">
+                                In JS, primitives (Number, String) are passed by <strong>value</strong>, but Objects and
+                                Arrays are passed by <strong>reference</strong>. Assigning an object to a new variable
+                                doesn't copy the data; it copies the <em>pointer</em> to that data in the Memory Heap.
+                            </p>
+                            <pre class="!m-0 text-[10px] bg-white border border-gray-100"><code><span class="hl-kw">const</span> a <span class="hl-op">=</span> { val: <span class="hl-num">1</span> };
+<span class="hl-kw">const</span> b <span class="hl-op">=</span> a;
+b.val <span class="hl-op">=</span> <span class="hl-num">2</span>;
+console.<span class="hl-fn">log</span>(a.val); <span class="hl-cm">// 2 (Changed!)</span></code></pre>
+                        </div>
+                    </div>
+                </section>
+
+                <div class="divider hidden md:block"></div>
+
+                <!-- 04. The Engine -->
+                <section id="engine" class="mb-20 md:mb-24">
+                    <span class="rams-label">04 / The Engine</span>
+                    <h3 class="text-xl font-medium mb-8">How it Runs: V8 and The Runtime</h3>
+                    <p class="text-sm text-gray-600 mb-8 max-w-lg">
+                        JavaScript is a single-threaded language, meaning it can only do <strong>one thing at a
+                            time</strong>. Imagine a chef in a tiny kitchen with only one burner—they have to finish (or
+                        pause) one dish before starting another.
+                    </p>
+
+                    <div class="rams-card">
+                        <h4 class="text-sm font-bold mb-4 uppercase tracking-wider text-gray-400">Memory Heap & Call
+                            Stack</h4>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                            <div>
+                                <h5 class="text-xs font-bold mb-2">Memory Heap</h5>
+                                <p class="text-[10px] text-gray-500 leading-relaxed">
+                                    Where memory allocation happens. Objects, arrays, and variables are stored here in a
+                                    large, unstructured memory region.
+                                </p>
+                            </div>
+                            <div>
+                                <h5 class="text-xs font-bold mb-2">Call Stack</h5>
+                                <p class="text-[10px] text-gray-500 leading-relaxed">
+                                    Where code is executed. It follows LIFO (Last In, First Out). Each function call
+                                    creates a "Frame" on the stack.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <div class="p-6 border border-gray-100 bg-gray-50/50">
+                            <h4 class="text-[10px] font-bold uppercase tracking-widest text-accent mb-3">V8: JIT
+                                Compilation</h4>
+                            <p class="text-[11px] text-gray-500 leading-relaxed font-light">
+                                V8 uses <strong>Ignition</strong> to interpret byte code and <strong>TurboFan</strong>
+                                to optimize it. If a piece of code is "hot" (run many times), V8 compiles it directly to
+                                optimized machine code for near-native performance.
+                            </p>
+                        </div>
+                        <div class="p-6 border border-gray-100 bg-gray-50/50">
+                            <h4 class="text-[10px] font-bold uppercase tracking-widest text-accent mb-3">Garbage
+                                Collection</h4>
+                            <p class="text-[11px] text-gray-500 leading-relaxed font-light">
+                                JS manages memory automatically via the <strong>Mark-and-Sweep</strong> algorithm. The
+                                collector "marks" objects that are still reachable and "sweeps" those that aren't,
+                                freeing up heap space.
+                            </p>
+                        </div>
+                    </div>
+                </section>
+
+                <div id="quiz-js-engine" class="mb-20 md:mb-24"></div>
+                <div class="divider hidden md:block"></div>
+
+                <!-- 05. Functions & Logic -->
+                <section id="functions" class="mb-20 md:mb-24">
+                    <span class="rams-label">05 / Functions & Logic</span>
+                    <h3 class="text-xl font-medium mb-8">Declarations & Higher-Order Functions</h3>
+                    <p class="text-sm text-gray-600 mb-8 max-w-lg">
+                        Think of a <strong>Function</strong> like a <strong>Recipe</strong>. Instead of writing out
+                        "boil water, add pasta, wait 10 mins" every time you're hungry, you write it once as a "Make
+                        Pasta" recipe and just call it whenever you need it.
+                    </p>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+                        <div>
+                            <h4 class="text-[10px] uppercase tracking-widest text-gray-400 mb-4 font-bold">HOF Pattern
+                            </h4>
+                            <p class="text-xs text-gray-500 leading-relaxed mb-4">
+                                A Higher-Order Function (HOF) is any function that operates on other functions. Common
+                                examples include <code>map</code>, <code>filter</code>, and <code>reduce</code>.
+                            </p>
+                            <div class="p-4 bg-gray-50 border border-gray-100 rounded">
+                                <pre
+                                    class="!m-0 text-[10px]"><code><span class="hl-kw">function</span> <span class="hl-fn">multiplier</span>(factor) {
+  <span class="hl-kw">return</span> <span class="hl-kw">function</span>(num) {
+    <span class="hl-kw">return</span> num <span class="hl-op">*</span> factor;
+  };
+}
+
+<span class="hl-kw">const</span> double <span class="hl-op">=</span> <span class="hl-fn">multiplier</span>(<span class="hl-num">2</span>);
+console.<span class="hl-fn">log</span>(<span class="hl-fn">double</span>(<span class="hl-num">5</span>)); <span class="hl-cm">// 10</span></code></pre>
+                            </div>
+                        </div>
+                        <div class="space-y-4">
+                            <div class="rams-card">
+                                <h4 class="text-xs font-bold mb-2">Hoisting</h4>
+                                <p class="text-[10px] text-gray-500 italic">Declarations are moved to the top of their
+                                    scope by the compiler.</p>
+                                <pre class="text-[9px] mt-2"><code><span class="hl-fn">sayHi</span>(); <span class="hl-cm">// Works</span>
+<span class="hl-kw">function</span> <span class="hl-fn">sayHi</span>() { 
+  console.<span class="hl-fn">log</span>(<span class="hl-str">"Hi"</span>); 
+}</code></pre>
+                            </div>
+                            <div class="rams-card">
+                                <h4 class="text-xs font-bold mb-2">Arrow Functions</h4>
+                                <p class="text-[10px] text-gray-500 italic">Concise syntax + lexical 'this' binding.</p>
+                                <pre
+                                    class="text-[9px] mt-2"><code><span class="hl-kw">const</span> <span class="hl-fn">add</span> <span class="hl-op">=</span> (a, b) <span class="hl-op">=></span> a <span class="hl-op">+</span> b;</code></pre>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="p-6 bg-gray-50 border border-gray-100">
+                        <h4 class="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-4">Under the Hood:
+                            Declarations vs Expressions</h4>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                            <p class="text-[11px] text-gray-500 leading-relaxed font-light">
+                                <strong>Function Declarations</strong> are hoisted entirely, meaning they can be called
+                                before they are defined. <strong>Function Expressions</strong> (including Arrow
+                                functions) are not hoisted in the same way; they are treated as variable assignments and
+                                follow the TDZ rules of <code>let</code>/<code>const</code>.
+                            </p>
+                            <pre
+                                class="!m-0 text-[10px] bg-white"><code><span class="hl-fn">sum</span>(<span class="hl-num">1</span>,<span class="hl-num">2</span>); <span class="hl-cm">// Works</span>
+<span class="hl-kw">function</span> <span class="hl-fn">sum</span>(a,b) { <span class="hl-kw">return</span> a<span class="hl-op">+</span>b; }
+
+<span class="hl-fn">add</span>(<span class="hl-num">1</span>,<span class="hl-num">2</span>); <span class="hl-cm">// ReferenceError</span>
+<span class="hl-kw">const</span> add <span class="hl-op">=</span> (a,b) <span class="hl-op">=></span> a<span class="hl-op">+</span>b;</code></pre>
+                        </div>
+                    </div>
+                </section>
+
+                <div class="divider hidden md:block"></div>
+
+                <!-- 06. Scopes & Closures -->
+                <section id="scopes" class="mb-20 md:mb-24">
+                    <span class="rams-label">06 / Scopes & Closures</span>
+                    <h3 class="text-xl font-medium mb-8">Lexical Environment</h3>
+                    <p class="text-sm text-gray-600 mb-8">
+                        Scope is like a <strong>Glass House</strong>. If you're inside a room (a function), you can see
+                        out into the living room and the backyard (outer scopes). But people in the backyard can't see
+                        what's happening inside your tiny room!
+                    </p>
+
+                    <div class="rams-card">
+                        <div class="flex flex-col md:flex-row gap-8">
+                            <div class="flex-1">
+                                <h4 class="text-xs font-bold mb-3 uppercase text-gray-400">The Closure Pattern</h4>
+                                <pre><code><span class="hl-kw">function</span> <span class="hl-fn">outer</span>() {
+  <span class="hl-kw">let</span> count <span class="hl-op">=</span> <span class="hl-num">0</span>;
+  <span class="hl-kw">return</span> <span class="hl-kw">function</span> <span class="hl-fn">inner</span>() {
+    count<span class="hl-op">++</span>;
+    <span class="hl-kw">return</span> count;
+  };
+}
+
+<span class="hl-kw">const</span> counter <span class="hl-op">=</span> <span class="hl-fn">outer</span>();
+console.<span class="hl-fn">log</span>(<span class="hl-fn">counter</span>()); <span class="hl-cm">// 1</span>
+console.<span class="hl-fn">log</span>(<span class="hl-fn">counter</span>()); <span class="hl-cm">// 2</span></code></pre>
+                            </div>
+                            <div class="flex-1 flex flex-col justify-center">
+                                <div class="p-6 bg-yellow-50 border border-yellow-100 rounded text-center md:text-left">
+                                    <p class="text-[10px] font-bold text-yellow-700 mb-4 uppercase tracking-wider">Live
+                                        Sandbox</p>
+                                    <div class="flex flex-col sm:flex-row items-center gap-6">
+                                        <button onclick="updateClosureDemo()"
+                                            class="btn btn-primary text-[10px] py-2 px-6 w-full sm:w-auto">Invoke
+                                            counter()</button>
+                                        <div class="flex items-center gap-2">
+                                            <span class="text-[9px] font-bold text-gray-400 uppercase">Count:</span>
+                                            <span id="closure-val" class="mono text-2xl font-bold text-accent">0</span>
+                                        </div>
+                                    </div>
+                                    <p class="text-[9px] text-yellow-600 mt-4 italic leading-relaxed">The inner function
+                                        maintains its own private reference to the outer 'count' variable.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="rams-card bg-gray-900 border-none text-gray-100">
+                        <h4 class="text-[10px] font-bold uppercase tracking-widest text-gray-300 mb-4">Deep
+                            Dive: Environment Records</h4>
+                        <p class="text-[11px] leading-relaxed mb-4">
+                            Every execution context has an associated <strong>Lexical Environment</strong>. It consists
+                            of:
+                        </p>
+                        <ul class="list-disc pl-5 space-y-2 text-[10px]">
+                            <li><strong>Environment Record</strong>: Stores variable and function declarations.</li>
+                            <li><strong>Outer Environment Reference</strong>: A link to the parent scope (forming the
+                                Scope Chain).</li>
+                        </ul>
+                        <p class="text-[11px] mt-4 italic text-gray-400">
+                            When a variable is used, JS checks the current Environment Record. If not found, it follows
+                            the 'Outer' link to the next record, and so on, until it hits the Global Scope.
+                        </p>
+                    </div>
+                </section>
+
+                <div id="quiz-js-closures" class="mb-20 md:mb-24"></div>
+                <div class="divider hidden md:block"></div>
+
+                <!-- 07. The DOM -->
+                <section id="dom" class="mb-20 md:mb-24">
+                    <span class="rams-label">07 / The DOM</span>
+                    <h3 class="text-xl font-medium mb-8">Document Object Model</h3>
+                    <p class="text-sm text-gray-600 mb-8 max-w-lg">
+                        The DOM is like a <strong>Family Tree</strong> for your website. Every element (like a button or
+                        a paragraph) is either a <strong>parent</strong>, a <strong>child</strong>, or a
+                        <strong>sibling</strong> of another element. JavaScript lets you "talk" to these family members
+                        and change their styles or content.
+                    </p>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+                        <div class="rams-card">
+                            <h4 class="text-xs font-bold mb-4 uppercase text-gray-400">Interaction Logic</h4>
+                            <pre class="text-[10px]"><code><span class="hl-cm">// Selection</span>
+<span class="hl-kw">const</span> btn <span class="hl-op">=</span> document.<span class="hl-fn">querySelector</span>(<span class="hl-str">'.btn'</span>);
+
+<span class="hl-cm">// Events</span>
+btn.<span class="hl-fn">addEventListener</span>(<span class="hl-str">'click'</span>, (e) <span class="hl-op">=></span> {
+  e.target.textContent <span class="hl-op">=</span> <span class="hl-str">"Clicked!"</span>;
+});
+
+<span class="hl-cm">// Modification</span>
+<span class="hl-kw">const</span> box <span class="hl-op">=</span> document.<span class="hl-fn">createElement</span>(<span class="hl-str">'div'</span>);
+box.style.background <span class="hl-op">=</span> <span class="hl-str">"yellow"</span>;</code></pre>
+                        </div>
+                        <div class="flex items-center justify-center">
+                            <div class="text-center p-8 bg-gray-50 border border-dashed border-gray-200 rounded w-full">
+                                <p class="text-xs text-gray-400 italic">DOM nodes are live objects in your memory heap,
+                                    linked to the browser's rendering engine.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mt-4">
+                        <div class="p-6 border border-gray-100">
+                            <h4 class="text-[10px] font-bold uppercase tracking-widest text-accent mb-3">Event
+                                Propagation</h4>
+                            <p class="text-[11px] text-gray-500 leading-relaxed font-light">
+                                Events traverse the DOM in two phases: <strong>Capturing</strong> (Root down to target)
+                                and <strong>Bubbling</strong> (Target back up to root). By default, listeners trigger in
+                                the bubbling phase.
+                            </p>
+                        </div>
+                        <div class="p-6 border border-gray-100">
+                            <h4 class="text-[10px] font-bold uppercase tracking-widest text-accent mb-3">Event
+                                Delegation</h4>
+                            <p class="text-[11px] text-gray-500 leading-relaxed font-light">
+                                Instead of adding 100 listeners to 100 buttons, you add 1 listener to their
+                                <strong>parent</strong>. Because of bubbling, the event will reach the parent, where you
+                                can identify the target button using <code>event.target</code>.
+                            </p>
+                        </div>
+                    </div>
+                </section>
+
+                <div class="divider hidden md:block"></div>
+
+                <!-- 08. Asynchronous JS -->
+                <section id="async" class="mb-20 md:mb-24">
+                    <span class="rams-label">08 / Asynchronous Masterclass</span>
+                    <h3 class="text-xl font-medium mb-8">Promises & Async/Await</h3>
+                    <p class="text-sm text-gray-600 mb-8">
+                        Asynchronous JS is like <strong>Ordering at a Restaurant</strong>. You give your order to a
+                        <strong>Waiter</strong> (the JS Engine). The waiter doesn't stand still at your table waiting
+                        for the chef to cook; they go serve other people. When your food is ready, they bring it back to
+                        you!
+                    </p>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+                        <div class="rams-card">
+                            <h4 class="text-xs font-bold mb-3 uppercase text-gray-400">Promise State</h4>
+                            <div class="space-y-2 mt-4">
+                                <div class="flex items-center gap-2 p-2 bg-blue-50 border border-blue-100 rounded">
+                                    <div class="w-2 h-2 rounded-full bg-blue-400 animate-pulse"></div>
+                                    <span class="text-[10px] mono">Pending</span>
+                                </div>
+                                <div class="flex items-center gap-2 p-2 bg-green-50 border border-green-100 rounded">
+                                    <div class="w-2 h-2 rounded-full bg-green-400"></div>
+                                    <span class="text-[10px] mono">Fulfilled (Resolved)</span>
+                                </div>
+                                <div class="flex items-center gap-2 p-2 bg-red-50 border border-red-100 rounded">
+                                    <div class="w-2 h-2 rounded-full bg-red-400"></div>
+                                    <span class="text-[10px] mono">Rejected</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="rams-card">
+                            <h4 class="text-xs font-bold mb-3 uppercase text-gray-400">Modern Pattern</h4>
+                            <pre class="text-[10px]"><code><span class="hl-kw">async</span> <span class="hl-kw">function</span> <span class="hl-fn">fetchData</span>() {
+  <span class="hl-kw">try</span> {
+    <span class="hl-kw">const</span> res <span class="hl-op">=</span> <span class="hl-kw">await</span> api.<span class="hl-fn">call</span>();
+    console.<span class="hl-fn">log</span>(res);
+  } <span class="hl-kw">catch</span> (err) {
+    console.<span class="hl-fn">error</span>(err);
+  }
+}</code></pre>
+                        </div>
+                    </div>
+
+                    <h4 id="event-loop" class="text-sm font-medium mb-6">The Event Loop Dynamics</h4>
+                    <p class="text-xs text-gray-500 mb-6">
+                        The Event Loop continuously monitors the Call Stack. If empty, it moves callbacks from the Task
+                        Queue (Macrotasks) and Microtask Queue (Promises) into the stack.
+                    </p>
+
+                    <div class="rams-card">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                            <div>
+                                <span class="text-[9px] font-bold uppercase text-gray-400 tracking-widest block mb-2">1.
+                                    Call Stack</span>
+                                <div id="v-stack" class="component-box border border-gray-100 p-2 min-h-[120px]"></div>
+                            </div>
+                            <div>
+                                <span class="text-[9px] font-bold uppercase text-gray-400 tracking-widest block mb-2">2.
+                                    Web APIs</span>
+                                <div id="v-apis" class="component-box border border-gray-100 p-2 min-h-[120px]"></div>
+                            </div>
+                            <div>
+                                <span class="text-[9px] font-bold uppercase text-gray-400 tracking-widest block mb-2">3.
+                                    Task Queue</span>
+                                <div id="v-queue" class="component-box border border-gray-100 p-2 min-h-[120px]"></div>
+                            </div>
+                            <div
+                                class="flex flex-col items-center justify-center p-4 bg-gray-50 rounded border border-dashed border-gray-200">
+                                <span class="text-[9px] font-bold uppercase text-gray-400 tracking-widest mb-3">Event
+                                    Loop</span>
+                                <div
+                                    class="w-12 h-12 border-2 border-dashed border-accent rounded-full flex items-center justify-center">
+                                    <svg class="w-6 h-6 animate-spin text-accent" fill="none" viewBox="0 0 24 24"
+                                        stroke="currentColor">
+                                        <path
+                                            d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                                            stroke-width="2" />
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+                        <button onclick="simulateEventLoop()" class="btn btn-secondary w-full text-[10px] py-3">Simulate
+                            setTimeout(() => {...}, 2000)</button>
+                    </div>
+                </section>
+
+                <div class="divider hidden md:block"></div>
+
+                <!-- 09. Event Loop & Architecture -->
+                <section id="architecture" class="mb-20 md:mb-24">
+                    <span class="rams-label">09 / Architecture</span>
+                    <h3 class="text-xl font-medium mb-8">Modules & Execution Order</h3>
+                    <p class="text-sm text-gray-600 mb-8 max-w-lg">
+                        Modern JS applications are built using **ES Modules**. This ensures a clear dependency graph and
+                        scoped variables by default.
+                    </p>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+                        <div class="rams-card">
+                            <h4 class="text-xs font-bold mb-4 uppercase text-gray-400">ES Modules (ESM)</h4>
+                            <pre class="text-[10px]"><code><span class="hl-cm">// utils.js</span>
+<span class="hl-kw">export</span> <span class="hl-kw">const</span> log <span class="hl-op">=</span> (msg) <span class="hl-op">=></span> console.<span class="hl-fn">log</span>(msg);
+
+<span class="hl-cm">// main.js</span>
+<span class="hl-kw">import</span> { log } <span class="hl-kw">from</span> <span class="hl-str">'./utils.js'</span>;
+<span class="hl-fn">log</span>(<span class="hl-str">"Hello Modules"</span>);</code></pre>
+                        </div>
+                        <div class="rams-card bg-gray-50 border-gray-200">
+                            <h4 class="text-[10px] uppercase tracking-widest text-gray-400 mb-4 font-bold">Micro vs
+                                Macro</h4>
+                            <div class="space-y-3">
+                                <div class="p-2 bg-white border border-gray-100 rounded">
+                                    <p class="text-[10px]"><span class="font-bold text-accent">Microtasks:</span>
+                                        Promises, queueMicrotask (runs first).</p>
+                                </div>
+                                <div class="p-2 bg-white border border-gray-100 rounded">
+                                    <p class="text-[10px]"><span class="font-bold text-gray-400">Macrotasks:</span>
+                                        setTimeout, setInterval, I/O.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="rams-card border-l-4 border-gray-800 bg-gray-50">
+                        <h4 class="text-xs font-bold mb-3 uppercase tracking-widest text-black">Under the Hood: The
+                            Priority Paradox</h4>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                            <p class="text-[11px] text-gray-600 leading-relaxed">
+                                The Event Loop handles Microtasks immediately after the current script finish and before
+                                the next Macrotask. This means a <code>Promise.resolve()</code> will ALWAYS execute
+                                before a <code>setTimeout(..., 0)</code>, even if the timer is technically "ready".
+                            </p>
+                            <pre class="!m-0 text-[10px] bg-white"><code>setTimeout(() <span class="hl-op">=></span> console.<span class="hl-fn">log</span>(<span class="hl-str">'Macrotask'</span>), <span class="hl-num">0</span>);
+Promise.<span class="hl-fn">resolve</span>().<span class="hl-fn">then</span>(() <span class="hl-op">=></span> console.<span class="hl-fn">log</span>(<span class="hl-str">'Microtask'</span>));
+
+<span class="hl-cm">// Output:</span>
+<span class="hl-cm">// 1. Microtask</span>
+<span class="hl-cm">// 2. Macrotask</span></code></pre>
+                        </div>
+                    </div>
+                </section>
+
+                <div class="divider hidden md:block"></div>
+                <section id="prototypes" class="mb-20 md:mb-24">
+                    <span class="rams-label">10 / OOP & Prototypes</span>
+                    <h3 class="text-xl font-medium mb-8">Prototypal Inheritance</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+                        <div class="rams-card">
+                            <p class="text-sm text-gray-600 mb-4">
+                                OOP is like using a <strong>Blueprint</strong> to build <strong>Houses</strong>. The
+                                Class is the blueprint (the plan), and the Objects are the actual houses built from that
+                                plan. Each house can have different colors, but they all follow the same structure.
+                            </p>
+                            <pre class="text-[10px]"><code><span class="hl-kw">const</span> animal <span class="hl-op">=</span> { <span class="hl-fn">eat</span>: <span class="hl-num">true</span> };
+<span class="hl-kw">const</span> dog <span class="hl-op">=</span> Object.<span class="hl-fn">create</span>(animal);
+console.<span class="hl-fn">log</span>(dog.eat); <span class="hl-cm">// true (inherited)</span></code></pre>
+                        </div>
+                        <div class="rams-card">
+                            <h4 class="text-xs font-bold mb-4 uppercase text-gray-400">Class Syntax (ES6)</h4>
+                            <pre class="text-[10px]"><code><span class="hl-kw">class</span> User {
+  <span class="hl-fn">constructor</span>(name) { <span class="hl-kw">this</span>.name <span class="hl-op">=</span> name; }
+  <span class="hl-fn">sayHi</span>() { console.<span class="hl-fn">log</span>(<span class="hl-kw">this</span>.name); }
+}</code></pre>
+                        </div>
+                    </div>
+
+                    <div class="p-6 bg-gray-50 border border-gray-200">
+                        <h4 class="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-4">Under the Hood:
+                            __proto__ vs prototype</h4>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                            <p class="text-[11px] text-gray-500 leading-relaxed font-light">
+                                Many developers confuse <code>prototype</code> and <code>__proto__</code>. The
+                                <code>prototype</code> property exists only on <strong>Constructor Functions</strong>
+                                (and classes) and is the object that will be assigned as <code>__proto__</code> to all
+                                instances created by it. <code>__proto__</code> is the property on
+                                <strong>Instances</strong> that actually points to their prototype in the chain.
+                            </p>
+                            <pre
+                                class="!m-0 text-[10px] bg-white border border-gray-100"><code><span class="hl-kw">function</span> <span class="hl-fn">User</span>() {}
+<span class="hl-kw">const</span> me <span class="hl-op">=</span> <span class="hl-kw">new</span> <span class="hl-fn">User</span>();
+
+console.<span class="hl-fn">log</span>(me.__proto__ <span class="hl-op">===</span> User.prototype); <span class="hl-cm">// true</span></code></pre>
+                        </div>
+                    </div>
+                </section>
+
+                <div id="quiz-js-oop" class="mb-20 md:mb-24"></div>
+                <div class="divider"></div>
+
+                <section id="modern" class="mb-20 md:mb-24">
+                    <span class="rams-label">11 / Modern Tooling</span>
+                    <h3 class="text-xl font-medium mb-8">ES2024+ Features</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="p-4 border border-gray-100 rounded">
+                            <h4 class="text-xs font-bold mb-2">Destructuring</h4>
+                            <pre
+                                class="!m-0 text-[10px] font-mono"><code><span class="hl-kw">const</span> { name, age } <span class="hl-op">=</span> user;
+<span class="hl-kw">const</span> [first, <span class="hl-op">...</span>rest] <span class="hl-op">=</span> arr;</code></pre>
+                        </div>
+                        <div class="p-4 border border-gray-100 rounded">
+                            <h4 class="text-xs font-bold mb-2">Nullish & Optional</h4>
+                            <pre
+                                class="!m-0 text-[10px] font-mono"><code><span class="hl-cm">// Nullish Coalescing</span>
+<span class="hl-kw">const</span> val <span class="hl-op">=</span> input <span class="hl-op">??</span> <span class="hl-str">'default'</span>;
+
+<span class="hl-cm">// Optional Chaining</span>
+<span class="hl-kw">const</span> city <span class="hl-op">=</span> user<span class="hl-op">?</span>.address<span class="hl-op">?</span>.city;</code></pre>
+                        </div>
+                        <div class="p-4 border-l-4 border-accent bg-gray-50 md:col-span-2 mt-4">
+                            <h4 class="text-xs font-bold mb-2 uppercase tracking-widest">The Edge of ES2024</h4>
+                            <p class="text-[10px] text-gray-500 leading-relaxed mb-4">
+                                Latest additions include <strong>Top-level await</strong> (using await outside async
+                                functions in modules) and new static methods like <code>Object.groupBy()</code> for
+                                easier
+                                data categorization.
+                            </p>
+                            <pre
+                                class="!m-0 text-[10px]"><code><span class="hl-cm">// Object.groupBy()</span>
+<span class="hl-kw">const</span> inventory <span class="hl-op">=</span> [
+  { name: <span class="hl-str">"apples"</span>, type: <span class="hl-str">"fruit"</span> },
+  { name: <span class="hl-str">"carrots"</span>, type: <span class="hl-str">"veg"</span> }
+];
+<span class="hl-kw">const</span> result <span class="hl-op">=</span> Object.<span class="hl-fn">groupBy</span>(inventory, ({ type }) <span class="hl-op">=></span> type);</code></pre>
+                        </div>
+                    </div>
+                </section>
+
+                <div class="divider hidden md:block"></div>
+                <section id="glossary" class="mb-20 md:mb-24">
+                    <span class="rams-label">12 / Glossary</span>
+                    <h3 class="text-xl font-medium mb-8">Key Terms & Definitions</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="p-4 border border-gray-100 rounded">
+                            <h4 class="text-xs font-bold mb-1 uppercase tracking-wider text-accent">Closure</h4>
+                            <p class="text-[11px] text-gray-500 leading-relaxed">A function that "remembers" its lexical
+                                environment even after the outer function has finished executing.</p>
+                        </div>
+                        <div class="p-4 border border-gray-100 rounded">
+                            <h4 class="text-xs font-bold mb-1 uppercase tracking-wider text-accent">Hoisting</h4>
+                            <p class="text-[11px] text-gray-500 leading-relaxed">The behavior where variable and
+                                function declarations are moved to the top of their scope by the compiler.</p>
+                        </div>
+                        <div class="p-4 border border-gray-100 rounded">
+                            <h4 class="text-xs font-bold mb-1 uppercase tracking-wider text-accent">Event Loop</h4>
+                            <p class="text-[11px] text-gray-500 leading-relaxed">The runtime mechanism that coordinates
+                                the execution of code, processing events, and executing queued sub-tasks.</p>
+                        </div>
+                        <div class="p-4 border border-gray-100 rounded">
+                            <h4 class="text-xs font-bold mb-1 uppercase tracking-wider text-accent">Prototype</h4>
+                            <p class="text-[11px] text-gray-500 leading-relaxed">An object from which other objects
+                                inherit properties. All JS objects have a prototype reference.</p>
+                        </div>
+                        <div class="p-4 border border-gray-100 rounded">
+                            <h4 class="text-xs font-bold mb-1 uppercase tracking-wider text-accent">Microtask Queue</h4>
+                            <p class="text-[11px] text-gray-500 leading-relaxed">A specific queue for high-priority
+                                tasks like Promise callbacks (<code>.then</code>). Higher priority than the Task Queue.
+                            </p>
+                        </div>
+                        <div class="p-4 border border-gray-100 rounded">
+                            <h4 class="text-xs font-bold mb-1 uppercase tracking-wider text-accent">LIFO / FIFO</h4>
+                            <p class="text-[11px] text-gray-500 leading-relaxed">LIFO (Last-In, First-Out) governs the
+                                <strong>Call Stack</strong>. FIFO (First-In, First-Out) governs the <strong>Task
+                                    Queue</strong>.
+                            </p>
+                        </div>
+                    </div>
+                </section>
+
+                <div class="divider hidden md:block"></div>
+
+                <!-- 13. Knowledge Check -->
+                <section id="quiz" class="mb-16 md:mb-20 lg:mb-24">
+                    <span class="rams-label">13 / Knowledge Check</span>
+                    <h3 class="text-xl font-medium mb-8">Test Your Knowledge</h3>
+                    <div id="quiz-container" class="rams-card">
+                        <!-- Quiz loads here -->
+                    </div>
+                </section>
+
+                <section id="certificate" class="mb-20 md:mb-24 hidden">
+                    <span class="rams-label">Certification</span>
+                    <h3 class="text-xl font-medium mb-6">Completion Certificate</h3>
+                    <div class="rams-card !p-0 overflow-hidden">
+                        <div class="p-6 md:p-8">
+                            <div class="flex flex-col md:flex-row gap-8 items-start">
+                                <div class="w-full md:w-1/3 space-y-4">
+                                    <p class="text-sm text-gray-600">Enter your name to generate your certificate.</p>
+                                    <input type="text" id="cert-name"
+                                        class="w-full border border-gray-300 p-2 font-mono text-sm focus:border-black outline-none"
+                                        placeholder="Brendan Eich">
+                                    <p id="cert-error" class="text-red-500 text-xs mt-2 hidden"></p>
+                                    <button onclick="generateCert()" class="btn btn-primary w-full">Generate
+                                        Certificate</button>
+                                    <button onclick="downloadCert()" id="btn-download"
+                                        class="btn btn-secondary w-full hidden">Download PNG</button>
+                                </div>
+                                <div
+                                    class="w-full md:w-2/3 bg-gray-50 border border-gray-200 p-4 flex items-center justify-center">
+                                    <canvas id="cert-canvas" class="w-full shadow-lg bg-white"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="bg-gray-50 px-6 py-3 border-t border-gray-100 text-center">
+                            <p class="text-[10px] text-gray-400 italic">
+                                This certificate confirms successful completion of learning and assessment on this
+                                platform
+                                and is not an accredited or government-recognized qualification.
+                            </p>
+                        </div>
+                    </div>
+                </section>
+
+                <footer class="w-full mt-12 mb-12">
+                    <div class="border-t border-gray-200 pt-8 flex justify-between items-center">
+                        <span class="text-[10px] mono uppercase text-gray-400">Undrstanding</span>
+                        <span class="text-[10px] mono uppercase text-gray-400">For Humans, From Humans</span>
+                    </div>
+                </footer>
+
+            </div>
+        </main>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/script.js"></script>
+    <script>
+        // --- Mobile Menu ---
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobile-menu');
+            menu.classList.toggle('hidden');
+            menu.classList.toggle('flex');
+            document.body.classList.toggle('overflow-hidden');
+        }
+
+        // --- Closure Demo ---
+        let closureCount = 0;
+        function updateClosureDemo() {
+            closureCount++;
+            document.getElementById('closure-val').textContent = closureCount;
+        }
+
+        // --- Event Loop Visualizer ---
+        async function simulateEventLoop() {
+            const stack = document.getElementById('v-stack');
+            const apis = document.getElementById('v-apis');
+            const queue = document.getElementById('v-queue');
+
+            const add = (target, text) => {
+                const el = document.createElement('div');
+                el.className = 'task-item';
+                el.textContent = text;
+                target.appendChild(el);
+                return el;
+            };
+
+            // 1. setTimeout on Stack
+            const call = add(stack, 'setTimeout(...)');
+            await new Promise(r => setTimeout(r, 800));
+            call.remove();
+
+            // 2. To Web APIs
+            const apiTask = add(apis, 'Timer (2s)');
+            await new Promise(r => setTimeout(r, 2000));
+            apiTask.remove();
+
+            // 3. To Task Queue
+            const queueTask = add(queue, 'Callback()');
+            await new Promise(r => setTimeout(r, 1000));
+
+            // 4. Back to Stack
+            queueTask.remove();
+            const finalCall = add(stack, 'Callback()');
+            await new Promise(r => setTimeout(r, 800));
+            finalCall.remove();
+        }
+
+        // --- Scroll Reveal ---
+        const revealObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('active');
+                    revealObserver.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.1 });
+
+        // --- Active Nav Sync ---
+        const navObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const id = entry.target.getAttribute('id');
+                    document.querySelectorAll('.nav-link, .mobile-nav-link').forEach(link => {
+                        link.classList.toggle('active', link.getAttribute('href') === `#${id}`);
+                    });
+                }
+            });
+        }, { threshold: 0.5 });
+
+        document.querySelectorAll('section').forEach(s => {
+            s.classList.add('section-reveal');
+            revealObserver.observe(s);
+            navObserver.observe(s);
+        });
+
+        // --- Init Quizzes ---
+        document.addEventListener('DOMContentLoaded', () => {
+            new InlineQuiz('quiz-js-fundamentals', {
+                question: "Which keyword allows variable re-assignment but is restricted to block scope?",
+                options: ["var", "let", "const", "external"],
+                answer: 1,
+                explanation: "'let' allows re-assignment but is block-scoped, unlike 'var' which is function-scoped."
+            });
+
+            new InlineQuiz('quiz-js-data', {
+                question: "How do you access the last element of an array 'arr' dynamically?",
+                options: ["arr[0]", "arr[arr.length]", "arr[arr.length - 1]", "arr.last()"],
+                answer: 2,
+                explanation: "Array indices are 0-based, so the last element is at length - 1."
+            });
+
+            new InlineQuiz('quiz-js-engine', {
+                question: "Which component of the JS Engine handles memory allocation for objects?",
+                options: ["Call Stack", "Web APIs", "Memory Heap", "Event Loop"],
+                answer: 2,
+                explanation: "The Memory Heap is a large, unstructured region where variables, objects, and arrays are allocated memory."
+            });
+
+            new InlineQuiz('quiz-js-closures', {
+                question: "What is a closure in JavaScript?",
+                options: ["A way to close a browser tab", "A function combined with its lexical environment", "A private class method", "The end of a code block"],
+                answer: 1,
+                explanation: "A closure gives you access to an outer function's scope from an inner function, 'closing over' variables."
+            });
+
+            new InlineQuiz('quiz-js-dom', {
+                question: "Which method is used to listen for a user interaction like a click?",
+                options: ["document.listen()", "element.addEventListener()", "window.onClick()", "element.attachListener()"],
+                answer: 1,
+                explanation: "addEventListener() is the standard way to register event handlers on DOM elements."
+            });
+
+            new InlineQuiz('quiz-js-oop', {
+                question: "What is the primary mechanism JS uses for inheritance?",
+                options: ["Classical Inheritance", "Prototypal Inheritance", "Function Cloning", "Memory Injection"],
+                answer: 1,
+                explanation: "JavaScript uses a prototype-based model where objects inherit properties from other objects."
+            });
+
+            const questions = [
+                {
+                    question: "Who created JavaScript in 1995 while working at Netscape?",
+                    options: ["Tim Berners-Lee", "Brendan Eich", "James Gosling", "Guido van Rossum"],
+                    answer: 1
+                },
+                {
+                    question: "Which component follows LIFO for function execution?",
+                    options: ["Memory Heap", "Task Queue", "Call Stack", "Libuv"],
+                    answer: 2
+                },
+                {
+                    question: "What happens to variables preserved in a closure's lexical environment?",
+                    options: ["Garbage collected", "Stored in heap and remembered", "Moved to stack", "Deleted on function return"],
+                    answer: 1
+                },
+                {
+                    question: "Where do microtasks (Promises) go after being finalized?",
+                    options: ["Task Queue", "Web APIs", "Microtask Queue", "Event Loop"],
+                    answer: 2
+                },
+                {
+                    question: "What is the 'this' context in an arrow function defined globally?",
+                    options: ["The function itself", "The global object (lexical)", "undefined", "null"],
+                    answer: 1
+                },
+                {
+                    question: "Which operator checks for both value and type equality?",
+                    options: ["=", "==", "===", "!="],
+                    answer: 2
+                },
+                {
+                    question: "Which mechanism allows accessing a variable before its declaration line?",
+                    options: ["Closures", "Hoisting", "Scoping", "Binding"],
+                    answer: 1
+                },
+                {
+                    question: "What is the result of 'Object.prototype.__proto__'?",
+                    options: ["null", "Object", "undefined", "Exception"],
+                    answer: 0
+                },
+                {
+                    question: "Which ES6 feature gathers remaining arguments into an array?",
+                    options: ["Spread", "Rest parameter", "Destructuring", "Map"],
+                    answer: 1
+                },
+                {
+                    question: "In the DOM, which property represents the inner text content of an element?",
+                    options: ["innerText", "textContent", "value", "htmlContent"],
+                    answer: 1
+                }
+            ];
+
+            new QuizManager('quiz-container', questions, () => {
+                document.getElementById('certificate').classList.remove('hidden');
+                document.getElementById('certificate').scrollIntoView({ behavior: 'smooth' });
+            });
+        });
+
+        // --- Cert Logic ---
+        const certGen = new CertificateGenerator('cert-canvas', 'JavaScript');
+        function generateCert() {
+            const nameInput = document.getElementById('cert-name');
+            const errorMsg = document.getElementById('cert-error');
+            const name = nameInput.value.trim();
+            const nameRegex = /^[a-zA-Z\s\-\.'’]+$/;
+
+            // Reset error state
+            errorMsg.classList.add('hidden');
+            nameInput.classList.remove('border-red-500');
+
+            if (!name) {
+                errorMsg.textContent = "Please enter your name.";
+                errorMsg.classList.remove('hidden');
+                nameInput.classList.add('border-red-500');
+                return;
+            }
+
+            if (name.length < 3 || name.length > 35) {
+                errorMsg.textContent = "Name must be between 3 and 35 characters.";
+                errorMsg.classList.remove('hidden');
+                nameInput.classList.add('border-red-500');
+                return;
+            }
+
+            if (!nameRegex.test(name)) {
+                errorMsg.textContent = "Name cannot contain numbers or special characters.";
+                errorMsg.classList.remove('hidden');
+                nameInput.classList.add('border-red-500');
+                return;
+            }
+
+            certGen.generate(name);
+            document.getElementById('btn-download').classList.remove('hidden');
+        }
+        function downloadCert() {
+            certGen.download('JS_Certificate.png');
+        }
+    </script>
+</body>
+
+</html>

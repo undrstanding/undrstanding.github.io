@@ -1,0 +1,1761 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UI/UX Design</title>
+    <link rel="icon" type="image/svg+xml" href="../assests/undrlogo.svg">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Roboto+Mono:wght@400;500&display=swap');
+
+        /* Global Scrollbar */
+        ::-webkit-scrollbar {
+            width: 1px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #000;
+        }
+
+        :root {
+            /* Rams Palette */
+            --bg-color: #f4f4f4;
+            --card-bg: #ffffff;
+            --text-main: #111111;
+            --text-muted: #737373;
+            /* Colors */
+            --accent: #6594B1;
+            /* Requested Accent */
+            --accent-light: #e0f0fa;
+            /* Light Blue */
+            --compare: #eab308;
+            --compare-light: #fef9c3;
+            --border: #e5e5e5;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            -webkit-font-smoothing: antialiased;
+            line-height: 1.6;
+            overflow-x: hidden;
+            max-width: 100vw;
+        }
+
+        h1,
+        h2,
+        h3,
+        h4,
+        h5 {
+            font-weight: 600;
+            letter-spacing: -0.02em;
+            color: var(--text-main);
+        }
+
+        p {
+            color: #404040;
+        }
+
+        .mono {
+            font-family: 'Roboto Mono', monospace;
+        }
+
+        /* Industrial Grid Layout */
+        .rams-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            transition: all 0.3s ease;
+        }
+
+        .rams-card:hover {
+            border-color: #a3a3a3;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        }
+
+        @media (min-width: 768px) {
+            .rams-card {
+                padding: 2.5rem;
+            }
+        }
+
+        .rams-label {
+            font-family: 'Inter', sans-serif;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        /* Controls */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.5rem 1.25rem;
+            font-size: 0.85rem;
+            font-weight: 500;
+            border-radius: 2px;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            white-space: nowrap;
+        }
+
+        .btn-primary {
+            background-color: var(--accent);
+            color: white;
+            border: 1px solid var(--accent);
+        }
+
+        .btn-primary:hover {
+            background-color: #4a7591;
+        }
+
+        .btn-secondary {
+            background-color: transparent;
+            color: var(--text-main);
+            border: 1px solid #a3a3a3;
+        }
+
+        .btn-secondary:hover {
+            background-color: #f0f0f0;
+            border-color: #555;
+        }
+
+        .btn-ghost {
+            color: var(--text-muted);
+        }
+
+        .btn-ghost:hover {
+            color: var(--text-main);
+            text-decoration: underline;
+        }
+
+        /* Nav */
+        .nav-link {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            padding: 0.5rem 0;
+            display: block;
+            transition: color 0.2s;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            color: var(--text-main);
+            font-weight: 500;
+        }
+
+        .nav-link.active::before {
+            content: "• ";
+            color: var(--accent);
+        }
+
+        /* Animation */
+        .section-reveal {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+        }
+
+        .section-reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Deep Dive Box */
+        .deep-dive {
+            background-color: #f9fafb;
+            border: 1px solid #e5e5e5;
+            padding: 1.5rem;
+            margin-top: 1.5rem;
+            font-size: 0.9rem;
+            line-height: 1.7;
+            color: #4b5563;
+        }
+
+        .deep-dive h4 {
+            color: #111;
+            font-weight: 600;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .deep-dive h4::before {
+            content: "";
+            display: inline-block;
+            width: 4px;
+            height: 4px;
+            background: var(--accent);
+            border-radius: 50%;
+        }
+
+        /* Wireframe Elements */
+        .wf-card {
+            background: #fff;
+            border: 1px dashed #d4d4d4;
+        }
+
+        .wf-card.active {
+            border-style: solid;
+            border-color: var(--accent);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="flex min-h-screen flex-col lg:flex-row">
+
+        <!-- Mobile Header -->
+        <header
+            class="lg:hidden fixed top-0 w-full bg-[#f4f4f4] border-b border-[#e5e5e5] z-[100] px-6 py-4 flex justify-between items-center h-16">
+            <div>
+                <h1 class="text-sm font-semibold tracking-wide uppercase text-black leading-tight">UI/UX<br>Design</h1>
+            </div>
+            <button onclick="toggleMobileMenu()" class="text-black focus:outline-none p-2 rounded">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+            </button>
+        </header>
+
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="fixed inset-0 bg-[#f4f4f4] z-[90] hidden flex-col pt-20 px-6 overflow-y-auto">
+            <nav class="flex flex-col">
+                <span class="text-[10px] text-gray-400 font-bold uppercase tracking-wider px-0 py-2">01.
+                    Definitions</span>
+                <a href="#definitions" class="nav-link text-black" onclick="toggleMobileMenu()">UI vs UX</a>
+
+                <span class="text-[10px] text-gray-400 font-bold uppercase tracking-wider px-0 py-2 mt-4">02.
+                    Methodology</span>
+                <a href="#process" class="nav-link text-black" onclick="toggleMobileMenu()">Design Process</a>
+                <a href="#research" class="nav-link text-black" onclick="toggleMobileMenu()">User Research</a>
+                <a href="#ia" class="nav-link text-black" onclick="toggleMobileMenu()">Information Architecture</a>
+
+                <span class="text-[10px] text-gray-400 font-bold uppercase tracking-wider px-0 py-2 mt-4">03. Visual
+                    Rules</span>
+                <a href="#composition" class="nav-link text-black" onclick="toggleMobileMenu()">Visual Composition</a>
+
+                <span class="text-[10px] text-gray-400 font-bold uppercase tracking-wider px-0 py-2 mt-4">04.
+                    Concepts</span>
+                <a href="#wireframing" class="nav-link text-black" onclick="toggleMobileMenu()">Wireframing</a>
+                <a href="#color" class="nav-link text-black" onclick="toggleMobileMenu()">Color Theory</a>
+                <a href="#typography" class="nav-link text-black" onclick="toggleMobileMenu()">Typography</a>
+
+                <span class="text-[10px] text-gray-400 font-bold uppercase tracking-wider px-0 py-2 mt-4">05.
+                    Psychology</span>
+                <a href="#laws" class="nav-link text-black" onclick="toggleMobileMenu()">UX Laws</a>
+                <a href="#a11y" class="nav-link text-black" onclick="toggleMobileMenu()">Accessibility</a>
+                <a href="#principles" class="nav-link text-black" onclick="toggleMobileMenu()">Core Principles</a>
+
+                <span class="text-[10px] text-gray-400 font-bold uppercase tracking-wider px-0 py-2 mt-4">06.
+                    Reference</span>
+                <a href="#glossary" class="nav-link text-black" onclick="toggleMobileMenu()">Glossary</a>
+
+                <span class="text-[10px] text-gray-400 font-bold uppercase tracking-wider px-0 py-2 mt-4">07.
+                    Evaluation</span>
+                <a href="#quiz" class="nav-link text-black" onclick="toggleMobileMenu()">Knowledge Check</a>
+            </nav>
+        </div>
+
+        <!-- Sidebar -->
+        <aside
+            class="hidden lg:block w-64 fixed h-screen bg-[#f4f4f4] border-r border-[#e5e5e5] z-50 overflow-y-auto thin-scrollbar">
+            <div class="p-8 h-full flex flex-col justify-between">
+                <div>
+                    <a href="../index.html"
+                        class="inline-flex items-center gap-2 px-4 py-2 mb-8 text-[10px] font-mono uppercase tracking-wider text-gray-600 border border-gray-300 hover:bg-black hover:text-white hover:border-black transition-all duration-200">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                        </svg>
+                        Back to Home
+                    </a>
+                    <div class="mb-12">
+                        <h1 class="text-sm font-semibold tracking-wide uppercase text-black">UI/UX<br>Design</h1>
+                        <p class="text-[10px] text-gray-400 mt-1 uppercase tracking-wider font-bold">Design
+                            Systems</p>
+                    </div>
+                    <nav class="space-y-1">
+                        <a href="#intro" class="nav-link font-medium text-black">Introduction</a>
+
+                        <div class="pt-4 pb-1 text-[10px] text-gray-400 font-bold uppercase tracking-wider">01.
+                            Definitions
+                        </div>
+                        <a href="#definitions" class="nav-link">UI vs UX</a>
+
+                        <div class="pt-4 pb-1 text-[10px] text-gray-400 font-bold uppercase tracking-wider">02.
+                            Methodology
+                        </div>
+                        <a href="#process" class="nav-link">Design Process</a>
+                        <a href="#research" class="nav-link">User Research</a>
+                        <a href="#ia" class="nav-link">Information Architecture</a>
+
+                        <div class="pt-4 pb-1 text-[10px] text-gray-400 font-bold uppercase tracking-wider">03. Visual
+                            Rules
+                        </div>
+                        <a href="#composition" class="nav-link">Visual Composition</a>
+
+                        <div class="pt-4 pb-1 text-[10px] text-gray-400 font-bold uppercase tracking-wider">04. Concepts
+                        </div>
+                        <a href="#wireframing" class="nav-link">Wireframing</a>
+                        <a href="#color" class="nav-link">Color Theory</a>
+                        <a href="#typography" class="nav-link">Typography</a>
+
+                        <div class="pt-4 pb-1 text-[10px] text-gray-400 font-bold uppercase tracking-wider">05.
+                            Psychology
+                        </div>
+                        <a href="#laws" class="nav-link">Laws of UX</a>
+                        <a href="#a11y" class="nav-link">Accessibility</a>
+                        <a href="#principles" class="nav-link">Core Principles</a>
+
+                        <div class="pt-4 pb-1 text-[10px] text-gray-400 font-bold uppercase tracking-wider">06.
+                            Reference
+                        </div>
+                        <a href="#glossary" class="nav-link">Glossary</a>
+
+                        <div class="pt-4 pb-1 text-[10px] text-gray-400 font-bold uppercase tracking-wider">07.
+                            Evaluation
+                        </div>
+                        <a href="#quiz" class="nav-link">Knowledge Check</a>
+                    </nav>
+                </div>
+
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 lg:ml-64 bg-white w-full">
+            <div class="max-w-3xl mx-auto px-4 sm:px-8 py-24 lg:py-20">
+
+                <!-- Hero -->
+                <section id="intro" class="mb-16 md:mb-24 section-reveal active">
+                    <h2
+                        class="text-3xl sm:text-4xl md:text-5xl font-semibold mb-6 text-black tracking-tight leading-tight">
+                        Form follows <br><span style="color: var(--accent);">Empathy.</span>
+                    </h2>
+                    <p class="text-sm sm:text-base md:text-lg text-gray-600 max-w-xl font-light leading-relaxed mb-6">
+                        Good design is more than just aesthetics; it's the bridge between human intent and machine
+                        execution.
+                    </p>
+                </section>
+
+                <div class="w-full h-px bg-gray-200 hidden md:block mb-10"></div>
+
+                <!-- 01. UI vs UX Definitions -->
+                <section id="definitions" class="mb-20 md:mb-24 section-reveal">
+                    <span class="rams-label">01 / The Core Distinction</span>
+                    <h3 class="text-xl font-medium mb-6">User Interface vs. User Experience</h3>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10">
+                        <!-- UI Definition -->
+                        <div class="rams-card bg-white border-l-4 border-l-[#6594B1]">
+                            <h4 class="text-sm font-bold uppercase tracking-widest text-black mb-3">User Interface (UI)
+                            </h4>
+                            <p class="text-sm text-gray-600 leading-relaxed">
+                                UI is the <strong>physical layer</strong> of an interface. It includes the buttons,
+                                colors, typography, spacing, and layout—the specific visual elements that a user
+                                interacts with.
+                            </p>
+                            <div class="mt-4 p-3 bg-gray-50 rounded italic text-[10px] text-gray-500">
+                                Focus: Aesthetics, Visual Consistency, Interaction Design.
+                            </div>
+                        </div>
+
+                        <!-- UX Definition -->
+                        <div class="rams-card bg-white border-l-4 border-l-gray-900">
+                            <h4 class="text-sm font-bold uppercase tracking-widest text-black mb-3">User Experience (UX)
+                            </h4>
+                            <p class="text-sm text-gray-600 leading-relaxed">
+                                UX is the <strong>internal experience</strong> a person has as they interact with every
+                                aspect of a company’s products and services. It’s about how they feel and how easily
+                                they achieve their goals.
+                            </p>
+                            <div class="mt-4 p-3 bg-gray-50 rounded italic text-[10px] text-gray-500">
+                                Focus: Logic, User Flow, Research, Empathy.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="rams-card bg-gray-50">
+                        <h4 class="text-xs font-bold uppercase tracking-widest text-gray-400 mb-6 text-center">Analogy
+                            Breakdown</h4>
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-8 text-center">
+                            <div>
+                                <div class="text-2xl mb-2">🐎</div>
+                                <h5 class="text-xs font-bold mb-1">The Horse</h5>
+                                <p class="text-[10px] text-gray-500">UI: The saddle, stirrups, and reins. <br>UX: The
+                                    feeling of the ride.</p>
+                            </div>
+                            <div>
+                                <div class="text-2xl mb-2">🍽️</div>
+                                <h5 class="text-xs font-bold mb-1">The Dinner</h5>
+                                <p class="text-[10px] text-gray-500">UI: The plate and cutlery. <br>UX: The taste and
+                                    service.</p>
+                            </div>
+                            <div>
+                                <div class="text-2xl mb-2">🏠</div>
+                                <h5 class="text-xs font-bold mb-1">The House</h5>
+                                <p class="text-[10px] text-gray-500">UI: Walls and paint. <br>UX: The comfort of living
+                                    there.</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <div class="w-full h-px bg-gray-200 hidden md:block mb-10"></div>
+
+                <!-- 02. The Design Process -->
+                <section id="process" class="mb-20 md:mb-24 section-reveal">
+                    <span class="rams-label">02 / Methodology</span>
+                    <h3 class="text-xl font-medium mb-6">The Design Thinking Process</h3>
+                    <p class="text-sm text-gray-600 mb-8 max-w-xl">
+                        User-Centered Design (UCD) follows a non-linear, iterative process called <strong>Design
+                            Thinking</strong>. It focuses on understanding users' needs before jumping into solutions.
+                    </p>
+
+                    <div class="rams-card bg-white p-0 overflow-hidden">
+                        <div class="grid grid-cols-1 sm:grid-cols-5 divide-y sm:divide-y-0 sm:divide-x divide-gray-100">
+                            <div class="p-4 text-center">
+                                <span class="text-[10px] font-bold text-gray-400 block mb-2">01</span>
+                                <div class="text-xl mb-1">🔍</div>
+                                <h5 class="text-[10px] font-bold uppercase">Empathize</h5>
+                                <p class="text-[9px] text-gray-500 mt-1">Research user needs.</p>
+                            </div>
+                            <div class="p-4 text-center bg-gray-50/50">
+                                <span class="text-[10px] font-bold text-gray-400 block mb-2">02</span>
+                                <div class="text-xl mb-1">🎯</div>
+                                <h5 class="text-[10px] font-bold uppercase">Define</h5>
+                                <p class="text-[9px] text-gray-500 mt-1">State user problems.</p>
+                            </div>
+                            <div class="p-4 text-center">
+                                <span class="text-[10px] font-bold text-gray-400 block mb-2">03</span>
+                                <div class="text-xl mb-1">💡</div>
+                                <h5 class="text-[10px] font-bold uppercase">Ideate</h5>
+                                <p class="text-[9px] text-gray-500 mt-1">Create solutions.</p>
+                            </div>
+                            <div class="p-4 text-center bg-gray-50/50">
+                                <span class="text-[10px] font-bold text-gray-400 block mb-2">04</span>
+                                <div class="text-xl mb-1">🛠️</div>
+                                <h5 class="text-[10px] font-bold uppercase">Prototype</h5>
+                                <p class="text-[9px] text-gray-500 mt-1">Build drafts.</p>
+                            </div>
+                            <div class="p-4 text-center">
+                                <span class="text-[10px] font-bold text-gray-400 block mb-2">05</span>
+                                <div class="text-xl mb-1">🧪</div>
+                                <h5 class="text-[10px] font-bold uppercase">Test</h5>
+                                <p class="text-[9px] text-gray-500 mt-1">Check results.</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <div class="w-full h-px bg-gray-200 hidden md:block mb-10"></div>
+
+                <!-- 03. User Research -->
+                <section id="research" class="mb-20 md:mb-24 section-reveal">
+                    <span class="rams-label">03 / Understanding Humans</span>
+                    <h3 class="text-xl font-medium mb-6">User Research & Personas</h3>
+                    <p class="text-sm text-gray-600 mb-8 max-w-xl">
+                        Research provides the data needed to design with intent. It helps us move from "I think" to "We
+                        know."
+                    </p>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <!-- Personas -->
+                        <div class="rams-card">
+                            <h4 class="text-sm font-bold uppercase tracking-widest text-[#6594B1] mb-4">User Personas
+                            </h4>
+                            <div class="flex items-center gap-4 mb-4">
+                                <div
+                                    class="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center text-xl">
+                                    👤</div>
+                                <div>
+                                    <h5 class="text-xs font-bold">"The Power User"</h5>
+                                    <p class="text-[10px] text-gray-500 italic">Archetype, not a real person.</p>
+                                </div>
+                            </div>
+                            <p class="text-xs text-gray-600 leading-relaxed">
+                                Personas are fictional characters created to represent the different user types that
+                                might use your service in a similar way.
+                            </p>
+                        </div>
+
+                        <!-- Research Methods -->
+                        <div class="rams-card border-dashed">
+                            <h4 class="text-sm font-bold uppercase tracking-widest text-black mb-4">Methodology</h4>
+                            <ul class="space-y-2 text-[10px] text-gray-600">
+                                <li class="flex items-center gap-2">
+                                    <span class="w-1.5 h-1.5 bg-black rounded-full"></span>
+                                    <span><strong>Qualitative:</strong> Interviews, Usability tests (The "Why").</span>
+                                </li>
+                                <li class="flex items-center gap-2">
+                                    <span class="w-1.5 h-1.5 bg-black rounded-full"></span>
+                                    <span><strong>Quantitative:</strong> Surveys, Analytics (The "How many").</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </section>
+
+                <div class="w-full h-px bg-gray-200 hidden md:block mb-10"></div>
+
+                <!-- 04. IA -->
+                <section id="ia" class="mb-20 md:mb-24 section-reveal">
+                    <span class="rams-label">04 / Information Architecture</span>
+                    <h3 class="text-xl font-medium mb-6">Structuring Content (IA)</h3>
+                    <p class="text-sm text-gray-600 mb-8 max-w-xl">
+                        IA is the discipline of making information findable and understandable. It is the sitemap of
+                        your product’s digital world.
+                    </p>
+
+                    <div class="rams-card bg-gray-50 border-gray-200">
+                        <div class="flex flex-col items-center">
+                            <div
+                                class="px-4 py-2 bg-white border border-gray-300 text-[10px] font-bold rounded mb-4 shadow-sm uppercase">
+                                Homepage</div>
+                            <div class="h-4 w-px bg-gray-300"></div>
+                            <div class="flex flex-col sm:grid sm:grid-cols-3 gap-4 sm:gap-8 relative w-full sm:w-auto">
+                                <div class="flex flex-col items-center">
+                                    <div
+                                        class="px-3 py-1.5 bg-white border border-gray-300 text-[9px] rounded shadow-sm w-full text-center sm:w-auto">
+                                        Product</div>
+                                </div>
+                                <div class="flex flex-col items-center">
+                                    <div
+                                        class="px-3 py-1.5 bg-white border border-gray-300 text-[9px] rounded shadow-sm font-bold border-l-4 border-l-[#6594B1] w-full text-center sm:w-auto">
+                                        About</div>
+                                </div>
+                                <div class="flex flex-col items-center">
+                                    <div
+                                        class="px-3 py-1.5 bg-white border border-gray-300 text-[9px] rounded shadow-sm w-full text-center sm:w-auto">
+                                        Contact</div>
+                                </div>
+                            </div>
+                            <p class="mt-8 text-[10px] text-gray-400 italic">"Don't make them think about where things
+                                are."</p>
+                        </div>
+                    </div>
+                </section>
+
+                <div class="w-full h-px bg-gray-200 hidden md:block mb-10"></div>
+
+                <!-- 06. Wireframing & Fidelity -->
+                <section id="wireframing" class="mb-20 md:mb-24 section-reveal">
+                    <span class="rams-label">06 / The Blueprint</span>
+                    <h3 class="text-xl font-medium mb-4">Wireframing & Fidelity</h3>
+                    <p class="text-sm text-gray-600 mb-8 max-w-xl">
+                        Before we build, we blueprint. Fidelity refers to the level of detail and realism in a design.
+                        Choosing the right fidelity depends on what you need to test.
+                    </p>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10">
+                        <!-- Lo-Fi -->
+                        <div class="rams-card">
+                            <h4 class="text-sm font-bold uppercase tracking-widest text-[#6594B1] mb-2">Low-Fidelity
+                                (Lo-Fi)</h4>
+                            <p class="text-[10px] text-gray-400 font-bold uppercase mb-4 tracking-tighter">The Skeleton
+                            </p>
+                            <p class="text-xs text-gray-600 leading-relaxed">
+                                Quick, rough sketches or digital outlines. Focuses on <strong>user flow</strong> and
+                                <strong>information
+                                    structure</strong> without distractions like color or images.
+                            </p>
+                        </div>
+                        <!-- Hi-Fi -->
+                        <div class="rams-card">
+                            <h4 class="text-sm font-bold uppercase tracking-widest text-black mb-2">High-Fidelity
+                                (Hi-Fi)</h4>
+                            <p class="text-[10px] text-gray-400 font-bold uppercase mb-4 tracking-tighter">The
+                                Simulation</p>
+                            <p class="text-xs text-gray-600 leading-relaxed">
+                                Detailed, pixel-perfect mockups. Features <strong>real content</strong>, brand colors,
+                                and
+                                typography. Used to test <strong>visual appeal</strong> and finalize technical
+                                specifications.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Comparison Table -->
+                    <div class="rams-card mb-10 overflow-x-auto">
+                        <table class="w-full text-left text-xs">
+                            <thead>
+                                <tr class="border-b border-gray-200">
+                                    <th class="py-3 font-bold uppercase tracking-wider text-gray-400">Feature</th>
+                                    <th class="py-3 font-bold uppercase tracking-wider text-[#6594B1]">Lo-Fi</th>
+                                    <th class="py-3 font-bold uppercase tracking-wider text-black">Hi-Fi</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-100">
+                                <tr>
+                                    <td class="py-4 font-medium">Purpose</td>
+                                    <td class="py-4 text-gray-500">Structure & Navigation</td>
+                                    <td class="py-4 text-gray-500">Visuals & Branding</td>
+                                </tr>
+                                <tr>
+                                    <td class="py-4 font-medium">Speed</td>
+                                    <td class="py-4 text-gray-500">Very Fast (Minutes)</td>
+                                    <td class="py-4 text-gray-500">Slower (Hours/Days)</td>
+                                </tr>
+                                <tr>
+                                    <td class="py-4 font-medium">Interactivity</td>
+                                    <td class="py-4 text-gray-500">Static or basic clickable</td>
+                                    <td class="py-4 text-gray-500">Fully interactive prototype</td>
+                                </tr>
+                                <tr>
+                                    <td class="py-4 font-medium">Visuals</td>
+                                    <td class="py-4 text-gray-500">Boxes, Lines, B&W</td>
+                                    <td class="py-4 text-gray-500">Colors, Images, Final Fonts</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Interactive Switcher -->
+                    <div class="rams-card">
+                        <div class="flex flex-col gap-6">
+                            <div class="flex flex-col sm:flex-row justify-between items-center gap-4">
+                                <h4 class="text-[10px] font-bold uppercase tracking-widest text-gray-400">Live Fidelity
+                                    Switcher</h4>
+                                <div class="flex gap-2">
+                                    <button onclick="setWireframeMode('lofi')" id="btn-lofi"
+                                        class="text-[10px] uppercase font-bold tracking-wider px-3 py-1.5 bg-gray-200 rounded transition-all">Skeletal
+                                        (Lo-Fi)</button>
+                                    <button onclick="setWireframeMode('hifi')" id="btn-hifi"
+                                        class="text-[10px] uppercase font-bold tracking-wider px-3 py-1.5 text-gray-400 hover:text-black transition-all">Mockup
+                                        (Hi-Fi)</button>
+                                </div>
+                            </div>
+
+                            <div
+                                class="relative bg-gray-50 border border-gray-200 min-h-[400px] sm:h-80 w-full flex flex-col sm:flex-row overflow-hidden">
+                                <!-- Sidebar Wireframe -->
+                                <div id="wf-sidebar"
+                                    class="w-full sm:w-1/4 h-24 sm:h-full border-b sm:border-b-0 sm:border-r border-dashed border-gray-300 p-4 transition-all duration-500">
+                                    <div class="w-8 h-8 bg-gray-300 rounded mb-4 sm:mb-4 inline-block sm:block"
+                                        id="wf-avatar"></div>
+                                    <div class="space-y-2 inline-block sm:block ml-4 sm:ml-0 align-top">
+                                        <div class="w-24 sm:w-full h-2 bg-gray-200 rounded"></div>
+                                        <div class="w-16 sm:w-2/3 h-2 bg-gray-200 rounded"></div>
+                                    </div>
+                                </div>
+                                <!-- Content Wireframe -->
+                                <div id="wf-content" class="flex-1 p-6 transition-all duration-500 relative">
+                                    <div id="wf-title" class="w-1/2 h-6 bg-gray-300 rounded mb-6"></div>
+                                    <div class="grid grid-cols-2 gap-4">
+                                        <div class="h-24 wf-card rounded p-2"></div>
+                                        <div class="h-24 wf-card rounded p-2"></div>
+                                        <div class="h-24 wf-card rounded p-2"></div>
+                                        <div class="h-24 wf-card rounded p-2"></div>
+                                    </div>
+                                    <div class="absolute bottom-6 right-6 w-10 h-10 bg-gray-300 rounded-full shadow-lg"
+                                        id="wf-fab"></div>
+                                </div>
+                            </div>
+                            <p id="fidelity-desc" class="text-[10px] text-gray-500 italic text-center">Viewing the
+                                "Skeleton": Pure structure, zero styling.</p>
+                        </div>
+                    </div>
+                </section>
+                <!-- Check: Design Process -->
+                <div id="quiz-ui-process"></div>
+
+                <!-- Check: Research -->
+                <div id="quiz-ui-research"></div>
+
+                <!-- Check: IA -->
+                <div id="quiz-ui-ia"></div>
+
+                <div class="w-full h-px bg-gray-200 hidden md:block mb-10"></div>
+
+                <!-- 05. Visual Composition (Rule of Thirds & Golden Ratio) -->
+                <section id="composition" class="mb-20 md:mb-24 section-reveal">
+                    <span class="rams-label">05 / Visual Composition</span>
+                    <h3 class="text-xl font-medium mb-6">Rule of Thirds & Golden Ratio</h3>
+                    <p class="text-sm text-gray-600 mb-8 max-w-xl">
+                        Composition is the arrangement of visual elements. It's how we create focus, balance, and
+                        harmony in a design.
+                    </p>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <!-- Rule of Thirds -->
+                        <div class="rams-card">
+                            <h4 class="text-sm font-bold uppercase tracking-widest text-black mb-4">Rule of Thirds</h4>
+                            <p class="text-xs text-gray-500 mb-6">Divide your canvas into a 3x3 grid. Placing key
+                                elements at the <strong>intersections</strong> creates a more dynamic and engaging
+                                composition.</p>
+
+                            <div
+                                class="relative aspect-video bg-gray-100 border border-gray-200 rounded overflow-hidden">
+                                <!-- Grid -->
+                                <div class="absolute inset-0 grid grid-cols-3 grid-rows-3">
+                                    <div class="border-r border-b border-gray-300"></div>
+                                    <div class="border-r border-b border-gray-300"></div>
+                                    <div class="border-b border-gray-300"></div>
+                                    <div class="border-r border-b border-gray-300"></div>
+                                    <div class="border-r border-b border-gray-300"></div>
+                                    <div class="border-b border-gray-300"></div>
+                                    <div class="border-r border-gray-300"></div>
+                                    <div class="border-r border-gray-300"></div>
+                                    <div></div>
+                                </div>
+                                <!-- Intersection Points -->
+                                <div
+                                    class="absolute top-1/3 left-1/3 w-2 h-2 bg-[#6594B1] rounded-full -translate-x-1/2 -translate-y-1/2 shadow-lg animate-pulse">
+                                </div>
+                                <div
+                                    class="absolute top-1/3 left-2/3 w-2 h-2 bg-[#6594B1] rounded-full -translate-x-1/2 -translate-y-1/2 shadow-lg animate-pulse">
+                                </div>
+                                <div
+                                    class="absolute top-2/3 left-1/3 w-2 h-2 bg-[#6594B1] rounded-full -translate-x-1/2 -translate-y-1/2 shadow-lg animate-pulse">
+                                </div>
+                                <div
+                                    class="absolute top-2/3 left-2/3 w-2 h-2 bg-[#6594B1] rounded-full -translate-x-1/2 -translate-y-1/2 shadow-lg animate-pulse">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Golden Ratio -->
+                        <div class="rams-card">
+                            <h4 class="text-sm font-bold uppercase tracking-widest text-black mb-4">Golden Ratio (1.618)
+                            </h4>
+                            <p class="text-xs text-gray-500 mb-6">A mathematical ratio often found in nature. In design,
+                                it creates a <strong>perfect sense of proportion</strong> and organic balance.</p>
+
+                            <div
+                                class="relative aspect-video bg-gray-100 border border-gray-200 rounded overflow-hidden flex items-center justify-center p-4">
+                                <svg viewBox="0 0 161.8 100" class="w-full h-auto filter drop-shadow-md">
+                                    <!-- Golden Rectangles -->
+                                    <rect x="0" y="0" width="100" height="100" fill="none" stroke="#6594B1"
+                                        stroke-width="0.5" />
+                                    <rect x="100" y="0" width="61.8" height="61.8" fill="none" stroke="#6594B1"
+                                        stroke-width="0.5" />
+                                    <rect x="100" y="61.8" width="38.2" height="38.2" fill="none" stroke="#6594B1"
+                                        stroke-width="0.5" />
+                                    <!-- Spiral approximation -->
+                                    <path
+                                        d="M 0 100 A 100 100 0 0 1 100 0 A 61.8 61.8 0 0 1 161.8 61.8 A 38.2 38.2 0 0 1 123.6 100"
+                                        fill="none" stroke="#6594B1" stroke-width="1" stroke-linecap="round" />
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Check: Composition -->
+                <div id="quiz-ui-composition"></div>
+
+                <div class="w-full h-px bg-gray-200 hidden md:block mb-10"></div>
+
+                <!-- Check: Wireframe -->
+                <div id="quiz-ui-wireframe"></div>
+
+                <!-- 07. Color Theory & Psychology -->
+                <section id="color" class="mb-20 md:mb-24 section-reveal">
+                    <span class="rams-label">07 / Emotion & Balance</span>
+                    <h3 class="text-xl font-medium mb-4">Color Theory & Psychology</h3>
+                    <p class="text-sm text-gray-600 mb-8 max-w-xl">
+                        Color is more than just decoration; it's a form of non-verbal communication. Designers use color
+                        to evoke specific emotions and influence user behavior.
+                    </p>
+
+                    <div class="rams-card mb-10">
+                        <h4 class="text-xs font-bold uppercase tracking-widest text-gray-400 mb-6">Visual Balance: The
+                            60-30-10 Rule</h4>
+                        <div class="flex flex-col md:flex-row items-center gap-12">
+                            <div class="relative w-40 h-40 flex-shrink-0">
+                                <svg viewBox="0 0 100 100" class="transform -rotate-90 w-full h-full">
+                                    <circle cx="50" cy="50" r="40" fill="transparent" stroke="#f0f0f0" stroke-width="20"
+                                        stroke-dasharray="251.2" stroke-dashoffset="0"></circle>
+                                    <circle cx="50" cy="50" r="40" fill="transparent" stroke="#333" stroke-width="20"
+                                        stroke-dasharray="251.2" stroke-dashoffset="150"></circle>
+                                    <circle cx="50" cy="50" r="40" fill="transparent" stroke="#6594B1" stroke-width="20"
+                                        stroke-dasharray="251.2" stroke-dashoffset="226"></circle>
+                                </svg>
+                                <div
+                                    class="absolute inset-0 flex items-center justify-center font-mono text-[10px] font-bold text-gray-500">
+                                    BALANCE</div>
+                            </div>
+
+                            <div class="flex-1 space-y-4 w-full">
+                                <div>
+                                    <div
+                                        class="flex justify-between mb-1 text-[10px] uppercase font-bold tracking-wider text-gray-500">
+                                        <span>Primary (60%)</span>
+                                        <span>Backgrounds</span>
+                                    </div>
+                                    <div class="w-full h-8 bg-gray-100 border border-gray-200"></div>
+                                </div>
+                                <div>
+                                    <div
+                                        class="flex justify-between mb-1 text-[10px] uppercase font-bold tracking-wider text-gray-500">
+                                        <span>Secondary (30%)</span>
+                                        <span>Text / Layout</span>
+                                    </div>
+                                    <div class="w-full h-8 bg-gray-900 border border-gray-900"></div>
+                                </div>
+                                <div>
+                                    <div
+                                        class="flex justify-between mb-1 text-[10px] uppercase font-bold tracking-wider text-[#6594B1]">
+                                        <span>Accent (10%)</span>
+                                        <span>Action</span>
+                                    </div>
+                                    <div class="w-full h-8 bg-[#6594B1]"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Color Psychology Grid -->
+                    <div class="rams-card bg-white border-dashed">
+                        <h4 class="text-xs font-bold uppercase tracking-widest text-black mb-6">Color Psychology in UI
+                        </h4>
+                        <div class="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-6 gap-4">
+                            <!-- Blue -->
+                            <div class="p-3 border border-gray-100 rounded hover:shadow-sm transition-shadow">
+                                <div class="w-full h-12 bg-blue-600 rounded mb-2"></div>
+                                <h5 class="text-[10px] font-bold uppercase mb-1">Blue</h5>
+                                <p class="text-[8px] text-gray-500 leading-tight">Trust, Security, Calm.</p>
+                            </div>
+                            <!-- Red -->
+                            <div class="p-3 border border-gray-100 rounded hover:shadow-sm transition-shadow">
+                                <div class="w-full h-12 bg-red-600 rounded mb-2"></div>
+                                <h5 class="text-[10px] font-bold uppercase mb-1">Red</h5>
+                                <p class="text-[8px] text-gray-500 leading-tight">Urgency, Excitement, Error.</p>
+                            </div>
+                            <!-- Green -->
+                            <div class="p-3 border border-gray-100 rounded hover:shadow-sm transition-shadow">
+                                <div class="w-full h-12 bg-green-600 rounded mb-2"></div>
+                                <h5 class="text-[10px] font-bold uppercase mb-1">Green</h5>
+                                <p class="text-[8px] text-gray-500 leading-tight">Growth, Health, Success.</p>
+                            </div>
+                            <!-- Yellow -->
+                            <div class="p-3 border border-gray-100 rounded hover:shadow-sm transition-shadow">
+                                <div class="w-full h-12 bg-yellow-400 rounded mb-2"></div>
+                                <h5 class="text-[10px] font-bold uppercase mb-1">Yellow</h5>
+                                <p class="text-[8px] text-gray-500 leading-tight">Optimism, Attention.</p>
+                            </div>
+                            <!-- Purple -->
+                            <div class="p-3 border border-gray-100 rounded hover:shadow-sm transition-shadow">
+                                <div class="w-full h-12 bg-purple-600 rounded mb-2"></div>
+                                <h5 class="text-[10px] font-bold uppercase mb-1">Purple</h5>
+                                <p class="text-[8px] text-gray-500 leading-tight">Luxury, Wisdom.</p>
+                            </div>
+                            <!-- Black -->
+                            <div class="p-3 border border-gray-100 rounded hover:shadow-sm transition-shadow">
+                                <div class="w-full h-12 bg-black rounded mb-2"></div>
+                                <h5 class="text-[10px] font-bold uppercase mb-1">Black</h5>
+                                <p class="text-[8px] text-gray-500 leading-tight">Power, Elegance.</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                <!-- Check: Color -->
+                <div id="quiz-ui-color"></div>
+
+                <!-- 08. Typography & Visual Hierarchy -->
+                <section id="typography" class="mb-20 md:mb-24 section-reveal">
+                    <span class="rams-label">08 / Digital Architecture</span>
+                    <h3 class="text-xl font-medium mb-6">Typography & Visual Hierarchy</h3>
+                    <p class="text-sm text-gray-600 mb-8 max-w-xl">
+                        Visual hierarchy is the arrangement of elements in a way that implies importance. Typography is
+                        the most powerful tool for establishing this hierarchy.
+                    </p>
+
+                    <!-- Hierarchy Principles -->
+                    <div class="rams-card mb-8">
+                        <h4 class="text-sm font-bold uppercase tracking-widest text-black mb-6">Hierarchy Principles
+                        </h4>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                            <div class="text-center p-4 bg-gray-50 rounded">
+                                <div class="text-2xl font-bold mb-2">SIZE</div>
+                                <p class="text-[9px] text-gray-500 uppercase font-bold tracking-tighter">Big = Important
+                                </p>
+                            </div>
+                            <div class="text-center p-4 bg-gray-50 rounded">
+                                <div class="text-2xl font-bold mb-2 text-[#6594B1]">COLOR</div>
+                                <p class="text-[9px] text-gray-500 uppercase font-bold tracking-tighter">Vibrant =
+                                    Priority</p>
+                            </div>
+                            <div class="text-center p-4 bg-gray-50 rounded">
+                                <div class="text-2xl font-black mb-2">WEIGHT</div>
+                                <p class="text-[9px] text-gray-500 uppercase font-bold tracking-tighter">Bolder =
+                                    Stronger</p>
+                            </div>
+                            <div class="text-center p-4 bg-gray-50 rounded">
+                                <div class="text-2xl mb-2 flex justify-center gap-1">
+                                    <div class="w-3 h-3 bg-black rounded-full"></div>
+                                    <div class="w-3 h-3 bg-black rounded-full"></div>
+                                </div>
+                                <p class="text-[9px] text-gray-500 uppercase font-bold tracking-tighter">Proximity =
+                                    Related</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Comparison Section -->
+                    <div class="rams-card mb-8">
+                        <div
+                            class="grid grid-cols-1 md:grid-cols-2 gap-8 divide-y md:divide-y-0 md:divide-x divide-gray-200">
+                            <!-- Good -->
+                            <div class="p-4">
+                                <div class="text-[10px] uppercase font-bold text-green-600 mb-4 tracking-widest">
+                                    Effective Hierarchy</div>
+                                <h1 class="text-3xl font-black mb-2 text-black leading-tight">Attention starts here.
+                                </h1>
+                                <p class="text-sm text-gray-600 mb-4 leading-relaxed">
+                                    By using scale, weight, and color, we guide the user's eye effortlessly through the
+                                    content.
+                                </p>
+                                <button
+                                    class="px-5 py-2.5 bg-[#6594B1] text-white text-[10px] font-bold rounded uppercase tracking-widest shadow-lg hover:shadow-xl transition-shadow">Call
+                                    to Action</button>
+                            </div>
+
+                            <!-- Bad -->
+                            <div class="p-4 opacity-50">
+                                <div class="text-[10px] uppercase font-bold text-red-500 mb-4 tracking-widest">Poor
+                                    Hierarchy</div>
+                                <div class="text-base font-normal mb-1 text-black">Everything is the same size.</div>
+                                <div class="text-base text-gray-800 mb-2">There is no clear starting point.</div>
+                                <div class="text-base text-gray-800 mb-4">Users get confused when buttons look like
+                                    text.</div>
+                                <div class="text-sm text-black underline">Confusing Link</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Font Pairing Tips -->
+                    <div class="rams-card bg-gray-900 text-white">
+                        <h4 class="text-xs font-bold uppercase tracking-widest text-[#6594B1] mb-6">Expert Font Pairing
+                        </h4>
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-8">
+                            <div class="border-l border-gray-700 pl-4">
+                                <h5 class="text-[10px] font-bold text-gray-400 uppercase mb-2">Contrast Weights</h5>
+                                <p class="font-bold text-xl leading-none">Extra Bold</p>
+                                <p class="font-extralight text-lg opacity-70 mb-2">Light Pair</p>
+                                <p class="text-[9px] text-gray-500">Pair extremely different weights of the same
+                                    typeface.</p>
+                            </div>
+                            <div class="border-l border-gray-700 pl-4">
+                                <h5 class="text-[10px] font-bold text-gray-400 uppercase mb-2">Serif + Sans Serif</h5>
+                                <p class="font-serif text-xl leading-none">Classic Serif</p>
+                                <p class="font-sans text-lg opacity-70 mb-2">Modern Sans</p>
+                                <p class="text-[9px] text-gray-500">The most reliable pairing for balanced
+                                    professionalism.</p>
+                            </div>
+                            <div class="border-l border-gray-700 pl-4">
+                                <h5 class="text-[10px] font-bold text-gray-400 uppercase mb-2">The X-Height Rule</h5>
+                                <div class="flex items-baseline gap-1 mb-2">
+                                    <span class="text-2xl font-bold">x</span>
+                                    <span class="text-2xl font-light opacity-50">x</span>
+                                </div>
+                                <p class="text-[9px] text-gray-500">Look for similar heights in lowercase letters for
+                                    better visual harmony.</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                <!-- Check: Typography -->
+                <div id="quiz-ui-typography"></div>
+
+                <!-- 09. Laws of UX -->
+                <section id="laws" class="mb-20 md:mb-24 section-reveal">
+                    <span class="rams-label">09 / Cognitive Psychology</span>
+                    <h3 class="text-xl font-medium mb-4">Laws of UX</h3>
+                    <p class="text-sm text-gray-600 mb-6 max-w-xl">
+                        Predictive principles that describe how users perceive and interact with interfaces.
+                    </p>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- Jakob's Law -->
+                        <div class="rams-card hover:border-[#6594B1] transition-colors p-6">
+                            <h4 class="text-lg font-bold mb-2">Jakob's Law</h4>
+                            <p class="text-xs text-gray-500 mb-6">Users spend most of their time on <strong>other
+                                    sites</strong>. This means users prefer your site to work the same way as all the
+                                other sites they already know.</p>
+                            <div class="bg-gray-50 p-4 border border-gray-100 rounded">
+                                <span class="text-[10px] uppercase text-gray-400 font-bold block mb-2">Mental
+                                    Models</span>
+                                <div class="flex gap-2 items-center">
+                                    <div class="w-8 h-8 bg-gray-200 rounded-lg"></div>
+                                    <div class="flex-1 h-2 bg-gray-200 rounded"></div>
+                                </div>
+                                <div class="mt-2 text-[9px] text-gray-400">Consistent patterns reduce cognitive load by
+                                    utilizing existing knowledge.</div>
+                            </div>
+                        </div>
+
+                        <!-- Fitts' Law -->
+                        <div class="rams-card hover:border-[#6594B1] transition-colors p-6">
+                            <h4 class="text-lg font-bold mb-2">Fitts' Law</h4>
+                            <p class="text-xs text-gray-500 mb-6">The time to acquire a target is a function of the
+                                <strong>distance</strong> to and <strong>size</strong> of the target. Make important
+                                actions big and easy to reach.
+                            </p>
+
+                            <div class="h-32 relative bg-gray-50 border border-gray-200 rounded overflow-hidden">
+                                <button
+                                    class="absolute bottom-2 right-2 w-6 h-6 bg-gray-300 rounded-full text-[8px] flex items-center justify-center">Slow</button>
+                                <button
+                                    class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-32 py-3 bg-[#6594B1] text-white font-bold rounded shadow-lg text-xs hover:scale-105 transition-transform">FAST
+                                    TARGET</button>
+                            </div>
+                        </div>
+
+                        <!-- Hick's Law -->
+                        <div class="rams-card hover:border-[#6594B1] transition-colors p-6">
+                            <h4 class="text-lg font-bold mb-2">Hick's Law</h4>
+                            <p class="text-xs text-gray-500 mb-6">The time it takes to make a decision increases with
+                                the <strong>number and complexity</strong> of choices. Simplify by removing unnecessary
+                                options.</p>
+
+                            <div
+                                class="h-32 bg-gray-50 border border-gray-200 rounded flex items-center justify-center">
+                                <div class="text-center">
+                                    <span class="text-[10px] uppercase text-gray-400 font-bold block mb-2">Decision
+                                        Paralysis</span>
+                                    <div class="flex gap-2">
+                                        <button
+                                            class="w-16 py-1 bg-[#6594B1] text-white text-[10px] rounded">Simple</button>
+                                        <button
+                                            class="w-16 py-1 bg-white border border-gray-300 text-gray-500 text-[10px] rounded">Complex</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Miller's Law -->
+                        <div class="rams-card hover:border-[#6594B1] transition-colors p-6">
+                            <h4 class="text-lg font-bold mb-2">Miller's Law</h4>
+                            <p class="text-xs text-gray-500 mb-6">The average person can only keep <strong>7 (± 2)
+                                    items</strong> in their working memory. Use "chunking" to organize information into
+                                manageable groups.</p>
+                            <div class="flex gap-1 justify-center py-4 bg-gray-50 rounded">
+                                <div class="w-4 h-4 bg-[#6594B1] rounded-sm opacity-20"></div>
+                                <div class="w-4 h-4 bg-[#6594B1] rounded-sm opacity-40"></div>
+                                <div class="w-4 h-4 bg-[#6594B1] rounded-sm opacity-60"></div>
+                                <div class="w-4 h-4 bg-[#6594B1] rounded-sm opacity-80"></div>
+                                <div class="w-4 h-4 bg-[#6594B1] rounded-sm"></div>
+                                <div class="w-4 h-4 bg-gray-300 rounded-sm"></div>
+                                <div class="w-4 h-4 bg-gray-300 rounded-sm"></div>
+                            </div>
+                        </div>
+
+                        <!-- Peak-End Rule -->
+                        <div class="rams-card hover:border-[#6594B1] transition-colors p-6 md:col-span-2">
+                            <h4 class="text-lg font-bold mb-2">Peak-End Rule</h4>
+                            <p class="text-xs text-gray-600 leading-relaxed mb-4">
+                                People judge an experience largely based on how they felt at its <strong>peak</strong>
+                                (the most intense point) and at its <strong>end</strong>, rather than the total sum or
+                                average of every moment.
+                            </p>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div class="p-3 bg-blue-50 border border-blue-100 rounded">
+                                    <span class="text-[9px] font-bold text-blue-400 uppercase">The Peak</span>
+                                    <p class="text-[10px] text-blue-700">Identify the 'Aha!' moment of your product and
+                                        ensure it's overwhelmingly positive.</p>
+                                </div>
+                                <div class="p-3 bg-green-50 border border-green-100 rounded">
+                                    <span class="text-[9px] font-bold text-green-400 uppercase">The End</span>
+                                    <p class="text-[10px] text-green-700">Ensure the final interaction—like a success
+                                        message or exit—is smooth and rewarding.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Aesthetic-Usability Effect -->
+                        <div class="rams-card hover:border-[#6594B1] transition-colors p-6">
+                            <h4 class="text-lg font-bold mb-2">Aesthetic-Usability Effect</h4>
+                            <p class="text-xs text-gray-500 mb-6">Users often perceive <strong>aesthetically
+                                    pleasing</strong> design as design that’s more usable. People are more tolerant of
+                                minor usability issues when the design looks good.</p>
+                            <div class="flex items-center justify-center p-4 bg-gray-50 rounded border border-gray-100">
+                                <span class="text-2xl">✨ = 🧠👍</span>
+                            </div>
+                        </div>
+
+                        <!-- Doherty Threshold -->
+                        <div class="rams-card hover:border-[#6594B1] transition-colors p-6">
+                            <h4 class="text-lg font-bold mb-2">Doherty Threshold</h4>
+                            <p class="text-xs text-gray-500 mb-6">Productivity soars when a computer and its users
+                                interact at a pace (<strong>&lt;400ms</strong>) that ensures neither has to wait on the
+                                other.</p>
+                            <div class="bg-gray-50 p-4 border border-gray-100 rounded flex items-center gap-2">
+                                <div class="w-full bg-gray-200 rounded-full h-2">
+                                    <div class="bg-green-500 h-2 rounded-full" style="width: 85%"></div>
+                                </div>
+                                <span class="text-[9px] font-bold text-green-600 whitespace-nowrap">&lt; 0.4s</span>
+                            </div>
+                        </div>
+
+                        <!-- Zeigarnik Effect -->
+                        <div class="rams-card hover:border-[#6594B1] transition-colors p-6">
+                            <h4 class="text-lg font-bold mb-2">Zeigarnik Effect</h4>
+                            <p class="text-xs text-gray-500 mb-6">People remember <strong>uncompleted or
+                                    interrupted</strong> tasks better than completed tasks. Use progress bars to gamify
+                                completion.</p>
+                            <div class="flex items-center gap-3 p-3 bg-gray-50 rounded border border-gray-100">
+                                <div
+                                    class="relative w-8 h-8 rounded-full border-2 border-gray-200 border-t-[#6594B1] border-r-[#6594B1] rotate-45">
+                                </div>
+                                <span class="text-[10px] text-gray-500 font-bold uppercase">Resume Task?</span>
+                            </div>
+                        </div>
+
+                        <!-- Von Restorff Effect -->
+                        <div class="rams-card hover:border-[#6594B1] transition-colors p-6">
+                            <h4 class="text-lg font-bold mb-2">Von Restorff Effect</h4>
+                            <p class="text-xs text-gray-500 mb-6">The <strong>Isolation Effect</strong>. When multiple
+                                similar objects are present, the one that differs from the rest is most likely to be
+                                remembered.</p>
+                            <div class="flex justify-center gap-2 p-4 bg-gray-50 rounded border border-gray-100">
+                                <div class="w-6 h-6 bg-gray-300 rounded-full opacity-50"></div>
+                                <div class="w-6 h-6 bg-gray-300 rounded-full opacity-50"></div>
+                                <div class="w-6 h-6 bg-[#6594B1] rounded-full scale-110 shadow-lg ring-2 ring-white">
+                                </div>
+                                <div class="w-6 h-6 bg-gray-300 rounded-full opacity-50"></div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                <!-- Check: Laws -->
+                <div id="quiz-ui-laws"></div>
+
+                <!-- 10. Accessibility -->
+                <section id="a11y" class="mb-20 md:mb-24 section-reveal">
+                    <span class="rams-label">10 / Inclusivity</span>
+                    <h3 class="text-xl font-medium mb-4">Accessibility (A11y)</h3>
+                    <p class="text-sm text-gray-600 mb-6 max-w-xl">
+                        The "a11y" numeronym stands for accessibility (11 letters between 'a' and 'y'). It ensures that
+                        digital products are usable by people with disabilities.
+                    </p>
+
+                    <div class="rams-card">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                            <!-- Contrast -->
+                            <div>
+                                <h4 class="text-sm font-bold mb-4 uppercase tracking-wider text-gray-500">Contrast
+                                    Ratios (WCAG)</h4>
+                                <div class="space-y-4">
+                                    <div
+                                        class="p-4 bg-gray-100 text-gray-300 rounded flex justify-between items-center group relative overflow-hidden">
+                                        <span class="font-medium text-sm">Low Contrast (Fail)</span>
+                                        <span class="text-xs font-mono text-red-400">Ratio 1.5:1</span>
+                                        <div
+                                            class="absolute inset-0 bg-red-50/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center font-bold text-red-600">
+                                            Hard to Read</div>
+                                    </div>
+                                    <div class="p-4 bg-[#6594B1] text-white rounded flex justify-between items-center">
+                                        <span class="font-medium text-sm">High Contrast (Pass)</span>
+                                        <span class="text-xs font-mono opacity-80">Ratio 4.5:1+</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Screen Reader State -->
+                            <div>
+                                <h4 class="text-sm font-bold mb-4 uppercase tracking-wider text-gray-500">Focus States
+                                </h4>
+                                <div class="space-y-4">
+                                    <div class="flex flex-col gap-2">
+                                        <label class="text-xs text-black font-medium">Bad Focus</label>
+                                        <input type="text" placeholder="Click me (No Outline)"
+                                            class="w-full p-2 border border-gray-300 rounded focus:outline-none">
+                                    </div>
+                                    <div class="flex flex-col gap-2">
+                                        <label class="text-xs text-black font-medium">Good Focus</label>
+                                        <input type="text" placeholder="Click me (Visible Ring)"
+                                            class="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-[#6594B1] focus:border-transparent">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                <!-- Check: Accessibility -->
+                <div id="quiz-ui-a11y"></div>
+
+                <!-- 11. Principles -->
+                <section id="principles" class="mb-20 md:mb-24 section-reveal">
+                    <span class="rams-label">11 / Foundations</span>
+                    <h3 class="text-xl font-medium mb-6">7 Core UI Principles</h3>
+                    <p class="text-sm text-gray-600 mb-8 max-w-xl">
+                        Fundamental rules that guide every effective interface layout and interaction.
+                    </p>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                        <!-- Clarity -->
+                        <div
+                            class="rams-card p-5 bg-white border border-gray-100 hover:border-[#6594B1] transition-colors">
+                            <div class="text-2xl mb-2">👓</div>
+                            <h4 class="text-sm font-bold uppercase mb-2">1. Clarity</h4>
+                            <p class="text-xs text-gray-500">Eliminate ambiguity. The user should always know what an
+                                element is and does.</p>
+                        </div>
+
+                        <!-- Feedback -->
+                        <div
+                            class="rams-card p-5 bg-white border border-gray-100 hover:border-[#6594B1] transition-colors">
+                            <div class="text-2xl mb-2">💬</div>
+                            <h4 class="text-sm font-bold uppercase mb-2">2. Feedback</h4>
+                            <p class="text-xs text-gray-500">Every action needs an immediate reaction (visual, audio, or
+                                haptic) to confirm receipt.</p>
+                        </div>
+
+                        <!-- User Control -->
+                        <div
+                            class="rams-card p-5 bg-white border border-gray-100 hover:border-[#6594B1] transition-colors">
+                            <div class="text-2xl mb-2">🎛️</div>
+                            <h4 class="text-sm font-bold uppercase mb-2">3. User Control</h4>
+                            <p class="text-xs text-gray-500">Allow users to undo, redo, and exit. Make them feel in
+                                charge of the system.</p>
+                        </div>
+
+                        <!-- Consistency -->
+                        <div
+                            class="rams-card p-5 bg-white border border-gray-100 hover:border-[#6594B1] transition-colors">
+                            <div class="text-2xl mb-2">🧱</div>
+                            <h4 class="text-sm font-bold uppercase mb-2">4. Consistency</h4>
+                            <p class="text-xs text-gray-500">Use standard layouts and elements. Don't reinvent the wheel
+                                for standard patterns.</p>
+                        </div>
+
+                        <!-- Efficiency -->
+                        <div
+                            class="rams-card p-5 bg-white border border-gray-100 hover:border-[#6594B1] transition-colors">
+                            <div class="text-2xl mb-2">⚡</div>
+                            <h4 class="text-sm font-bold uppercase mb-2">5. Efficiency</h4>
+                            <p class="text-xs text-gray-500">Streamline workflows. Reduce clicks and scrolls for
+                                frequent actions.</p>
+                        </div>
+
+                        <!-- Familiarity -->
+                        <div
+                            class="rams-card p-5 bg-white border border-gray-100 hover:border-[#6594B1] transition-colors">
+                            <div class="text-2xl mb-2">🏠</div>
+                            <h4 class="text-sm font-bold uppercase mb-2">6. Familiarity</h4>
+                            <p class="text-xs text-gray-500">Use icons and language that users already understand from
+                                the real world.</p>
+                        </div>
+
+                        <!-- Structure -->
+                        <div
+                            class="rams-card p-5 bg-white border border-gray-100 hover:border-[#6594B1] transition-colors sm:col-span-2 lg:col-span-3">
+                            <div class="flex items-start gap-4">
+                                <div class="text-2xl">🏗️</div>
+                                <div>
+                                    <h4 class="text-sm font-bold uppercase mb-1">7. Structure & Hierarchy</h4>
+                                    <p class="text-xs text-gray-500">Organize information logically. Use grouping and
+                                        aligning to reduce cognitive load.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 12. Glossary -->
+                <section id="glossary" class="mb-20 md:mb-24 section-reveal">
+                    <span class="rams-label">12 / Terminology</span>
+                    <h3 class="text-xl font-medium mb-4">Designer's Glossary</h3>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div
+                            class="p-4 border border-gray-200 bg-gray-50 rounded hover:border-[#6594B1] transition-colors">
+                            <h4 class="font-bold text-sm mb-1 text-black">Affordance</h4>
+                            <p class="text-xs text-gray-600">A property of an object that suggests how the object should
+                                be used (e.g., a button looking clickable).</p>
+                        </div>
+                        <div
+                            class="p-4 border border-gray-200 bg-gray-50 rounded hover:border-[#6594B1] transition-colors">
+                            <h4 class="font-bold text-sm mb-1 text-black">Signifier</h4>
+                            <p class="text-xs text-gray-600">Visual cues that signal affordance (e.g., the shadow on a
+                                button, an arrow icon).</p>
+                        </div>
+                        <div
+                            class="p-4 border border-gray-200 bg-gray-50 rounded hover:border-[#6594B1] transition-colors">
+                            <h4 class="font-bold text-sm mb-1 text-black">Kerning</h4>
+                            <p class="text-xs text-gray-600">The spacing between individual characters in a word.</p>
+                        </div>
+                        <div
+                            class="p-4 border border-gray-200 bg-gray-50 rounded hover:border-[#6594B1] transition-colors">
+                            <h4 class="font-bold text-sm mb-1 text-black">Leading</h4>
+                            <p class="text-xs text-gray-600">The vertical spacing between lines of text (line-height).
+                            </p>
+                        </div>
+                        <div
+                            class="p-4 border border-gray-200 bg-gray-50 rounded hover:border-[#6594B1] transition-colors">
+                            <h4 class="font-bold text-sm mb-1 text-black">Responsive</h4>
+                            <p class="text-xs text-gray-600">Design that adapts fluidly to different screen sizes and
+                                orientations.</p>
+                        </div>
+                        <div
+                            class="p-4 border border-gray-200 bg-gray-50 rounded hover:border-[#6594B1] transition-colors">
+                            <h4 class="font-bold text-sm mb-1 text-black">Negative Space</h4>
+                            <p class="text-xs text-gray-600">The "white space" around elements that gives the design
+                                room to breathe.</p>
+                        </div>
+                    </div>
+                </section>
+
+                <div class="divider"></div>
+
+                <!-- 12. Quiz -->
+                <section id="quiz" class="mb-20 md:mb-24">
+                    <span class="rams-label">13 / Knowledge Check</span>
+                    <div id="quiz-container" class="rams-card">
+                        <!-- Quiz loads here -->
+                    </div>
+                </section>
+
+                <!-- 13. Certificate (Initially Hidden) -->
+                <section id="certificate" class="mb-20 md:mb-24 hidden">
+                    <span class="rams-label">14 / Certification</span>
+                    <h3 class="text-xl font-medium mb-6">Completion Certificate</h3>
+
+                    <div class="rams-card !p-0 overflow-hidden">
+                        <div class="p-6 md:p-8">
+                            <div class="flex flex-col md:flex-row gap-8 items-start">
+                                <div class="w-full md:w-1/3 space-y-4">
+                                    <p class="text-sm text-gray-600">
+                                        Enter your name below to generate your personalized certificate of completion
+                                        for the UI/UX Design series.
+                                    </p>
+                                    <div>
+                                        <label for="cert-name"
+                                            class="block text-xs font-bold text-gray-500 uppercase mb-1">Full
+                                            Name</label>
+                                        <input type="text" id="cert-name"
+                                            class="w-full border border-gray-300 p-2 font-mono text-sm focus:border-black outline-none"
+                                            placeholder="Don Norman">
+                                        <p id="cert-error" class="text-red-500 text-xs mt-2 hidden">Please enter your
+                                            name.</p>
+                                    </div>
+                                    <button onclick="generateCert()"
+                                        class="btn btn-primary bg-black border-black text-white w-full hover:bg-gray-800">Generate
+                                        Certificate</button>
+                                    <button onclick="downloadCert()" id="btn-download"
+                                        class="btn btn-secondary w-full hidden">Download PNG</button>
+                                </div>
+
+                                <div
+                                    class="w-full md:w-2/3 bg-gray-50 border border-gray-200 p-4 flex items-center justify-center">
+                                    <canvas id="cert-canvas" class="w-full shadow-lg bg-white"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="bg-gray-50 px-6 py-3 border-t border-gray-100 text-center">
+                            <p class="text-[10px] text-gray-400 italic">
+                                This certificate confirms successful completion of learning and assessment on this
+                                platform and is not an accredited or government-recognized qualification.
+                            </p>
+                        </div>
+                    </div>
+                </section>
+
+                <footer class="w-full mt-12 mb-12">
+                    <div class="border-t border-gray-200 pt-8 flex justify-between items-center">
+                        <span class="text-[10px] mono uppercase text-gray-400">Undrstanding</span>
+                        <span class="text-[10px] mono uppercase text-gray-400">For Humans, From Humans</span>
+                    </div>
+                </footer>
+
+            </div>
+        </main>
+    </div>
+
+    <script>
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobile-menu');
+            menu.classList.toggle('hidden');
+            menu.classList.toggle('flex');
+            document.body.classList.toggle('overflow-hidden');
+        }
+
+        // Wireframe Logic
+        function setWireframeMode(mode) {
+            const sidebar = document.getElementById('wf-sidebar');
+            const content = document.getElementById('wf-content');
+            const fab = document.getElementById('wf-fab');
+            const btnLofi = document.getElementById('btn-lofi');
+            const btnHifi = document.getElementById('btn-hifi');
+            const cards = document.querySelectorAll('.wf-card');
+            const avatar = document.getElementById('wf-avatar');
+            const desc = document.getElementById('fidelity-desc');
+
+            if (mode === 'hifi') {
+                // Sidebar
+                sidebar.classList.remove('border-dashed');
+                sidebar.classList.add('bg-gray-900', 'border-none');
+
+                // Avatar
+                avatar.classList.add('rounded-full');
+                avatar.classList.remove('rounded');
+
+                // Cards
+                cards.forEach(c => c.classList.add('active'));
+
+                // FAB
+                fab.classList.remove('bg-gray-300');
+                fab.style.backgroundColor = 'var(--accent)';
+
+                // Buttons
+                btnHifi.classList.remove('text-gray-400');
+                btnHifi.classList.add('bg-[#6594B1]', 'text-white');
+                btnLofi.classList.remove('bg-gray-200');
+                btnLofi.classList.add('text-gray-400');
+
+                desc.textContent = 'Viewing the "Mockup": Pixel-perfect, brand-aligned, and ready for review.';
+            } else {
+                // Revert
+                sidebar.classList.add('border-dashed');
+                sidebar.classList.remove('bg-gray-900', 'border-none');
+
+                avatar.classList.remove('rounded-full');
+                avatar.classList.add('rounded');
+
+                cards.forEach(c => c.classList.remove('active'));
+
+                fab.classList.add('bg-gray-300');
+                fab.style.backgroundColor = '';
+
+                btnLofi.classList.add('bg-gray-200');
+                btnLofi.classList.remove('text-gray-400');
+                btnHifi.classList.add('text-gray-400');
+                btnHifi.classList.remove('bg-[#6594B1]', 'text-white');
+
+                desc.textContent = 'Viewing the "Skeleton": Pure structure, zero styling.';
+            }
+        }
+
+        // Intersection Observer for Animations and Sidebar
+        document.addEventListener('DOMContentLoaded', () => {
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('active');
+                    }
+                });
+            }, { threshold: 0.1 });
+
+            document.querySelectorAll('.section-reveal').forEach(section => {
+                observer.observe(section);
+            });
+
+            // Sidebar Active State
+            const navLinks = document.querySelectorAll('aside .nav-link');
+            const sectionObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const id = entry.target.getAttribute('id');
+                        const activeLink = document.querySelector(`aside .nav-link[href="#${id}"]`);
+
+                        if (activeLink) {
+                            navLinks.forEach(link => link.classList.remove('active'));
+                            activeLink.classList.add('active');
+                        }
+                    }
+                });
+            }, { rootMargin: '-20% 0px -60% 0px' });
+
+            document.querySelectorAll('section').forEach(section => {
+                sectionObserver.observe(section);
+            });
+        });
+        // Initialize Quizzes
+        document.addEventListener('DOMContentLoaded', () => {
+            // 1. Inline Quizzes
+            new InlineQuiz('quiz-ui-process', {
+                question: "Which phase of Design Thinking involves creating 'solutions' or ideas?",
+                options: ["Empathize", "Define", "Ideate", "Prototype"],
+                answer: 2,
+                explanation: "Ideation is the stage where you generate a wide range of potential solutions to the problem defined in previous steps."
+            });
+
+            new InlineQuiz('quiz-ui-research', {
+                question: "Qualitative research (like interviews) is primarily concerned with:",
+                options: ["How many people use a feature", "The 'Why' behind user behavior", "Statistical significance", "Page load times"],
+                answer: 1,
+                explanation: "Qualitative research focuses on understanding the underlying motivations and reasoning of users."
+            });
+
+            new InlineQuiz('quiz-ui-ia', {
+                question: "What does Information Architecture (IA) primarily structure?",
+                options: ["Color palettes", "Content and navigation logic", "Server-side code", "Vector graphics"],
+                answer: 1,
+                explanation: "IA is about organizing content so that users can find what they need and understand where they are within a product."
+            });
+
+            new InlineQuiz('quiz-ui-composition', {
+                question: "Where should key elements be placed according to the Rule of Thirds?",
+                options: ["Dead center", "At the grid intersections", "At the very edges", "Only in the top row"],
+                answer: 1,
+                explanation: "Placing key elements at the grid intersections (power points) creates a more balanced and dynamic composition."
+            });
+
+            new InlineQuiz('quiz-ui-wireframe', {
+                question: "What is the primary purpose of a 'Lo-Fi' wireframe?",
+                options: ["To choose the final color palette", "To focus on layout and structure without distraction", "To create production-ready code", "To test high-quality images"],
+                answer: 1,
+                explanation: "Lo-fi wireframes are about skeletal structure and function, intentionally ignoring aesthetics to solve usability first."
+            });
+
+            new InlineQuiz('quiz-ui-typography', {
+                question: "Which hierarchy principle suggests that related elements should be placed close together?",
+                options: ["Scale", "Color", "Proximity", "Weight"],
+                answer: 2,
+                explanation: "Proximity is the principle that objects near each other appear to be part of the same group or related in function."
+            });
+
+            new InlineQuiz('quiz-ui-color', {
+                question: "Which color is traditionally associated with 'Trust' and 'Security' in UI design?",
+                options: ["Red", "Blue", "Yellow", "Purple"],
+                answer: 1,
+                explanation: "Blue is the most common color for finance and tech brands because it evokes feelings of trust, stability, and professionalism."
+            });
+
+            new InlineQuiz('quiz-ui-laws', {
+                question: "According to Fitts' Law, which button is easiest to click?",
+                options: ["A small button far away", "A large button far away", "A large button close to the cursor", "A small button close to the cursor"],
+                answer: 2,
+                explanation: "Fitts' Law states that ease of acquisition increases with target size and decreases with distance. Big and close is best."
+            });
+
+            new InlineQuiz('quiz-ui-a11y', {
+                question: "What is the minimum WCAG contrast ratio for normal text?",
+                options: ["3:1", "4.5:1", "7:1", "2:1"],
+                answer: 1,
+                explanation: "WCAG AA standards require a contrast ratio of at least 4.5:1 for normal text to ensure readability for visually impaired users."
+            });
+
+            // 2. Final Certification Quiz
+            const finalQuestions = [
+                {
+                    question: "What is the difference between UI and UX?",
+                    options: [
+                        "UI is code, UX is design.",
+                        "UI is the visual interface, UX is the overall user experience and feeling.",
+                        "They are the same thing.",
+                        "UX comes before UI always."
+                    ],
+                    answer: 1
+                },
+                {
+                    question: "Which of these is NOT a principle of good typography hierarchy?",
+                    options: [
+                        "Using different font weights (Bold vs Regular)",
+                        "Using different font sizes",
+                        "Using 5 different fonts in one paragraph",
+                        "Using color contrast"
+                    ],
+                    answer: 2
+                },
+                {
+                    question: "What is a 'Wireframe'?",
+                    options: [
+                        "A final high-fidelity mockup",
+                        "A skeletal blueprint of a webpage or app",
+                        "A CSS framework",
+                        "A type of 3D model"
+                    ],
+                    answer: 1
+                },
+                {
+                    question: "Hick's Law states that...",
+                    options: [
+                        "More choices lead to quicker decisions",
+                        "Decision time increases with the number of choices",
+                        "Users never scroll",
+                        "Blue is the best color for buttons"
+                    ],
+                    answer: 1
+                },
+                {
+                    question: "What is 'Kerning'?",
+                    options: [
+                        "The space between lines",
+                        "The space between individual characters",
+                        "The size of the font",
+                        "The margin of the page"
+                    ],
+                    answer: 1
+                },
+                {
+                    question: "What does visual 'Affordance' mean?",
+                    options: [
+                        "How expensive a product looks",
+                        "Visual cues that suggest how an object should be used",
+                        "The loading speed of a page",
+                        "The contrast ratio of text"
+                    ],
+                    answer: 1
+                },
+                {
+                    question: "In the 60-30-10 color rule, what is the 60%?",
+                    options: [
+                        "The accent color",
+                        "The secondary color",
+                        "The dominant/primary color (usually neutral)",
+                        "The darkness of the shadow"
+                    ],
+                    answer: 2
+                },
+                {
+                    question: "Why is accessibility (A11y) important?",
+                    options: [
+                        "It is required by law only",
+                        "It makes the design look better",
+                        "It ensures usage by people with disabilities and improves usability for all",
+                        "It allows for more colors"
+                    ],
+                    answer: 2
+                },
+                {
+                    question: "What is 'White Space' or 'Negative Space'?",
+                    options: [
+                        "Wasted screen real estate",
+                        "The empty area around elements that creates structure and focus",
+                        "The background color white",
+                        "A bug in the layout"
+                    ],
+                    answer: 1
+                },
+                {
+                    question: "Which file format consists of vector graphics?",
+                    options: [
+                        "JPG",
+                        "PNG",
+                        "SVG",
+                        "GIF"
+                    ],
+                    answer: 2
+                },
+                {
+                    question: "Which stage of the Design Thinking process involves building low-fidelity drafts of a solution?",
+                    options: ["Empathize", "Define", "Ideate", "Prototype"],
+                    answer: 3
+                },
+                {
+                    question: "What is an Information Architecture (IA) sitemap used for?",
+                    options: ["Choosing the primary brand colors", "Visualizing the hierarchy and navigation of a site", "Writing the technical documentation", "Testing the speed of the website"],
+                    answer: 1
+                },
+                {
+                    question: "Why do designers use 'User Personas'?",
+                    options: ["To represent real individual users exactly", "To create fictional archetypes that represent user groups", "To replace real user testing", "To design for themselves"],
+                    answer: 1
+                },
+                {
+                    question: "The 'Golden Ratio' is approximately equal to:",
+                    options: ["1.5", "1.618", "2.0", "3.14"],
+                    answer: 1
+                },
+                {
+                    question: "In the Rule of Thirds, how many grid intersections are there?",
+                    options: ["2", "4", "6", "9"],
+                    answer: 1
+                },
+                {
+                    question: "Which of these is a font pairing tip for creating visual harmony?",
+                    options: ["Use two very similar fonts", "Match the x-heights of different typefaces", "Avoid using bold weights", "Use only one font size everywhere"],
+                    answer: 1
+                },
+                {
+                    question: "Visual hierarchy is primarily about:",
+                    options: ["Adding as much color as possible", "Directing user attention to the most important elements", "Filling every empty space", "Making all text the same size"],
+                    answer: 1
+                },
+                {
+                    question: "Which color is best for evoking a sense of 'Luxury' and 'Exclusivity'?",
+                    options: ["Yellow", "Purple", "Green", "Red"],
+                    answer: 1
+                },
+                {
+                    question: "What is the 'Serial Position Effect' in UX design?",
+                    options: ["The tendency to only remember the middle items in a list", "The tendency to remember the first and last items in a series best", "The order in which pages are designed", "The position of the scrollbar"],
+                    answer: 1
+                },
+                {
+                    question: "What is the primary principle of 'Mobile-First' design?",
+                    options: ["Designing for desktop first and then hiding elements for mobile", "Starting the design process for the smallest screen and scaling up", "Only making apps for iPhones", "Ignoring desktop users entirely"],
+                    answer: 1
+                }
+            ];
+
+            new QuizManager('quiz-container', finalQuestions, () => {
+                document.getElementById('certificate').classList.remove('hidden');
+                setTimeout(() => {
+                    document.getElementById('certificate').scrollIntoView({ behavior: 'smooth' });
+                }, 100);
+            });
+
+            // Certificate Logic
+            const certGen = new CertificateGenerator('cert-canvas', 'UI/UX Design');
+
+            window.generateCert = function () {
+                const nameInput = document.getElementById('cert-name');
+                const errorMsg = document.getElementById('cert-error');
+                const name = nameInput.value.trim();
+                const nameRegex = /^[a-zA-Z\s\-\.'’]+$/;
+
+                // Reset error state
+                errorMsg.classList.add('hidden');
+                nameInput.classList.remove('border-red-500');
+
+                if (!name) {
+                    errorMsg.textContent = "Please enter your name.";
+                    errorMsg.classList.remove('hidden');
+                    nameInput.classList.add('border-red-500');
+                    return;
+                }
+
+                if (name.length < 3 || name.length > 35) {
+                    errorMsg.textContent = "Name must be between 3 and 35 characters.";
+                    errorMsg.classList.remove('hidden');
+                    nameInput.classList.add('border-red-500');
+                    return;
+                }
+
+                if (!nameRegex.test(name)) {
+                    errorMsg.textContent = "Name cannot contain numbers or special characters.";
+                    errorMsg.classList.remove('hidden');
+                    nameInput.classList.add('border-red-500');
+                    return;
+                }
+
+                certGen.generate(name);
+                document.getElementById('btn-download').classList.remove('hidden');
+            };
+
+            window.downloadCert = function () {
+                const name = document.getElementById('cert-name').value.trim();
+                certGen.download(`Undrstanding_UIUX_Certificate_${name.replace(/\s+/g, '_')}.png`);
+            };
+        });
+    </script>
+    <script src="js/script.js"></script> <!-- Link to shared script -->
+</body>
+
+</html>

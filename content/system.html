@@ -1,0 +1,1853 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>System Architecture</title>
+    <link rel="icon" type="image/svg+xml" href="../assests/undrlogo.svg">
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Roboto+Mono:wght@400;500&display=swap');
+
+        /* Global Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #a3a3a3;
+            border-radius: 3px;
+        }
+
+        :root {
+            /* Rams Palette - Industrial Brown Edition */
+            --bg-color: #f4f4f4;
+            --card-bg: #ffffff;
+            --text-main: #111111;
+            --text-muted: #737373;
+
+            /* Brown Accent (Amber 800/900) */
+            --accent: #92400e;
+            --accent-hover: #78350f;
+
+            --danger: #ef4444;
+            --border: #e5e5e5;
+            --line: #d4d4d4;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            -webkit-font-smoothing: antialiased;
+            line-height: 1.5;
+        }
+
+        h1,
+        h2,
+        h3,
+        h4,
+        h5 {
+            font-weight: 600;
+            letter-spacing: -0.03em;
+            color: var(--text-main);
+        }
+
+        .mono {
+            font-family: 'Roboto Mono', monospace;
+        }
+
+        /* Industrial Grid Layout */
+        .rams-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .rams-card:hover {
+            border-color: #a3a3a3;
+        }
+
+        @media (min-width: 768px) {
+            .rams-card {
+                padding: 2rem;
+            }
+        }
+
+        .rams-label {
+            font-family: 'Inter', sans-serif;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+            margin-bottom: 1rem;
+            display: block;
+        }
+
+        /* Controls */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.5rem 1.25rem;
+            font-size: 0.85rem;
+            font-weight: 500;
+            border-radius: 2px;
+            transition: all 0.1s ease;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            white-space: nowrap;
+        }
+
+        .btn-primary {
+            background-color: var(--accent);
+            color: white;
+            border: 1px solid var(--accent);
+        }
+
+        .btn-primary:hover {
+            background-color: var(--accent-hover);
+        }
+
+        .btn-secondary {
+            background-color: transparent;
+            color: var(--text-main);
+            border: 1px solid #a3a3a3;
+        }
+
+        .btn-secondary:hover {
+            background-color: #e5e5e5;
+            border-color: #737373;
+        }
+
+        /* Navigation */
+        .nav-link {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            padding: 0.5rem 0;
+            display: block;
+            transition: color 0.2s;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            color: var(--text-main);
+            font-weight: 500;
+        }
+
+        .nav-link.active::before {
+            content: "• ";
+            color: var(--accent);
+        }
+
+        /* Mobile Menu */
+        .mobile-nav-link {
+            font-size: 1.25rem;
+            font-weight: 500;
+            color: var(--text-main);
+            padding: 1rem 0;
+            border-bottom: 1px solid #e5e5e5;
+            display: block;
+        }
+
+        .divider {
+            height: 1px;
+            background-color: var(--border);
+            width: 100%;
+            margin: 3rem 0;
+        }
+
+        .thin-scrollbar::-webkit-scrollbar {
+            width: 1px;
+        }
+
+        .thin-scrollbar::-webkit-scrollbar-thumb {
+            background: #d4d4d4;
+        }
+
+        /* Animation */
+        .section-reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 1s cubic-bezier(0.25, 1, 0.25, 1), transform 1s cubic-bezier(0.25, 1, 0.25, 1);
+        }
+
+        .section-reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Server/Node Visuals */
+        .server-node {
+            transition: all 0.2s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .server-node.active {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 2px rgba(146, 64, 14, 0.1);
+        }
+
+        .server-load-bar {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background-color: #fbbf24;
+            /* Warning yellow */
+            opacity: 0.5;
+            transition: height 0.3s linear;
+        }
+
+        .request-dot {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background-color: var(--accent);
+            border-radius: 50%;
+            z-index: 20;
+        }
+
+        /* Event Bus Animation */
+        .event-pulse {
+            animation: pulse-ring 2s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
+        }
+
+        @keyframes pulse-ring {
+            0% {
+                transform: scale(0.33);
+                opacity: 1;
+            }
+
+            80%,
+            100% {
+                transform: scale(2);
+                opacity: 0;
+            }
+        }
+
+        /* Container Stack */
+        .container-box {
+            background-image: repeating-linear-gradient(45deg, transparent, transparent 5px, rgba(255, 255, 255, 0.1) 5px, rgba(255, 255, 255, 0.1) 10px);
+        }
+
+        /* Details Box */
+        .details-box {
+            background-color: #f9fafb;
+            border-top: 1px solid #e5e5e5;
+            padding: 1.5rem;
+            margin-top: 0;
+            font-size: 0.8rem;
+            color: #4b5563;
+            line-height: 1.6;
+        }
+
+        .details-title {
+            font-weight: 700;
+            color: #111;
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            font-size: 0.7rem;
+            letter-spacing: 0.05em;
+        }
+    </style>
+</head>
+
+<body class="overflow-x-hidden">
+
+    <div class="flex min-h-screen flex-col lg:flex-row">
+
+        <!-- Mobile Header (Fixed) -->
+        <header
+            class="lg:hidden fixed top-0 w-full bg-[#f4f4f4] border-b border-[#e5e5e5] z-[100] px-6 py-4 flex justify-between items-center h-16">
+            <div>
+                <h1 class="text-sm font-semibold tracking-wide uppercase text-black leading-tight">
+                    System<br>Architecture</h1>
+            </div>
+            <button onclick="toggleMobileMenu()"
+                class="text-black focus:outline-none p-2 border border-transparent active:bg-gray-200 rounded">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+            </button>
+        </header>
+
+        <!-- Mobile Menu Overlay -->
+        <div id="mobile-menu" class="fixed inset-0 bg-[#f4f4f4] z-[90] hidden flex-col pt-20 px-6 overflow-y-auto">
+            <nav class="flex flex-col">
+                <span class="text-[10px] text-gray-400 font-bold uppercase tracking-wider px-0 py-2">01.
+                    Fundamentals</span>
+                <a href="#intro" class="mobile-nav-link" onclick="toggleMobileMenu()">Introduction</a>
+                <a href="#principles" class="mobile-nav-link" onclick="toggleMobileMenu()">Core Principles</a>
+
+                <span class="text-[10px] text-gray-400 font-bold uppercase tracking-wider px-0 py-2 mt-4">02.
+                    Patterns</span>
+                <a href="#monolith" class="mobile-nav-link" onclick="toggleMobileMenu()">Structural Patterns</a>
+                <a href="#layered" class="mobile-nav-link" onclick="toggleMobileMenu()">Layered & SOA</a>
+                <a href="#eda" class="mobile-nav-link" onclick="toggleMobileMenu()">Event-Driven</a>
+
+                <span class="text-[10px] text-gray-400 font-bold uppercase tracking-wider px-0 py-2 mt-4">03.
+                    Scaling</span>
+                <a href="#loadbalancing" class="mobile-nav-link" onclick="toggleMobileMenu()">Load Balancing</a>
+                <a href="#caching" class="mobile-nav-link" onclick="toggleMobileMenu()">Caching</a>
+                <a href="#databases" class="mobile-nav-link" onclick="toggleMobileMenu()">Databases</a>
+
+                <span class="text-[10px] text-gray-400 font-bold uppercase tracking-wider px-0 py-2 mt-4">04. Ops</span>
+                <a href="#apis" class="mobile-nav-link" onclick="toggleMobileMenu()">APIs</a>
+                <a href="#containers" class="mobile-nav-link" onclick="toggleMobileMenu()">Containers</a>
+                <a href="#observability" class="mobile-nav-link" onclick="toggleMobileMenu()">Observability</a>
+                <a href="#checklist" class="mobile-nav-link" onclick="toggleMobileMenu()">Design Checklist</a>
+                <a href="#glossary" class="mobile-nav-link" onclick="toggleMobileMenu()">Glossary</a>
+
+                <span class="text-[10px] text-gray-400 font-bold uppercase tracking-wider px-0 py-2 mt-4">05.
+                    Assessment</span>
+                <a href="#quiz" class="mobile-nav-link border-b-0" onclick="toggleMobileMenu()">Knowledge Check</a>
+            </nav>
+        </div>
+
+        <!-- Sidebar (Desktop) -->
+        <aside
+            class="hidden lg:block w-64 fixed h-screen bg-[#f4f4f4] border-r border-[#e5e5e5] z-50 overflow-y-auto thin-scrollbar">
+            <div class="p-8 h-full flex flex-col justify-between">
+                <div>
+                    <a href="../index.html"
+                        class="inline-flex items-center gap-2 px-4 py-2 mb-8 text-[10px] font-mono uppercase tracking-wider text-gray-600 border border-gray-300 hover:bg-black hover:text-white hover:border-black transition-all duration-200">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                        </svg>
+                        Back to Home
+                    </a>
+                    <div class="mb-12">
+                        <h1 class="text-sm font-semibold tracking-wide uppercase text-black">System<br>Architecture
+                        </h1>
+                        <p class="text-[10px] text-gray-500 mt-1 uppercase tracking-wider">Architecture</p>
+                    </div>
+
+                    <nav class="space-y-1">
+                        <div class="pt-0 pb-1 text-[10px] text-gray-400 font-bold uppercase tracking-wider">01.
+                            Fundamentals</div>
+                        <a href="#intro" class="nav-link">Introduction</a>
+                        <a href="#principles" class="nav-link">Core Principles</a>
+
+                        <div class="pt-4 pb-1 text-[10px] text-gray-400 font-bold uppercase tracking-wider">02. Patterns
+                        </div>
+                        <a href="#monolith" class="nav-link">Monolith/Microservices</a>
+                        <a href="#layered" class="nav-link">Layered & SOA</a>
+                        <a href="#eda" class="nav-link">Event-Driven (EDA)</a>
+
+                        <div class="pt-4 pb-1 text-[10px] text-gray-400 font-bold uppercase tracking-wider">03. Scaling
+                            & Data</div>
+                        <a href="#loadbalancing" class="nav-link">Load Balancing</a>
+                        <a href="#caching" class="nav-link">Caching Strategy</a>
+                        <a href="#databases" class="nav-link">Databases</a>
+
+                        <div class="pt-4 pb-1 text-[10px] text-gray-400 font-bold uppercase tracking-wider">04.
+                            Infrastructure</div>
+                        <a href="#apis" class="nav-link">APIs & Protocols</a>
+                        <a href="#containers" class="nav-link">Containers & Cloud</a>
+                        <a href="#observability" class="nav-link">Observability</a>
+
+                        <div class="pt-4 pb-1 text-[10px] text-gray-400 font-bold uppercase tracking-wider">05. Summary
+                        </div>
+                        <a href="#checklist" class="nav-link">Design Checklist</a>
+                        <a href="#glossary" class="nav-link">Glossary</a>
+
+                        <div class="pt-4 pb-1 text-[10px] text-gray-400 font-bold uppercase tracking-wider">06.
+                            Assessment
+                        </div>
+                        <a href="#quiz" class="nav-link">Knowledge Check</a>
+                    </nav>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 lg:ml-64 bg-white w-full">
+            <div class="max-w-3xl mx-auto px-4 sm:px-8 py-24 lg:py-20">
+
+                <!-- Hero Section -->
+                <section id="intro" class="mb-16 md:mb-24">
+                    <h2 class="text-3xl md:text-5xl font-semibold mb-6 text-black tracking-tight leading-tight">
+                        Designing for<br>Scale & Reliability
+                    </h2>
+                    <p class="text-base md:text-lg text-[#555] max-w-xl font-light leading-relaxed mb-4">
+                        System design is the process of defining the architecture, components, modules, interfaces, and
+                        data for a system to satisfy specified requirements.
+                    </p>
+                    <p class="text-sm text-gray-500 max-w-lg leading-relaxed">
+                        It is the art of trade-offs. Speed vs. Consistency. Complexity vs. Maintainability. Monolith vs.
+                        Microservices. There is no "perfect" architecture, only the right set of choices for the
+                        specific constraints.
+                    </p>
+                </section>
+
+                <div class="divider hidden md:block"></div>
+
+                <!-- 01. Core Principles -->
+                <section id="principles" class="mb-20 md:mb-24">
+                    <span class="rams-label">01 / Fundamentals</span>
+                    <h3 class="text-xl font-medium mb-6">Core Principles</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="rams-card bg-gray-50 border-0 p-6 mb-0">
+                            <h4 class="font-bold text-sm mb-2 text-amber-900">SOLID</h4>
+                            <p class="text-xs text-gray-600 mb-2">Five principles for OO design to make software more
+                                understandable and flexible.</p>
+                            <ul class="text-[10px] text-gray-500 list-disc list-inside space-y-1">
+                                <li><strong>S</strong>ingle Responsibility: Do one thing well.</li>
+                                <li><strong>O</strong>pen/Closed: Open for extension, closed for mod.</li>
+                                <li><strong>L</strong>iskov Substitution: Subtypes must be substitutable.</li>
+                                <li><strong>I</strong>nterface Segregation: Many client-specific interfaces.</li>
+                                <li><strong>D</strong>ependency Inversion: Depend on abstractions.</li>
+                            </ul>
+                        </div>
+                        <div class="rams-card bg-gray-50 border-0 p-6 mb-0">
+                            <h4 class="font-bold text-sm mb-2 text-amber-900">CAP Theorem</h4>
+                            <p class="text-xs text-gray-600 mb-2">In a distributed data store, you can only guarantee
+                                two of the following three:</p>
+                            <ul class="text-[10px] text-gray-500 list-disc list-inside space-y-1">
+                                <li><strong>Consistency:</strong> Every read receives the most recent write.</li>
+                                <li><strong>Availability:</strong> Every request receives a response (no error).</li>
+                                <li><strong>Partition Tolerance:</strong> System continues despite message loss.</li>
+                            </ul>
+                            <p class="text-[10px] text-gray-400 mt-2 italic">Note: In distributed systems, P is
+                                mandatory. You mostly choose between CP (Consistency) or AP (Availability).</p>
+                        </div>
+                        <div class="rams-card bg-gray-50 border-0 p-6 mb-0">
+                            <h4 class="font-bold text-sm mb-2 text-amber-900">KISS & DRY</h4>
+                            <p class="text-xs text-gray-600 mb-2">Philosophy for maintainable code.</p>
+                            <ul class="text-[10px] text-gray-500 list-disc list-inside space-y-1">
+                                <li><strong>Keep It Simple, Stupid:</strong> Complexity is the enemy of reliability.
+                                </li>
+                                <li><strong>Don't Repeat Yourself:</strong> Duplication leads to inconsistent updates.
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="rams-card bg-gray-50 border-0 p-6 mb-0">
+                            <h4 class="font-bold text-sm mb-2 text-amber-900">Twelve-Factor App</h4>
+                            <p class="text-xs text-gray-600">A methodology for building SaaS apps. Key points:</p>
+                            <ul class="text-[10px] text-gray-500 list-disc list-inside space-y-1 mt-2">
+                                <li>Store config in environment variables.</li>
+                                <li>Treat backing services (DBs) as attached resources.</li>
+                                <li>Execute the app as one or more stateless processes.</li>
+                                <li>Keep dev, staging, and prod as similar as possible.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </section>
+                <!-- Check: Principles -->
+                <div id="quiz-system-principles"></div>
+
+                <!-- 02. Structural Patterns -->
+                <section id="monolith" class="mb-20 md:mb-24">
+                    <span class="rams-label">02 / Structural Patterns</span>
+                    <h3 class="text-xl font-medium mb-2">Monolithic vs. Microservices vs. Modular</h3>
+                    <p class="text-sm text-gray-600 mb-8 max-w-lg">
+                        <strong>Monoliths</strong> are unified units. <strong>Microservices</strong> are distributed
+                        independent services. <strong>Modular Monoliths</strong> are hybrid.
+                    </p>
+
+                    <div class="rams-card pb-0">
+                        <div class="flex flex-col gap-6">
+                            <!-- Visual Container -->
+                            <div class="bg-[#f4f4f4] border border-gray-200 p-8 h-72 flex items-center justify-center relative overflow-hidden"
+                                id="arch-container">
+                                <!-- Content injected by JS -->
+                            </div>
+
+                            <!-- Controls -->
+                            <div
+                                class="flex flex-col md:flex-row items-center justify-between gap-4 pt-4 border-t border-gray-100">
+                                <div class="flex gap-2">
+                                    <button onclick="setArch('monolith')"
+                                        class="btn btn-secondary text-xs">Monolith</button>
+                                    <button onclick="setArch('modular')"
+                                        class="btn btn-secondary text-xs">Modular</button>
+                                    <button onclick="setArch('microservices')"
+                                        class="btn btn-secondary text-xs">Microservices</button>
+                                </div>
+                                <div class="flex gap-2">
+                                    <button onclick="scaleArch()"
+                                        class="btn btn-primary text-xs bg-amber-800 border-amber-800 hover:bg-amber-900">Scale
+                                        Up</button>
+                                </div>
+                            </div>
+                            <div class="text-xs text-gray-500 italic mb-6" id="arch-status">
+                                Select an architecture pattern to visualize its structure and scaling behavior.
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Deep Dive Info -->
+                    <div class="details-box">
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <div>
+                                <div class="details-title">Monolith</div>
+                                <ul class="list-disc list-inside space-y-1">
+                                    <li><strong>Pros:</strong> Simple to deploy, easy E2E testing, zero network latency
+                                        between calls.</li>
+                                    <li><strong>Cons:</strong> High coupling, single point of failure, technology
+                                        lock-in, scales as a whole block.</li>
+                                </ul>
+                            </div>
+                            <div>
+                                <div class="details-title">Modular Monolith</div>
+                                <ul class="list-disc list-inside space-y-1">
+                                    <li><strong>Pros:</strong> Code boundaries enforced, easier refactoring, simplified
+                                        ops (single deployment).</li>
+                                    <li><strong>Cons:</strong> Still shares runtime resources (CPU/Memory) across
+                                        modules.</li>
+                                </ul>
+                            </div>
+                            <div>
+                                <div class="details-title">Microservices</div>
+                                <ul class="list-disc list-inside space-y-1">
+                                    <li><strong>Pros:</strong> Independent scaling, fault isolation, tech freedom per
+                                        service.</li>
+                                    <li><strong>Cons:</strong> Distributed system complexity, network latency, difficult
+                                        debugging/tracing.</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                <!-- Check: Monolith -->
+                <div id="quiz-system-monolith"></div>
+
+                <!-- 03. Layered & SOA -->
+                <section id="layered" class="mb-20 md:mb-24">
+                    <span class="rams-label">02.1 / Structural Patterns</span>
+                    <h3 class="text-xl font-medium mb-6">Layered & Tiered Architecture</h3>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <div>
+                            <h4 class="text-sm font-bold mb-4">N-Tier Architecture</h4>
+                            <p class="text-xs text-gray-600 mb-4">The most common pattern. Separates concerns
+                                horizontally. Strict layering means Layer A calls Layer B, but Layer B never calls Layer
+                                A.</p>
+
+                            <div class="space-y-2 mb-4">
+                                <div class="p-3 bg-gray-800 text-white text-xs text-center rounded shadow-sm">
+                                    Presentation Layer (UI)</div>
+                                <div class="flex justify-center h-4">
+                                    <div class="w-px bg-gray-300"></div>
+                                </div>
+                                <div class="p-3 bg-amber-800 text-white text-xs text-center rounded shadow-sm">Business
+                                    Logic Layer</div>
+                                <div class="flex justify-center h-4">
+                                    <div class="w-px bg-gray-300"></div>
+                                </div>
+                                <div
+                                    class="p-3 bg-gray-200 text-gray-800 text-xs text-center rounded border border-gray-300">
+                                    Data Access Layer</div>
+                            </div>
+                            <p class="text-[10px] text-gray-500 italic">Common Pitfall: "Architecture Sinkhole" —
+                                requests passing through layers without logic just to get to DB.</p>
+                        </div>
+
+                        <div>
+                            <h4 class="text-sm font-bold mb-4">SOA (Service Oriented)</h4>
+                            <p class="text-xs text-gray-600 mb-4">Precursor to microservices. Focuses on reusing
+                                components via an Enterprise Service Bus (ESB).</p>
+
+                            <div
+                                class="relative h-40 bg-gray-50 border border-gray-200 rounded p-4 flex items-center justify-center">
+                                <div class="absolute w-full h-2 bg-orange-400 top-1/2 -translate-y-1/2"></div>
+                                <div
+                                    class="absolute bg-white px-2 text-[9px] text-orange-600 font-bold border border-orange-200 rounded z-10">
+                                    Enterprise Service Bus (ESB)</div>
+                                <div
+                                    class="absolute top-4 left-4 w-12 h-12 bg-white border border-gray-300 flex items-center justify-center text-[8px] rounded shadow-sm">
+                                    Billing</div>
+                                <div
+                                    class="absolute top-4 right-4 w-12 h-12 bg-white border border-gray-300 flex items-center justify-center text-[8px] rounded shadow-sm">
+                                    Inv</div>
+                                <div
+                                    class="absolute bottom-4 left-10 w-12 h-12 bg-white border border-gray-300 flex items-center justify-center text-[8px] rounded shadow-sm">
+                                    CRM</div>
+                                <div class="absolute w-px h-8 bg-gray-400 top-16 left-10"></div>
+                                <div class="absolute w-px h-8 bg-gray-400 top-16 right-10"></div>
+                                <div class="absolute w-px h-8 bg-gray-400 bottom-16 left-16"></div>
+                            </div>
+                            <p class="text-[10px] text-gray-500 mt-2 italic">Note: The ESB often becomes a bottleneck or
+                                "Smart pipes, dumb endpoints".</p>
+                        </div>
+                    </div>
+                </section>
+                <!-- Check: Layered -->
+                <div id="quiz-system-layered"></div>
+
+                <!-- 04. EDA -->
+                <section id="eda" class="mb-20 md:mb-24">
+                    <span class="rams-label">02.2 / Asynchronous</span>
+                    <h3 class="text-xl font-medium mb-2">Event-Driven Architecture (EDA)</h3>
+                    <p class="text-sm text-gray-600 mb-8 max-w-lg">
+                        Components communicate by emitting <strong>Events</strong> (facts about what happened).
+                        Producers don't know consumers. This decouples services in time and space.
+                    </p>
+
+                    <div class="rams-card pb-0">
+                        <div class="relative bg-gray-900 h-48 rounded overflow-hidden flex items-center justify-center"
+                            id="eda-canvas">
+                            <!-- Visuals handled by JS -->
+                            <div class="w-3/4 h-1 bg-gray-600 relative"></div>
+                            <div class="absolute left-8 top-1/2 -translate-y-1/2 flex flex-col items-center">
+                                <button onclick="emitEvent()"
+                                    class="w-16 h-16 rounded-full bg-amber-700 text-white text-[10px] font-bold shadow-[0_0_20px_rgba(180,83,9,0.5)] hover:scale-105 transition-transform flex items-center justify-center z-20">
+                                    Buy Item
+                                </button>
+                                <span class="text-[9px] text-gray-400 mt-2">Producer</span>
+                            </div>
+                            <div class="absolute right-12 top-8 flex flex-col items-center">
+                                <div
+                                    class="w-20 h-8 bg-gray-800 border border-gray-600 rounded flex items-center justify-center text-[9px] text-gray-300 z-10 consumer-node">
+                                    Email Svc</div>
+                            </div>
+                            <div class="absolute right-12 bottom-8 flex flex-col items-center">
+                                <div
+                                    class="w-20 h-8 bg-gray-800 border border-gray-600 rounded flex items-center justify-center text-[9px] text-gray-300 z-10 consumer-node">
+                                    Inventory Svc</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="details-box">
+                        <div class="details-title">Key Concepts</div>
+                        <ul class="list-disc list-inside space-y-1">
+                            <li><strong>Decoupling:</strong> The checkout service doesn't need to know if the Email
+                                service is online. It just drops a message and moves on.</li>
+                            <li><strong>Eventual Consistency:</strong> Data isn't consistent immediately across all
+                                services (e.g., Inventory updates 200ms after Order).</li>
+                            <li><strong>Load Leveling:</strong> If a traffic spike occurs, the queue buffers requests so
+                                consumers can process at their own pace without crashing.</li>
+                        </ul>
+                    </div>
+                </section>
+                <!-- Check: EDA -->
+                <div id="quiz-system-eda"></div>
+
+                <!-- 05. Load Balancing -->
+                <section id="loadbalancing" class="mb-20 md:mb-24">
+                    <span class="rams-label">03 / Traffic Control</span>
+                    <h3 class="text-xl font-medium mb-2">Load Balancing</h3>
+                    <p class="text-sm text-gray-600 mb-8 max-w-lg">
+                        Distributing incoming network traffic across a group of backend servers. This ensures no single
+                        server bears too much load.
+                    </p>
+
+                    <div class="rams-card pb-0">
+                        <div
+                            class="relative bg-gray-50 border border-gray-200 p-6 h-64 flex flex-col justify-between overflow-hidden">
+                            <!-- Visual Elements (LB, Servers) -->
+                            <div class="flex justify-center mb-4">
+                                <div class="flex flex-col items-center">
+                                    <div
+                                        class="w-8 h-8 bg-gray-800 rounded-full flex items-center justify-center text-white text-[10px]">
+                                        USR</div>
+                                    <div class="text-[9px] uppercase mt-1 text-gray-400">Traffic Source</div>
+                                </div>
+                            </div>
+                            <div class="flex justify-center mb-8 relative z-10">
+                                <div class="w-24 h-8 border-2 border-amber-700 bg-white rounded flex items-center justify-center text-xs font-mono font-bold text-amber-800 shadow-sm"
+                                    id="lb-node">
+                                    Load Balancer
+                                </div>
+                            </div>
+                            <div class="flex justify-around items-end" id="server-cluster">
+                                <div class="w-14 h-20 border border-gray-300 bg-white rounded flex flex-col items-center justify-end p-1 server-node"
+                                    id="srv-0">
+                                    <div class="server-load-bar" id="load-0" style="height: 0%"></div>
+                                    <div class="w-full h-1 bg-gray-200 mb-1 z-10"></div>
+                                    <div class="w-full h-1 bg-gray-200 mb-1 z-10"></div><span
+                                        class="text-[9px] font-mono text-gray-400 z-10">S1</span>
+                                    <span class="text-[8px] absolute top-1 right-1 text-gray-400"
+                                        id="load-text-0">0%</span>
+                                </div>
+                                <div class="w-14 h-20 border border-gray-300 bg-white rounded flex flex-col items-center justify-end p-1 server-node"
+                                    id="srv-1">
+                                    <div class="server-load-bar" id="load-1" style="height: 0%"></div>
+                                    <div class="w-full h-1 bg-gray-200 mb-1 z-10"></div>
+                                    <div class="w-full h-1 bg-gray-200 mb-1 z-10"></div><span
+                                        class="text-[9px] font-mono text-gray-400 z-10">S2</span>
+                                    <span class="text-[8px] absolute top-1 right-1 text-gray-400"
+                                        id="load-text-1">0%</span>
+                                </div>
+                                <div class="w-14 h-20 border border-gray-300 bg-white rounded flex flex-col items-center justify-end p-1 server-node"
+                                    id="srv-2">
+                                    <div class="server-load-bar" id="load-2" style="height: 0%"></div>
+                                    <div class="w-full h-1 bg-gray-200 mb-1 z-10"></div>
+                                    <div class="w-full h-1 bg-gray-200 mb-1 z-10"></div><span
+                                        class="text-[9px] font-mono text-gray-400 z-10">S3</span>
+                                    <span class="text-[8px] absolute top-1 right-1 text-gray-400"
+                                        id="load-text-2">0%</span>
+                                </div>
+                            </div>
+                            <div id="traffic-canvas" class="absolute inset-0 pointer-events-none"></div>
+                        </div>
+
+                        <div class="flex flex-col sm:flex-row justify-between items-center mt-6 mb-6 gap-4">
+                            <div class="flex flex-wrap gap-2 justify-center sm:justify-start">
+                                <button onclick="sendTraffic(1)" class="btn btn-secondary text-xs">1 Req</button>
+                                <button onclick="sendTraffic(10)" class="btn btn-secondary text-xs">Burst (10)</button>
+                                <button onclick="toggleAlgorithm()" class="btn btn-secondary text-xs"
+                                    id="algo-btn">Algo: Round Robin</button>
+                            </div>
+                            <div class="text-right w-full sm:w-auto text-center sm:text-right">
+                                <div class="text-[10px] uppercase text-gray-400">Total Requests</div>
+                                <div id="req-count" class="font-mono text-sm font-bold text-amber-800">0</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="details-box">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <div class="details-title">Algorithms</div>
+                                <ul class="list-disc list-inside space-y-1">
+                                    <li><strong>Round Robin:</strong> Requests are distributed sequentially. Simple,
+                                        effective for equal servers.</li>
+                                    <li><strong>Least Connections:</strong> Sends new requests to the server with the
+                                        fewest active connections.</li>
+                                    <li><strong>IP Hash:</strong> Uses client IP to determine server. Useful for "Sticky
+                                        Sessions" (user stays on same server).</li>
+                                </ul>
+                            </div>
+                            <div>
+                                <div class="details-title">Types</div>
+                                <ul class="list-disc list-inside space-y-1">
+                                    <li><strong>L4 (Transport):</strong> Balances based on IP/Port (TCP/UDP). Very fast,
+                                        packet level.</li>
+                                    <li><strong>L7 (Application):</strong> Balances based on HTTP headers, URLs,
+                                        Cookies. Smarter, CPU intensive.</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                <!-- Check: Load Balancing -->
+                <div id="quiz-system-lb"></div>
+
+                <!-- 06. Caching -->
+                <section id="caching" class="mb-20 md:mb-24">
+                    <span class="rams-label">03.1 / Speed</span>
+                    <h3 class="text-xl font-medium mb-2">Caching Strategy</h3>
+                    <p class="text-sm text-gray-600 mb-8 max-w-lg">
+                        Reading from memory (RAM) is ~100x faster than disk. Caching reduces database load and latency.
+                    </p>
+
+                    <div class="rams-card pb-0">
+                        <div class="flex items-center justify-between gap-4 mb-4">
+                            <div class="text-center">
+                                <div
+                                    class="w-10 h-10 bg-black rounded-full text-white flex items-center justify-center text-xs mb-2 mx-auto">
+                                    App</div>
+                            </div>
+                            <div class="flex-1 h-px bg-gray-300 relative">
+                                <div
+                                    class="absolute -top-3 left-1/2 -translate-x-1/2 text-[9px] bg-white px-1 text-gray-400">
+                                    GET /user/1</div>
+                            </div>
+                            <div class="text-center relative">
+                                <div class="w-16 h-16 border-2 border-amber-700 bg-amber-50 rounded flex items-center justify-center text-xs font-bold text-amber-900 transition-colors"
+                                    id="cache-box">CACHE</div>
+                                <div class="absolute -bottom-6 w-full text-center text-[9px] text-gray-400 font-mono">
+                                    Redis</div>
+                            </div>
+                            <div class="flex-1 h-px bg-gray-300 relative"></div>
+                            <div class="text-center relative">
+                                <div class="w-16 h-16 border-2 border-gray-400 bg-gray-100 rounded-full flex flex-col items-center justify-center text-xs font-bold text-gray-600 transition-colors"
+                                    id="db-box">
+                                    <div class="w-full h-px bg-gray-300 my-0.5"></div>DB<div
+                                        class="w-full h-px bg-gray-300 my-0.5"></div>
+                                </div>
+                                <div class="absolute -bottom-6 w-full text-center text-[9px] text-gray-400 font-mono">
+                                    Postgres</div>
+                            </div>
+                        </div>
+
+                        <!-- Visual Speedometer -->
+                        <div class="mb-4">
+                            <div class="text-[10px] uppercase text-gray-400 mb-1">Request Latency</div>
+                            <div class="w-full h-2 bg-gray-200 rounded overflow-hidden">
+                                <div id="latency-bar" class="h-full bg-amber-600 w-0 transition-all duration-300"></div>
+                            </div>
+                        </div>
+
+                        <div class="bg-gray-900 text-gray-200 p-4 rounded mono text-xs mb-4">
+                            <div id="cache-log">Waiting for request...</div>
+                        </div>
+                        <div class="flex flex-col sm:flex-row gap-2 mb-6">
+                            <button onclick="fetchData('user_1')"
+                                class="btn btn-primary bg-amber-800 border-amber-800 hover:bg-amber-900 w-full">Fetch
+                                User 1</button>
+                            <button onclick="clearCache()" class="btn btn-secondary w-full">Evict Cache</button>
+                        </div>
+                    </div>
+
+                    <div class="details-box">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <div class="details-title">Strategies</div>
+                                <ul class="list-disc list-inside space-y-1">
+                                    <li><strong>Cache-Aside (Lazy Loading):</strong> App checks cache. If miss, app
+                                        fetches DB and updates cache. Best for read-heavy.</li>
+                                    <li><strong>Write-Through:</strong> App writes to Cache and DB simultaneously.
+                                        Consistency is high, writes are slower.</li>
+                                    <li><strong>Write-Back:</strong> App writes only to Cache (fast). Cache async writes
+                                        to DB. Risk of data loss.</li>
+                                </ul>
+                            </div>
+                            <div>
+                                <div class="details-title">Eviction</div>
+                                <ul class="list-disc list-inside space-y-1">
+                                    <li><strong>LRU (Least Recently Used):</strong> Discard items not used recently.
+                                    </li>
+                                    <li><strong>TTL (Time To Live):</strong> Data expires after fixed time (e.g., 5
+                                        mins). Prevents "Stale Data".</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                <!-- Check: Caching -->
+                <div id="quiz-system-caching"></div>
+
+                <!-- 07. Databases -->
+                <section id="databases" class="mb-20 md:mb-24">
+                    <span class="rams-label">03.2 / Storage</span>
+                    <h3 class="text-xl font-medium mb-6">Databases & Scaling</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                        <div class="rams-card bg-white h-full mb-0">
+                            <div class="flex justify-between items-start mb-4">
+                                <h4 class="text-sm font-bold">Relational (SQL)</h4>
+                                <span class="text-[9px] border border-gray-300 px-1 rounded">ACID</span>
+                            </div>
+                            <div class="space-y-2">
+                                <div class="flex items-center gap-2 text-xs font-mono border-b border-gray-100 py-1">
+                                    <span class="text-amber-800">id</span> | <span class="text-amber-800">name</span>
+                                </div>
+                                <div class="flex items-center gap-2 text-xs font-mono py-1 text-gray-400">1
+                                    &nbsp;|&nbsp; John</div>
+                            </div>
+                        </div>
+                        <div class="rams-card bg-white h-full mb-0">
+                            <div class="flex justify-between items-start mb-4">
+                                <h4 class="text-sm font-bold">NoSQL</h4>
+                                <span class="text-[9px] border border-gray-300 px-1 rounded">BASE</span>
+                            </div>
+                            <div class="text-xs font-mono text-gray-500 bg-gray-50 p-3 rounded border border-gray-100">{
+                                "id": 1, "name": "John" }</div>
+                        </div>
+                    </div>
+
+                    <div class="details-box">
+                        <div class="details-title">Scaling Techniques</div>
+                        <ul class="list-disc list-inside space-y-1">
+                            <li><strong>Vertical Scaling:</strong> Upgrade the server hardware (CPU/RAM). Simple but has
+                                a hard limit (ceiling).</li>
+                            <li><strong>Read Replicas:</strong> Master DB handles writes. Slave DBs handle reads. Great
+                                for read-heavy apps.</li>
+                            <li><strong>Horizontal Scaling:</strong> Adding more machines to the pool (scaling out).
+                                includes <strong>Sharding</strong> (Splitting data across multiple servers).</li>
+                            <li><strong>CDN (Content Delivery Network):</strong> Cached static content (images, CSS)
+                                stored in servers globally close to the user to reduce latency.</li>
+                            <li><strong>Reverse Proxy:</strong> A server (like Nginx) sitting in front of web servers,
+                                handling security, SSL termination, and routing.</li>
+                        </ul>
+                    </div>
+                </section>
+                <!-- Check: Databases -->
+                <div id="quiz-system-db"></div>
+
+                <!-- 08. APIs -->
+                <section id="apis" class="mb-20 md:mb-24">
+                    <span class="rams-label">04 / Interfaces</span>
+                    <h3 class="text-xl font-medium mb-6">API Paradigms</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                        <div
+                            class="bg-white border border-gray-200 p-4 rounded hover:border-gray-400 transition-colors">
+                            <h4 class="font-bold text-sm mb-2">REST</h4>
+                            <div class="text-[10px] font-mono text-gray-500 bg-gray-50 p-2 mb-2 rounded">GET /users/1
+                            </div>
+                            <p class="text-xs text-gray-600">Standard, resource-based. Uses HTTP verbs. Stateless.</p>
+                        </div>
+                        <div
+                            class="bg-white border border-gray-200 p-4 rounded hover:border-gray-400 transition-colors">
+                            <h4 class="font-bold text-sm mb-2">GraphQL</h4>
+                            <div class="text-[10px] font-mono text-gray-500 bg-gray-50 p-2 mb-2 rounded">query { user(1)
+                                { name } }</div>
+                            <p class="text-xs text-gray-600">Flexible. Client asks for exactly what it needs. Avoids
+                                Over-fetching.</p>
+                        </div>
+                        <div
+                            class="bg-white border border-gray-200 p-4 rounded hover:border-gray-400 transition-colors">
+                            <h4 class="font-bold text-sm mb-2">gRPC</h4>
+                            <div class="text-[10px] font-mono text-gray-500 bg-gray-50 p-2 mb-2 rounded">
+                                service.GetUser(id)</div>
+                            <p class="text-xs text-gray-600">High performance. Uses Protocol Buffers (Binary). Great for
+                                internal microservices.</p>
+                        </div>
+                    </div>
+
+                    <div class="details-box">
+                        <div class="details-title">Important Concepts</div>
+                        <ul class="list-disc list-inside space-y-1">
+                            <li><strong>Idempotency:</strong> Making the same request multiple times has the same effect
+                                as making it once (e.g., retrying a Payment).</li>
+                            <li><strong>Statelessness:</strong> Server does not store client context between requests.
+                                Scalable.</li>
+                        </ul>
+                    </div>
+                </section>
+                <!-- Check: APIs -->
+                <div id="quiz-system-api"></div>
+
+                <!-- 09. Containers -->
+                <section id="containers" class="mb-20 md:mb-24">
+                    <span class="rams-label">04.1 / Deployment</span>
+                    <h3 class="text-xl font-medium mb-6">Containers vs. Virtual Machines</h3>
+
+                    <div class="rams-card pb-0">
+                        <div class="flex flex-col gap-6">
+                            <div class="flex flex-wrap justify-center gap-4 mb-2 border-b border-gray-100 pb-4">
+                                <button onclick="setDeployment('vm')" id="btn-vm"
+                                    class="btn btn-secondary text-xs">Virtual Machines</button>
+                                <button onclick="setDeployment('container')" id="btn-container"
+                                    class="btn btn-secondary text-xs">Containers</button>
+                            </div>
+
+                            <div class="relative h-72 bg-gray-50 border border-gray-200 px-8 py-4 flex flex-col justify-end items-center overflow-hidden"
+                                id="deploy-canvas">
+                                <!-- Content injected by JS -->
+                            </div>
+
+                            <div class="text-xs text-gray-500 italic text-center min-h-[40px] mb-4" id="deploy-desc">
+                                Select a deployment strategy to see the infrastructure layers.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="details-box">
+                        <div class="details-title">Orchestration</div>
+                        <p class="mb-2">Managing 100s of containers manually is impossible. We use orchestrators like
+                            <strong>Kubernetes (K8s)</strong>.
+                        </p>
+                        <ul class="list-disc list-inside space-y-1">
+                            <li><strong>Auto-scaling:</strong> Spin up more containers when CPU is high.</li>
+                            <li><strong>Self-healing:</strong> Restart containers if they crash.</li>
+                            <li><strong>Immutable Infrastructure:</strong> Never patch a running server. Replace it with
+                                a new image.</li>
+                        </ul>
+                    </div>
+                </section>
+                <!-- Check: Containers -->
+                <div id="quiz-system-containers"></div>
+
+                <!-- 10. Observability -->
+                <section id="observability" class="mb-20 md:mb-24">
+                    <span class="rams-label">04.2 / Operations</span>
+                    <h3 class="text-xl font-medium mb-6">Monitoring & Logging</h3>
+                    <p class="text-sm text-gray-600 mb-6">You can't fix what you can't see. Observability is composed of
+                        three pillars.</p>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-1 mb-6">
+                        <div class="bg-gray-900 p-4 border-r border-gray-700">
+                            <div class="text-[10px] uppercase text-gray-400 font-bold mb-2">01. Metrics</div>
+                            <div class="h-16 flex items-end gap-1">
+                                <div class="w-2 bg-amber-600 h-1/3"></div>
+                                <div class="w-2 bg-amber-600 h-1/2"></div>
+                                <div class="w-2 bg-amber-600 h-3/4"></div>
+                                <div class="w-2 bg-amber-600 h-2/3"></div>
+                                <div class="w-2 bg-red-500 h-full animate-pulse"></div>
+                                <div class="w-2 bg-amber-600 h-1/2"></div>
+                            </div>
+                            <p class="text-[9px] text-gray-500 mt-2">"CPU is at 99%" (Aggregatable data)</p>
+                        </div>
+                        <div class="bg-gray-900 p-4 border-r border-gray-700">
+                            <div class="text-[10px] uppercase text-gray-400 font-bold mb-2">02. Logs</div>
+                            <div class="font-mono text-[8px] text-gray-300 space-y-1">
+                                <div class="opacity-50">[INFO] Req started</div>
+                                <div class="opacity-50">[INFO] DB conn ok</div>
+                                <div class="text-red-400">[ERR] Timeout</div>
+                            </div>
+                            <p class="text-[9px] text-gray-500 mt-2">"Why it failed" (Discrete events)</p>
+                        </div>
+                        <div class="bg-gray-900 p-4">
+                            <div class="text-[10px] uppercase text-gray-400 font-bold mb-2">03. Traces</div>
+                            <div class="space-y-1">
+                                <div class="h-1 bg-blue-500 w-full"></div>
+                                <div class="h-1 bg-purple-500 w-2/3 ml-4"></div>
+                                <div class="h-1 bg-yellow-500 w-1/3 ml-12"></div>
+                            </div>
+                            <p class="text-[9px] text-gray-500 mt-2">"Where it slowed down" (Request Lifecycle)</p>
+                        </div>
+                    </div>
+
+                    <div class="details-box">
+                        <div class="details-title">The 4 Golden Signals (Google SRE)</div>
+                        <ul class="list-disc list-inside space-y-1">
+                            <li><strong>Latency:</strong> Time taken to serve a request.</li>
+                            <li><strong>Throughput:</strong> Requests processed per unit of time (req/sec).</li>
+                            <li><strong>Traffic:</strong> Demand on the system.</li>
+                            <li><strong>Errors:</strong> Rate of failing requests (500s).</li>
+                            <li><strong>Saturation:</strong> How "full" the service is (CPU/Memory usage).</li>
+                        </ul>
+                    </div>
+                </section>
+                <!-- Check: Observability -->
+                <div id="quiz-system-observability"></div>
+
+                <!-- 11. Checklist -->
+                <section id="checklist" class="mb-12">
+                    <span class="rams-label">05 / Summary</span>
+                    <h3 class="text-xl font-medium mb-4">Design Checklist</h3>
+                    <ul class="space-y-3 text-sm text-gray-600 border-t border-gray-200 pt-4">
+                        <li class="flex items-start gap-3">
+                            <span class="text-amber-800 font-bold">1.</span>
+                            <span>Define Functional Requirements (What does it do?)</span>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <span class="text-amber-800 font-bold">2.</span>
+                            <span>Define Non-Functional Requirements (Latency, Availability, Consistency).</span>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <span class="text-amber-800 font-bold">3.</span>
+                            <span>Estimate Scale (Traffic, Storage, Bandwidth).</span>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <span class="text-amber-800 font-bold">4.</span>
+                            <span>Define Data Model (SQL vs NoSQL).</span>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <span class="text-amber-800 font-bold">5.</span>
+                            <span>Design High-Level API (REST/GraphQL).</span>
+                        </li>
+                    </ul>
+                </section>
+
+                <!-- Glossary Section -->
+                <section id="glossary" class="mb-20">
+                    <span class="rams-label">Glossary</span>
+                    <h3 class="text-xl font-medium mb-8">Key Definitions</h3>
+                    <div class="rams-card">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <h4 class="font-bold text-sm mb-2">CAP Theorem</h4>
+                                <p class="text-xs text-gray-600">States that in a distributed data store, you can only
+                                    guarantee two of Consistency, Availability, and Partition Tolerance.</p>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-sm mb-2">Microservices</h4>
+                                <p class="text-xs text-gray-600">An architectural style where an application is
+                                    structured as a collection of loosely coupled, independently deployable services.
+                                </p>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-sm mb-2">Monolith</h4>
+                                <p class="text-xs text-gray-600">An architectural style where the application is built
+                                    as a single, unified unit.</p>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-sm mb-2">Load Balancer</h4>
+                                <p class="text-xs text-gray-600">A device or software that distributes network traffic
+                                    across a cluster of servers.</p>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-sm mb-2">Caching</h4>
+                                <p class="text-xs text-gray-600">The process of storing copies of data in a temporary
+                                    storage location (cache) for faster access.</p>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-sm mb-2">Sharding</h4>
+                                <p class="text-xs text-gray-600">A method of splitting and storing a single logical
+                                    dataset in multiple databases.</p>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-sm mb-2">SOLID</h4>
+                                <p class="text-xs text-gray-600">Five design principles intended to make software
+                                    designs more understandable, flexible, and maintainable.</p>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-sm mb-2">Event-Driven Architecture</h4>
+                                <p class="text-xs text-gray-600">A software architecture pattern promoting the
+                                    production, detection, consumption of, and reaction to events.</p>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-sm mb-2">Vertical Scaling</h4>
+                                <p class="text-xs text-gray-600">Adding more processing power (CPU, RAM) to an existing
+                                    server (Scaling Up).</p>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-sm mb-2">Horizontal Scaling</h4>
+                                <p class="text-xs text-gray-600">Adding more servers to the resource pool (Scaling Out).
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 08. Quiz -->
+                <section id="quiz" class="mb-20 md:mb-24">
+                    <span class="rams-label">08 / Knowledge Check</span>
+                    <div id="quiz-container" class="rams-card">
+                        <!-- Quiz loads here -->
+                    </div>
+                </section>
+
+                <!-- 09. Certificate (Initially Hidden) -->
+                <section id="certificate" class="mb-20 md:mb-24 hidden">
+                    <span class="rams-label">09 / Certification</span>
+                    <h3 class="text-xl font-medium mb-6">Completion Certificate</h3>
+
+                    <div class="rams-card !p-0 overflow-hidden">
+                        <div class="p-6 md:p-8">
+                            <div class="flex flex-col md:flex-row gap-8 items-start">
+                                <div class="w-full md:w-1/3 space-y-4">
+                                    <p class="text-sm text-gray-600">
+                                        Enter your name below to generate your personalized certificate of completion
+                                        for
+                                        the System Architecture series.
+                                    </p>
+                                    <div>
+                                        <label for="cert-name"
+                                            class="block text-xs font-bold text-gray-500 uppercase mb-1">Full
+                                            Name</label>
+                                        <input type="text" id="cert-name"
+                                            class="w-full border border-gray-300 p-2 font-mono text-sm focus:border-black outline-none"
+                                            placeholder="Grace Hopper">
+                                        <p id="cert-error" class="text-red-500 text-xs mt-2 hidden">Please enter your
+                                            name.
+                                        </p>
+                                    </div>
+                                    <button onclick="generateCert()"
+                                        class="btn btn-primary bg-black border-black text-white w-full hover:bg-gray-800">Generate
+                                        Certificate</button>
+                                    <button onclick="downloadCert()" id="btn-download"
+                                        class="btn btn-secondary w-full hidden">Download PNG</button>
+
+                                </div>
+
+                                <div
+                                    class="w-full md:w-2/3 bg-gray-50 border border-gray-200 p-4 flex items-center justify-center">
+                                    <canvas id="cert-canvas" class="w-full shadow-lg bg-white"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="bg-gray-50 px-6 py-3 border-t border-gray-100 text-center">
+                            <p class="text-[10px] text-gray-400 italic">
+                                This certificate confirms successful completion of learning and assessment on this
+                                platform
+                                and is not an accredited or government-recognized qualification.
+                            </p>
+                        </div>
+                    </div>
+                </section>
+
+                <script src="js/script.js"></script>
+                <script>
+                    document.addEventListener('DOMContentLoaded', () => {
+                        new InlineQuiz('quiz-system-principles', {
+                            question: "In the context of the CAP Theorem, which two properties are typically chosen for distributed data stores?",
+                            options: ["Consistency & Availability (CA)", "Consistency & Partition Tolerance (CP) or Availability & Partition Tolerance (AP)", "All three", "None"],
+                            answer: 1,
+                            explanation: "Partition Tolerance (P) is mandatory in distributed systems, so you typically trade off between Consistency (CP) and Availability (AP)."
+                        });
+
+                        new InlineQuiz('quiz-system-monolith', {
+                            question: "What is a primary disadvantage of a Monolithic architecture?",
+                            options: ["Complex networking", "Single point of failure & High coupling", "Too many repositories", "Hard to debug locally"],
+                            answer: 1,
+                            explanation: "Monoliths have high coupling, meaning a failure in one component can bring down the entire system."
+                        });
+
+                        new InlineQuiz('quiz-system-layered', {
+                            question: "In N-Tier Architecture, which layer typically handles data storage retrieval?",
+                            options: ["Presentation Layer", "Business Logic Layer", "Data Access Layer (DAL)", "Cache Layer"],
+                            answer: 2,
+                            explanation: "The Data Access Layer abstracts the logic required to access the database or other storage systems."
+                        });
+
+                        new InlineQuiz('quiz-system-eda', {
+                            question: "What is the main benefit of Event-Driven Architecture (EDA)?",
+                            options: ["Tighter coupling", "Decoupling producers from consumers", "Synchronous communication", "Simpler debugging"],
+                            answer: 1,
+                            explanation: "EDA decouples services; the producer emits an event without needing to know which consumers (if any) will process it."
+                        });
+
+                        new InlineQuiz('quiz-system-lb', {
+                            question: "Which Load Balancing algorithm sends requests to servers sequentially?",
+                            options: ["Least Connections", "IP Hash", "Round Robin", "Random"],
+                            answer: 2,
+                            explanation: "Round Robin rotates through the list of servers sequentially."
+                        });
+
+                        new InlineQuiz('quiz-system-caching', {
+                            question: "Which caching strategy loads data only when requested?",
+                            options: ["Write-Through", "Cache-Aside (Lazy Loading)", "Write-Back", "Pre-loading"],
+                            answer: 1,
+                            explanation: "Cache-Aside (Lazy Loading) loads data into the cache only after a cache miss occurs."
+                        });
+
+                        new InlineQuiz('quiz-system-db', {
+                            question: "What does 'Vertical Scaling' (Scaling Up) involve?",
+                            options: ["Adding more machines", "Upgrading hardware (CPU/RAM) on a single machine", "Sharding data", "Using a CDN"],
+                            answer: 1,
+                            explanation: "Vertical Scaling means adding more power (CPU, RAM) to an existing server, which has a physical limit."
+                        });
+
+                        new InlineQuiz('quiz-system-api', {
+                            question: "Which API paradigm allows the client to request exactly the data it needs?",
+                            options: ["REST", "SOAP", "GraphQL", "gRPC"],
+                            answer: 2,
+                            explanation: "GraphQL allows clients to specify exactly which fields they need, preventing over-fetching."
+                        });
+
+                        new InlineQuiz('quiz-system-containers', {
+                            question: "How do Containers differ from Virtual Machines?",
+                            options: ["Containers share the Host OS kernel", "Containers have their own heavy Guest OS", "Containers are slower", "Containers cannot run Linux"],
+                            answer: 0,
+                            explanation: "Containers are lightweight because they share the underlying Host OS kernel, whereas VMs have a full Guest OS."
+                        });
+
+                        new InlineQuiz('quiz-system-observability', {
+                            question: "Which pillar of observability helps realize 'why' a specific request failed?",
+                            options: ["Metrics", "Logs", "Traces", "Dashboards"],
+                            answer: 1,
+                            explanation: "Logs provide discrete details about events (like error messages) that help explain why a failure occurred."
+                        });
+                    });
+                </script>
+                <script>
+                    // Quiz Data
+                    const questions = [
+                        {
+                            question: "What is the primary function of a Load Balancer?",
+                            options: ["To store data", "To distribute network traffic across multiple servers", "To encrypt passwords", "To run background jobs"],
+                            answer: 1
+                        },
+                        {
+                            question: "What does 'Horizontal Scaling' involve?",
+                            options: ["Adding more power (CPU/RAM) to an existing machine", "Adding more machines to the pool", "Reducing the number of servers", "Moving to the cloud"],
+                            answer: 1
+                        },
+                        {
+                            question: "In the CAP theorem, what does 'P' stand for?",
+                            options: ["Partition Tolerance", "Performance", "Persistence", "Privacy"],
+                            answer: 0
+                        },
+                        {
+                            question: "What is the main purpose of Caching?",
+                            options: ["To permanently store data", "To reduce latency and server load", "To backup the database", "To validate user input"],
+                            answer: 1
+                        },
+                        {
+                            question: "What is 'Sharding'?",
+                            options: ["Splitting a large database into smaller, faster, more easily managed parts", "Compressing files", "Encrypting data", "Deleting old logs"],
+                            answer: 0
+                        },
+                        {
+                            question: "What is a CDN (Content Delivery Network) used for?",
+                            options: ["Calculating numbers", "Delivering content to users based on their geographic location", "Managing database transactions", "Writing code"],
+                            answer: 1
+                        },
+                        {
+                            question: "Which represents a 'Microservices' architecture?",
+                            options: ["One large application codebase", "Many loosely coupled, independently deployable services", "A single database for everything", "One web server"],
+                            answer: 1
+                        },
+                        {
+                            question: "What defines 'Latency'?",
+                            options: ["The amount of data processed per second", "The time delay between a request and a response", "The total storage capacity", "The number of users"],
+                            answer: 1
+                        },
+                        {
+                            question: "What is a 'Reverse Proxy'?",
+                            options: ["A server that retrieves resources on behalf of a client from one or more servers", "A firewall", "A database", "A client browser"],
+                            answer: 0
+                        },
+                        {
+                            question: "What does 'Throughput' measure?",
+                            options: ["How fast a single request is processed", "The number of actions executed or results produced per unit of time", "The size of the hard drive", "The cost of the server"],
+                            answer: 1
+                        }
+                    ];
+
+                    // Init Quiz
+                    new QuizManager('quiz-container', questions, () => {
+                        document.getElementById('certificate').classList.remove('hidden');
+                        setTimeout(() => {
+                            document.getElementById('certificate').scrollIntoView({ behavior: 'smooth' });
+                        }, 100);
+                    });
+
+                    // Certificate Logic
+                    const certGen = new CertificateGenerator('cert-canvas', 'System Architecture');
+
+                    function generateCert() {
+                        const nameInput = document.getElementById('cert-name');
+                        const errorMsg = document.getElementById('cert-error');
+                        const name = nameInput.value.trim();
+                        const nameRegex = /^[a-zA-Z\s\-\.'’]+$/;
+
+                        // Reset error state
+                        errorMsg.classList.add('hidden');
+                        nameInput.classList.remove('border-red-500');
+
+                        if (!name) {
+                            errorMsg.textContent = "Please enter your name.";
+                            errorMsg.classList.remove('hidden');
+                            nameInput.classList.add('border-red-500');
+                            return;
+                        }
+
+                        if (name.length < 3 || name.length > 35) {
+                            errorMsg.textContent = "Name must be between 3 and 35 characters.";
+                            errorMsg.classList.remove('hidden');
+                            nameInput.classList.add('border-red-500');
+                            return;
+                        }
+
+
+                        if (!nameRegex.test(name)) {
+                            errorMsg.textContent = "Name cannot contain numbers or special characters.";
+                            errorMsg.classList.remove('hidden');
+                            nameInput.classList.add('border-red-500');
+                            return;
+                        }
+
+                        certGen.generate(name);
+                        document.getElementById('btn-download').classList.remove('hidden');
+                    }
+
+                    function downloadCert() {
+                        const name = document.getElementById('cert-name').value.trim();
+                        certGen.download(`Undrstanding_System_Certificate_${name.replace(/\s+/g, '_')}.png`);
+                    }
+                </script>
+
+                <footer class="w-full mt-12 mb-12">
+                    <div class="border-t border-gray-200 pt-8 flex justify-between items-center">
+                        <span class="text-[10px] mono uppercase text-gray-400">Undrstanding</span>
+                        <span class="text-[10px] mono uppercase text-gray-400">For Humans, From Humans</span>
+                    </div>
+                </footer>
+
+            </div>
+        </main>
+    </div>
+
+    <!-- Logic Script -->
+    <script>
+        // --- Mobile Menu ---
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobile-menu');
+            if (menu.classList.contains('hidden')) {
+                menu.classList.remove('hidden');
+                menu.classList.add('flex');
+                document.body.style.overflow = 'hidden';
+            } else {
+                menu.classList.add('hidden');
+                menu.classList.remove('flex');
+                document.body.style.overflow = 'auto';
+            }
+        }
+
+        // --- 01. Monolith vs Microservices Logic ---
+        const archContainer = document.getElementById('arch-container');
+        const archStatus = document.getElementById('arch-status');
+        let currentArch = 'monolith';
+        let scaleLevel = 1;
+
+        function renderArch() {
+            archContainer.innerHTML = '';
+
+            // Helper to create semantic block
+            const createBlock = (text, color, w, h) => {
+                const div = document.createElement('div');
+                div.className = `${color} flex items-center justify-center text-[10px] font-bold text-white shadow-sm transition-all duration-300 border border-white/20`;
+                div.style.width = w;
+                div.style.height = h;
+                div.innerText = text;
+                return div;
+            };
+
+            const modules = [
+                { name: "Auth", color: "bg-blue-600" },
+                { name: "Orders", color: "bg-green-600" },
+                { name: "Inv", color: "bg-purple-600" },
+                { name: "Pay", color: "bg-amber-600" }
+            ];
+
+            if (currentArch === 'monolith') {
+                // One big box containing all blocks tightly packed
+                const container = document.createElement('div');
+                container.className = 'bg-gray-800 p-2 flex flex-col gap-1 shadow-lg transition-all duration-500 relative z-20';
+                // Scale affects total size
+                const size = 80 + (scaleLevel * 10);
+                container.style.width = `${size}px`;
+                container.style.height = `${size + 40}px`;
+
+                // Add header
+                const header = document.createElement('div');
+                header.className = 'text-white text-[9px] text-center font-mono mb-1';
+                header.innerText = `Instance 1`;
+                container.appendChild(header);
+
+                modules.forEach(m => {
+                    container.appendChild(createBlock(m.name, m.color, '100%', '25%'));
+                });
+
+                archContainer.appendChild(container);
+
+                // If scaled, show phantom copies behind to represent "horizontal" scaling or just size for vertical
+                if (scaleLevel > 1) {
+                    const clone = container.cloneNode(true);
+                    clone.style.position = 'absolute';
+                    clone.style.left = '50%';
+                    clone.style.top = '50%';
+                    clone.style.transform = `translate(-40%, -40%) scale(0.9)`;
+                    clone.style.opacity = '0.3';
+                    clone.style.zIndex = '10';
+                    clone.querySelector('div').innerText = `Instance 2+`; // Change label
+                    archContainer.insertBefore(clone, container);
+                }
+
+                archStatus.innerHTML = `<strong>Monolith:</strong> Vertical Scaling (Bigger Box) + Horizontal (Clones). Resource intensive as you must replicate EVERYTHING.`;
+
+            } else if (currentArch === 'modular') {
+                // MODULAR LOGIC FIX: Show horizontal scaling by stacking cards
+                // Base unit builder
+                const createModularUnit = (opacity = 1, offset = 0, z = 10, label = "Unit 1") => {
+                    const container = document.createElement('div');
+                    container.className = 'bg-white border-2 border-gray-800 p-2 grid grid-cols-2 gap-2 shadow-lg transition-all duration-500 absolute';
+                    container.style.width = '140px';
+                    container.style.height = '140px';
+                    container.style.left = '50%';
+                    container.style.top = '50%';
+                    // Stack effect
+                    container.style.transform = `translate(-50%, -50%) translate(${offset}px, ${offset}px)`;
+                    container.style.zIndex = z;
+                    container.style.opacity = opacity;
+
+                    modules.forEach(m => {
+                        container.appendChild(createBlock(m.name, m.color, '100%', '100%'));
+                    });
+
+                    // Label overlay
+                    const lbl = document.createElement('div');
+                    lbl.className = 'absolute -top-4 left-0 text-[8px] font-bold text-gray-500';
+                    lbl.innerText = label;
+                    container.appendChild(lbl);
+
+                    return container;
+                };
+
+                // Add clones based on scaleLevel
+                // We render from back to front
+                for (let i = scaleLevel - 1; i >= 0; i--) {
+                    // i=0 is front. i=3 is back.
+                    const offset = i * -8; // Move up-left
+                    const z = 50 - i;
+                    const opacity = i === 0 ? 1 : 0.5 - (i * 0.1);
+                    const label = `Instance ${i + 1}`;
+                    archContainer.appendChild(createModularUnit(opacity, offset, z, label));
+                }
+
+                archStatus.innerHTML = `<strong>Modular Monolith:</strong> Code is separated internally, but deployment is unified. Scaling requires duplicating the <em>whole</em> unit (Level ${scaleLevel} instances).`;
+
+            } else {
+                // Microservices: Distinct separated nodes connected by lines
+                const wrapper = document.createElement('div');
+                wrapper.className = 'flex flex-wrap gap-4 justify-center items-center w-full h-full relative';
+
+                modules.forEach((m, i) => {
+                    // Scale specific services
+                    const count = (m.name === 'Orders' || m.name === 'Inv') ? scaleLevel : 1;
+
+                    const col = document.createElement('div');
+                    col.className = 'flex flex-col gap-1 items-center bg-gray-100 p-1 rounded';
+
+                    // Label
+                    const lbl = document.createElement('span');
+                    lbl.innerText = m.name;
+                    lbl.className = "text-[8px] uppercase font-bold text-gray-400 mb-1";
+                    col.appendChild(lbl);
+
+                    for (let j = 0; j < count; j++) {
+                        col.appendChild(createBlock(m.name, m.color, '40px', '40px'));
+                    }
+                    wrapper.appendChild(col);
+                });
+
+                archContainer.appendChild(wrapper);
+                archStatus.innerHTML = `<strong>Microservices:</strong> "Orders" and "Inv" scaled to ${scaleLevel} instances independently. "Auth" stays small. Optimized resources, complex networking.`;
+            }
+        }
+
+        function setArch(type) {
+            currentArch = type;
+            scaleLevel = 1;
+            renderArch();
+        }
+
+        function scaleArch() {
+            if (scaleLevel < 4) {
+                scaleLevel++;
+                renderArch();
+            } else {
+                if (!archStatus.innerHTML.includes("(Max Scale Reached)")) {
+                    archStatus.innerHTML += " <span class='text-red-600 font-bold not-italic'>(Max Scale Reached)</span>";
+                }
+            }
+        }
+
+        renderArch(); // Initial render
+
+        // --- 02. Load Balancing Logic ---
+        const lbNode = document.getElementById('lb-node');
+        const trafficCanvas = document.getElementById('traffic-canvas');
+        const reqCountDisplay = document.getElementById('req-count');
+        const algoBtn = document.getElementById('algo-btn');
+        let reqCount = 0;
+        let roundRobinIndex = 0;
+        let algo = 'round-robin';
+
+        // Simulating server load state (0-100)
+        let serverLoads = [0, 0, 0];
+
+        // Decay loop
+        setInterval(() => {
+            for (let i = 0; i < 3; i++) {
+                if (serverLoads[i] > 0) {
+                    serverLoads[i] = Math.max(0, serverLoads[i] - 5);
+                    updateLoadVisuals(i);
+                }
+            }
+        }, 200);
+
+        function updateLoadVisuals(index) {
+            const bar = document.getElementById(`load-${index}`);
+            const txt = document.getElementById(`load-text-${index}`);
+            if (!bar || !txt) return;
+
+            const load = serverLoads[index];
+
+            bar.style.height = `${load}%`;
+            txt.innerText = `${load}%`;
+
+            // Color logic
+            if (load > 80) bar.style.backgroundColor = '#ef4444'; // Red
+            else if (load > 50) bar.style.backgroundColor = '#f59e0b'; // Orange
+            else bar.style.backgroundColor = '#10b981'; // Green
+        }
+
+        function toggleAlgorithm() {
+            if (algo === 'round-robin') {
+                algo = 'random';
+                algoBtn.innerText = 'Algo: Random';
+            } else {
+                algo = 'round-robin';
+                algoBtn.innerText = 'Algo: Round Robin';
+            }
+        }
+
+        function sendTraffic(amount) {
+            for (let i = 0; i < amount; i++) {
+                setTimeout(() => createRequest(), i * 150);
+            }
+        }
+
+        function createRequest() {
+            reqCount++;
+            reqCountDisplay.innerText = reqCount;
+
+            const dot = document.createElement('div');
+            dot.className = 'request-dot';
+            dot.style.left = '50%';
+            dot.style.top = '10%';
+            trafficCanvas.appendChild(dot);
+
+            // 1. Move to LB
+            setTimeout(() => {
+                dot.style.transition = 'top 0.3s linear';
+                dot.style.top = '35%';
+
+                lbNode.classList.add('bg-amber-100');
+                setTimeout(() => lbNode.classList.remove('bg-amber-100'), 100);
+
+                // 2. Determine Server
+                setTimeout(() => {
+                    let targetIndex;
+                    if (algo === 'round-robin') {
+                        targetIndex = roundRobinIndex;
+                        roundRobinIndex = (roundRobinIndex + 1) % 3;
+                    } else {
+                        targetIndex = Math.floor(Math.random() * 3);
+                    }
+
+                    const targetServer = document.getElementById(`srv-${targetIndex}`);
+                    const positions = ['20%', '50%', '80%'];
+
+                    dot.style.transition = 'all 0.4s ease-out';
+                    dot.style.top = '80%';
+                    dot.style.left = positions[targetIndex];
+
+                    // 3. Hit Server
+                    setTimeout(() => {
+                        if (targetServer) {
+                            targetServer.classList.add('active');
+                            setTimeout(() => targetServer.classList.remove('active'), 200);
+
+                            // Add Load
+                            serverLoads[targetIndex] = Math.min(100, serverLoads[targetIndex] + 20);
+                            updateLoadVisuals(targetIndex);
+                        }
+
+                        dot.remove();
+                    }, 400);
+
+                }, 300);
+            }, 50);
+        }
+
+        // --- 03. Caching Logic ---
+        let cacheStore = {};
+        const cacheLog = document.getElementById('cache-log');
+        const cacheBox = document.getElementById('cache-box');
+        const dbBox = document.getElementById('db-box');
+        const latencyBar = document.getElementById('latency-bar');
+
+        function fetchData(key) {
+            const start = performance.now();
+            latencyBar.style.width = '0%';
+            latencyBar.style.transition = 'none';
+            latencyBar.classList.remove('bg-green-500', 'bg-red-500', 'bg-amber-600');
+
+            if (cacheStore[key]) {
+                // HIT (Instant)
+                // Force reflow
+                void latencyBar.offsetWidth;
+                latencyBar.style.transition = 'width 0.2s ease-out';
+                latencyBar.style.width = '10%'; // Short bar
+                latencyBar.classList.add('bg-green-500');
+
+                setTimeout(() => {
+                    const time = (performance.now() - start + 2).toFixed(2);
+                    cacheBox.classList.add('bg-amber-200', 'border-amber-900');
+                    setTimeout(() => cacheBox.classList.remove('bg-amber-200', 'border-amber-900'), 300);
+                    logCache(`✅ CACHE HIT: ${key} (RAM) - ${time}ms`);
+                }, 200);
+
+            } else {
+                // MISS (Slow)
+                dbBox.classList.add('bg-gray-300');
+
+                void latencyBar.offsetWidth;
+                latencyBar.style.transition = 'width 1.5s linear'; // Slow transition
+                latencyBar.style.width = '100%'; // Full bar
+                latencyBar.classList.add('bg-amber-600');
+
+                setTimeout(() => {
+                    dbBox.classList.remove('bg-gray-300');
+                    cacheStore[key] = true;
+
+                    cacheBox.classList.add('bg-yellow-100');
+                    setTimeout(() => cacheBox.classList.remove('bg-yellow-100'), 200);
+
+                    const time = 45 + (Math.random() * 10);
+                    logCache(`❌ CACHE MISS: ${key} (Disk I/O) - ${time.toFixed(2)}ms`);
+                }, 1500); // 1.5s artificial delay
+            }
+        }
+
+        function clearCache() {
+            cacheStore = {};
+            logCache("🗑️ Cache cleared.");
+        }
+
+        function logCache(msg) {
+            cacheLog.innerText = msg;
+            cacheLog.style.color = '#fff';
+            setTimeout(() => cacheLog.style.color = '#e5e7eb', 100);
+        }
+
+        // --- 04. EDA Logic ---
+        function emitEvent() {
+            const canvas = document.getElementById('eda-canvas');
+
+            // Create Producer Dot
+            const dot = document.createElement('div');
+            dot.className = 'absolute w-4 h-4 bg-amber-600 rounded-full z-30 transition-all duration-1000 ease-in-out flex items-center justify-center text-[8px] text-white font-bold';
+            dot.innerText = "E";
+            dot.style.left = '4rem';
+            dot.style.top = '50%';
+            dot.style.transform = 'translateY(-50%)';
+            canvas.appendChild(dot);
+
+            // Move to bus center
+            setTimeout(() => {
+                dot.style.left = '50%';
+
+                setTimeout(() => {
+                    dot.remove();
+
+                    // Create multiple consumer dots
+                    const createConsumerDot = (targetY) => {
+                        const c = document.createElement('div');
+                        c.className = 'absolute w-3 h-3 bg-amber-500 rounded-full z-20 transition-all duration-700';
+                        c.style.left = '50%'; c.style.top = '50%';
+                        canvas.appendChild(c);
+
+                        setTimeout(() => {
+                            c.style.left = '85%';
+                            c.style.top = targetY;
+
+                            setTimeout(() => {
+                                c.remove();
+                                // Pulse effect on consumers
+                                const consumers = document.querySelectorAll('.consumer-node');
+                                consumers.forEach(node => {
+                                    node.classList.add('border-amber-500', 'text-amber-500');
+                                    setTimeout(() => node.classList.remove('border-amber-500', 'text-amber-500'), 300);
+                                });
+                            }, 700);
+                        }, 50);
+                    };
+
+                    createConsumerDot('25%'); // Email
+                    createConsumerDot('75%'); // Inventory
+
+                }, 1000);
+            }, 50);
+        }
+
+        // --- 09. Containers Logic ---
+        const deployCanvas = document.getElementById('deploy-canvas');
+        const deployDesc = document.getElementById('deploy-desc');
+
+        function setDeployment(type) {
+            // Update buttons
+            document.getElementById('btn-vm').className = type === 'vm' ? 'btn btn-primary text-xs bg-amber-800 border-amber-800' : 'btn btn-secondary text-xs';
+            document.getElementById('btn-container').className = type === 'container' ? 'btn btn-primary text-xs bg-amber-800 border-amber-800' : 'btn btn-secondary text-xs';
+
+            deployCanvas.innerHTML = '';
+
+            const createBlock = (text, color, h, w = '100%', animateDelay = 0) => {
+                const div = document.createElement('div');
+                div.className = `${color} w-full flex items-center justify-center text-[10px] font-bold text-white border border-black/10 shadow-sm transition-all duration-500 opacity-0 transform translate-y-4`;
+                div.style.height = h;
+                div.style.width = w;
+                div.innerText = text;
+
+                // Trigger animation
+                setTimeout(() => {
+                    div.classList.remove('opacity-0', 'translate-y-4');
+                }, animateDelay);
+
+                return div;
+            };
+
+            const stackWrapper = document.createElement('div');
+            stackWrapper.className = "w-full max-w-md flex flex-col gap-1";
+
+            if (type === 'vm') {
+                // VM: Apps separate stacks down to Hypervisor
+                const appLayer = document.createElement('div');
+                appLayer.className = "flex gap-4 w-full";
+
+                // VM 1
+                const vm1 = document.createElement('div');
+                vm1.className = "flex-1 flex flex-col gap-1";
+                vm1.appendChild(createBlock("App A", "bg-amber-500", "30px", "100%", 100));
+                vm1.appendChild(createBlock("Bins/Libs", "bg-amber-600", "25px", "100%", 200));
+                vm1.appendChild(createBlock("Guest OS", "bg-red-800", "40px", "100%", 300)); // Heavy layer
+
+                // VM 2
+                const vm2 = document.createElement('div');
+                vm2.className = "flex-1 flex flex-col gap-1";
+                vm2.appendChild(createBlock("App B", "bg-amber-500", "30px", "100%", 150));
+                vm2.appendChild(createBlock("Bins/Libs", "bg-amber-600", "25px", "100%", 250));
+                vm2.appendChild(createBlock("Guest OS", "bg-red-800", "40px", "100%", 350)); // Heavy layer
+
+                appLayer.appendChild(vm1);
+                appLayer.appendChild(vm2);
+                stackWrapper.appendChild(appLayer);
+
+                // Shared Infra
+                stackWrapper.appendChild(createBlock("Hypervisor", "bg-gray-500", "30px", "100%", 450));
+                stackWrapper.appendChild(createBlock("Infrastructure (Hardware)", "bg-gray-800", "35px", "100%", 500));
+
+                deployDesc.innerHTML = `<strong>Virtual Machines:</strong> Hardware virtualization. Each app runs on its own heavy <span class='text-red-600'>Guest OS</span> (GBs of size). Complete isolation, but resource intensive.`;
+
+            } else {
+                // Containers: Apps separate stacks down to Engine
+                const appLayer = document.createElement('div');
+                appLayer.className = "flex gap-4 w-full";
+
+                // Container 1
+                const c1 = document.createElement('div');
+                c1.className = "flex-1 flex flex-col gap-1";
+                c1.appendChild(createBlock("App A", "bg-amber-500", "30px", "100%", 100));
+                c1.appendChild(createBlock("Bins/Libs", "bg-amber-600", "25px", "100%", 200));
+
+                // Container 2
+                const c2 = document.createElement('div');
+                c2.className = "flex-1 flex flex-col gap-1";
+                c2.appendChild(createBlock("App B", "bg-amber-500", "30px", "100%", 150));
+                c2.appendChild(createBlock("Bins/Libs", "bg-amber-600", "25px", "100%", 250));
+
+                appLayer.appendChild(c1);
+                appLayer.appendChild(c2);
+                stackWrapper.appendChild(appLayer);
+
+                // Shared Layers
+                stackWrapper.appendChild(createBlock("Container Engine (Docker)", "bg-blue-600", "30px", "100%", 350));
+                stackWrapper.appendChild(createBlock("Host OS", "bg-gray-600", "30px", "100%", 450));
+                stackWrapper.appendChild(createBlock("Infrastructure (Hardware)", "bg-gray-800", "35px", "100%", 500));
+
+                deployDesc.innerHTML = `<strong>Containers:</strong> OS virtualization. Apps share the <span class='text-blue-600'>Host OS & Engine</span>. Lightweight (MBs), fast startup, portable.`;
+            }
+
+            deployCanvas.appendChild(stackWrapper);
+        }
+
+        // Initialize with VM view
+        setDeployment('vm');
+
+        // --- Scroll Reveal Init ---
+        const revealObserver = new IntersectionObserver((entries, observer) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('active');
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, {
+            threshold: 0.15,
+            rootMargin: "0px 0px -50px 0px"
+        });
+
+        document.querySelectorAll('section').forEach(section => {
+            section.classList.add('section-reveal');
+            revealObserver.observe(section);
+        });
+
+    </script>
+
+
+</body>
+
+</html>

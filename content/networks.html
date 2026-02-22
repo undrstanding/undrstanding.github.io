@@ -1,0 +1,2172 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Computer Networks</title>
+    <link rel="icon" type="image/svg+xml" href="../assests/undrlogo.svg">
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Roboto+Mono:wght@400;500&display=swap');
+
+        /* Global Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #a3a3a3;
+            border-radius: 3px;
+        }
+
+        :root {
+            /* Rams Palette - Cyan/Teal Edition */
+            --bg-color: #f4f4f4;
+            --card-bg: #ffffff;
+            --text-main: #111111;
+            --text-muted: #737373;
+
+            /* Cyan Accent */
+            --accent: #0e7490;
+            --accent-hover: #155e75;
+
+            --danger: #ef4444;
+            --border: #e5e5e5;
+            --line: #d4d4d4;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            -webkit-font-smoothing: antialiased;
+            line-height: 1.5;
+        }
+
+        h1,
+        h2,
+        h3,
+        h4,
+        h5 {
+            font-weight: 600;
+            letter-spacing: -0.03em;
+            color: var(--text-main);
+        }
+
+        .mono {
+            font-family: 'Roboto Mono', monospace;
+        }
+
+        /* Industrial Grid Layout */
+        .rams-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .rams-card:hover {
+            border-color: #a3a3a3;
+        }
+
+        @media (min-width: 768px) {
+            .rams-card {
+                padding: 2rem;
+            }
+        }
+
+        .rams-label {
+            font-family: 'Inter', sans-serif;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+            margin-bottom: 1rem;
+            display: block;
+        }
+
+        /* Controls */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.5rem 1.25rem;
+            font-size: 0.85rem;
+            font-weight: 500;
+            border-radius: 2px;
+            transition: all 0.1s ease;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            white-space: nowrap;
+        }
+
+        .btn-primary {
+            background-color: var(--accent);
+            color: white;
+            border: 1px solid var(--accent);
+        }
+
+        .btn-primary:hover {
+            background-color: var(--accent-hover);
+            color: white;
+        }
+
+        /* Disabled State */
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn-secondary {
+            background-color: transparent;
+            color: var(--text-main);
+            border: 1px solid #a3a3a3;
+        }
+
+        .btn-secondary:hover {
+            background-color: #e5e5e5;
+            border-color: #737373;
+        }
+
+        /* Navigation */
+        .nav-link {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            padding: 0.5rem 0;
+            display: block;
+            transition: color 0.2s;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            color: var(--text-main);
+            font-weight: 500;
+        }
+
+        .nav-link.active::before {
+            content: "• ";
+            color: var(--accent);
+        }
+
+        /* Mobile Menu */
+        .mobile-nav-link {
+            font-size: 1.25rem;
+            font-weight: 500;
+            color: var(--text-main);
+            padding: 1rem 0;
+            border-bottom: 1px solid #e5e5e5;
+            display: block;
+        }
+
+        .divider {
+            height: 1px;
+            background-color: var(--border);
+            width: 100%;
+            margin: 3rem 0;
+        }
+
+        .thin-scrollbar::-webkit-scrollbar {
+            width: 1px;
+        }
+
+        .thin-scrollbar::-webkit-scrollbar-thumb {
+            background: #d4d4d4;
+        }
+
+        /* Visual Specifics */
+        .packet {
+            transition: all 0.5s ease-in-out;
+        }
+
+        .osi-layer {
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+
+        .osi-layer:hover,
+        .osi-layer.active {
+            background-color: #ecfeff;
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        .section-reveal {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .section-reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Router Node Pulse */
+        @keyframes pulse-ring {
+            0% {
+                transform: scale(0.8);
+                opacity: 0.5;
+                border-color: transparent;
+            }
+
+            50% {
+                opacity: 1;
+                border-color: var(--accent);
+            }
+
+            100% {
+                transform: scale(1.2);
+                opacity: 0;
+                border-color: transparent;
+            }
+        }
+
+        .router-dot::before {
+            content: '';
+            position: absolute;
+            top: -4px;
+            left: -4px;
+            right: -4px;
+            bottom: -4px;
+            border-radius: 50%;
+            border: 1px solid var(--accent);
+            animation: pulse-ring 2s infinite;
+        }
+    </style>
+</head>
+
+<body class="overflow-x-hidden">
+
+    <div class="flex min-h-screen flex-col lg:flex-row">
+
+        <!-- Mobile Header (Fixed) -->
+        <header
+            class="lg:hidden fixed top-0 w-full bg-[#f4f4f4] border-b border-[#e5e5e5] z-[100] px-6 py-4 flex justify-between items-center h-16">
+            <div>
+                <h1 class="text-sm font-semibold tracking-wide uppercase text-black leading-tight">
+                    Computer<br>Networks</h1>
+            </div>
+            <button onclick="toggleMobileMenu()"
+                class="text-black focus:outline-none p-2 border border-transparent active:bg-gray-200 rounded">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+            </button>
+        </header>
+
+        <!-- Mobile Menu Overlay -->
+        <div id="mobile-menu" class="fixed inset-0 bg-[#f4f4f4] z-[90] hidden flex-col pt-20 px-6 overflow-y-auto">
+            <nav class="flex flex-col">
+                <span class="text-[10px] text-gray-400 font-bold uppercase tracking-wider px-0 py-2">01.
+                    Fundamentals</span>
+                <a href="#intro" class="mobile-nav-link" onclick="toggleMobileMenu()">Introduction</a>
+                <a href="#topologies" class="mobile-nav-link" onclick="toggleMobileMenu()">Topologies</a>
+                <a href="#network-types" class="mobile-nav-link" onclick="toggleMobileMenu()">Network Types</a>
+                <a href="#osi" class="mobile-nav-link" onclick="toggleMobileMenu()">OSI Model</a>
+                <a href="#encapsulation" class="mobile-nav-link" onclick="toggleMobileMenu()">Encapsulation</a>
+                <a href="#datalink" class="mobile-nav-link" onclick="toggleMobileMenu()">Data Link & Reliability</a>
+
+                <span class="text-[10px] text-gray-400 font-bold uppercase tracking-wider px-0 py-2 mt-4">02.
+                    Architecture</span>
+                <a href="#tcpip" class="mobile-nav-link" onclick="toggleMobileMenu()">TCP/IP Stack</a>
+                <a href="#ip" class="mobile-nav-link" onclick="toggleMobileMenu()">IP Addressing</a>
+                <a href="#routing" class="mobile-nav-link" onclick="toggleMobileMenu()">Routing & Algorithms</a>
+                <a href="#protocols" class="mobile-nav-link" onclick="toggleMobileMenu()">Protocols (DNS/HTTP/Email)</a>
+                <a href="#wireless" class="mobile-nav-link" onclick="toggleMobileMenu()">Wireless</a>
+
+                <span class="text-[10px] text-gray-400 font-bold uppercase tracking-wider px-0 py-2 mt-4">03.
+                    Security</span>
+                <a href="#security" class="mobile-nav-link" onclick="toggleMobileMenu()">Encryption (SSL/TLS)</a>
+                <a href="#glossary" class="mobile-nav-link" onclick="toggleMobileMenu()">Glossary</a>
+
+                <span class="text-[10px] text-gray-400 font-bold uppercase tracking-wider px-0 py-2 mt-4">04.
+                    Verification</span>
+                <a href="#exam" class="mobile-nav-link" onclick="toggleMobileMenu()">Knowledge Check</a>
+
+
+            </nav>
+        </div>
+
+        <!-- Sidebar (Desktop) -->
+        <aside
+            class="hidden lg:block w-64 fixed h-screen bg-[#f4f4f4] border-r border-[#e5e5e5] z-50 overflow-y-auto thin-scrollbar">
+            <div class="p-8 h-full flex flex-col justify-between">
+                <div>
+                    <a href="../index.html"
+                        class="inline-flex items-center gap-2 px-4 py-2 mb-8 text-[10px] font-mono uppercase tracking-wider text-gray-600 border border-gray-300 hover:bg-black hover:text-white hover:border-black transition-all duration-200">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                        </svg>
+                        Back to Home
+                    </a>
+                    <div class="mb-12">
+                        <h1 class="text-sm font-semibold tracking-wide uppercase text-black">Computer<br>Networks
+                        </h1>
+                        <p class="text-[10px] text-gray-400 mt-1 uppercase tracking-wider font-bold">Networks
+                        </p>
+                    </div>
+
+                    <nav class="space-y-1">
+                        <div class="pt-0 pb-1 text-[10px] text-gray-400 font-bold uppercase tracking-wider">01.
+                            Fundamentals</div>
+                        <a href="#intro" class="nav-link">Introduction</a>
+                        <a href="#topologies" class="nav-link">Topologies</a>
+                        <a href="#network-types" class="nav-link">Network Types</a>
+                        <a href="#osi" class="nav-link">The OSI Model</a>
+                        <a href="#encapsulation" class="nav-link">Encapsulation</a>
+                        <a href="#datalink" class="nav-link">Data Link & Reliability</a>
+
+                        <div class="pt-4 pb-1 text-[10px] text-gray-400 font-bold uppercase tracking-wider">02.
+                            Architecture
+                        </div>
+                        <a href="#tcpip" class="nav-link">TCP/IP Stack</a>
+                        <a href="#ip" class="nav-link">IP Addressing</a>
+                        <a href="#routing" class="nav-link">Routing & Algorithms</a>
+                        <a href="#protocols" class="nav-link">Protocols (DNS/HTTP/Email)</a>
+                        <a href="#wireless" class="nav-link">Wireless & Mobile</a>
+
+                        <div class="pt-4 pb-1 text-[10px] text-gray-400 font-bold uppercase tracking-wider">03. Security
+                        </div>
+                        <a href="#security" class="nav-link">Encryption & SSL</a>
+                        <a href="#glossary" class="nav-link">Glossary</a>
+
+                        <div class="pt-4 pb-1 text-[10px] text-gray-400 font-bold uppercase tracking-wider">04.
+                            Verification</div>
+                        <a href="#exam" class="nav-link">Knowledge Check</a>
+
+
+                    </nav>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 lg:ml-64 bg-white w-full">
+            <div class="max-w-3xl mx-auto px-4 sm:px-8 py-24 lg:py-20">
+
+                <!-- Hero Section -->
+                <section id="intro" class="mb-16 md:mb-24">
+                    <h2 class="text-3xl md:text-5xl font-semibold mb-6 text-black tracking-tight leading-tight">
+                        The Invisible<br>Mega-Structure
+                    </h2>
+                    <p class="text-base md:text-lg text-[#555] max-w-xl font-light leading-relaxed mb-4">
+                        Computer Networks connect independent computers to share resources and data. From the fiber
+                        cables under the ocean to the Wi-Fi signals in the air.
+                    </p>
+                    <p class="text-sm text-gray-500 max-w-lg leading-relaxed">
+                        It is a layered abstraction. Each layer solves a specific problem—converting signals to bits,
+                        bits to packets, routing packets across the world, and ensuring applications understand the
+                        data.
+                    </p>
+                </section>
+
+                <div class="divider hidden md:block"></div>
+
+                <!-- 01.1 Topologies -->
+                <section id="topologies" class="mb-16">
+                    <span class="rams-label">01.1 / Structure</span>
+                    <h3 class="text-xl font-medium mb-6">Network Topologies</h3>
+                    <p class="text-sm text-gray-600 mb-8 max-w-lg">
+                        Topology defines the physical or logical layout of a network. It determines how devices connect
+                        and data flows.
+                    </p>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- Star -->
+                        <div class="rams-card mb-0 p-6 flex flex-col items-center text-center">
+                            <div class="w-24 h-24 mb-4 relative flex items-center justify-center">
+                                <div class="absolute w-3 h-3 bg-cyan-700 rounded-full z-10"></div> <!-- Hub -->
+                                <div class="absolute w-full h-full animate-spin-slow" style="animation-duration: 10s;">
+                                    <div
+                                        class="absolute top-0 left-1/2 -translate-x-1/2 w-2 h-2 bg-gray-400 rounded-full">
+                                    </div>
+                                    <div
+                                        class="absolute bottom-0 left-1/2 -translate-x-1/2 w-2 h-2 bg-gray-400 rounded-full">
+                                    </div>
+                                    <div
+                                        class="absolute left-0 top-1/2 -translate-y-1/2 w-2 h-2 bg-gray-400 rounded-full">
+                                    </div>
+                                    <div
+                                        class="absolute right-0 top-1/2 -translate-y-1/2 w-2 h-2 bg-gray-400 rounded-full">
+                                    </div>
+                                    <div class="absolute inset-0 border border-gray-200 rounded-full opacity-0"></div>
+                                    <!-- Invisible ring guide -->
+                                    <!-- Spokes -->
+                                    <div class="absolute inset-0 flex items-center justify-center">
+                                        <div class="w-full h-[1px] bg-gray-300 rotate-0"></div>
+                                    </div>
+                                    <div class="absolute inset-0 flex items-center justify-center">
+                                        <div class="w-full h-[1px] bg-gray-300 rotate-90"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <h4 class="font-bold text-sm text-gray-900">Star Topology</h4>
+                            <p class="text-xs text-gray-500 mt-2">All devices connect to a central Hub/Switch. Easy to
+                                troubleshoot, but if the Hub fails, the network goes down.</p>
+                        </div>
+
+                        <!-- Mesh -->
+                        <div class="rams-card mb-0 p-6 flex flex-col items-center text-center">
+                            <div class="w-24 h-24 mb-4 relative">
+                                <svg class="w-full h-full stroke-gray-300 stroke-[1.5]" viewBox="0 0 100 100">
+                                    <circle cx="20" cy="20" r="3" class="fill-gray-400" />
+                                    <circle cx="80" cy="20" r="3" class="fill-gray-400" />
+                                    <circle cx="20" cy="80" r="3" class="fill-gray-400" />
+                                    <circle cx="80" cy="80" r="3" class="fill-gray-400" />
+                                    <circle cx="50" cy="50" r="3" class="fill-cyan-700" />
+                                    <path d="M20 20 L80 20 M20 20 L20 80 M20 20 L50 50" />
+                                    <path d="M80 80 L80 20 M80 80 L20 80 M80 80 L50 50" />
+                                    <path d="M20 80 L50 50 M80 20 L50 50" />
+                                </svg>
+                            </div>
+                            <h4 class="font-bold text-sm text-gray-900">Mesh Topology</h4>
+                            <p class="text-xs text-gray-500 mt-2">Devices interconnect redundantly. High reliability and
+                                fault tolerance, but expensive and complex cabling.</p>
+                        </div>
+
+                        <!-- Bus -->
+                        <div class="rams-card mb-0 p-6 flex flex-col items-center text-center">
+                            <div class="w-24 h-24 mb-4 relative flex items-center justify-center">
+                                <!-- Backbone -->
+                                <div class="absolute w-full h-[2px] bg-cyan-700 top-1/2 -translate-y-1/2"></div>
+                                <!-- Drop Lines -->
+                                <div class="absolute w-[1px] h-6 bg-gray-400 top-1/2 left-[20%]"></div>
+                                <div class="absolute w-[1px] h-6 bg-gray-400 bottom-1/2 left-[50%]"></div>
+                                <div class="absolute w-[1px] h-6 bg-gray-400 top-1/2 right-[20%]"></div>
+                                <!-- Nodes -->
+                                <div
+                                    class="absolute w-2 h-2 bg-gray-600 rounded-full top-[calc(50%+24px)] left-[calc(20%-3px)]">
+                                </div>
+                                <div
+                                    class="absolute w-2 h-2 bg-gray-600 rounded-full bottom-[calc(50%+24px)] left-[calc(50%-3px)]">
+                                </div>
+                                <div
+                                    class="absolute w-2 h-2 bg-gray-600 rounded-full top-[calc(50%+24px)] right-[calc(20%-3px)]">
+                                </div>
+                                <!-- Terminators -->
+                                <div class="absolute w-1 h-3 bg-red-400 top-1/2 left-0 -translate-y-1/2"></div>
+                                <div class="absolute w-1 h-3 bg-red-400 top-1/2 right-0 -translate-y-1/2"></div>
+                            </div>
+                            <h4 class="font-bold text-sm text-gray-900">Bus Topology</h4>
+                            <p class="text-xs text-gray-500 mt-2">Single cable (backbone) connects all devices. Easy to
+                                install, but a cable break stops the whole network.</p>
+                        </div>
+
+                        <!-- Ring -->
+                        <div class="rams-card mb-0 p-6 flex flex-col items-center text-center">
+                            <div class="w-24 h-24 mb-4 relative flex items-center justify-center">
+                                <!-- Ring -->
+                                <div class="absolute w-16 h-16 border-2 border-cyan-700 rounded-full"></div>
+                                <!-- Nodes -->
+                                <div
+                                    class="absolute w-3 h-3 bg-gray-100 border border-gray-400 rounded-full top-0 left-1/2 -translate-x-1/2 -translate-y-1.5">
+                                </div>
+                                <div
+                                    class="absolute w-3 h-3 bg-gray-100 border border-gray-400 rounded-full bottom-0 left-1/2 -translate-x-1/2 translate-y-1.5">
+                                </div>
+                                <div
+                                    class="absolute w-3 h-3 bg-gray-100 border border-gray-400 rounded-full left-0 top-1/2 -translate-x-1.5 -translate-y-1/2">
+                                </div>
+                                <div
+                                    class="absolute w-3 h-3 bg-gray-100 border border-gray-400 rounded-full right-0 top-1/2 translate-x-1.5 -translate-y-1/2">
+                                </div>
+                                <!-- Direction Arrows (Subtle) -->
+                                <div class="absolute w-full h-full animate-spin-slow opacity-20"
+                                    style="animation-duration: 20s;">
+                                    <div class="absolute top-2 right-2 w-1 h-1 bg-cyan-700 rounded-full"></div>
+                                </div>
+                            </div>
+                            <h4 class="font-bold text-sm text-gray-900">Ring Topology</h4>
+                            <p class="text-xs text-gray-500 mt-2">Devices connect in a circle. Data travels in one
+                                direction. Token passing controls access.</p>
+                        </div>
+
+                        <!-- Tree -->
+                        <div class="rams-card mb-0 p-6 flex flex-col items-center text-center">
+                            <div class="w-24 h-24 mb-4 relative flex flex-col items-center justify-center">
+                                <svg class="w-full h-full stroke-gray-300 stroke-[1.5]" viewBox="0 0 100 100">
+                                    <path
+                                        d="M50 20 L30 50 M50 20 L70 50 M30 50 L20 80 M30 50 L40 80 M70 50 L60 80 M70 50 L80 80" />
+                                    <!-- Root -->
+                                    <circle cx="50" cy="20" r="3" class="fill-cyan-700" />
+                                    <!-- Level 1 -->
+                                    <circle cx="30" cy="50" r="2.5" class="fill-gray-400" />
+                                    <circle cx="70" cy="50" r="2.5" class="fill-gray-400" />
+                                    <!-- Level 2 -->
+                                    <circle cx="20" cy="80" r="2" class="fill-gray-300" />
+                                    <circle cx="40" cy="80" r="2" class="fill-gray-300" />
+                                    <circle cx="60" cy="80" r="2" class="fill-gray-300" />
+                                    <circle cx="80" cy="80" r="2" class="fill-gray-300" />
+                                </svg>
+                            </div>
+                            <h4 class="font-bold text-sm text-gray-900">Tree Topology</h4>
+                            <p class="text-xs text-gray-500 mt-2">Hierarchical structure with a root node. Scalable and
+                                manageable, often used in WANs.</p>
+                        </div>
+
+                        <!-- Hybrid -->
+                        <div class="rams-card mb-0 p-6 flex flex-col items-center text-center">
+                            <div class="w-24 h-24 mb-4 relative flex items-center justify-center">
+                                <svg class="w-full h-full stroke-gray-300 stroke-[1.5]" viewBox="0 0 100 100">
+                                    <!-- Left: Star Topology -->
+                                    <circle cx="30" cy="50" r="3.5" class="fill-cyan-700" /> <!-- Hub -->
+                                    <circle cx="15" cy="35" r="2" class="fill-gray-400" />
+                                    <circle cx="15" cy="65" r="2" class="fill-gray-400" />
+                                    <circle cx="45" cy="35" r="2" class="fill-gray-400" />
+                                    <path d="M30 50 L15 35 M30 50 L15 65 M30 50 L45 35" />
+
+                                    <!-- Connection (Bridge) -->
+                                    <line x1="30" y1="50" x2="65" y2="50" class="stroke-cyan-800 stroke-[2]"
+                                        stroke-dasharray="2,2" />
+
+                                    <!-- Right: Ring Topology -->
+                                    <circle cx="80" cy="50" r="15" fill="none" class="stroke-cyan-700" />
+                                    <circle cx="80" cy="35" r="2" class="fill-gray-400" />
+                                    <circle cx="95" cy="50" r="2" class="fill-gray-400" />
+                                    <circle cx="80" cy="65" r="2" class="fill-gray-400" />
+                                    <circle cx="65" cy="50" r="2" class="fill-gray-400" /> <!-- Connection Node -->
+                                </svg>
+                            </div>
+                            <h4 class="font-bold text-sm text-gray-900">Hybrid Topology</h4>
+                            <p class="text-xs text-gray-500 mt-2">Integration of two or more different topologies (e.g.,
+                                Star-Ring). Flexible but complex to design.</p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 01.2 Network Types -->
+                <section id="network-types" class="mb-16">
+                    <span class="rams-label">01.2 / Scope</span>
+                    <h3 class="text-xl font-medium mb-6">Network Types</h3>
+                    <p class="text-sm text-gray-600 mb-8 max-w-lg">
+                        Networks are classified by their geographical scope, from a few meters (PAN) to the entire globe
+                        (WAN).
+                    </p>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                        <!-- PAN -->
+                        <div
+                            class="rams-card mb-0 p-4 min-h-[160px] flex flex-col justify-between hover:shadow-md transition-shadow">
+                            <div>
+                                <div class="flex items-center justify-between mb-2">
+                                    <h4 class="font-bold text-xs text-gray-900 uppercase">PAN</h4>
+                                    <span class="text-[10px] text-cyan-600 font-mono">Person</span>
+                                </div>
+                                <p class="text-[11px] text-gray-500 leading-snug">
+                                    <strong class="text-gray-700">Personal Area Network.</strong> Smallest range
+                                    (approx. 10m). Connects personal devices.
+                                </p>
+                            </div>
+                            <div class="mt-3 pt-3 border-t border-gray-100 flex items-center justify-between">
+                                <span class="text-[9px] text-gray-400 font-mono">Bluetooth, Zigbee</span>
+                                <div class="w-2 h-2 rounded-full bg-cyan-100 border border-cyan-300"></div>
+                            </div>
+                        </div>
+
+                        <!-- LAN -->
+                        <div
+                            class="rams-card mb-0 p-4 min-h-[160px] flex flex-col justify-between hover:shadow-md transition-shadow">
+                            <div>
+                                <div class="flex items-center justify-between mb-2">
+                                    <h4 class="font-bold text-xs text-gray-900 uppercase">LAN</h4>
+                                    <span class="text-[10px] text-cyan-600 font-mono">Local</span>
+                                </div>
+                                <p class="text-[11px] text-gray-500 leading-snug">
+                                    <strong class="text-gray-700">Local Area Network.</strong> Connects devices in a
+                                    single location like a home, office, or building. High speed.
+                                </p>
+                            </div>
+                            <div class="mt-3 pt-3 border-t border-gray-100 flex items-center justify-between">
+                                <span class="text-[9px] text-gray-400 font-mono">Ethernet (802.3)</span>
+                                <div class="w-3 h-3 rounded-full bg-green-100 border border-green-300"></div>
+                            </div>
+                        </div>
+
+                        <!-- WLAN -->
+                        <div
+                            class="rams-card mb-0 p-4 min-h-[160px] flex flex-col justify-between hover:shadow-md transition-shadow">
+                            <div>
+                                <div class="flex items-center justify-between mb-2">
+                                    <h4 class="font-bold text-xs text-gray-900 uppercase">WLAN</h4>
+                                    <span class="text-[10px] text-cyan-600 font-mono">Wireless</span>
+                                </div>
+                                <p class="text-[11px] text-gray-500 leading-snug">
+                                    <strong class="text-gray-700">Wireless LAN.</strong> Uses radio waves to connect
+                                    devices without cables. Flexible but subject to interference.
+                                </p>
+                            </div>
+                            <div class="mt-3 pt-3 border-t border-gray-100 flex items-center justify-between">
+                                <span class="text-[9px] text-gray-400 font-mono">Wi-Fi (802.11)</span>
+                                <div
+                                    class="w-3 h-3 rounded-full bg-purple-100 border border-purple-300 flex items-center justify-center">
+                                    <div class="w-1 h-1 bg-purple-400 rounded-full"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- CAN -->
+                        <div
+                            class="rams-card mb-0 p-4 min-h-[160px] flex flex-col justify-between hover:shadow-md transition-shadow">
+                            <div>
+                                <div class="flex items-center justify-between mb-2">
+                                    <h4 class="font-bold text-xs text-gray-900 uppercase">CAN</h4>
+                                    <span class="text-[10px] text-cyan-600 font-mono">Campus</span>
+                                </div>
+                                <p class="text-[11px] text-gray-500 leading-snug">
+                                    <strong class="text-gray-700">Campus Area Network.</strong> Interconnects multiple
+                                    LANs within a specific area like a university or military base.
+                                </p>
+                            </div>
+                            <div class="mt-3 pt-3 border-t border-gray-100 flex items-center justify-between">
+                                <span class="text-[9px] text-gray-400 font-mono">Fiber Backbones</span>
+                                <div class="w-4 h-4 rounded-full bg-orange-100 border border-orange-300"></div>
+                            </div>
+                        </div>
+
+                        <!-- MAN -->
+                        <div
+                            class="rams-card mb-0 p-4 min-h-[160px] flex flex-col justify-between hover:shadow-md transition-shadow">
+                            <div>
+                                <div class="flex items-center justify-between mb-2">
+                                    <h4 class="font-bold text-xs text-gray-900 uppercase">MAN</h4>
+                                    <span class="text-[10px] text-cyan-600 font-mono">Metro</span>
+                                </div>
+                                <p class="text-[11px] text-gray-500 leading-snug">
+                                    <strong class="text-gray-700">Metropolitan Area Network.</strong> Spans an entire
+                                    city or large campus. Connects multiple LANs.
+                                </p>
+                            </div>
+                            <div class="mt-3 pt-3 border-t border-gray-100 flex items-center justify-between">
+                                <span class="text-[9px] text-gray-400 font-mono">Cable TV, Metro Ethernet</span>
+                                <div class="w-5 h-5 rounded-full bg-red-100 border border-red-300"></div>
+                            </div>
+                        </div>
+
+                        <!-- WAN -->
+                        <div
+                            class="rams-card mb-0 p-4 min-h-[160px] flex flex-col justify-between hover:shadow-md transition-shadow shadow-sm border-cyan-100">
+                            <div>
+                                <div class="flex items-center justify-between mb-2">
+                                    <h4 class="font-bold text-xs text-cyan-900 uppercase">WAN</h4>
+                                    <span class="text-[10px] text-cyan-600 font-mono">Wide</span>
+                                </div>
+                                <p class="text-[11px] text-gray-500 leading-snug">
+                                    <strong class="text-gray-700">Wide Area Network.</strong> Spans countries or
+                                    continents. The Internet is the largest WAN.
+                                </p>
+                            </div>
+                            <div class="mt-3 pt-3 border-t border-gray-100 flex items-center justify-between">
+                                <span class="text-[9px] text-gray-400 font-mono">Satellites, Fiber Optic</span>
+                                <div
+                                    class="w-6 h-6 rounded-full bg-blue-100 border border-blue-300 flex items-center justify-center">
+                                    <div class="w-6 h-[1px] bg-blue-300 rotate-45 transform"></div>
+                                    <div class="w-6 h-[1px] bg-blue-300 -rotate-45 transform absolute"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- SAN -->
+                        <div
+                            class="rams-card mb-0 p-4 min-h-[160px] flex flex-col justify-between hover:shadow-md transition-shadow">
+                            <div>
+                                <div class="flex items-center justify-between mb-2">
+                                    <h4 class="font-bold text-xs text-gray-900 uppercase">SAN</h4>
+                                    <span class="text-[10px] text-cyan-600 font-mono">Storage</span>
+                                </div>
+                                <p class="text-[11px] text-gray-500 leading-snug">
+                                    <strong class="text-gray-700">Storage Area Network.</strong> High-speed network
+                                    providing block-level access to storage. Appears as local drives.
+                                </p>
+                            </div>
+                            <div class="mt-3 pt-3 border-t border-gray-100 flex items-center justify-between">
+                                <span class="text-[9px] text-gray-400 font-mono">Fibre Channel</span>
+                                <div class="flex gap-0.5">
+                                    <div class="w-1 h-3 bg-gray-300 rounded-sm"></div>
+                                    <div class="w-1 h-3 bg-gray-300 rounded-sm"></div>
+                                    <div class="w-1 h-3 bg-gray-300 rounded-sm"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- VPN -->
+                        <div
+                            class="rams-card mb-0 p-4 min-h-[160px] flex flex-col justify-between hover:shadow-md transition-shadow bg-gray-50">
+                            <div>
+                                <div class="flex items-center justify-between mb-2">
+                                    <h4 class="font-bold text-xs text-gray-900 uppercase">VPN</h4>
+                                    <span class="text-[10px] text-cyan-600 font-mono">Virtual</span>
+                                </div>
+                                <p class="text-[11px] text-gray-500 leading-snug">
+                                    <strong class="text-gray-700">Virtual Private Network.</strong> Extends a private
+                                    network across a public one (Internet). Encrypted tunnel.
+                                </p>
+                            </div>
+                            <div class="mt-3 pt-3 border-t border-gray-100 flex items-center justify-between">
+                                <span class="text-[9px] text-gray-400 font-mono">IPsec, OpenVPN</span>
+                                <div
+                                    class="w-3 h-3 border-2 border-gray-400 rounded-sm flex items-center justify-center">
+                                    <div class="w-1 h-1 bg-gray-600 rounded-full"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </section>
+
+                <!-- 01. The OSI Model -->
+                <section id="osi" class="mb-16">
+                    <span class="rams-label">01 / Abstraction</span>
+                    <h3 class="text-xl font-medium mb-6">The OSI Model (7 Layers)</h3>
+                    <p class="text-sm text-gray-600 mb-8 max-w-lg">
+                        The Open Systems Interconnection (OSI) model standardizes communication functions into 7
+                        distinct layers.
+                    </p>
+
+                    <div class="mb-8 bg-white border border-gray-200 p-4 rounded-lg shadow-sm">
+                        <h4 class="font-bold text-sm mb-2 text-cyan-900">Why Layering?</h4>
+                        <ul class="list-disc list-inside text-xs text-gray-600 space-y-1 leading-relaxed">
+                            <li><strong>Interoperability:</strong> Different hardware and software can communicate if
+                                they follow the same standard protocols.</li>
+                            <li><strong>Abstraction:</strong> Complex details are hidden. A browser (L7) doesn't need to
+                                know about fiber optics (L1).</li>
+                            <li><strong>Troubleshooting:</strong> Helps isolate problems (e.g., "Is it a physical cable
+                                issue or a wrong IP address?").</li>
+                        </ul>
+                    </div>
+
+                    <div class="rams-card">
+                        <div class="flex flex-col md:flex-row gap-6">
+                            <!-- Visual Stack -->
+                            <div
+                                class="w-full md:w-1/3 flex flex-col-reverse border border-gray-200 rounded overflow-hidden">
+                                <div class="osi-layer p-3 border-t border-gray-100 flex justify-between items-center group"
+                                    onclick="showLayer(1)" id="layer-1">
+                                    <span
+                                        class="text-xs font-mono font-bold text-gray-400 group-hover:text-cyan-600">L1</span>
+                                    <span class="text-xs font-bold text-gray-700">Physical</span>
+                                </div>
+                                <div class="osi-layer p-3 border-t border-gray-100 flex justify-between items-center group"
+                                    onclick="showLayer(2)" id="layer-2">
+                                    <span
+                                        class="text-xs font-mono font-bold text-gray-400 group-hover:text-cyan-600">L2</span>
+                                    <span class="text-xs font-bold text-gray-700">Data Link</span>
+                                </div>
+                                <div class="osi-layer p-3 border-t border-gray-100 flex justify-between items-center group"
+                                    onclick="showLayer(3)" id="layer-3">
+                                    <span
+                                        class="text-xs font-mono font-bold text-gray-400 group-hover:text-cyan-600">L3</span>
+                                    <span class="text-xs font-bold text-gray-700">Network</span>
+                                </div>
+                                <div class="osi-layer p-3 border-t border-gray-100 flex justify-between items-center group"
+                                    onclick="showLayer(4)" id="layer-4">
+                                    <span
+                                        class="text-xs font-mono font-bold text-gray-400 group-hover:text-cyan-600">L4</span>
+                                    <span class="text-xs font-bold text-gray-700">Transport</span>
+                                </div>
+                                <div class="osi-layer p-3 border-t border-gray-100 flex justify-between items-center group"
+                                    onclick="showLayer(5)" id="layer-5">
+                                    <span
+                                        class="text-xs font-mono font-bold text-gray-400 group-hover:text-cyan-600">L5</span>
+                                    <span class="text-xs font-bold text-gray-700">Session</span>
+                                </div>
+                                <div class="osi-layer p-3 border-t border-gray-100 flex justify-between items-center group"
+                                    onclick="showLayer(6)" id="layer-6">
+                                    <span
+                                        class="text-xs font-mono font-bold text-gray-400 group-hover:text-cyan-600">L6</span>
+                                    <span class="text-xs font-bold text-gray-700">Presentation</span>
+                                </div>
+                                <div class="osi-layer p-3 border-b border-gray-100 flex justify-between items-center group"
+                                    onclick="showLayer(7)" id="layer-7">
+                                    <span
+                                        class="text-xs font-mono font-bold text-gray-400 group-hover:text-cyan-600">L7</span>
+                                    <span class="text-xs font-bold text-gray-700">Application</span>
+                                </div>
+                            </div>
+
+                            <!-- Detailed Info Panel -->
+                            <div
+                                class="flex-1 bg-gray-50 border border-gray-200 rounded p-6 flex flex-col justify-center min-h-[280px]">
+                                <span class="text-[10px] text-cyan-600 font-bold uppercase tracking-wider mb-2">Selected
+                                    Layer</span>
+                                <h4 class="text-2xl font-bold mb-4 text-gray-900" id="osi-title">Select a Layer</h4>
+                                <p class="text-sm text-gray-600 leading-relaxed mb-6" id="osi-desc">
+                                    Interact with the stack on the left to explore each layer's specific
+                                    responsibilities in the network model.
+                                </p>
+                                <div class="border-t border-gray-200 pt-4 mt-auto grid grid-cols-2 gap-4">
+                                    <div>
+                                        <span class="block text-[10px] uppercase text-gray-400 font-bold">Data
+                                            Unit</span>
+                                        <span class="text-sm font-mono text-gray-800" id="osi-unit">-</span>
+                                    </div>
+                                    <div>
+                                        <span
+                                            class="block text-[10px] uppercase text-gray-400 font-bold">Examples</span>
+                                        <span class="text-sm font-mono text-gray-800" id="osi-proto">-</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Quick Check 1 -->
+                <div id="check-osi" class="mb-20 md:mb-24"></div>
+
+                <!-- 01.3 Encapsulation -->
+                <section id="encapsulation" class="mb-16">
+                    <span class="rams-label">01.3 / Data Flow</span>
+                    <h3 class="text-xl font-medium mb-6">Encapsulation</h3>
+                    <p class="text-sm text-gray-600 mb-8 max-w-lg">
+                        As data moves down the stack, each layer adds a "Header" (and sometimes a Footer). This process
+                        is called Encapsulation.
+                    </p>
+
+                    <div class="rams-card p-6 overflow-x-auto">
+                        <div class="flex items-center gap-2 min-w-[600px] text-xs font-mono">
+                            <!-- L7 -->
+                            <div class="flex flex-col items-center">
+                                <div class="bg-gray-100 p-2 rounded border border-gray-300 w-24 text-center">User Data
+                                </div>
+                                <span class="text-gray-400 text-[10px] mt-1">Application</span>
+                            </div>
+                            <span class="text-gray-400">→</span>
+                            <!-- L4 -->
+                            <div class="flex flex-col items-center">
+                                <div class="flex">
+                                    <div class="bg-blue-100 p-2 rounded-l border border-blue-200">TCP H.</div>
+                                    <div
+                                        class="bg-gray-100 p-2 rounded-r border border-gray-300 border-l-0 text-gray-400">
+                                        Data</div>
+                                </div>
+                                <span class="text-blue-600 text-[10px] mt-1">Segment</span>
+                            </div>
+                            <span class="text-gray-400">→</span>
+                            <!-- L3 -->
+                            <div class="flex flex-col items-center">
+                                <div class="flex">
+                                    <div class="bg-green-100 p-2 rounded-l border border-green-200">IP Header</div>
+                                    <div class="bg-blue-50 p-2 border-y border-blue-100 opacity-50">TCP</div>
+                                    <div
+                                        class="bg-gray-50 p-2 rounded-r border border-gray-200 border-l-0 text-gray-400 opacity-50">
+                                        Data</div>
+                                </div>
+                                <span class="text-green-600 text-[10px] mt-1">Packet</span>
+                            </div>
+                            <span class="text-gray-400">→</span>
+                            <!-- L2 -->
+                            <div class="flex flex-col items-center">
+                                <div class="flex">
+                                    <div class="bg-orange-100 p-2 rounded-l border border-orange-200">MAC</div>
+                                    <div class="bg-green-50 p-2 border-y border-green-100 opacity-50 text-[10px]">..
+                                    </div>
+                                    <div
+                                        class="bg-gray-50 p-2 border-y border-gray-200 border-l-0 text-gray-400 opacity-50 text-[10px]">
+                                        ..</div>
+                                    <div class="bg-orange-100 p-2 rounded-r border border-orange-200 border-l-0">FCS
+                                    </div>
+                                </div>
+                                <span class="text-orange-600 text-[10px] mt-1">Frame</span>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 01.4 Data Link & Reliability -->
+                <section id="datalink" class="mb-16">
+                    <span class="rams-label">01.4 / Reliability</span>
+                    <h3 class="text-xl font-medium mb-6">Data Link Control & Access</h3>
+                    <p class="text-sm text-gray-600 mb-8 max-w-lg">
+                        Ensuring data integrity and managing how devices share the communication medium.
+                    </p>
+
+                    <div class="space-y-8">
+                        <!-- Error Detection -->
+                        <div class="rams-card mb-0">
+                            <h4 class="font-bold text-sm mb-4">Error Detection</h4>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div class="bg-gray-50 p-4 rounded border border-gray-100">
+                                    <h5 class="text-xs font-bold text-cyan-800 uppercase mb-2">Block Coding</h5>
+                                    <p class="text-xs text-gray-600 mb-2">
+                                        Data is divided into blocks. Redundant bits are added to each block to check
+                                        validity.
+                                    </p>
+                                    <ul class="list-disc list-inside text-[10px] text-gray-500">
+                                        <li>Parity Check (Simple)</li>
+                                        <li>Hamming Code (Correction)</li>
+                                    </ul>
+                                    <!-- Parity Interactive -->
+                                    <div class="mt-3 bg-white p-2 border border-gray-200 rounded">
+                                        <div class="flex items-center gap-2 mb-2">
+                                            <input type="text" id="parity-input" placeholder="1011" maxlength="8"
+                                                class="w-full border border-gray-300 p-1 text-xs font-mono text-center focus:outline-none focus:border-cyan-500"
+                                                oninput="calcParity()">
+                                            <div id="parity-bit"
+                                                class="w-8 h-8 flex items-center justify-center bg-gray-100 text-xs font-bold font-mono border border-gray-300 text-cyan-600">
+                                                -
+                                            </div>
+                                        </div>
+                                        <p class="text-[10px] text-gray-400 text-center">Type bits. Box shows Even
+                                            Parity
+                                            bit.</p>
+                                    </div>
+                                </div>
+                                <div class="bg-gray-50 p-4 rounded border border-gray-100">
+                                    <h5 class="text-xs font-bold text-cyan-800 uppercase mb-2">Cyclic Codes (CRC)</h5>
+                                    <p class="text-xs text-gray-600 mb-2">
+                                        Uses binary division. Append Checksum bits so the resulting frame is divisible
+                                        by a predefined polynomial.
+                                    </p>
+                                    <div class="bg-white p-2 border border-gray-200 text-[10px] font-mono">
+                                        Data: 101001 -> CRC: 101001<span class="text-red-500">011</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mt-4 bg-gray-50 p-4 rounded border border-gray-100">
+                                <h5 class="text-xs font-bold text-cyan-800 uppercase mb-2">Checksum</h5>
+                                <p class="text-xs text-gray-600">
+                                    Used in higher layers (TCP/IP). The sender sums up data segments (using 1's
+                                    complement) and sends the result. Receiver repeats the sum; if result is all 1s,
+                                    data is valid.
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- Access Control -->
+                        <div class="rams-card mb-0">
+                            <h4 class="font-bold text-sm mb-4">Media Access Control (MAC)</h4>
+
+                            <!-- CSMA/CD Visual -->
+                            <div class="mb-6 bg-gray-50 p-4 rounded border border-gray-200">
+                                <h5 class="text-xs font-bold text-gray-800 uppercase mb-3">CSMA/CD Simulation</h5>
+                                <div class="relative h-20 bg-white border border-gray-200 rounded mb-3 overflow-hidden"
+                                    id="csma-canvas">
+                                    <!-- Wire -->
+                                    <div class="absolute top-1/2 left-4 right-4 h-0.5 bg-gray-300 -translate-y-1/2">
+                                    </div>
+                                    <!-- Node A -->
+                                    <div class="absolute top-1/2 left-4 w-4 h-4 bg-cyan-600 rounded-full -translate-y-1/2 z-10 transition-transform"
+                                        id="node-a"></div>
+                                    <!-- Node B -->
+                                    <div class="absolute top-1/2 right-4 w-4 h-4 bg-purple-600 rounded-full -translate-y-1/2 z-10 transition-transform"
+                                        id="node-b"></div>
+
+                                    <!-- Collisions -->
+                                    <div id="collision-flash"
+                                        class="absolute inset-0 bg-red-500 opacity-0 transition-opacity duration-100 pointer-events-none z-20">
+                                    </div>
+                                </div>
+                                <div class="flex gap-2">
+                                    <button onclick="csmaSend('A')"
+                                        class="btn btn-primary text-[10px] py-1 px-3 h-8 bg-cyan-700 border-cyan-700">Send
+                                        A</button>
+                                    <button onclick="csmaSend('B')"
+                                        class="btn btn-primary text-[10px] py-1 px-3 h-8 bg-purple-700 border-purple-700">Send
+                                        B</button>
+                                    <span id="csma-status"
+                                        class="text-[10px] font-mono text-gray-500 self-center ml-auto">Ready to
+                                        transmit.</span>
+                                </div>
+                            </div>
+
+                            <div class="overflow-x-auto">
+                                <table class="w-full text-left text-xs">
+                                    <thead
+                                        class="bg-gray-50 border-b border-gray-200 uppercase text-gray-400 font-bold">
+                                        <tr>
+                                            <th class="p-3">Category</th>
+                                            <th class="p-3">Method</th>
+                                            <th class="p-3">Mechanism</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="divide-y divide-gray-100 font-mono text-gray-700">
+                                        <tr>
+                                            <td class="p-3 font-bold text-cyan-700">Random Access</td>
+                                            <td class="p-3">CSMA/CD</td>
+                                            <td class="p-3">Sense carrier. If collision, back off random time.
+                                                (Ethernet)
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="p-3 font-bold text-cyan-700">Random Access</td>
+                                            <td class="p-3">CSMA/CA</td>
+                                            <td class="p-3">Collision Avoidance using RTS/CTS signals. (Wi-Fi)</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="p-3 font-bold text-orange-700">Controlled</td>
+                                            <td class="p-3">Reservation</td>
+                                            <td class="p-3">Stations reserve time slots before sending.</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="p-3 font-bold text-orange-700">Controlled</td>
+                                            <td class="p-3">Polling</td>
+                                            <td class="p-3">Primary device asks Secondary devices if they have data.
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="p-3 font-bold text-orange-700">Controlled</td>
+                                            <td class="p-3">Token Passing</td>
+                                            <td class="p-3">Token circulates. Only token holder can send. (Token Ring)
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- PPP -->
+                        <div class="rams-card mb-0 flex items-center justify-between p-6">
+                            <div>
+                                <h4 class="font-bold text-sm mb-1">PPP (Point-to-Point Protocol)</h4>
+                                <p class="text-xs text-gray-600 max-w-sm">
+                                    Direct connection between two nodes. Handles authentication (PAP/CHAP), encryption,
+                                    and compression. Commonly used in ISP connections.
+                                </p>
+                            </div>
+                            <div
+                                class="text-[10px] font-mono text-gray-400 bg-gray-50 p-2 rounded border border-gray-100">
+                                L2 Protocol
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 02. TCP/IP -->
+                <section id="tcpip" class="mb-20 md:mb-24">
+                    <span class="rams-label">02 / Transport</span>
+                    <h3 class="text-xl font-medium mb-6">TCP/IP & Packet Switching</h3>
+                    <p class="text-sm text-gray-600 mb-8 max-w-lg">
+                        The Internet runs on TCP/IP. Data is broken into packets, routed independently, and reassembled
+                        at the destination.
+                    </p>
+
+                    <div class="mb-6 p-4 bg-gray-50 border border-gray-200 rounded">
+                        <h4 class="font-bold text-sm mb-2 text-gray-900">The TCP 3-Way Handshake</h4>
+                        <p class="text-xs text-gray-600 mb-3">Before data transfers, TCP guarantees a reliable
+                            connection:</p>
+                        <div class="font-mono text-xs space-y-2 bg-white p-3 rounded border border-gray-100">
+                            <div class="flex justify-between text-cyan-700"><span>1. SYN</span> <span
+                                    class="text-gray-400">(Hello?)</span></div>
+                            <div class="flex justify-between text-gray-500 pl-8"><span>2. SYN-ACK</span> <span
+                                    class="text-gray-400">(Hello! I hear you.)</span></div>
+                            <div class="flex justify-between text-cyan-700"><span>3. ACK</span> <span
+                                    class="text-gray-400">(Great, let's connect.)</span></div>
+                        </div>
+                    </div>
+
+                    <div class="rams-card">
+                        <div class="relative bg-white border border-gray-200 h-72 overflow-hidden rounded mb-6"
+                            id="packet-canvas">
+
+                            <!-- Background Grid -->
+                            <div class="absolute inset-0 opacity-10"
+                                style="background-image: radial-gradient(#9ca3af 1px, transparent 1px); background-size: 20px 20px;">
+                            </div>
+
+                            <!-- Nodes -->
+                            <div class="absolute left-6 top-1/2 -translate-y-1/2 flex flex-col items-center z-10">
+                                <div
+                                    class="w-14 h-14 bg-white border-2 border-cyan-700 rounded-lg flex items-center justify-center shadow-lg relative router-dot">
+                                    <span class="text-xs font-bold text-cyan-900">Client</span>
+                                </div>
+                            </div>
+
+                            <div class="absolute right-6 top-1/2 -translate-y-1/2 flex flex-col items-center z-10">
+                                <div
+                                    class="w-14 h-14 bg-white border-2 border-gray-700 rounded-lg flex items-center justify-center shadow-lg">
+                                    <span class="text-xs font-bold text-gray-900">Server</span>
+                                </div>
+                            </div>
+
+                            <!-- Routers -->
+                            <div class="absolute w-10 h-10 rounded-full bg-white border-2 border-gray-400 flex items-center justify-center text-[10px] font-mono router-node shadow-md z-10 transform -translate-x-1/2 -translate-y-1/2"
+                                style="left: 30%; top: 30%">R1</div>
+                            <div class="absolute w-10 h-10 rounded-full bg-white border-2 border-gray-400 flex items-center justify-center text-[10px] font-mono router-node shadow-md z-10 transform -translate-x-1/2 -translate-y-1/2"
+                                style="left: 45%; top: 70%">R2</div>
+                            <div class="absolute w-10 h-10 rounded-full bg-white border-2 border-gray-400 flex items-center justify-center text-[10px] font-mono router-node shadow-md z-10 transform -translate-x-1/2 -translate-y-1/2"
+                                style="left: 60%; top: 40%">R3</div>
+
+                            <!-- Lines (SVG) -->
+                            <svg class="absolute inset-0 w-full h-full pointer-events-none stroke-gray-300"
+                                style="stroke-width: 1.5px; stroke-dasharray: 4 4;">
+                                <line x1="80" y1="144" x2="30%" y2="30%" /> <!-- User to R1 -->
+                                <line x1="80" y1="144" x2="45%" y2="70%" /> <!-- User to R2 -->
+                                <line x1="30%" y1="30%" x2="60%" y2="40%" /> <!-- R1 to R3 -->
+                                <line x1="45%" y1="70%" x2="60%" y2="40%" /> <!-- R2 to R3 -->
+                                <line x1="60%" y1="40%" x2="90%" y2="144" /> <!-- R3 to Server -->
+                            </svg>
+                        </div>
+
+                        <div class="flex gap-4">
+                            <button onclick="sendPackets()"
+                                class="btn btn-primary w-full bg-cyan-700 border-cyan-700 hover:bg-cyan-800">
+                                Send Data Packet
+                            </button>
+                        </div>
+                    </div>
+                </section>
+
+
+                <!-- 02.1 Network Layer & Addressing -->
+                <section id="ip" class="mb-20 md:mb-24">
+                    <span class="rams-label">02.1 / Addressing & Switching</span>
+                    <h3 class="text-xl font-medium mb-6">Network Layer: IP & Switching</h3>
+                    <p class="text-sm text-gray-600 mb-8 max-w-lg">
+                        The Network Layer is responsible for logical addressing (IP) and routing packets from source to
+                        destination appropriately.
+                    </p>
+
+                    <!-- Switching Techniques -->
+                    <div class="mb-12">
+                        <h4 class="font-bold text-sm mb-4">Packet Switching</h4>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="rams-card mb-0 p-5">
+                                <h5 class="text-xs font-bold text-cyan-800 uppercase mb-2">Datagram Approach</h5>
+                                <p class="text-xs text-gray-600 mb-2 leading-relaxed">
+                                    Connectionless. Each packet is treated independently. Packets may take different
+                                    paths and arrive out of order.
+                                </p>
+                                <div class="text-[10px] font-mono text-gray-500 bg-gray-50 p-2 rounded">
+                                    Used by: The Internet (IP)
+                                </div>
+                            </div>
+                            <div class="rams-card mb-0 p-5">
+                                <h5 class="text-xs font-bold text-gray-800 uppercase mb-2">Virtual Circuit</h5>
+                                <p class="text-xs text-gray-600 mb-2 leading-relaxed">
+                                    Connection-oriented. A pre-defined path is established before data transfer. All
+                                    packets follow the same path.
+                                </p>
+                                <div class="text-[10px] font-mono text-gray-500 bg-gray-50 p-2 rounded">
+                                    Used by: ATM, Frame Relay
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="divider"></div>
+
+                    <h4 class="font-bold text-sm mb-6 mt-8">IP Addressing (IPv4 vs IPv6)</h4>
+
+                    <div class="rams-card mb-6">
+                        <h4 class="font-bold text-sm mb-4">IPv4 Packet Header</h4>
+                        <div class="border border-gray-300 rounded overflow-hidden text-xs font-mono text-center">
+                            <div class="grid grid-cols-4 border-b border-gray-300">
+                                <div class="bg-gray-100 p-2 border-r border-gray-300">Version</div>
+                                <div class="bg-gray-100 p-2 border-r border-gray-300">IHL</div>
+                                <div class="bg-gray-100 p-2 border-r border-gray-300">ToS</div>
+                                <div class="bg-gray-100 p-2">Total Length</div>
+                            </div>
+                            <div class="grid grid-cols-2 border-b border-gray-300">
+                                <div class="bg-gray-50 p-2 border-r border-gray-300">Identification</div>
+                                <div class="bg-gray-50 p-2">Fragment Offset</div>
+                            </div>
+                            <div class="grid grid-cols-3 border-b border-gray-300">
+                                <div class="bg-gray-100 p-2 border-r border-gray-300">TTL</div>
+                                <div class="bg-gray-100 p-2 border-r border-gray-300">Protocol</div>
+                                <div class="bg-gray-100 p-2">Header Checksum</div>
+                            </div>
+                            <div class="bg-cyan-50 p-3 border-b border-gray-300 font-bold text-cyan-800">Source IP
+                                Address (32 bits)</div>
+                            <div class="bg-cyan-50 p-3 font-bold text-cyan-800">Destination IP Address (32 bits)</div>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                        <div class="bg-gray-50 p-4 rounded border border-gray-200">
+                            <h5 class="text-xs font-bold uppercase mb-2">IPv4</h5>
+                            <ul class="list-disc list-inside text-[10px] text-gray-600 space-y-1">
+                                <li><strong>Size:</strong> 32-bit (approx 4.3 billion addresses)</li>
+                                <li><strong>Format:</strong> Dotted Decimal (192.168.1.1)</li>
+                                <li><strong>Header:</strong> Variable length (20-60 bytes)</li>
+                                <li><strong>Config:</strong> Manual or DHCP</li>
+                            </ul>
+                        </div>
+                        <div class="bg-gray-50 p-4 rounded border border-gray-200">
+                            <h5 class="text-xs font-bold uppercase mb-2">IPv6</h5>
+                            <ul class="list-disc list-inside text-[10px] text-gray-600 space-y-1">
+                                <li><strong>Size:</strong> 128-bit (Undecillions of addresses)</li>
+                                <li><strong>Format:</strong> Hexadecimal (2001:0db8::1)</li>
+                                <li><strong>Header:</strong> Fixed length (40 bytes), Simpler processing</li>
+                                <li><strong>Config:</strong> Auto-configuration (SLAAC) built-in</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="bg-gray-50 p-4 rounded border border-gray-200">
+                            <h5 class="text-xs font-bold uppercase mb-2">CIDR Notation</h5>
+                            <p class="text-xs text-gray-600 mb-2">Classless Inter-Domain Routing.</p>
+                            <code
+                                class="block bg-white p-2 rounded border border-gray-200 text-xs mb-2">192.168.1.0/24</code>
+                            <ul class="list-disc list-inside text-[10px] text-gray-500">
+                                <li>/24 = 255.255.255.0 (Subnet Mask)</li>
+                                <li>254 Usable Hosts</li>
+                            </ul>
+                        </div>
+                        <div class="bg-gray-50 p-4 rounded border border-gray-200">
+                            <h5 class="text-xs font-bold uppercase mb-2">Private Ranges (RFC 1918)</h5>
+                            <p class="text-xs text-gray-600 mb-2">Not routable on the internet.</p>
+                            <ul class="list-disc list-inside text-[10px] font-mono text-gray-500 space-y-1">
+                                <li>10.0.0.0/8 (Enterprise)</li>
+                                <li>172.16.0.0/12 (AWS/Cloud)</li>
+                                <li>192.168.0.0/16 (Home)</li>
+                            </ul>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 02.2 Routing Protocols -->
+                <section id="routing" class="mb-20 md:mb-24">
+                    <span class="rams-label">02.2 / Routing</span>
+                    <h3 class="text-xl font-medium mb-6">Routing Protocols & Algorithms</h3>
+                    <p class="text-sm text-gray-600 mb-8 max-w-lg">
+                        How routers decide the best path for a packet. Algorithms build the map, protocols share the
+                        map.
+                    </p>
+
+                    <!-- Algorithms -->
+                    <div class="mb-10">
+                        <h4 class="font-bold text-sm mb-4">Core Algorithms</h4>
+
+                        <!-- Dijkstra Visualizer -->
+                        <div class="rams-card mb-6 p-6">
+                            <h5 class="text-xs font-bold text-cyan-800 uppercase mb-4">Interactive Dijkstra (Shortest
+                                Path)</h5>
+                            <div class="flex flex-col md:flex-row gap-6">
+                                <div class="relative w-full h-48 bg-gray-50 border border-gray-200 rounded"
+                                    id="dijkstra-canvas">
+                                    <!-- Nodes (A, B, C, D) -->
+                                    <div class="absolute w-8 h-8 bg-white border-2 border-gray-400 rounded-full flex items-center justify-center text-xs font-bold z-10"
+                                        style="left: 10%; top: 50%; transform: translate(-50%, -50%);" id="node-0">A
+                                    </div>
+                                    <div class="absolute w-8 h-8 bg-white border-2 border-gray-400 rounded-full flex items-center justify-center text-xs font-bold z-10"
+                                        style="left: 50%; top: 20%; transform: translate(-50%, -50%);" id="node-1">B
+                                    </div>
+                                    <div class="absolute w-8 h-8 bg-white border-2 border-gray-400 rounded-full flex items-center justify-center text-xs font-bold z-10"
+                                        style="left: 50%; top: 80%; transform: translate(-50%, -50%);" id="node-2">C
+                                    </div>
+                                    <div class="absolute w-8 h-8 bg-white border-2 border-gray-400 rounded-full flex items-center justify-center text-xs font-bold z-10"
+                                        style="left: 90%; top: 50%; transform: translate(-50%, -50%);" id="node-3">D
+                                    </div>
+
+                                    <!-- Edges (SVG overlay) -->
+                                    <svg class="absolute inset-0 w-full h-full pointer-events-none">
+                                        <!-- AB (4) -->
+                                        <line x1="10%" y1="50%" x2="50%" y2="20%" class="stroke-gray-300 stroke-2"
+                                            id="edge-0-1" />
+                                        <text x="30%" y="35%" class="fill-gray-500 text-[10px] font-bold">4</text>
+                                        <!-- AC (2) -->
+                                        <line x1="10%" y1="50%" x2="50%" y2="80%" class="stroke-gray-300 stroke-2"
+                                            id="edge-0-2" />
+                                        <text x="30%" y="65%" class="fill-gray-500 text-[10px] font-bold">2</text>
+                                        <!-- BC (1) -->
+                                        <line x1="50%" y1="20%" x2="50%" y2="80%" class="stroke-gray-300 stroke-2"
+                                            id="edge-1-2" />
+                                        <text x="52%" y="50%" class="fill-gray-500 text-[10px] font-bold">1</text>
+                                        <!-- BD (5) -->
+                                        <line x1="50%" y1="20%" x2="90%" y2="50%" class="stroke-gray-300 stroke-2"
+                                            id="edge-1-3" />
+                                        <text x="70%" y="35%" class="fill-gray-500 text-[10px] font-bold">5</text>
+                                        <!-- CD (8) -->
+                                        <line x1="50%" y1="80%" x2="90%" y2="50%" class="stroke-gray-300 stroke-2"
+                                            id="edge-2-3" />
+                                        <text x="70%" y="65%" class="fill-gray-500 text-[10px] font-bold">8</text>
+                                    </svg>
+                                </div>
+                                <div class="w-full md:w-1/3 flex flex-col justify-center gap-2">
+                                    <div class="text-xs text-gray-600 mb-2">Find shortest path from <strong>A</strong>
+                                        to <strong>D</strong>.</div>
+                                    <button onclick="runDijkstra()" class="btn btn-primary text-xs w-full">Calculate
+                                        Path</button>
+                                    <div id="dijkstra-out"
+                                        class="mt-2 p-2 bg-gray-100 rounded text-xs font-mono min-h-[40px] flex items-center">
+                                        Result: ?
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div class="bg-gray-50 p-4 rounded border border-gray-100">
+                                <h5 class="text-xs font-bold text-cyan-800 uppercase mb-2">Distance Vector (DVR)</h5>
+                                <p class="text-[10px] text-gray-600 mb-2">
+                                    Bellman-Ford Algorithm. Routers define path by "Distance" (Metric) and "Vector"
+                                    (Direction/Next Hop).
+                                </p>
+                                <div class="text-[10px] font-mono text-gray-500">
+                                    Issue: Count-to-Infinity problem.
+                                </div>
+                            </div>
+                            <div class="bg-gray-50 p-4 rounded border border-gray-100">
+                                <h5 class="text-xs font-bold text-purple-800 uppercase mb-2">Link State (LSR)</h5>
+                                <p class="text-[10px] text-gray-600 mb-2">
+                                    Dijkstra's Algorithm. Every router knows the complete graph (topology) of the
+                                    network.
+                                </p>
+                                <div class="text-[10px] font-mono text-gray-500">
+                                    Heavy computation, fast convergence.
+                                </div>
+                            </div>
+                            <div class="bg-gray-50 p-4 rounded border border-gray-100">
+                                <h5 class="text-xs font-bold text-orange-800 uppercase mb-2">Path Vector (PVR)</h5>
+                                <p class="text-[10px] text-gray-600 mb-2">
+                                    Similar to DVR but stores the entire path history to prevent loops. Used between
+                                    Autonomous Systems.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Unicast Protocols -->
+                    <div class="rams-card mb-8">
+                        <h4 class="font-bold text-sm mb-4">Unicast Routing Protocols</h4>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left text-xs">
+                                <thead class="bg-gray-50 border-b border-gray-200 uppercase text-gray-400 font-bold">
+                                    <tr>
+                                        <th class="p-3">Protocol</th>
+                                        <th class="p-3">Type</th>
+                                        <th class="p-3">Metric</th>
+                                        <th class="p-3">Use Case</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-gray-100 font-mono text-gray-700">
+                                    <tr>
+                                        <td class="p-3 font-bold text-cyan-700">RIP (v1/v2)</td>
+                                        <td class="p-3">Distance Vector</td>
+                                        <td class="p-3">Hop Count (Max 15)</td>
+                                        <td class="p-3">Small Networks, LANs</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="p-3 font-bold text-purple-700">OSPF</td>
+                                        <td class="p-3">Link State</td>
+                                        <td class="p-3">Cost (Bandwidth)</td>
+                                        <td class="p-3">Large Enterprise (Intra-AS)</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="p-3 font-bold text-orange-700">BGP</td>
+                                        <td class="p-3">Path Vector</td>
+                                        <td class="p-3">Policy/Attributes</td>
+                                        <td class="p-3">Internet Core (Inter-AS)</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Multicast -->
+                    <div class="rams-card mb-0 bg-gray-900 text-white border-gray-800 p-6">
+                        <div class="flex items-start justify-between">
+                            <div>
+                                <h4 class="font-bold text-sm mb-2 text-gray-200">Multicast Routing: MOSPF</h4>
+                                <p class="text-xs text-gray-400 max-w-lg mb-2">
+                                    Multicast Extensions to OSPF. Uses the Link State database to calculate a
+                                    "Source-Based
+                                    Tree" for efficient one-to-many delivery.
+                                </p>
+                                <div class="flex gap-2 text-[10px] font-mono mt-2">
+                                    <span class="bg-gray-800 px-2 py-1 rounded text-cyan-400">Pruning</span>
+                                    <span class="bg-gray-800 px-2 py-1 rounded text-cyan-400">Grafting</span>
+                                    <span class="bg-gray-800 px-2 py-1 rounded text-cyan-400">IGMP</span>
+                                </div>
+                            </div>
+                            <div class="text-right hidden sm:block">
+                                <div class="text-[10px] font-mono text-gray-600">RFC 1584</div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 02.3 Protocols -->
+                <section id="protocols" class="mb-16">
+                    <span class="rams-label">02.3 / Protocols</span>
+                    <h3 class="text-xl font-medium mb-6">Key Protocols</h3>
+
+                    <div class="rams-card bg-cyan-50 border-cyan-100">
+                        <h4 class="font-bold text-sm mb-3 text-cyan-900">Interactive DNS Resolver</h4>
+                        <div class="flex flex-col gap-4">
+                            <div class="flex flex-col sm:flex-row gap-2">
+                                <input type="text" id="dns-input" value="google.com"
+                                    class="border border-cyan-200 p-2 text-sm rounded flex-1 focus:outline-none focus:border-cyan-600 font-mono text-cyan-900"
+                                    readonly>
+                                <button onclick="resolveDNS()" id="dns-btn"
+                                    class="btn btn-primary text-xs w-full sm:w-auto">Resolve</button>
+                            </div>
+                            <div class="bg-white border border-cyan-100 p-4 rounded min-h-[120px] text-xs font-mono space-y-2 overflow-y-auto max-h-40"
+                                id="dns-log">
+                                <div class="text-gray-400 italic">Trace path will appear here...</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
+                        <div class="rams-card bg-gray-50 border-0 p-6 mb-0">
+                            <h4 class="font-bold text-sm mb-2 text-cyan-900">HTTP/HTTPS</h4>
+                            <p class="text-xs text-gray-600 mb-2">HyperText Transfer Protocol. Application layer
+                                protocol for transmitting hypermedia documents (HTML).</p>
+                            <div class="flex items-center gap-2 mt-3 mb-3">
+                                <span
+                                    class="px-2 py-1 bg-green-100 text-green-700 text-[10px] rounded font-bold border border-green-200">GET</span>
+                                <span
+                                    class="px-2 py-1 bg-blue-100 text-blue-700 text-[10px] rounded font-bold border border-blue-200">POST</span>
+                                <span
+                                    class="px-2 py-1 bg-yellow-100 text-yellow-700 text-[10px] rounded font-bold border border-yellow-200">PUT</span>
+                            </div>
+
+                            <div class="border-t border-gray-200 pt-3">
+                                <h5 class="text-[10px] font-bold uppercase text-gray-400 mb-2">Status Codes</h5>
+                                <div class="grid grid-cols-3 gap-2 text-[10px] font-mono">
+                                    <div
+                                        class="bg-green-50 text-green-700 p-1 rounded text-center border border-green-100">
+                                        200 OK</div>
+                                    <div
+                                        class="bg-indigo-50 text-indigo-700 p-1 rounded text-center border border-indigo-100">
+                                        301 Moved</div>
+                                    <div class="bg-red-50 text-red-700 p-1 rounded text-center border border-red-100">
+                                        404 Not Found</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="rams-card bg-gray-50 border-0 p-6 mb-0">
+                            <h4 class="font-bold text-sm mb-2 text-cyan-900">DHCP</h4>
+                            <p class="text-xs text-gray-600 mb-2">Dynamic Host Configuration Protocol. Automatically
+                                assigns IP addresses to devices on a network.</p>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
+                        <!-- SSH -->
+                        <div class="rams-card mb-0 p-5 border-l-4 border-l-gray-800">
+                            <div class="flex justify-between items-start mb-2">
+                                <h4 class="font-bold text-sm text-gray-900">SSH</h4>
+                                <span class="text-[10px] font-mono bg-gray-100 px-2 py-1 rounded text-gray-600">Port
+                                    22</span>
+                            </div>
+                            <p class="text-xs text-gray-600 mb-2 leading-relaxed">
+                                <strong class="text-gray-800">Secure Shell.</strong> Cryptographic protocol for
+                                operating network services securely over an unsecured network. Used for remote login.
+                            </p>
+                            <div class="mt-2 text-[10px] text-gray-400 font-mono">
+                                $ ssh user@host
+                            </div>
+                        </div>
+
+                        <!-- FTP -->
+                        <div class="rams-card mb-0 p-5 border-l-4 border-l-orange-500">
+                            <div class="flex justify-between items-start mb-2">
+                                <h4 class="font-bold text-sm text-gray-900">FTP</h4>
+                                <span class="text-[10px] font-mono bg-orange-50 px-2 py-1 rounded text-orange-600">Port
+                                    21</span>
+                            </div>
+                            <p class="text-xs text-gray-600 mb-2 leading-relaxed">
+                                <strong class="text-gray-800">File Transfer Protocol.</strong> Standard protocol used
+                                for the transfer of computer files between a client and server.
+                            </p>
+                        </div>
+
+                        <!-- SMTP -->
+                        <div class="rams-card mb-0 p-5 border-l-4 border-l-blue-500">
+                            <div class="flex justify-between items-start mb-2">
+                                <h4 class="font-bold text-sm text-gray-900">SMTP</h4>
+                                <span class="text-[10px] font-mono bg-blue-50 px-2 py-1 rounded text-blue-600">Port
+                                    25</span>
+                            </div>
+                            <p class="text-xs text-gray-600 mb-2 leading-relaxed">
+                                <strong class="text-gray-800">Simple Mail Transfer Protocol.</strong> The standard for
+                                sending emails across the Internet.
+                            </p>
+                        </div>
+
+                        <!-- IMAP -->
+                        <div class="rams-card mb-0 p-5 border-l-4 border-l-purple-500">
+                            <div class="flex justify-between items-start mb-2">
+                                <h4 class="font-bold text-sm text-gray-900">IMAP</h4>
+                                <span class="text-[10px] font-mono bg-purple-50 px-2 py-1 rounded text-purple-600">Port
+                                    143</span>
+                            </div>
+                            <p class="text-xs text-gray-600 mb-2 leading-relaxed">
+                                <strong class="text-gray-800">Internet Message Access Protocol.</strong> Used by email
+                                clients to retrieve messages from a mail server.
+                            </p>
+                        </div>
+
+                        <!-- RDP -->
+                        <div class="rams-card mb-0 p-5 border-l-4 border-l-cyan-500">
+                            <div class="flex justify-between items-start mb-2">
+                                <h4 class="font-bold text-sm text-gray-900">RDP</h4>
+                                <span class="text-[10px] font-mono bg-cyan-50 px-2 py-1 rounded text-cyan-600">Port
+                                    3389</span>
+                            </div>
+                            <p class="text-xs text-gray-600 mb-2 leading-relaxed">
+                                <strong class="text-gray-800">Remote Desktop Protocol.</strong> Microsoft protocol that
+                                provides a graphical interface to connect to another computer.
+                            </p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Quick Check 2 -->
+                <div id="check-protocols" class="mb-20 md:mb-24"></div>
+
+                <!-- 04. Wireless -->
+                <!-- 04. Wireless -->
+                <section id="wireless" class="mb-20 md:mb-24">
+                    <span class="rams-label">02.4 / Wireless</span>
+                    <h3 class="text-xl font-medium mb-6">Wireless & Mobile</h3>
+
+                    <div class="space-y-4">
+                        <div class="rams-card mb-0">
+                            <div class="flex items-start justify-between">
+                                <div>
+                                    <h4 class="font-bold text-sm mb-2">Wi-Fi Standards</h4>
+                                    <p class="text-xs text-gray-600 max-w-sm">From 802.11b to Wi-Fi 7 (802.11be).
+                                        Trade-off between Range (2.4GHz) and Speed (5GHz/6GHz).</p>
+                                </div>
+                                <div class="text-right">
+                                    <div class="text-[10px] font-mono text-gray-400">IEEE 802.11</div>
+                                </div>
+                            </div>
+                            <div class="mt-4 grid grid-cols-3 gap-2 text-center">
+                                <div
+                                    class="p-5 bg-gray-50 rounded border border-gray-100 hover:border-gray-300 transition-colors">
+                                    <div class="text-xs font-bold text-gray-900 mb-1">2.4 GHz</div>
+                                    <div class="text-[10px] text-gray-500 font-medium">Long Range</div>
+                                    <div class="text-[10px] text-gray-400">Slower</div>
+                                </div>
+                                <div
+                                    class="p-5 bg-gray-50 rounded border border-gray-100 hover:border-gray-300 transition-colors">
+                                    <div class="text-xs font-bold text-gray-900 mb-1">5 GHz</div>
+                                    <div class="text-[10px] text-gray-500 font-medium">Med Range</div>
+                                    <div class="text-[10px] text-gray-400">Fast</div>
+                                </div>
+                                <div
+                                    class="p-5 bg-gray-50 rounded border border-gray-100 hover:border-gray-300 transition-colors">
+                                    <div class="text-xs font-bold text-gray-900 mb-1">6 GHz</div>
+                                    <div class="text-[10px] text-gray-500 font-medium">Short Range</div>
+                                    <div class="text-[10px] text-gray-400">Ultra Fast</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 05. Security -->
+                <section id="security" class="mb-16">
+                    <span class="rams-label">03 / Safety</span>
+                    <h3 class="text-xl font-medium mb-6">Encryption & Security</h3>
+
+                    <div class="rams-card mb-6">
+                        <h4 class="font-bold text-sm mb-4">Symmetric vs Asymmetric Encryption</h4>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                            <div class="p-4 rounded border border-gray-100 bg-gray-50">
+                                <h5 class="text-xs font-bold text-cyan-800 uppercase mb-2">Symmetric</h5>
+                                <p class="text-xs text-gray-600 mb-2 leading-relaxed">Same key for encryption and
+                                    decryption. Fast, but key exchange is risky.</p>
+                                <div
+                                    class="font-mono text-[10px] bg-white p-2 rounded text-gray-500 border border-gray-200 inline-block">
+                                    AES, DES</div>
+                            </div>
+                            <div class="p-4 rounded border border-gray-100 bg-gray-50">
+                                <h5 class="text-xs font-bold text-cyan-800 uppercase mb-2">Asymmetric (Public Key)</h5>
+                                <p class="text-xs text-gray-600 mb-2 leading-relaxed">Public key encrypts, Private key
+                                    decrypts. Foundation of SSL/TLS.</p>
+                                <div class="mt-3 bg-white p-3 rounded border border-gray-200">
+                                    <strong class="block text-[10px] uppercase text-gray-400 mb-1">SSL/TLS
+                                        Handshake</strong>
+                                    <ol class="list-decimal list-inside text-[10px] text-gray-600 space-y-1">
+                                        <li>Client sends "Hello" & ciphers.</li>
+                                        <li>Server sends <strong>Public Key Certificate</strong>.</li>
+                                        <li>Client verifies cert & sends Session Key.</li>
+                                        <li>Switch to fast <strong>Symmetric</strong> encryption.</li>
+                                    </ol>
+                                </div>
+                                <div
+                                    class="font-mono text-[10px] bg-white p-2 rounded text-gray-500 border border-gray-200 inline-block">
+                                    RSA, ECC</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="rams-card bg-gray-900 text-white border-gray-800">
+                        <h4 class="font-bold text-sm mb-4 text-gray-200">Interactive Encryption Box</h4>
+                        <div class="space-y-4">
+                            <input type="text" id="crypto-msg" placeholder="Enter secret message"
+                                class="w-full bg-gray-800 border border-gray-700 p-3 text-sm text-white rounded font-mono focus:outline-none focus:border-cyan-500 placeholder-gray-600 transition-colors">
+
+                            <div class="flex flex-col sm:flex-row gap-3">
+                                <button onclick="encryptMsg()"
+                                    class="btn bg-cyan-700 text-white hover:bg-cyan-600 text-xs border-0 py-2 w-full sm:w-auto">Encrypt
+                                    (Public Key)</button>
+                                <button onclick="decryptMsg()"
+                                    class="btn bg-gray-700 text-white hover:bg-gray-600 text-xs border-0 py-2 w-full sm:w-auto">Decrypt
+                                    (Private Key)</button>
+                            </div>
+
+                            <div class="font-mono text-xs p-4 bg-black rounded min-h-[60px] break-all text-green-400 border border-gray-800"
+                                id="crypto-out">
+                                // Output will appear here
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Quick Check 3 -->
+                <div id="check-security" class="mb-20 md:mb-24"></div>
+
+                <div class="divider hidden md:block"></div>
+
+                <!-- Glossary Section -->
+                <section id="glossary" class="mb-20">
+                    <span class="rams-label">Glossary</span>
+                    <h3 class="text-xl font-medium mb-8">Key Definitions</h3>
+                    <div class="rams-card">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <h4 class="font-bold text-sm mb-2">Topology</h4>
+                                <p class="text-xs text-gray-600">The physical or logical layout of a network (e.g.,
+                                    Star, Mesh).</p>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-sm mb-2">OSI Model</h4>
+                                <p class="text-xs text-gray-600">The Open Systems Interconnection model standardizing
+                                    communication into 7 layers.</p>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-sm mb-2">Encapsulation</h4>
+                                <p class="text-xs text-gray-600">The process of adding headers/footers to data as it
+                                    moves down the protocol stack.</p>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-sm mb-2">TCP/IP</h4>
+                                <p class="text-xs text-gray-600">Transmission Control Protocol/Internet Protocol. The
+                                    foundational communication stack of the internet.</p>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-sm mb-2">Packet</h4>
+                                <p class="text-xs text-gray-600">A formatted unit of data carried by a packet-switched
+                                    network.</p>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-sm mb-2">IP Address</h4>
+                                <p class="text-xs text-gray-600">A unique numerical label assigned to each device
+                                    connected to a computer network.</p>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-sm mb-2">DNS</h4>
+                                <p class="text-xs text-gray-600">Domain Name System. Translates domain names
+                                    (google.com) to IP addresses.</p>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-sm mb-2">HTTP/HTTPS</h4>
+                                <p class="text-xs text-gray-600">HyperText Transfer Protocol. Application layer protocol
+                                    for transmitting web documents.</p>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-sm mb-2">Encryption</h4>
+                                <p class="text-xs text-gray-600">The process of encoding information so only authorized
+                                    parties can access it.</p>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-sm mb-2">SSL/TLS</h4>
+                                <p class="text-xs text-gray-600">Secure Sockets Layer/Transport Layer Security.
+                                    Protocols for establishing authenticated and encrypted links.</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 06. Exam & Cert -->
+                <section id="exam" class="mb-20">
+                    <span class="rams-label">04 / Verification</span>
+                    <h3 class="text-xl font-medium mb-6">Knowledge Check</h3>
+                    <p class="text-sm text-gray-600 mb-8 max-w-lg">
+                        Verify your understanding of Computer Network fundamentals. Pass the exam to earn your
+                        certificate.
+                    </p>
+
+                    <!-- Quiz Container -->
+                    <div id="quiz-container" class="rams-card mb-12">
+                        <!-- Dynamic Quiz Content -->
+                    </div>
+                </section>
+
+                <!-- 13. Certificate (Standard) -->
+                <section id="certificate" class="mb-20 md:mb-24 hidden">
+                    <span class="rams-label">06 / Certification</span>
+                    <h3 class="text-xl font-medium mb-6">Completion Certificate</h3>
+
+                    <div class="rams-card !p-0 overflow-hidden">
+                        <div class="p-6 md:p-8">
+                            <div class="flex flex-col md:flex-row gap-8 items-start">
+                                <div class="w-full md:w-1/3 space-y-4">
+                                    <p class="text-sm text-gray-600">
+                                        Enter your name below to generate your personalized certificate of completion
+                                        for the Computer Networks series.
+                                    </p>
+                                    <div>
+                                        <label for="cert-name"
+                                            class="block text-xs font-bold text-gray-500 uppercase mb-1">Full
+                                            Name</label>
+                                        <input type="text" id="cert-name"
+                                            class="w-full border border-gray-300 p-2 font-mono text-sm focus:border-black outline-none"
+                                            placeholder="Vint Cerf">
+                                        <p id="cert-error" class="text-red-500 text-xs mt-2 hidden">Please enter your
+                                            name.
+                                        </p>
+                                    </div>
+                                    <button onclick="generateCert()"
+                                        class="btn btn-primary bg-black border-black text-white w-full hover:bg-gray-800">Generate
+                                        Certificate</button>
+                                    <button onclick="downloadCert()" id="btn-download"
+                                        class="btn btn-secondary w-full hidden">Download PNG</button>
+
+                                </div>
+
+                                <div
+                                    class="w-full md:w-2/3 bg-gray-50 border border-gray-200 p-4 flex items-center justify-center">
+                                    <canvas id="cert-canvas" class="w-full shadow-lg bg-white"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="bg-gray-50 px-6 py-3 border-t border-gray-100 text-center">
+                            <p class="text-[10px] text-gray-400 italic">
+                                This certificate confirms successful completion of learning and assessment on this
+                                platform
+                                and is not an accredited or government-recognized qualification.
+                            </p>
+                        </div>
+                    </div>
+                </section>
+
+                <footer class="w-full mt-12 mb-12">
+                    <div class="border-t border-gray-200 pt-8 flex justify-between items-center">
+                        <span class="text-[10px] mono uppercase text-gray-400">Undrstanding</span>
+                        <span class="text-[10px] mono uppercase text-gray-400">For Humans, From Humans</span>
+                    </div>
+                </footer>
+
+            </div>
+        </main>
+    </div>
+    <script src="js/script.js"></script>
+    <script>
+        // --- 1. Init & UI Helpers ---
+        window.addEventListener('DOMContentLoaded', () => {
+            // Initialize Inline Quizzes
+            if (typeof InlineQuiz !== 'undefined') {
+                new InlineQuiz('check-osi', {
+                    question: "Which layer is responsible for routing and logical addressing?",
+                    options: ["Data Link Layer", "Network Layer", "Transport Layer", "Session Layer"],
+                    answer: 1,
+                    explanation: "The Network Layer (Layer 3) handles routing packets between networks using IP addresses."
+                });
+
+                new InlineQuiz('check-protocols', {
+                    question: "Which record type allows one domain to alias another?",
+                    options: ["A Record", "MX Record", "CNAME Record", "TXT Record"],
+                    answer: 2,
+                    explanation: "CNAME (Canonical Name) records map an alias name to a true or canonical domain name."
+                });
+
+                new InlineQuiz('check-security', {
+                    question: "What is the main benefit of Asymmetric Encryption?",
+                    options: ["It is faster than Symmetric", "It requires no keys", "It solves the key exchange problem", "It uses shorter keys"],
+                    answer: 2,
+                    explanation: "Asymmetric encryption uses public/private pairs, allowing safe key exchange over public channels."
+                });
+
+                // --- Quiz Manager (Final Exam) ---
+                if (typeof QuizManager !== 'undefined') {
+                    const finalQuestions = [
+                        { q: "Which OSI Layer is responsible for logical addressing and routing?", o: ["Layer 2 (Data Link)", "Layer 3 (Network)", "Layer 4 (Transport)", "Layer 1 (Physical)"], a: 1 },
+                        { q: "What is the primary difference between TCP and UDP?", o: ["UDP is reliable, TCP is fast", "TCP is connection-oriented/reliable, UDP is connectionless/fast", "TCP is for videos, UDP is for email", "There is no difference"], a: 1 },
+                        { q: "Which DNS record type maps an alias to a canonical name?", o: ["A", "MX", "CNAME", "PTR"], a: 2 },
+                        { q: "Which standard port is used for secure web traffic (HTTPS)?", o: ["80", "22", "443", "8080"], a: 2 },
+                        { q: "How many bits are in an IPv4 address?", o: ["32 bits", "128 bits", "64 bits", "48 bits"], a: 0 },
+                        { q: "Which device primarily operates at Layer 2 (Data Link) and uses MAC addresses?", o: ["Hub", "Router", "Switch", "Repeater"], a: 2 },
+                        { q: "In Encapsulation, what is the protocol data unit (PDU) at the Transport Layer called?", o: ["Frame", "Packet", "Segment", "Bit"], a: 2 },
+                        { q: "Which component of the CIA Triad ensures data is accessible when needed?", o: ["Confidentiality", "Integrity", "Availability", "Authorization"], a: 2 },
+                        { q: "In which topology do all nodes connect individually to a central connection point?", o: ["Bus", "Ring", "Mesh", "Star"], a: 3 },
+                        { q: "Which protocol is specifically used for transferring files?", o: ["SMTP", "FTP", "SSH", "HTTP"], a: 1 }
+                    ];
+
+                    new QuizManager('quiz-container', finalQuestions.map(qx => ({ question: qx.q, options: qx.o, answer: qx.a })), () => {
+                        // On Success
+                        const certArea = document.getElementById('certificate');
+                        certArea.classList.remove('hidden');
+                        certArea.scrollIntoView({ behavior: 'smooth' });
+                    });
+                }
+
+                // --- Certificate Logic ---
+                const certGen = new CertificateGenerator('cert-canvas', 'Computer Networks');
+
+                // Expose to window for onclick handlers
+                window.generateCert = function () {
+                    const nameInput = document.getElementById('cert-name');
+                    const errorMsg = document.getElementById('cert-error');
+                    const name = nameInput.value.trim();
+                    const nameRegex = /^[a-zA-Z\s\-\.'’]+$/;
+
+                    // Reset error state
+                    errorMsg.classList.add('hidden');
+                    nameInput.classList.remove('border-red-500');
+
+                    if (!name) {
+                        errorMsg.textContent = "Please enter your name.";
+                        errorMsg.classList.remove('hidden');
+                        nameInput.classList.add('border-red-500');
+                        return;
+                    }
+
+                    if (name.length < 3 || name.length > 35) {
+                        errorMsg.textContent = "Name must be between 3 and 35 characters.";
+                        errorMsg.classList.remove('hidden');
+                        nameInput.classList.add('border-red-500');
+                        return;
+                    }
+
+
+                    if (!nameRegex.test(name)) {
+                        errorMsg.textContent = "Name cannot contain numbers or special characters.";
+                        errorMsg.classList.remove('hidden');
+                        nameInput.classList.add('border-red-500');
+                        return;
+                    }
+
+                    certGen.generate(name);
+                    document.getElementById('btn-download').classList.remove('hidden');
+                };
+
+                window.downloadCert = function () {
+                    const name = document.getElementById('cert-name').value.trim();
+                    certGen.download(`UndrLib_Networks_Certificate_${name.replace(/\s+/g, '_')}.png`);
+                };
+
+            }
+
+
+        });
+
+
+
+        // --- 2. Mobile Nav ---
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobile-menu');
+            if (menu.classList.contains('hidden')) {
+                menu.classList.remove('hidden');
+                menu.classList.add('flex');
+            } else {
+                menu.classList.add('hidden');
+                menu.classList.remove('flex');
+            }
+        }
+
+        // --- 3. Scroll & Sidebar Logic ---
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('active');
+                    const id = entry.target.id;
+                    document.querySelectorAll('.nav-link').forEach(link => {
+                        link.classList.remove('active');
+                        if (link.getAttribute('href') === `#${id}`) {
+                            link.classList.add('active');
+                        }
+                    });
+                }
+            });
+        }, { threshold: 0.1 });
+
+        document.querySelectorAll('section').forEach(section => {
+            section.classList.add('section-reveal');
+            observer.observe(section);
+        });
+
+        // --- 4. Visuals: OSI ---
+        const osiData = {
+            1: { t: "Physical", d: "Transmits raw bit stream over the physical medium.", u: "Bit", p: "Fiber, Coax, Hubs" },
+            2: { t: "Data Link", d: "Defines format of data on the network. Handles physical addressing (MAC).", u: "Frame", p: "Ethernet, Switch" },
+            3: { t: "Network", d: "Decides which physical path the data will take (Routing). Logical addressing (IP).", u: "Packet", p: "IP, ICMP, Routers" },
+            4: { t: "Transport", d: "Transmits data using transmission protocols including TCP and UDP. Error handling.", u: "Segment", p: "TCP, UDP" },
+            5: { t: "Session", d: "Maintains connections and is responsible for controlling ports and sessions.", u: "Data", p: "API, Sockets" },
+            6: { t: "Presentation", d: "Ensures data is in a usable format and is where encryption occurs.", u: "Data", p: "SSL, SSH, JPEG" },
+            7: { t: "Application", d: "Human-computer interaction layer, where applications can access the network services.", u: "Data", p: "HTTP, DNS, SMTP" }
+        };
+
+        function showLayer(n) {
+            document.querySelectorAll('.osi-layer').forEach(el => el.classList.remove('active'));
+            document.getElementById(`layer-${n}`).classList.add('active');
+            const data = osiData[n];
+            document.getElementById('osi-title').textContent = `${n}. ${data.t}`;
+            document.getElementById('osi-desc').textContent = data.d;
+            document.getElementById('osi-unit').textContent = data.u;
+            document.getElementById('osi-proto').textContent = data.p;
+        }
+        showLayer(7); // Default
+
+        // --- 5. Visuals: TCP/IP ---
+        function sendPackets() {
+            const container = document.getElementById('packet-canvas');
+            // Two paths (R1-R3-Server OR R2-R3-Server)
+            const paths = [
+                [{ x: 80, y: 144 }, { x: '30%', y: '30%' }, { x: '60%', y: '40%' }, { x: '90%', y: '144' }],
+                [{ x: 80, y: 144 }, { x: '45%', y: '70%' }, { x: '60%', y: '40%' }, { x: '90%', y: '144' }]
+            ];
+
+            for (let i = 0; i < 6; i++) {
+                setTimeout(() => {
+                    const packet = document.createElement('div');
+                    packet.className = 'absolute w-3 h-3 bg-cyan-600 rounded-full z-20 packet shadow-sm transform -translate-x-1/2 -translate-y-1/2';
+                    const path = paths[i % 2]; // Alternate
+
+                    // Start
+                    packet.style.left = typeof path[0].x === 'number' ? path[0].x + 'px' : path[0].x;
+                    packet.style.top = typeof path[0].y === 'number' ? path[0].y + 'px' : path[0].y;
+                    container.appendChild(packet);
+
+                    setTimeout(() => { packet.style.left = path[1].x; packet.style.top = path[1].y; }, 100);
+                    setTimeout(() => { packet.style.left = path[2].x; packet.style.top = path[2].y; }, 700);
+                    setTimeout(() => { packet.style.left = path[3].x; packet.style.top = path[3].y; packet.style.opacity = '0'; }, 1300);
+                    setTimeout(() => packet.remove(), 2000);
+                }, i * 300);
+            }
+        }
+
+        // --- 6. Visuals: DNS ---
+        async function resolveDNS() {
+            const btn = document.getElementById('dns-btn');
+            const log = document.getElementById('dns-log');
+            const domain = document.getElementById('dns-input').value;
+
+            if (!domain) return;
+
+            btn.disabled = true;
+            btn.textContent = "Resolving...";
+            log.innerHTML = '';
+
+            const steps = [
+                `<span class="text-blue-600 font-bold">User</span> asks Resolver: "Where is ${domain}?"`,
+                `<span class="text-purple-600 font-bold">Resolver</span> checking Cache... Miss.`,
+                `<span class="text-purple-600 font-bold">Resolver</span> asks <span class="text-red-500 font-bold">Root (.)</span>`,
+                `<span class="text-red-500 font-bold">Root</span> says: "Go to .com TLD Server (192.5.6.30)"`,
+                `<span class="text-purple-600 font-bold">Resolver</span> asks <span class="text-orange-500 font-bold">TLD (.com)</span>`,
+                `<span class="text-orange-500 font-bold">TLD</span> says: "Go to Authoritative NS (ns1.google.com)"`,
+                `<span class="text-purple-600 font-bold">Resolver</span> asks <span class="text-green-600 font-bold">Auth NS</span>`,
+                `<span class="text-green-600 font-bold">Auth NS</span> says: "IP is 142.250.190.46"`,
+                `<span class="text-blue-600 font-bold">Result:</span> Connected to ${domain} (142.250.190.46)`
+            ];
+
+            for (let step of steps) {
+                const div = document.createElement('div');
+                div.className = "border-b border-gray-100 pb-1 mb-1 last:border-0";
+                div.innerHTML = `> ${step}`;
+                log.appendChild(div);
+                await new Promise(r => setTimeout(r, 600));
+                log.scrollTop = log.scrollHeight;
+            }
+
+            btn.disabled = false;
+            btn.textContent = "Resolve";
+        }
+
+        // --- 7. Visuals: Crypto ---
+        let originalText = "";
+        function encryptMsg() {
+            const input = document.getElementById('crypto-msg');
+            const out = document.getElementById('crypto-out');
+            if (!input.value) return;
+
+            originalText = input.value;
+            const encrypted = btoa(input.value).split('').reverse().join('') + "==";
+            out.textContent = encrypted;
+            out.classList.add('animate-pulse');
+            setTimeout(() => out.classList.remove('animate-pulse'), 500);
+        }
+
+        function decryptMsg() {
+            const out = document.getElementById('crypto-out');
+            if (!originalText) return;
+            out.textContent = `Decrypted: "${originalText}"`;
+        }
+
+        // --- 8. Visuals: Parity Check ---
+        function calcParity() {
+            const input = document.getElementById('parity-input').value;
+            const out = document.getElementById('parity-bit');
+
+            // Filter non-binary
+            const clean = input.replace(/[^01]/g, '');
+            if (clean !== input) {
+                document.getElementById('parity-input').value = clean;
+            }
+
+            if (clean.length === 0) {
+                out.textContent = "-";
+                return;
+            }
+
+            // Count 1s
+            const ones = (clean.match(/1/g) || []).length;
+            const isEven = ones % 2 === 0;
+
+            // Even Parity: if even number of 1s, parity is 0. If odd, parity is 1.
+            out.textContent = isEven ? "0" : "1";
+        }
+
+        // --- 9. Visuals: CSMA/CD ---
+        let csmaState = { A: false, B: false };
+        let csmaTimer = null;
+
+        function csmaSend(node) {
+            const canvas = document.getElementById('csma-canvas');
+            const status = document.getElementById('csma-status');
+            const flash = document.getElementById('collision-flash');
+
+            if (csmaState[node]) return; // Already sending
+
+            csmaState[node] = true;
+            status.textContent = `${node} sending...`;
+            status.classList.remove('text-red-600', 'font-bold');
+
+            // Create Packet
+            const packet = document.createElement('div');
+            const colorClass = node === 'A' ? 'bg-cyan-500' : 'bg-purple-500';
+            const packetClass = `packet-${node}`;
+            packet.className = `absolute top-1/2 w-3 h-3 rounded-full z-10 transition-all duration-[1000ms] ease-linear ${colorClass} ${packetClass}`;
+            packet.style.transform = 'translateY(-50%)';
+
+            if (node === 'A') {
+                packet.style.left = '2rem';
+            } else {
+                packet.style.right = '2rem';
+            }
+
+            canvas.appendChild(packet);
+
+            // Animate
+            requestAnimationFrame(() => {
+                if (node === 'A') packet.style.left = 'calc(100% - 2rem)';
+                else packet.style.right = 'calc(100% - 2rem)';
+            });
+
+            // Check Collision
+            if (csmaState.A && csmaState.B) {
+                // Collision!
+                status.textContent = "COLLISION! JAM SIGNAL SENT.";
+                status.classList.add('text-red-600', 'font-bold');
+
+                // Visual Collision (meet in middle approx 500ms)
+                setTimeout(() => {
+                    flash.style.opacity = '1';
+                    // Stop packets
+                    canvas.querySelectorAll(`[class*="packet-"]`).forEach(p => p.remove());
+
+                    setTimeout(() => flash.style.opacity = '0', 200);
+                }, 500);
+
+                // Backoff
+                setTimeout(() => {
+                    resetCsma("Backing off (Random Wait)...");
+                }, 1500);
+            } else {
+                // Success check after duration
+                setTimeout(() => {
+                    // Check if packet still exists (wasn't killed by collision)
+                    const myPacket = canvas.querySelector(`.${packetClass}`);
+                    if (myPacket) {
+                        status.textContent = `${node} Sent Successfully.`;
+                        myPacket.remove();
+                        csmaState[node] = false;
+                        if (!csmaState.A && !csmaState.B) { // If both done
+                            resetCsma("Ready to transmit.");
+                        }
+                    }
+                }, 1000);
+            }
+        }
+
+        function resetCsma(msg) {
+            csmaState = { A: false, B: false };
+            const status = document.getElementById('csma-status');
+            if (status) {
+                status.textContent = msg;
+                status.classList.remove('text-red-600', 'font-bold');
+            }
+
+            const canvas = document.getElementById('csma-canvas');
+            if (canvas) {
+                canvas.querySelectorAll(`[class*="packet-"]`).forEach(p => p.remove());
+            }
+
+            if (msg.includes("Backing off")) {
+                setTimeout(() => {
+                    if (status) status.textContent = "Ready to transmit.";
+                }, 1500);
+            }
+        }
+
+        // --- 10. Visuals: Dijkstra ---
+        function runDijkstra() {
+            // Graph: A=0, B=1, C=2, D=3
+            // Edges: A-B(4), A-C(2), B-C(1), B-D(5), C-D(8)
+            const edges = [
+                { u: 0, v: 1, w: 4, id: 'edge-0-1' },
+                { u: 0, v: 2, w: 2, id: 'edge-0-2' },
+                { u: 1, v: 2, w: 1, id: 'edge-1-2' },
+                { u: 1, v: 3, w: 5, id: 'edge-1-3' },
+                { u: 2, v: 3, w: 8, id: 'edge-2-3' }
+            ];
+
+            const out = document.getElementById('dijkstra-out');
+            out.textContent = "Calculating...";
+
+            // Reset
+            document.querySelectorAll('#dijkstra-canvas line').forEach(l => l.setAttribute('stroke', '#d1d5db'));
+            document.querySelectorAll('#dijkstra-canvas div').forEach(d => d.classList.remove('bg-cyan-100', 'border-cyan-600'));
+
+            // Step 1: Start at A
+            setTimeout(() => {
+                document.getElementById('node-0').classList.add('bg-cyan-100', 'border-cyan-600');
+                out.textContent = "Start at A (Cost: 0). Neighbors: B(4), C(2).";
+            }, 500);
+
+            // Step 2: Choose C (2 < 4)
+            setTimeout(() => {
+                document.getElementById('edge-0-2').setAttribute('stroke', '#0891b2'); // A-C
+                document.getElementById('node-2').classList.add('bg-cyan-100', 'border-cyan-600');
+                out.textContent = "Visit C (Min Cost 2). Update neighbors.";
+            }, 1500);
+
+            // Step 3: From C, we see D(8). Path A-C-D = 10.
+            // But wait, check B via C? A-C-B = 2+1=3. 3 < 4 (direct A-B). Update B!
+            setTimeout(() => {
+                document.getElementById('edge-1-2').setAttribute('stroke', '#0891b2'); // C-B
+                document.getElementById('node-1').classList.add('bg-cyan-100', 'border-cyan-600');
+                out.textContent = "Found shorter path to B via C (Cost 3).";
+            }, 3000);
+
+            // Step 4: From B (Cost 3), go to D (5). Total 3+5=8.
+            // Previous A-C-D was 10. 8 < 10. Update D.
+            setTimeout(() => {
+                document.getElementById('edge-1-3').setAttribute('stroke', '#0891b2'); // B-D
+                document.getElementById('node-3').classList.add('bg-cyan-100', 'border-cyan-600');
+                out.textContent = "Path to D found via B (Cost 8). Shortest Path: A→C→B→D.";
+            }, 4500);
+        }
+    </script>
+</body>
+
+</html>

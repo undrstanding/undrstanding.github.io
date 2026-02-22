@@ -1,0 +1,2302 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Software Engineering & PM</title>
+    <link rel="icon" type="image/svg+xml" href="../assests/undrlogo.svg">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        accent: '#FFD150',
+                        'accent-light': '#fffbeb',
+                        'accent-dark': '#F5C540', // Slightly darker for text/borders
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Roboto+Mono:wght@400;500&display=swap');
+
+        ::-webkit-scrollbar {
+            width: 1px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #000;
+        }
+
+        :root {
+            --bg-color: #f4f4f4;
+            --card-bg: #ffffff;
+            --text-main: #111111;
+            --text-muted: #737373;
+            --accent: #FFD150;
+            /* User Requested Accent */
+            --accent-light: #fffbeb;
+            --border: #e5e5e5;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            -webkit-font-smoothing: antialiased;
+            line-height: 1.6;
+            overflow-x: hidden;
+            max-width: 100vw;
+        }
+
+        h1,
+        h2,
+        h3,
+        h4,
+        h5 {
+            font-weight: 600;
+            letter-spacing: -0.02em;
+            color: var(--text-main);
+        }
+
+        p {
+            color: #404040;
+        }
+
+        .mono {
+            font-family: 'Roboto Mono', monospace;
+        }
+
+        .rams-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            transition: all 0.3s ease;
+        }
+
+        .rams-card:hover {
+            border-color: #a3a3a3;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        }
+
+        @media (min-width: 768px) {
+            .rams-card {
+                padding: 2.5rem;
+            }
+        }
+
+        .rams-label {
+            font-family: 'Inter', sans-serif;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        .nav-link {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            padding: 0.5rem 0;
+            display: block;
+            transition: color 0.2s;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            color: var(--text-main);
+            font-weight: 500;
+        }
+
+        .nav-link.active::before {
+            content: "• ";
+            color: var(--accent);
+        }
+
+        .cmd-block {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 1rem;
+            border-radius: 4px;
+            font-family: 'Roboto Mono', monospace;
+            font-size: 0.85rem;
+            overflow-x: auto;
+            margin-top: 1rem;
+            border-left: 3px solid var(--accent);
+        }
+
+        /* Specific block for SE tools presentation */
+        .tool-block {
+            background: #f9fafb;
+            border: 1px solid #e5e5e5;
+            padding: 1.5rem;
+            border-radius: 4px;
+            margin-top: 1rem;
+        }
+
+        .cmd-prompt {
+            color: #FFD150;
+            margin-right: 0.5rem;
+            user-select: none;
+        }
+
+        .cmd-comment {
+            color: #6a9955;
+            display: block;
+            margin-bottom: 0.25rem;
+        }
+
+        .deep-dive {
+            background-color: #f9fafb;
+            border: 1px solid #e5e5e5;
+            padding: 1.5rem;
+            margin-top: 1.5rem;
+            font-size: 0.9rem;
+            line-height: 1.7;
+            color: #4b5563;
+        }
+
+        .deep-dive h4 {
+            color: #111;
+            font-weight: 600;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .deep-dive h4::before {
+            content: "";
+            display: inline-block;
+            width: 4px;
+            height: 4px;
+            background: var(--accent);
+            border-radius: 50%;
+        }
+
+        /* New Process Flow Styles */
+        .process-flow {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .process-step {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+        }
+
+        .step-marker {
+            min-width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background-color: var(--accent);
+            color: black;
+            font-size: 0.75rem;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: 2px;
+        }
+
+        /* Controls */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.5rem 1.25rem;
+            font-size: 0.85rem;
+            font-weight: 500;
+            border-radius: 2px;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            white-space: nowrap;
+        }
+
+        .btn-primary {
+            background-color: var(--accent);
+            color: black;
+            border: 1px solid var(--accent);
+        }
+
+        .btn-primary:hover {
+            opacity: 0.9;
+            filter: brightness(0.95);
+        }
+
+        .btn-secondary {
+            background-color: transparent;
+            color: var(--text-main);
+            border: 1px solid #a3a3a3;
+        }
+
+        .btn-secondary:hover {
+            background-color: #f0f0f0;
+            border-color: #555;
+        }
+
+        /* Visualizations */
+        .viz-container {
+            position: relative;
+            padding: 2rem;
+            background: #fafafa;
+            border: 1px solid #e5e5e5;
+            border-radius: 8px;
+            overflow: hidden;
+            margin-bottom: 2rem;
+        }
+
+        /* Waterfall Viz */
+        .waterfall-step {
+            background: white;
+            border: 1px solid #d4d4d4;
+            padding: 1rem;
+            border-radius: 4px;
+            width: 180px;
+            margin-bottom: -0.5rem;
+            position: relative;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            z-index: 10;
+        }
+
+        .waterfall-step:hover {
+            transform: translateX(10px) scale(1.02);
+            border-color: var(--accent);
+            z-index: 20;
+        }
+
+        .waterfall-step::after {
+            content: "";
+            position: absolute;
+            left: 50%;
+            bottom: -1rem;
+            width: 2px;
+            height: 1rem;
+            background: #d4d4d4;
+            transform: translateX(-50%);
+            z-index: 1;
+        }
+
+        .waterfall-step:last-child::after {
+            display: none;
+        }
+
+        .waterfall-step:nth-child(1) {
+            margin-left: 0;
+        }
+
+        .waterfall-step:nth-child(2) {
+            margin-left: 40px;
+        }
+
+        .waterfall-step:nth-child(3) {
+            margin-left: 80px;
+        }
+
+        .waterfall-step:nth-child(4) {
+            margin-left: 120px;
+        }
+
+        .waterfall-step:nth-child(5) {
+            margin-left: 160px;
+        }
+
+        .waterfall-desc {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease, opacity 0.3s ease;
+            opacity: 0;
+            font-size: 0.75rem;
+            color: #666;
+            margin-top: 0;
+        }
+
+        .waterfall-step:hover .waterfall-desc {
+            max-height: 100px;
+            opacity: 1;
+            margin-top: 0.5rem;
+        }
+
+        /* Concurrent State Viz */
+        .state-box {
+            background: white;
+            border: 1px solid #e5e5e5;
+            padding: 0.75rem;
+            text-align: center;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.75rem;
+            transition: all 0.2s;
+            text-transform: lowercase;
+            color: #404040;
+        }
+
+        .state-box:hover {
+            border-color: var(--accent);
+            transform: translateY(-2px);
+            box-shadow: none;
+            /* Explicitly no shadow as requested */
+        }
+
+        /* Interactive Tabs */
+        .model-tabs {
+            display: flex;
+            gap: 1rem;
+            border-bottom: 1px solid #e5e5e5;
+            margin-bottom: 1.5rem;
+            overflow-x: auto;
+        }
+
+        .model-tab {
+            padding: 0.75rem 0;
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: #737373;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+
+        .model-tab:hover {
+            color: var(--text-main);
+        }
+
+        .model-tab.active {
+            color: black;
+            border-bottom-color: var(--accent);
+        }
+
+        .model-content {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .model-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(5px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Spiral SVG Styles */
+        .spiral-path {
+            fill: none;
+            stroke: #e5e5e5;
+            stroke-width: 2;
+            stroke-dasharray: 1000;
+            stroke-dashoffset: 1000;
+            animation: drawSpiral 2s ease-out forwards;
+        }
+
+        @keyframes drawSpiral {
+            to {
+                stroke-dashoffset: 0;
+            }
+        }
+
+        .spiral-quadrant:hover text {
+            fill: var(--accent);
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="flex min-h-screen flex-col lg:flex-row">
+
+        <!-- Mobile Header -->
+        <header
+            class="lg:hidden fixed top-0 w-full bg-[#f4f4f4] border-b border-[#e5e5e5] z-[100] px-6 py-4 flex justify-between items-center h-16">
+            <div>
+                <h1 class="text-sm font-semibold tracking-wide uppercase text-black leading-tight">Software<br>Eng & PM
+                </h1>
+            </div>
+            <button onclick="toggleMobileMenu()" class="text-black focus:outline-none p-2 rounded">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+            </button>
+        </header>
+
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="fixed inset-0 bg-[#f4f4f4] z-[90] hidden flex-col pt-20 px-6 overflow-y-auto">
+            <nav class="flex flex-col">
+                <span class="text-[10px] text-gray-400 font-bold uppercase tracking-wider px-0 py-2">00.
+                    Foundations</span>
+                <a href="#nature" class="mobile-nav-link" onclick="toggleMobileMenu()">Nature of Software</a>
+                <a href="#webapps" class="mobile-nav-link" onclick="toggleMobileMenu()">WebApps</a>
+                <a href="#process" class="mobile-nav-link" onclick="toggleMobileMenu()">The Process</a>
+                <a href="#sdlc" class="mobile-nav-link" onclick="toggleMobileMenu()">SDLC</a>
+                <a href="#practice" class="mobile-nav-link" onclick="toggleMobileMenu()">SE Practice</a>
+                <a href="#myths" class="mobile-nav-link" onclick="toggleMobileMenu()">Myths</a>
+
+                <span class="text-[10px] text-gray-400 font-bold uppercase tracking-wider px-0 py-2 mt-4">01. Process
+                    Models</span>
+                <a href="#generic-process" class="mobile-nav-link" onclick="toggleMobileMenu()">Generic & Assessment</a>
+                <a href="#prescriptive-models" class="mobile-nav-link" onclick="toggleMobileMenu()">Prescriptive</a>
+                <a href="#unified-process" class="mobile-nav-link" onclick="toggleMobileMenu()">Unified Process</a>
+                <a href="#psp-tsp" class="mobile-nav-link" onclick="toggleMobileMenu()">PSP & TSP</a>
+
+                <span class="text-[10px] text-gray-400 font-bold uppercase tracking-wider px-0 py-2 mt-4">02.
+                    Requirements</span>
+                <a href="#requirements-engineering" class="mobile-nav-link"
+                    onclick="toggleMobileMenu()">Understanding</a>
+                <a href="#modeling-scenarios" class="mobile-nav-link" onclick="toggleMobileMenu()">Scenarios</a>
+                <a href="#modeling-strategies" class="mobile-nav-link" onclick="toggleMobileMenu()">Strategies</a>
+
+                <span class="text-[10px] text-gray-400 font-bold uppercase tracking-wider px-0 py-2 mt-4">03.
+                    Agility</span>
+                <a href="#agile" class="mobile-nav-link" onclick="toggleMobileMenu()">Agile & Scrum</a>
+
+                <span class="text-[10px] text-gray-400 font-bold uppercase tracking-wider px-0 py-2 mt-4">04.
+                    Project Mgmt</span>
+                <a href="#pm-tools" class="mobile-nav-link" onclick="toggleMobileMenu()">Tools</a>
+                <a href="#estimation" class="mobile-nav-link" onclick="toggleMobileMenu()">Estimation</a>
+                <a href="#scheduling" class="mobile-nav-link" onclick="toggleMobileMenu()">Scheduling</a>
+
+                <span class="text-[10px] text-gray-400 font-bold uppercase tracking-wider px-0 py-2 mt-4">05.
+                    Construction</span>
+                <a href="#version-control" class="mobile-nav-link" onclick="toggleMobileMenu()">Version Control</a>
+
+                <span class="text-[10px] text-gray-400 font-bold uppercase tracking-wider px-0 py-2 mt-4">06.
+                    Delivery</span>
+                <a href="#cicd" class="mobile-nav-link" onclick="toggleMobileMenu()">CI/CD</a>
+                <a href="#testing" class="mobile-nav-link" onclick="toggleMobileMenu()">Testing</a>
+                <a href="#glossary" class="mobile-nav-link" onclick="toggleMobileMenu()">Glossary</a>
+            </nav>
+        </div>
+
+        <!-- Sidebar -->
+        <aside
+            class="hidden lg:block w-64 fixed h-screen bg-[#f4f4f4] border-r border-[#e5e5e5] z-50 overflow-y-auto thin-scrollbar">
+            <div class="p-8 h-full flex flex-col justify-between">
+                <div>
+                    <a href="../index.html"
+                        class="inline-flex items-center gap-2 px-4 py-2 mb-8 text-[10px] font-mono uppercase tracking-wider text-gray-600 border border-gray-300 hover:bg-black hover:text-white hover:border-black transition-all duration-200">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                        </svg>
+                        Back to Home
+                    </a>
+                    <div class="mb-12">
+                        <h1 class="text-sm font-semibold tracking-wide uppercase text-black">Software<br>Eng & PM</h1>
+                        <p class="text-[10px] text-gray-500 mt-1 uppercase tracking-wider">Process & Tools</p>
+                    </div>
+                    <nav class="space-y-1">
+                        <a href="#intro" class="nav-link font-medium text-black">Introduction</a>
+
+                        <div class="pt-4 pb-1 text-[10px] text-gray-400 font-bold uppercase tracking-wider">00.
+                            Foundations</div>
+                        <a href="#nature" class="nav-link">Nature of Software</a>
+                        <a href="#webapps" class="nav-link">WebApps</a>
+                        <a href="#process" class="nav-link">The Process</a>
+                        <a href="#sdlc" class="nav-link">SDLC</a>
+                        <a href="#practice" class="nav-link">SE Practice</a>
+                        <a href="#myths" class="nav-link">Myths</a>
+
+                        <div class="pt-4 pb-1 text-[10px] text-gray-400 font-bold uppercase tracking-wider">01. Process
+                            Models</div>
+                        <a href="#generic-process" class="nav-link">Generic & Assessment</a>
+                        <a href="#prescriptive-models" class="nav-link">Prescriptive Models</a>
+                        <a href="#specialized-models" class="nav-link">Specialized Models</a>
+                        <a href="#unified-process" class="nav-link">Unified Process</a>
+                        <a href="#psp-tsp" class="nav-link">PSP & TSP</a>
+
+                        <div class="pt-4 pb-1 text-[10px] text-gray-400 font-bold uppercase tracking-wider">02.
+                            Requirements</div>
+                        <a href="#requirements-engineering" class="nav-link">Understanding</a>
+                        <a href="#modeling-scenarios" class="nav-link">Scenarios</a>
+                        <a href="#modeling-strategies" class="nav-link">Strategies</a>
+
+                        <div class="pt-4 pb-1 text-[10px] text-gray-400 font-bold uppercase tracking-wider">03. Agility
+                        </div>
+                        <a href="#agile" class="nav-link">Agile & Scrum</a>
+
+                        <div class="pt-4 pb-1 text-[10px] text-gray-400 font-bold uppercase tracking-wider">04.
+                            Project Mgmt</div>
+                        <a href="#pm-tools" class="nav-link">Tools</a>
+                        <a href="#estimation" class="nav-link">Estimation</a>
+                        <a href="#scheduling" class="nav-link">Scheduling</a>
+
+                        <div class="pt-4 pb-1 text-[10px] text-gray-400 font-bold uppercase tracking-wider">05.
+                            Construction</div>
+                        <a href="#version-control" class="nav-link">Version Control</a>
+
+                        <div class="pt-4 pb-1 text-[10px] text-gray-400 font-bold uppercase tracking-wider">06. Delivery
+                        </div>
+                        <a href="#cicd" class="nav-link">CI/CD</a>
+                        <a href="#testing" class="nav-link">Testing</a>
+                        <a href="#glossary" class="nav-link">Glossary</a>
+                    </nav>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 lg:ml-64 bg-white w-full">
+            <div class="max-w-3xl mx-auto px-4 sm:px-8 py-24 lg:py-20">
+
+                <!-- Hero -->
+                <section id="intro" class="mb-16 md:mb-24">
+                    <h2 class="text-3xl md:text-5xl font-semibold mb-6 text-black tracking-tight leading-tight">Building
+                        Bits<br>& Managing Chaos</h2>
+                    <p class="text-base md:text-lg text-gray-600 max-w-xl font-light leading-relaxed mb-6">
+                        Software Engineering is more than just coding; it's the disciplined application of engineering
+                        principles to software development. Project Management ensures that this development is
+                        organized, efficient, and meets its goals.
+                    </p>
+                </section>
+
+                <div class="divider hidden md:block border-t border-gray-100 my-10"></div>
+
+                <!-- 00. Foundations: Nature of Software -->
+                <section id="nature" class="mb-20 md:mb-24">
+                    <span class="rams-label">00 / Foundations</span>
+                    <h3 class="text-xl font-medium mb-4">The Nature of Software</h3>
+                    <p class="text-sm text-gray-600 mb-6 max-w-xl">
+                        Software is unique among engineering artifacts. It is malleable, complex, and invisible. Unlike
+                        hardware, software doesn't "wear out," but it does deteriorate over time due to change.
+                    </p>
+                    <div class="rams-card">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <h4 class="font-bold text-sm mb-2">Invisibility</h4>
+                                <p class="text-xs text-gray-600">You can't see the structure of software like you can a
+                                    bridge. This makes it hard to visualize problems.</p>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-sm mb-2">Complexity</h4>
+                                <p class="text-xs text-gray-600">Software systems have millions of moving parts
+                                    (states),
+                                    far more than any machine.</p>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-sm mb-2">Malleability</h4>
+                                <p class="text-xs text-gray-600">Software is easy to change, which leads to the false
+                                    belief that it is easy to change <em>correctly</em>.</p>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-sm mb-2">Deterioration</h4>
+                                <p class="text-xs text-gray-600">As software is changed, its structure degrades (entropy
+                                    increases) unless refactored.</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 00.b Unique Nature of WebApps -->
+                <section id="webapps" class="mb-20 md:mb-24">
+                    <h3 class="text-xl font-medium mb-4">Unique Nature of WebApps</h3>
+                    <p class="text-sm text-gray-600 mb-6 max-w-xl">
+                        Web applications are a specialized form of software with distinct characteristics that influence
+                        how they are engineered.
+                    </p>
+                    <div class="rams-card">
+                        <ul class="space-y-3">
+                            <li class="flex items-start gap-3">
+                                <span class="text-xs font-bold font-mono text-black min-w-[20px]">01</span>
+                                <p class="text-xs text-gray-600"><strong class="text-black">Network
+                                        Intensiveness:</strong>
+                                    They live on the network; latency and connectivity are critical factors.</p>
+                            </li>
+                            <li class="flex items-start gap-3">
+                                <span class="text-xs font-bold font-mono text-black min-w-[20px]">02</span>
+                                <p class="text-xs text-gray-600"><strong class="text-black">Concurrency:</strong>
+                                    Thousands
+                                    of users may access the application closely or simultaneously.</p>
+                            </li>
+                            <li class="flex items-start gap-3">
+                                <span class="text-xs font-bold font-mono text-black min-w-[20px]">03</span>
+                                <p class="text-xs text-gray-600"><strong class="text-black">Unpredictable Load:</strong>
+                                    Traffic can spike from 100 to 100,000 users in minutes.</p>
+                            </li>
+                            <li class="flex items-start gap-3">
+                                <span class="text-xs font-bold font-mono text-black min-w-[20px]">04</span>
+                                <p class="text-xs text-gray-600"><strong class="text-black">Availability:</strong> Users
+                                    expect 24/7/365 uptime.</p>
+                            </li>
+                            <li class="flex items-start gap-3">
+                                <span class="text-xs font-bold font-mono text-black min-w-[20px]">05</span>
+                                <p class="text-xs text-gray-600"><strong class="text-black">Data Driven:</strong> The
+                                    primary function is often to present processing of complex data.</p>
+                            </li>
+                        </ul>
+                    </div>
+                </section>
+
+                <!-- 00.c The Software Process -->
+                <section id="process" class="mb-20 md:mb-24">
+                    <h3 class="text-xl font-medium mb-4">The Software Process</h3>
+                    <p class="text-sm text-gray-600 mb-6 max-w-xl">
+                        A process framework establishes the foundation for a complete software engineering process. It
+                        identifies a small number of framework activities that are applicable to all software projects.
+                    </p>
+                    <div class="rams-card bg-gray-50 border-none">
+                        <div class="flex flex-col md:flex-row justify-between gap-4 font-mono text-xs text-center">
+                            <div class="flex-1 p-2 bg-white border border-gray-200 rounded">Communication</div>
+                            <div class="hidden md:block text-gray-400 self-center">&rarr;</div>
+                            <div class="flex-1 p-2 bg-white border border-gray-200 rounded">Planning</div>
+                            <div class="hidden md:block text-gray-400 self-center">&rarr;</div>
+                            <div class="flex-1 p-2 bg-white border border-gray-200 rounded">Modeling</div>
+                            <div class="hidden md:block text-gray-400 self-center">&rarr;</div>
+                            <div class="flex-1 p-2 bg-white border border-gray-200 rounded">Construction</div>
+                            <div class="hidden md:block text-gray-400 self-center">&rarr;</div>
+                            <div class="flex-1 p-2 bg-white border border-gray-200 rounded">Deployment</div>
+                        </div>
+                        <p class="text-[10px] text-gray-400 mt-4 text-center">The Generic Process Framework</p>
+                    </div>
+                </section>
+
+                <!-- 00.d SDLC -->
+                <section id="sdlc" class="mb-20 md:mb-24">
+                    <h3 class="text-xl font-medium mb-4">SDLC (Software Development Life Cycle)</h3>
+                    <p class="text-sm text-gray-600 mb-6 max-w-xl">
+                        A structured process that enables the production of high-quality, low-cost software in the
+                        shortest possible production time.
+                    </p>
+                    <div class="rams-card">
+                        <div class="space-y-4">
+                            <!-- Phase 1 -->
+                            <div class="flex items-start gap-4">
+                                <div
+                                    class="w-8 h-8 rounded-full bg-accent text-black flex items-center justify-center font-bold text-xs shrink-0">
+                                    1</div>
+                                <div>
+                                    <h4 class="font-bold text-sm mb-1">Planning & Requirements</h4>
+                                    <p class="text-xs text-gray-600">Gathering requirements from stakeholders. Answering
+                                        "What do we want?" and "What is feasible?".</p>
+                                </div>
+                            </div>
+                            <!-- Phase 2 -->
+                            <div class="flex items-start gap-4">
+                                <div
+                                    class="w-8 h-8 rounded-full bg-accent text-black flex items-center justify-center font-bold text-xs shrink-0">
+                                    2</div>
+                                <div>
+                                    <h4 class="font-bold text-sm mb-1">Defining (SRS)</h4>
+                                    <p class="text-xs text-gray-600">Documenting requirements in a Software Requirement
+                                        Specification (SRS). Getting approval.</p>
+                                </div>
+                            </div>
+                            <!-- Phase 3 -->
+                            <div class="flex items-start gap-4">
+                                <div
+                                    class="w-8 h-8 rounded-full bg-accent text-black flex items-center justify-center font-bold text-xs shrink-0">
+                                    3</div>
+                                <div>
+                                    <h4 class="font-bold text-sm mb-1">Designing</h4>
+                                    <p class="text-xs text-gray-600">Creating the system architecture. High-Level Design
+                                        (HLD) and Low-Level Design (LLD).</p>
+                                </div>
+                            </div>
+                            <!-- Phase 4 -->
+                            <div class="flex items-start gap-4">
+                                <div
+                                    class="w-8 h-8 rounded-full bg-accent text-black flex items-center justify-center font-bold text-xs shrink-0">
+                                    4</div>
+                                <div>
+                                    <h4 class="font-bold text-sm mb-1">Building (Coding)</h4>
+                                    <p class="text-xs text-gray-600">The act of converting design into code.</p>
+                                </div>
+                            </div>
+                            <!-- Phase 5 -->
+                            <div class="flex items-start gap-4">
+                                <div
+                                    class="w-8 h-8 rounded-full bg-accent text-black flex items-center justify-center font-bold text-xs shrink-0">
+                                    5</div>
+                                <div>
+                                    <h4 class="font-bold text-sm mb-1">Testing</h4>
+                                    <p class="text-xs text-gray-600">Verifying that the software meets requirements and
+                                        is bug-free.</p>
+                                </div>
+                            </div>
+                            <!-- Phase 6 -->
+                            <div class="flex items-start gap-4">
+                                <div
+                                    class="w-8 h-8 rounded-full bg-accent text-black flex items-center justify-center font-bold text-xs shrink-0">
+                                    6</div>
+                                <div>
+                                    <h4 class="font-bold text-sm mb-1">Deployment</h4>
+                                    <p class="text-xs text-gray-600">Releasing the software to the user (e.g., SIT, UAT
+                                        environments).</p>
+                                </div>
+                            </div>
+                            <!-- Phase 7 -->
+                            <div class="flex items-start gap-4">
+                                <div
+                                    class="w-8 h-8 rounded-full bg-accent text-black flex items-center justify-center font-bold text-xs shrink-0">
+                                    7</div>
+                                <div>
+                                    <h4 class="font-bold text-sm mb-1">Maintenance</h4>
+                                    <p class="text-xs text-gray-600">Upgrading the software, fixing bugs, and responding
+                                        to user feedback.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 00.e Software Engineering Practice -->
+                <section id="practice" class="mb-20 md:mb-24">
+                    <h3 class="text-xl font-medium mb-4">Software Engineering Practice</h3>
+                    <p class="text-sm text-gray-600 mb-6 max-w-xl">
+                        At its core, engineering is problem solving. George Polya's "How to Solve It" provides the
+                        essence
+                        of software engineering practice.
+                    </p>
+                    <div class="rams-card">
+                        <div class="space-y-6">
+                            <div>
+                                <h4 class="font-bold text-sm mb-1">1. Understand the Problem</h4>
+                                <p class="text-xs text-gray-600">Communication and Analysis. Who connects? What is the
+                                    unknown? What are the data/conditions?</p>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-sm mb-1">2. Plan the Solution</h4>
+                                <p class="text-xs text-gray-600">Modeling and Design. Have you seen this before? Do you
+                                    know a related problem? Draw a figure.</p>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-sm mb-1">3. Carry Out the Plan</h4>
+                                <p class="text-xs text-gray-600">Code Generation. Write the code. Keep it clean. Check
+                                    each step.</p>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-sm mb-1">4. Examine the Result</h4>
+                                <p class="text-xs text-gray-600">Testing and QA. Can you check the result? Can you
+                                    derive the result differently?</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 00.e Software Myths -->
+                <section id="myths" class="mb-20 md:mb-24">
+                    <h3 class="text-xl font-medium mb-4">Software Myths</h3>
+                    <p class="text-sm text-gray-600 mb-6 max-w-xl">
+                        Beliefs about software and the process of building it can be traced to the earliest days of
+                        computing. Many are erroneous and harmful.
+                    </p>
+                    <div class="space-y-4">
+                        <div class="rams-card mb-0 bg-red-50/50 border-red-100">
+                            <span
+                                class="text-[10px] font-bold text-red-500 uppercase tracking-widest mb-1 display-block">Management
+                                Myth</span>
+                            <h4 class="font-bold text-sm mb-2 text-gray-900">"We have standards and procedures, so we
+                                are good."</h4>
+                            <p class="text-xs text-gray-600"><strong class="text-black">Reality:</strong> Standards are
+                                often unused or outdated. Developers don't follow them if they aren't practical.</p>
+                        </div>
+                        <div class="rams-card mb-0 bg-red-50/50 border-red-100">
+                            <span
+                                class="text-[10px] font-bold text-red-500 uppercase tracking-widest mb-1 display-block">Customer
+                                Myth</span>
+                            <h4 class="font-bold text-sm mb-2 text-gray-900">"A general statement of objectives is
+                                enough to start coding."</h4>
+                            <p class="text-xs text-gray-600"><strong class="text-black">Reality:</strong> Ambiguous
+                                requirements are the root of most project failures. Detailed understanding is required.
+                            </p>
+                        </div>
+                        <div class="rams-card mb-0 bg-red-50/50 border-red-100">
+                            <span
+                                class="text-[10px] font-bold text-red-500 uppercase tracking-widest mb-1 display-block">Practitioner
+                                Myth</span>
+                            <h4 class="font-bold text-sm mb-2 text-gray-900">"Once we write the program and get it to
+                                work, our job is done."</h4>
+                            <p class="text-xs text-gray-600"><strong class="text-black">Reality:</strong> 60-80% of
+                                effort is expended <em>after</em> the software is delivered to the customer.</p>
+                        </div>
+                    </div>
+                </section>
+
+                <div class="divider hidden md:block border-t border-gray-100 my-10"></div>
+
+                <!-- 01. Process Models: Generic -->
+                <section id="generic-process" class="mb-20 md:mb-24">
+                    <span class="rams-label">01 / Process Models</span>
+                    <h3 class="text-xl font-medium mb-4">The Generic Process Model</h3>
+                    <p class="text-sm text-gray-600 mb-6 max-w-xl">
+                        Regardless of the specific model chosen, all software development relies on a generic process
+                        framework consisting of five activities.
+                    </p>
+                    <div class="rams-card">
+                        <div class="process-flow">
+                            <div class="flex flex-wrap gap-2 justify-center font-mono text-xs">
+                                <div class="bg-gray-100 px-3 py-2 rounded">Communication</div>
+                                <div class="text-gray-400 self-center">&rarr;</div>
+                                <div class="bg-gray-100 px-3 py-2 rounded">Planning</div>
+                                <div class="text-gray-400 self-center">&rarr;</div>
+                                <div class="bg-gray-100 px-3 py-2 rounded">Modeling</div>
+                                <div class="text-gray-400 self-center">&rarr;</div>
+                                <div class="bg-gray-100 px-3 py-2 rounded">Construction</div>
+                                <div class="text-gray-400 self-center">&rarr;</div>
+                                <div class="bg-gray-100 px-3 py-2 rounded">Deployment</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h4 class="font-bold text-sm mt-8 mb-4">Process Assessment (CMMI)</h4>
+                    <p class="text-sm text-gray-600 mb-4">The Capability Maturity Model Integration (CMMI) defines five
+                        levels of process maturity:</p>
+                    <div class="grid grid-cols-2 md:grid-cols-5 gap-2 text-center text-xs">
+                        <div class="bg-gray-50 p-2 rounded border border-gray-100">
+                            <strong class="block text-gray-900">1. Initial</strong>
+                            <span class="text-gray-500">Ad hoc, chaotic</span>
+                        </div>
+                        <div class="bg-gray-50 p-2 rounded border border-gray-100">
+                            <strong class="block text-gray-900">2. Managed</strong>
+                            <span class="text-gray-500">Project level</span>
+                        </div>
+                        <div class="bg-gray-50 p-2 rounded border border-gray-100">
+                            <strong class="block text-gray-900">3. Defined</strong>
+                            <span class="text-gray-500">Org standard</span>
+                        </div>
+                        <div class="bg-gray-50 p-2 rounded border border-gray-100">
+                            <strong class="block text-gray-900">4. Measured</strong>
+                            <span class="text-gray-500">Quantitative</span>
+                        </div>
+                        <div class="bg-blue-50 p-2 rounded border border-blue-100">
+                            <strong class="block text-blue-900">5. Optimizing</strong>
+                            <span class="text-blue-500">Continuous value</span>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 01.b Prescriptive Models -->
+                <section id="prescriptive-models" class="mb-20 md:mb-24">
+                    <h3 class="text-xl font-medium mb-4">Prescriptive Process Models</h3>
+                    <p class="text-sm text-gray-600 mb-6 max-w-xl">
+                        These models advocate an orderly approach to software engineering. Use the tabs below to explore
+                        them.
+                    </p>
+
+                    <div class="rams-card min-h-[400px]">
+                        <div class="model-tabs">
+                            <div class="model-tab active" onclick="switchTab(event, 'waterfall', this)">Waterfall</div>
+                            <div class="model-tab" onclick="switchTab(event, 'incremental', this)">Incremental</div>
+                            <div class="model-tab" onclick="switchTab(event, 'evolutionary', this)">Evolutionary
+                                (Spiral)</div>
+                            <div class="model-tab" onclick="switchTab(event, 'concurrent', this)">Concurrent</div>
+                        </div>
+
+                        <!-- Waterfall Content -->
+                        <div id="waterfall" class="model-content active">
+                            <p class="text-xs text-gray-500 mb-6">The classic life cycle. Systematic, sequential
+                                approach. Good for well-defined requirements.</p>
+                            <div class="overflow-x-auto pb-4">
+                                <div class="flex flex-col items-start pl-4 min-w-[350px]">
+                                    <div class="waterfall-step">
+                                        <span class="font-bold text-sm">Communication</span>
+                                        <p class="waterfall-desc">Project initiation, requirements gathering.</p>
+                                    </div>
+                                    <div class="waterfall-step">
+                                        <span class="font-bold text-sm">Planning</span>
+                                        <p class="waterfall-desc">Estimating, scheduling, tracking.</p>
+                                    </div>
+                                    <div class="waterfall-step">
+                                        <span class="font-bold text-sm">Modeling</span>
+                                        <p class="waterfall-desc">Analysis and Design.</p>
+                                    </div>
+                                    <div class="waterfall-step">
+                                        <span class="font-bold text-sm">Construction</span>
+                                        <p class="waterfall-desc">Code and Test.</p>
+                                    </div>
+                                    <div class="waterfall-step">
+                                        <span class="font-bold text-sm">Deployment</span>
+                                        <p class="waterfall-desc">Delivery, Support, Feedback.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Incremental Content -->
+                        <div id="incremental" class="model-content">
+                            <p class="text-xs text-gray-500 mb-6">Combines linear and parallel process flows. Delivers
+                                software in small but usable pieces (increments).</p>
+                            <div class="space-y-4">
+                                <div class="flex items-center gap-4">
+                                    <div class="w-24 text-xs font-bold text-right">Increment 1</div>
+                                    <div
+                                        class="flex-1 bg-gray-100 rounded h-8 flex items-center px-4 text-xs text-gray-600 border border-gray-200">
+                                        Core Product (Basic features)
+                                    </div>
+                                </div>
+                                <div class="flex items-center gap-4 pl-8">
+                                    <div class="w-24 text-xs font-bold text-right">Increment 2</div>
+                                    <div
+                                        class="flex-1 bg-gray-50 rounded h-8 flex items-center px-4 text-xs text-gray-400 border border-gray-100 border-dashed">
+                                        Additional Features
+                                    </div>
+                                </div>
+                                <div class="flex items-center gap-4 pl-16">
+                                    <div class="w-24 text-xs font-bold text-right">Increment 3</div>
+                                    <div
+                                        class="flex-1 bg-gray-50 rounded h-8 flex items-center px-4 text-xs text-gray-400 border border-gray-100 border-dashed">
+                                        Refinement & Extras
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Evolutionary Content -->
+                        <div id="evolutionary" class="model-content">
+                            <p class="text-xs text-gray-500 mb-6">Iterative models designed to accommodate change. The
+                                Spiral Model is a risk-driven process generator.</p>
+                            <div class="flex flex-col md:flex-row items-center gap-8 my-8">
+                                <!-- Spiral SVG: Flat Design Quadrants -->
+                                <div class="relative">
+                                    <svg width="300" height="300" viewBox="0 0 300 300">
+                                        <!-- Quadrant Backgrounds -->
+                                        <rect x="0" y="0" width="150" height="150" fill="#f0fdff" stroke="none" />
+                                        <!-- Top-Left: Communication -->
+                                        <rect x="150" y="0" width="150" height="150" fill="#fffdf2" stroke="none" />
+                                        <!-- Top-Right: Planning -->
+                                        <rect x="150" y="150" width="150" height="150" fill="#fdf2f8" stroke="none" />
+                                        <!-- Bottom-Right: Modeling -->
+                                        <rect x="0" y="150" width="150" height="150" fill="#f0fff4" stroke="none" />
+                                        <!-- Bottom-Left: Construction -->
+
+                                        <!-- Axes -->
+                                        <line x1="150" y1="0" x2="150" y2="300" stroke="#e5e5e5" stroke-width="1" />
+                                        <line x1="0" y1="150" x2="300" y2="150" stroke="#e5e5e5" stroke-width="1" />
+
+                                        <!-- Labels -->
+                                        <text x="10" y="20" font-size="10" font-weight="bold" fill="#0ea5e9"
+                                            opacity="0.5">COMMUNICATION</text>
+                                        <text x="230" y="20" font-size="10" font-weight="bold" fill="#eab308"
+                                            opacity="0.5">PLANNING</text>
+                                        <text x="250" y="290" font-size="10" font-weight="bold" fill="#ec4899"
+                                            opacity="0.5">MODELING</text>
+                                        <text x="10" y="290" font-size="10" font-weight="bold" fill="#22c55e"
+                                            opacity="0.5">CONSTRUCTION</text>
+
+                                        <!-- Spiral Path -->
+                                        <path class="spiral-path"
+                                            d="M150,150 m0,0 l-10,-10 l-20,0 l-10,10 l0,20 l10,10 l40,0 l10,-10 l0,-40 l-10,-10 l-60,0 l-10,10 l0,60 l10,10 l80,0 l10,-10 l0,-80"
+                                            stroke="#333" fill="none" stroke-width="2" />
+
+                                        <!-- Interactive Points -->
+                                        <g class="group cursor-pointer">
+                                            <circle cx="150" cy="150" r="6" fill="#000" />
+                                            <text x="160" y="155" font-size="10" opacity="0"
+                                                class="group-hover:opacity-100 transition-opacity">Start</text>
+                                        </g>
+                                        <g class="group cursor-pointer">
+                                            <circle cx="120" cy="140" r="4" fill="#0ea5e9" stroke="white"
+                                                stroke-width="2" />
+                                        </g>
+                                        <g class="group cursor-pointer">
+                                            <circle cx="180" cy="140" r="4" fill="#eab308" stroke="white"
+                                                stroke-width="2" />
+                                        </g>
+                                        <g class="group cursor-pointer">
+                                            <circle cx="180" cy="180" r="4" fill="#ec4899" stroke="white"
+                                                stroke-width="2" />
+                                        </g>
+                                        <g class="group cursor-pointer">
+                                            <circle cx="120" cy="180" r="4" fill="#22c55e" stroke="white"
+                                                stroke-width="2" />
+                                        </g>
+                                    </svg>
+                                </div>
+                                <div class="text-xs text-gray-600 space-y-2 max-w-xs">
+                                    <div class="flex items-center gap-2">
+                                        <div class="w-3 h-3 bg-[#f0fdff] border border-gray-200"></div>
+                                        <span><strong>Communication:</strong> Establish requirements.</span>
+                                    </div>
+                                    <div class="flex items-center gap-2">
+                                        <div class="w-3 h-3 bg-[#fffdf2] border border-gray-200"></div>
+                                        <span><strong>Planning:</strong> Risk analysis, scheduling.</span>
+                                    </div>
+                                    <div class="flex items-center gap-2">
+                                        <div class="w-3 h-3 bg-[#fdf2f8] border border-gray-200"></div>
+                                        <span><strong>Modeling:</strong> Design & Engineering.</span>
+                                    </div>
+                                    <div class="flex items-center gap-2">
+                                        <div class="w-3 h-3 bg-[#f0fff4] border border-gray-200"></div>
+                                        <span><strong>Construction:</strong> Code, Test, Release.</span>
+                                    </div>
+                                    <p class="mt-4 italic text-gray-400">Radius increases with cost/time. Angular
+                                        dimension represents progress through phases.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Concurrent Content -->
+                        <div id="concurrent" class="model-content">
+                            <p class="text-xs text-gray-500 mb-6">A schema of States. Activities exist concurrently in
+                                different states. Transitions are triggered by events.</p>
+                            <div class="relative p-6 border border-gray-100 rounded bg-gray-50">
+                                <!-- Central Connector Line (Invisible logic, visual structure) -->
+                                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 items-center">
+                                    <!-- State Column 1 -->
+                                    <div class="space-y-4">
+                                        <div class="state-box">
+                                            <span
+                                                class="block text-[10px] text-gray-400 uppercase tracking-widest mb-1">State</span>
+                                            none
+                                        </div>
+                                        <div class="text-center text-gray-300">↓</div>
+                                        <div class="state-box border-blue-400 bg-blue-50 text-blue-900">
+                                            <span
+                                                class="block text-[10px] text-blue-300 uppercase tracking-widest mb-1">Active</span>
+                                            under development
+                                        </div>
+                                    </div>
+
+                                    <!-- Arrows / Transitions Middle -->
+                                    <div class="hidden md:flex flex-col items-center justify-center h-full space-y-2">
+                                        <div class="w-full h-px bg-gray-300"></div>
+                                        <span
+                                            class="text-[9px] uppercase text-gray-400 bg-gray-50 px-2">Transitions</span>
+                                        <div class="w-full h-px bg-gray-300"></div>
+                                    </div>
+
+                                    <!-- State Column 2 -->
+                                    <div class="space-y-4">
+                                        <div class="state-box border-yellow-400 bg-yellow-50 text-yellow-900">
+                                            <span
+                                                class="block text-[10px] text-yellow-300 uppercase tracking-widest mb-1">Review</span>
+                                            awaiting review
+                                        </div>
+                                        <div class="text-center text-gray-300">↓</div>
+                                        <div class="state-box border-green-400 bg-green-50 text-green-900">
+                                            <span
+                                                class="block text-[10px] text-green-300 uppercase tracking-widest mb-1">Final</span>
+                                            done
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="mt-6 pt-4 border-t border-gray-200 text-center">
+                                    <p class="text-[10px] font-mono text-gray-500">
+                                        EVENT: [Review Required] &rarr; TRANSITION: [Under Development] to [Awaiting
+                                        Review]
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 01.c Specialized Models -->
+                <section id="specialized-models" class="mb-20 md:mb-24">
+                    <h3 class="text-xl font-medium mb-4">Specialized Process Models</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div class="rams-card mb-0 p-4">
+                            <h4 class="font-bold text-sm mb-2">Component-Based</h4>
+                            <p class="text-xs text-gray-600">Focuses on reusing existing components to assemble
+                                software. Increases efficiency.</p>
+                        </div>
+                        <div class="rams-card mb-0 p-4">
+                            <h4 class="font-bold text-sm mb-2">Formal Methods</h4>
+                            <p class="text-xs text-gray-600">Mathematical specification and verification. Used for
+                                safety-critical systems (aerospace, medical).</p>
+                        </div>
+                        <div class="rams-card mb-0 p-4">
+                            <h4 class="font-bold text-sm mb-2">AOSD</h4>
+                            <p class="text-xs text-gray-600">Aspect-Oriented. Focuses on modularizing cross-cutting
+                                concerns (logging, security).</p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 01.d Unified Process -->
+                <section id="unified-process" class="mb-20 md:mb-24">
+                    <h3 class="text-xl font-medium mb-4">The Unified Process (UP)</h3>
+                    <p class="text-sm text-gray-600 mb-6 max-w-xl">
+                        A use-case driven, architecture-centric, iterative and incremental software process.
+                    </p>
+                    <div class="rams-card">
+                        <div class="space-y-4">
+                            <div class="hidden md:flex border-b border-gray-100 pb-2">
+                                <div class="w-1/4 font-bold text-xs uppercase text-gray-400">Phase</div>
+                                <div class="w-3/4 font-bold text-xs uppercase text-gray-400">Focus</div>
+                            </div>
+                            <div
+                                class="flex flex-col md:flex-row items-start gap-1 md:gap-0 border-b border-gray-50 md:border-none pb-4 md:pb-0">
+                                <div class="w-full md:w-1/4 font-bold text-sm">Inception</div>
+                                <div class="w-full md:w-3/4 text-xs text-gray-600">Communication & Planning.
+                                    Feasibility, scope,
+                                    business case.</div>
+                            </div>
+                            <div
+                                class="flex flex-col md:flex-row items-start gap-1 md:gap-0 border-b border-gray-50 md:border-none pb-4 md:pb-0">
+                                <div class="w-full md:w-1/4 font-bold text-sm">Elaboration</div>
+                                <div class="w-full md:w-3/4 text-xs text-gray-600">Planning & Modeling. Core
+                                    architecture, risk
+                                    resolution.</div>
+                            </div>
+                            <div
+                                class="flex flex-col md:flex-row items-start gap-1 md:gap-0 border-b border-gray-50 md:border-none pb-4 md:pb-0">
+                                <div class="w-full md:w-1/4 font-bold text-sm">Construction</div>
+                                <div class="w-full md:w-3/4 text-xs text-gray-600">Construction. Code generation,
+                                    testing,
+                                    integration.</div>
+                            </div>
+                            <div class="flex flex-col md:flex-row items-start gap-1 md:gap-0 pb-0">
+                                <div class="w-full md:w-1/4 font-bold text-sm">Transition</div>
+                                <div class="w-full md:w-3/4 text-xs text-gray-600">Deployment. Beta testing, user
+                                    training,
+                                    rollout.</div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 01.e PSP & TSP -->
+                <section id="psp-tsp" class="mb-20 md:mb-24">
+                    <h3 class="text-xl font-medium mb-4">Personal & Team Process</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="rams-card mb-0">
+                            <h4 class="font-bold text-sm mb-2">PSP (Personal)</h4>
+                            <p class="text-xs text-gray-600 mb-3">Structured process for the individual. Emphasizes
+                                measurement (LOC, defects) and planning.</p>
+                            <span class="text-[10px] uppercase font-bold text-accent tracking-wider">Goal: Personal
+                                Discipline</span>
+                        </div>
+                        <div class="rams-card mb-0">
+                            <h4 class="font-bold text-sm mb-2">TSP (Team)</h4>
+                            <p class="text-xs text-gray-600 mb-3">Building self-directed teams that plan and track their
+                                own work. Requires PSP training.</p>
+                            <span class="text-[10px] uppercase font-bold text-accent tracking-wider">Goal: Team
+                                Productivity</span>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Quick Check 1 -->
+                <div id="qc-process" class="mb-20 md:mb-24"></div>
+
+                <!-- 02. Requirements Engineering -->
+                <section id="requirements-engineering" class="mb-20 md:mb-24">
+                    <span class="rams-label">02 / Requirements</span>
+                    <h3 class="text-xl font-medium mb-4">Understanding Requirements</h3>
+                    <p class="text-sm text-gray-600 mb-6 max-w-xl">
+                        Requirements engineering is the process of establishing the services that the customer
+                        requires from a system and the constraints under which it operates and is developed.
+                    </p>
+                    <div class="rams-card">
+                        <div class="grid grid-cols-2 md:grid-cols-3 gap-4 text-center">
+                            <div class="p-3 bg-gray-50 border border-gray-100 rounded">
+                                <strong class="block text-xs font-bold mb-1">Elicitation</strong>
+                                <span class="text-[10px] text-gray-500">Asking questions, gathering info.</span>
+                            </div>
+                            <div class="p-3 bg-gray-50 border border-gray-100 rounded">
+                                <strong class="block text-xs font-bold mb-1">Elaboration</strong>
+                                <span class="text-[10px] text-gray-500">Creating models, refining details.</span>
+                            </div>
+                            <div class="p-3 bg-gray-50 border border-gray-100 rounded">
+                                <strong class="block text-xs font-bold mb-1">Negotiation</strong>
+                                <span class="text-[10px] text-gray-500">Reconciling conflicts, priorities.</span>
+                            </div>
+                            <div class="p-3 bg-gray-50 border border-gray-100 rounded">
+                                <strong class="block text-xs font-bold mb-1">Specification</strong>
+                                <span class="text-[10px] text-gray-500">Documentation (SRS).</span>
+                            </div>
+                            <div class="p-3 bg-gray-50 border border-gray-100 rounded">
+                                <strong class="block text-xs font-bold mb-1">Validation</strong>
+                                <span class="text-[10px] text-gray-500">Reviewing for errors.</span>
+                            </div>
+                            <div class="p-3 bg-gray-50 border border-gray-100 rounded">
+                                <strong class="block text-xs font-bold mb-1">Management</strong>
+                                <span class="text-[10px] text-gray-500">Tracking changes.</span>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 02.b Modeling Scenarios -->
+                <section id="modeling-scenarios" class="mb-20 md:mb-24">
+                    <h3 class="text-xl font-medium mb-4">Requirement Modeling: Scenarios</h3>
+                    <p class="text-sm text-gray-600 mb-6 max-w-xl">
+                        Describing how the system is used from the user's perspective.
+                    </p>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- Use Cases -->
+                        <div class="rams-card mb-0 min-h-[250px] relative">
+                            <h4 class="font-bold text-sm mb-4">Use Cases</h4>
+                            <div class="absolute inset-0 top-10 flex items-center justify-center p-4">
+                                <!-- Flat SVG Use Case Diagram -->
+                                <svg width="100%" height="180" viewBox="0 0 240 160">
+                                    <!-- Actor -->
+                                    <circle cx="30" cy="80" r="10" stroke="#404040" fill="none" stroke-width="1.5" />
+                                    <line x1="30" y1="90" x2="30" y2="120" stroke="#404040" stroke-width="1.5" />
+                                    <!-- Body -->
+                                    <line x1="15" y1="100" x2="45" y2="100" stroke="#404040" stroke-width="1.5" />
+                                    <!-- Arms -->
+                                    <line x1="30" y1="120" x2="15" y2="145" stroke="#404040" stroke-width="1.5" />
+                                    <!-- Leg L -->
+                                    <line x1="30" y1="120" x2="45" y2="145" stroke="#404040" stroke-width="1.5" />
+                                    <!-- Leg R -->
+                                    <text x="30" y="158" text-anchor="middle" font-size="8" fill="#666">User</text>
+
+                                    <!-- System Boundary -->
+                                    <rect x="70" y="10" width="160" height="140" fill="#f9fafb" stroke="#e5e5e5"
+                                        rx="4" />
+                                    <text x="150" y="25" text-anchor="middle" font-size="8" fill="#999"
+                                        letter-spacing="1">SYSTEM</text>
+
+                                    <!-- Use Cases -->
+                                    <ellipse cx="150" cy="55" rx="50" ry="15" fill="white" stroke="#3b82f6"
+                                        stroke-width="1" />
+                                    <text x="150" y="58" text-anchor="middle" font-size="8" fill="#3b82f6">Login</text>
+
+                                    <ellipse cx="150" cy="105" rx="50" ry="15" fill="white" stroke="#3b82f6"
+                                        stroke-width="1" />
+                                    <text x="150" y="108" text-anchor="middle" font-size="8" fill="#3b82f6">View
+                                        Dashboard</text>
+
+                                    <!-- Connections -->
+                                    <line x1="45" y1="80" x2="100" y2="55" stroke="#ccc" stroke-width="1" />
+                                    <line x1="45" y1="80" x2="100" y2="105" stroke="#ccc" stroke-width="1" />
+                                </svg>
+                            </div>
+                        </div>
+
+                        <!-- User Stories -->
+                        <div class="rams-card mb-0">
+                            <h4 class="font-bold text-sm mb-4">User Stories</h4>
+                            <div class="space-y-3">
+                                <div
+                                    class="p-3 bg-yellow-50 border border-yellow-100 rounded text-xs text-gray-700 font-mono">
+                                    "As a <strong class="text-yellow-700">Student</strong>,<br>
+                                    I want to <strong class="text-yellow-700">download course materials</strong>,<br>
+                                    so that I can <strong class="text-yellow-700">study offline</strong>."
+                                </div>
+                                <div
+                                    class="p-3 bg-blue-50 border border-blue-100 rounded text-xs text-gray-700 font-mono">
+                                    "As an <strong class="text-blue-700">Admin</strong>,<br>
+                                    I want to <strong class="text-blue-700">ban users</strong>,<br>
+                                    so that I can <strong class="text-blue-700">maintain safety</strong>."
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 02.c Modeling Strategies -->
+                <section id="modeling-strategies" class="mb-20 md:mb-24">
+                    <h3 class="text-xl font-medium mb-4">Modeling Strategies</h3>
+                    <p class="text-sm text-gray-600 mb-6 max-w-xl">
+                        View the requirements from different angles to ensure completeness.
+                    </p>
+
+                    <div class="rams-card">
+                        <div class="model-tabs">
+                            <div class="model-tab active" onclick="switchTab(event, 'flow', this)">Flow-Oriented</div>
+                            <div class="model-tab" onclick="switchTab(event, 'class', this)">Class-Based</div>
+                            <div class="model-tab" onclick="switchTab(event, 'behavior', this)">Behavioral</div>
+                        </div>
+
+                        <!-- Flow Content -->
+                        <div id="flow" class="model-content active">
+                            <p class="text-xs text-gray-500 mb-6">Visualizing how data moves through the system (Data
+                                Flow Diagram - DFD).</p>
+                            <div class="flex items-center justify-center gap-4 py-4 text-xs">
+                                <div class="p-2 border border-black bg-white rounded">User Input</div>
+                                <div class="text-gray-400">&rarr;</div>
+                                <div
+                                    class="w-20 h-20 rounded-full border border-blue-500 bg-blue-50 flex items-center justify-center text-center text-blue-700 p-2">
+                                    Process Input
+                                </div>
+                                <div class="text-gray-400">&rarr;</div>
+                                <div class="flex flex-col gap-1">
+                                    <div class="h-1 w-12 bg-gray-300"></div>
+                                    <div class="h-8 w-16 border-l-4 border-gray-400 pl-2 flex items-center bg-gray-50">
+                                        Database</div>
+                                    <div class="h-1 w-12 bg-gray-300"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Class Content -->
+                        <div id="class" class="model-content">
+                            <p class="text-xs text-gray-500 mb-6">Defining objects, attributes, and relationships (Class
+                                Diagram).</p>
+                            <div class="flex justify-center py-4">
+                                <div class="border border-gray-300 rounded w-48 bg-white shadow-sm">
+                                    <div class="bg-gray-100 p-2 border-b border-gray-300 font-bold text-xs text-center">
+                                        SoftwareEngineer</div>
+                                    <div class="p-2 border-b border-gray-300 text-[10px] text-gray-600">
+                                        + name: String<br>
+                                        + skills: List&lt;String&gt;<br>
+                                        + coffeeLevel: int
+                                    </div>
+                                    <div class="p-2 text-[10px] text-gray-600">
+                                        + code()<br>
+                                        + debug()<br>
+                                        + deploy()
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Behavior Content -->
+                        <div id="behavior" class="model-content">
+                            <p class="text-xs text-gray-500 mb-6">Modeling how the system reacts to external events
+                                (State Diagram).</p>
+                            <!-- Reusing generic state-box styles -->
+                            <div class="overflow-x-auto pb-4">
+                                <div class="flex justify-center gap-6 items-center py-4 min-w-[500px]">
+                                    <div class="state-box">Idle</div>
+                                    <div class="text-gray-400 text-xs">&rarr; Event: Click &rarr;</div>
+                                    <div class="state-box border-accent bg-[#fffdf2]">Processing</div>
+                                    <div class="text-gray-400 text-xs">&rarr; Event: Done &rarr;</div>
+                                    <div class="state-box border-green-500 text-green-700 bg-green-50">Success</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Quick Check 2 -->
+                <div id="qc-requirements" class="mb-20 md:mb-24"></div>
+
+                <!-- 01. Agile & Scrum -->
+                <section id="agile" class="mb-20 md:mb-24">
+                    <span class="rams-label">03 / Agility</span>
+                    <h3 class="text-xl font-medium mb-4">Agile Development</h3>
+                    <p class="text-sm text-gray-600 mb-6 max-w-xl">
+                        Agility is about rapid response to change, effective communication, and delivering value. It's
+                        not just a process, but a philosophy.
+                    </p>
+
+                    <!-- The Manifesto -->
+                    <div class="rams-card mb-8">
+                        <h4 class="font-bold text-sm mb-4">The Agile Manifesto</h4>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+                            <div class="p-3 bg-green-50 border border-green-100 rounded">
+                                <strong class="text-green-800 block mb-1">Individuals & Interactions</strong>
+                                <span class="text-gray-500">over processes and tools</span>
+                            </div>
+                            <div class="p-3 bg-green-50 border border-green-100 rounded">
+                                <strong class="text-green-800 block mb-1">Working Software</strong>
+                                <span class="text-gray-500">over comprehensive documentation</span>
+                            </div>
+                            <div class="p-3 bg-green-50 border border-green-100 rounded">
+                                <strong class="text-green-800 block mb-1">Customer Collaboration</strong>
+                                <span class="text-gray-500">over contract negotiation</span>
+                            </div>
+                            <div class="p-3 bg-green-50 border border-green-100 rounded">
+                                <strong class="text-green-800 block mb-1">Responding to Change</strong>
+                                <span class="text-gray-500">over following a plan</span>
+                            </div>
+                        </div>
+                        <p class="text-[10px] text-gray-400 mt-4 text-center italic">While there is value in the items
+                            on
+                            the right, we value the items on the left more.</p>
+                    </div>
+
+                    <!-- Extreme Programming (XP) -->
+                    <div class="mb-8">
+                        <h4 class="font-bold text-base mb-4">Extreme Programming (XP)</h4>
+                        <p class="text-sm text-gray-600 mb-4 max-w-xl">
+                            The most widely used agile process, proposed by Kent Beck. It pushes good practices to the
+                            "extreme".
+                        </p>
+
+                        <!-- XP Values -->
+                        <div class="flex flex-wrap gap-2 mb-6">
+                            <span
+                                class="px-2 py-1 bg-gray-100 text-gray-600 text-[10px] uppercase font-bold rounded">Communication</span>
+                            <span
+                                class="px-2 py-1 bg-gray-100 text-gray-600 text-[10px] uppercase font-bold rounded">Simplicity</span>
+                            <span
+                                class="px-2 py-1 bg-gray-100 text-gray-600 text-[10px] uppercase font-bold rounded">Feedback</span>
+                            <span
+                                class="px-2 py-1 bg-gray-100 text-gray-600 text-[10px] uppercase font-bold rounded">Courage</span>
+                            <span
+                                class="px-2 py-1 bg-gray-100 text-gray-600 text-[10px] uppercase font-bold rounded">Respect</span>
+                        </div>
+
+                        <!-- XP Practices Grid -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                            <!-- Planning -->
+                            <div
+                                class="p-4 border border-gray-200 rounded hover:border-accent transition-colors bg-white">
+                                <div class="text-[10px] font-bold uppercase text-gray-400 mb-2">Planning</div>
+                                <h5 class="text-sm font-bold mb-2">Planning Game</h5>
+                                <p class="text-xs text-gray-600 leading-snug">Determine the scope of the next release by
+                                    combining business priorities with technical estimates. Users write stories;
+                                    developers estimate them.</p>
+                            </div>
+                            <div
+                                class="p-4 border border-gray-200 rounded hover:border-accent transition-colors bg-white">
+                                <div class="text-[10px] font-bold uppercase text-gray-400 mb-2">Release</div>
+                                <h5 class="text-sm font-bold mb-2">Small Releases</h5>
+                                <p class="text-xs text-gray-600 leading-snug">Put a simple system into production
+                                    quickly, then release new versions on a very short cycle.</p>
+                            </div>
+                            <div
+                                class="p-4 border border-gray-200 rounded hover:border-accent transition-colors bg-white">
+                                <div class="text-[10px] font-bold uppercase text-gray-400 mb-2">Design</div>
+                                <h5 class="text-sm font-bold mb-2">Metaphor</h5>
+                                <p class="text-xs text-gray-600 leading-snug">Guide all development with a simple shared
+                                    story of how the whole system works (e.g., "The system is like an assembly line").
+                                </p>
+                            </div>
+
+                            <!-- Design -->
+                            <div
+                                class="p-4 border border-gray-200 rounded hover:border-accent transition-colors bg-white">
+                                <div class="text-[10px] font-bold uppercase text-gray-400 mb-2">Design</div>
+                                <h5 class="text-sm font-bold mb-2">Simple Design</h5>
+                                <p class="text-xs text-gray-600 leading-snug">The system should be designed as simply as
+                                    possible at any given moment. Extra complexity is removed immediately.</p>
+                            </div>
+
+                            <!-- Coding -->
+                            <div
+                                class="p-4 border border-gray-200 rounded hover:border-accent transition-colors bg-white">
+                                <div class="text-[10px] font-bold uppercase text-gray-400 mb-2">Coding</div>
+                                <h5 class="text-sm font-bold mb-2">Pair Programming</h5>
+                                <p class="text-xs text-gray-600 leading-snug">Two programmers work together at one
+                                    machine. One types (Driver), the other reviews and thinks strategically (Navigator).
+                                </p>
+                            </div>
+                            <div
+                                class="p-4 border border-gray-200 rounded hover:border-accent transition-colors bg-white">
+                                <div class="text-[10px] font-bold uppercase text-gray-400 mb-2">Testing</div>
+                                <h5 class="text-sm font-bold mb-2">Test-Driven Development</h5>
+                                <p class="text-xs text-gray-600 leading-snug">Write a failing automated test
+                                    <em>before</em> writing any code. Then write just enough code to pass the test.
+                                </p>
+                            </div>
+                            <div
+                                class="p-4 border border-gray-200 rounded hover:border-accent transition-colors bg-white">
+                                <div class="text-[10px] font-bold uppercase text-gray-400 mb-2">Coding</div>
+                                <h5 class="text-sm font-bold mb-2">Refactoring</h5>
+                                <p class="text-xs text-gray-600 leading-snug">Restructure the system without changing
+                                    its behavior to remove duplication, improve communication, and simplify.</p>
+                            </div>
+                            <div
+                                class="p-4 border border-gray-200 rounded hover:border-accent transition-colors bg-white">
+                                <div class="text-[10px] font-bold uppercase text-gray-400 mb-2">Coding</div>
+                                <h5 class="text-sm font-bold mb-2">Coding Standards</h5>
+                                <p class="text-xs text-gray-600 leading-snug">Programmers write code in accordance with
+                                    rules emphasizing communication through code.</p>
+                            </div>
+
+                            <!-- Team -->
+                            <div
+                                class="p-4 border border-gray-200 rounded hover:border-accent transition-colors bg-white">
+                                <div class="text-[10px] font-bold uppercase text-gray-400 mb-2">Team</div>
+                                <h5 class="text-sm font-bold mb-2">Collective Ownership</h5>
+                                <p class="text-xs text-gray-600 leading-snug">Anyone can change any code anywhere in the
+                                    system at any time.</p>
+                            </div>
+                            <div
+                                class="p-4 border border-gray-200 rounded hover:border-accent transition-colors bg-white">
+                                <div class="text-[10px] font-bold uppercase text-gray-400 mb-2">Integration</div>
+                                <h5 class="text-sm font-bold mb-2">Continuous Integration</h5>
+                                <p class="text-xs text-gray-600 leading-snug">Integrate and build the system many times
+                                    a day, every time a task is completed.</p>
+                            </div>
+                            <div
+                                class="p-4 border border-gray-200 rounded hover:border-accent transition-colors bg-white">
+                                <div class="text-[10px] font-bold uppercase text-gray-400 mb-2">Team</div>
+                                <h5 class="text-sm font-bold mb-2">40-Hour Week</h5>
+                                <p class="text-xs text-gray-600 leading-snug">Work only as many hours as you can
+                                    sustain. Tired programmers make more bugs.</p>
+                            </div>
+                            <div
+                                class="p-4 border border-gray-200 rounded hover:border-accent transition-colors bg-white">
+                                <div class="text-[10px] font-bold uppercase text-gray-400 mb-2">Team</div>
+                                <h5 class="text-sm font-bold mb-2">On-site Customer</h5>
+                                <p class="text-xs text-gray-600 leading-snug">Include a real, live user on the team,
+                                    available full-time to answer questions.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Other Frameworks (Scrum & Kanban) -->
+                    <h4 class="font-bold text-sm mb-4">Other Frameworks</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                        <div class="rams-card mb-0">
+                            <h4 class="text-sm font-bold mb-2">Scrum</h4>
+                            <p class="text-xs text-gray-600 mb-4">A framework within Agile.</p>
+                            <ul class="text-xs space-y-2 text-gray-500 list-disc pl-4">
+                                <li><strong>Sprints:</strong> Short, time-boxed periods (usually 2 weeks) to complete
+                                    set work.</li>
+                                <li><strong>Stand-ups:</strong> Daily short meetings to sync on progress and blockers.
+                                </li>
+                                <li><strong>Roles:</strong> Scrum Master, Product Owner, Development Team.</li>
+                            </ul>
+                        </div>
+                        <div class="rams-card mb-0">
+                            <h4 class="text-sm font-bold mb-2">Kanban</h4>
+                            <p class="text-xs text-gray-600 mb-4">Visualizing work.</p>
+                            <ul class="text-xs space-y-2 text-gray-500 list-disc pl-4">
+                                <li><strong>Board:</strong> Columns representing states (To Do, Doing, Done).</li>
+                                <li><strong>WIP Limits:</strong> Limiting "Work In Progress" to improve flow.</li>
+                                <li><strong>Continuous Flow:</strong> No fixed time-boxes, focus on cycle time.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </section>
+
+
+
+                <div class="divider hidden md:block border-t border-gray-100 my-10"></div>
+
+                <!-- 04. Project Management -->
+                <section id="pm-tools" class="mb-20 md:mb-24">
+                    <span class="rams-label">04 / Project Management</span>
+                    <h3 class="text-xl font-medium mb-4">Project Management</h3>
+                    <p class="text-sm text-gray-600 mb-6 max-w-xl">
+                        Managing software projects involves estimation, scheduling, and risk management to ensure timely
+                        delivery.
+                    </p>
+
+                    <!-- Estimation -->
+                    <div id="estimation" class="mb-12">
+                        <h4 class="font-bold text-base mb-4">Estimation Techniques</h4>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <div class="rams-card mb-0">
+                                <h4 class="text-sm font-bold mb-2">LOC</h4>
+                                <p class="text-xs text-gray-600 mb-2">Lines of Code.</p>
+                                <p class="text-xs text-gray-500">Direct measure. Easy to count but language-dependent
+                                    and can encourage bloat.</p>
+                            </div>
+                            <div class="rams-card mb-0">
+                                <h4 class="text-sm font-bold mb-2">FP</h4>
+                                <p class="text-xs text-gray-600 mb-2">Function Points.</p>
+                                <p class="text-xs text-gray-500">Indirect measure based on functionality (inputs,
+                                    outputs, inquiries). Language independent.</p>
+                            </div>
+                            <div class="rams-card mb-0">
+                                <h4 class="text-sm font-bold mb-2">COCOMO</h4>
+                                <p class="text-xs text-gray-600 mb-2">Constructive Cost Model.</p>
+                                <p class="text-xs text-gray-500">Empirical mathematical model. Effort = a(KLOC)^b * EAF.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Scheduling -->
+                    <div id="scheduling" class="mb-12">
+                        <h4 class="font-bold text-base mb-4">Scheduling</h4>
+                        <div class="rams-card">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                <div>
+                                    <h5 class="text-sm font-bold mb-2">PERT / CPM</h5>
+                                    <p class="text-xs text-gray-600 mb-4">Program Evaluation Review Technique & Critical
+                                        Path Method.</p>
+
+                                    <!-- Simple PERT Diagram -->
+                                    <div
+                                        class="flex items-center gap-2 justify-center py-4 bg-gray-50 rounded border border-gray-100">
+                                        <div
+                                            class="w-8 h-8 rounded-full bg-white border-2 border-gray-300 flex items-center justify-center text-[10px] font-bold">
+                                            1</div>
+                                        <div class="w-8 h-0.5 bg-gray-300"></div>
+                                        <div
+                                            class="w-8 h-8 rounded-full bg-white border-2 border-accent flex items-center justify-center text-[10px] font-bold relative">
+                                            2
+                                            <span class="absolute -top-4 text-[8px] text-accent font-bold">CP</span>
+                                        </div>
+                                        <div class="w-8 h-0.5 bg-accent"></div>
+                                        <div
+                                            class="w-8 h-8 rounded-full bg-white border-2 border-accent flex items-center justify-center text-[10px] font-bold">
+                                            3</div>
+                                    </div>
+                                    <p class="text-[10px] text-gray-500 mt-2 text-center">Identifying the longest path
+                                        (Critical Path) determines project duration.</p>
+                                </div>
+                                <div>
+                                    <h5 class="text-sm font-bold mb-2">Gantt Chart</h5>
+                                    <p class="text-xs text-gray-600 mb-4">Timeline visualization.</p>
+
+                                    <!-- Simple Gantt Chart -->
+                                    <div class="space-y-2 py-4 bg-gray-50 rounded border border-gray-100 px-4">
+                                        <div class="flex items-center gap-2">
+                                            <div class="w-16 text-[10px] font-bold text-gray-500 text-right">Design
+                                            </div>
+                                            <div class="h-3 bg-blue-400 rounded w-16"></div>
+                                        </div>
+                                        <div class="flex items-center gap-2">
+                                            <div class="w-16 text-[10px] font-bold text-gray-500 text-right">Dev</div>
+                                            <div class="flex-1 flex">
+                                                <div class="w-8"></div> <!-- Offset -->
+                                                <div class="h-3 bg-blue-600 rounded w-24"></div>
+                                            </div>
+                                        </div>
+                                        <div class="flex items-center gap-2">
+                                            <div class="w-16 text-[10px] font-bold text-gray-500 text-right">Test</div>
+                                            <div class="flex-1 flex">
+                                                <div class="w-24"></div> <!-- Offset -->
+                                                <div class="h-3 bg-green-500 rounded w-12"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Risk Management -->
+                    <div id="risk" class="mb-12">
+                        <h4 class="font-bold text-base mb-4">Risk Management (RMMM)</h4>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <div class="border border-green-200 bg-green-50 p-4 rounded">
+                                <h5 class="text-sm font-bold text-green-800 mb-1">Mitigation</h5>
+                                <p class="text-xs text-gray-600">Proactive planning to avoid the risk (e.g., training
+                                    staff).</p>
+                            </div>
+                            <div class="border border-yellow-200 bg-yellow-50 p-4 rounded">
+                                <h5 class="text-sm font-bold text-yellow-800 mb-1">Monitoring</h5>
+                                <p class="text-xs text-gray-600">Tracking risk factors (e.g., watching staff turnover).
+                                </p>
+                            </div>
+                            <div class="border border-red-200 bg-red-50 p-4 rounded">
+                                <h5 class="text-sm font-bold text-red-800 mb-1">Management</h5>
+                                <p class="text-xs text-gray-600">Contingency plan if the risk occurs (e.g., hiring
+                                    contractors).</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tools (Existing) -->
+                    <h4 class="font-bold text-base mb-4">PM Tools</h4>
+                    <div class="rams-card">
+                        <div class="tool-block bg-white border border-gray-200 p-4 rounded mb-4">
+                            <div class="flex items-center gap-3 mb-2">
+                                <div
+                                    class="w-8 h-8 rounded bg-blue-600 flex items-center justify-center text-white font-bold text-xs">
+                                    J</div>
+                                <h4 class="font-bold text-sm">JIRA / Linear</h4>
+                            </div>
+                            <p class="text-xs text-gray-600">The industry standards for issue tracking and agile project
+                                management. Great for detailed sprint planning and backlog management.</p>
+                        </div>
+
+                        <div class="tool-block bg-white border border-gray-200 p-4 rounded mb-4">
+                            <div class="flex items-center gap-3 mb-2">
+                                <div
+                                    class="w-8 h-8 rounded bg-blue-400 flex items-center justify-center text-white font-bold text-xs">
+                                    T</div>
+                                <h4 class="font-bold text-sm">Trello / Notion</h4>
+                            </div>
+                            <p class="text-xs text-gray-600">More flexible, visual tools often used for smaller teams or
+                                documentation-heavy workflows (Notion).</p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 05. Construction -->
+                <section id="version-control" class="mb-20 md:mb-24">
+                    <span class="rams-label">05 / Construction</span>
+                    <h3 class="text-xl font-medium mb-4">Constructing Code</h3>
+                    <div class="rams-card">
+                        <div class="flex items-center gap-2 mb-4">
+                            <div
+                                class="w-8 h-8 rounded bg-orange-600 flex items-center justify-center text-white font-bold text-xs">
+                                G</div>
+                            <h4 class="font-bold text-sm">Version Control (Git)</h4>
+                        </div>
+                        <p class="text-sm mb-4">Managing code changes over time. Essential for collaboration.</p>
+                        <div class="cmd-block">
+                            <span class="cmd-comment"># Initialize a repository</span>
+                            <span class="cmd-prompt">$</span>git init
+
+                            <br><br><span class="cmd-comment"># Stage changes</span>
+                            <span class="cmd-prompt">$</span>git add .
+
+                            <br><br><span class="cmd-comment"># Commit changes</span>
+                            <span class="cmd-prompt">$</span>git commit -m "feat: add user login"
+
+                            <br><br><span class="cmd-comment"># Push to remote</span>
+                            <span class="cmd-prompt">$</span>git push origin main
+
+                            <br><br><span class="cmd-comment"># Branching</span>
+                            <span class="cmd-prompt">$</span>git checkout -b feature/new-ui
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 03. CI/CD -->
+                <section id="cicd" class="mb-20 md:mb-24">
+                    <span class="rams-label">06 / Delivery</span>
+                    <h3 class="text-xl font-medium mb-4">CI/CD</h3>
+                    <p class="text-sm text-gray-600 mb-6 max-w-xl">
+                        Continuous Integration and Continuous Delivery/Deployment. Automating the bridge between coding
+                        and running in production.
+                    </p>
+                    <div class="deep-dive">
+                        <h4 class="font-bold text-base mb-4">The CI/CD Pipeline</h4>
+
+                        <!-- Pipeline Visual -->
+                        <div class="flex flex-col md:flex-row gap-4 mb-8">
+                            <!-- Stage 1: Source -->
+                            <div
+                                class="flex-1 p-3 bg-gray-50 rounded border border-gray-200 relative hover:border-accent transition-colors">
+                                <div
+                                    class="absolute -top-3 left-3 bg-accent text-black text-[10px] font-bold px-2 py-0.5 rounded">
+                                    CI</div>
+                                <h5 class="text-sm font-bold mb-2 mt-1">1. Source</h5>
+                                <ul class="text-xs text-gray-600 space-y-1 list-disc pl-3">
+                                    <li>Code Commit</li>
+                                    <li>Pull Request</li>
+                                    <li>Code Review</li>
+                                </ul>
+                            </div>
+                            <!-- Arrow -->
+                            <div class="hidden md:flex items-center text-gray-300">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                                    stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                                </svg>
+                            </div>
+                            <!-- Stage 2: Build -->
+                            <div
+                                class="flex-1 p-3 bg-gray-50 rounded border border-gray-200 relative hover:border-accent transition-colors">
+                                <div
+                                    class="absolute -top-3 left-3 bg-accent text-black text-[10px] font-bold px-2 py-0.5 rounded">
+                                    CI</div>
+                                <h5 class="text-sm font-bold mb-2 mt-1">2. Build</h5>
+                                <ul class="text-xs text-gray-600 space-y-1 list-disc pl-3">
+                                    <li>Linting</li>
+                                    <li>Compiling</li>
+                                    <li>Unit Tests</li>
+                                    <li>Docker Image</li>
+                                </ul>
+                            </div>
+                            <!-- Arrow -->
+                            <div class="hidden md:flex items-center text-gray-300">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                                    stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                                </svg>
+                            </div>
+                            <!-- Stage 3: Test -->
+                            <div
+                                class="flex-1 p-3 bg-gray-50 rounded border border-gray-200 relative hover:border-accent transition-colors">
+                                <div
+                                    class="absolute -top-3 left-3 bg-accent text-black text-[10px] font-bold px-2 py-0.5 rounded">
+                                    CD</div>
+                                <h5 class="text-sm font-bold mb-2 mt-1">3. Test</h5>
+                                <ul class="text-xs text-gray-600 space-y-1 list-disc pl-3">
+                                    <li>Integration Tests</li>
+                                    <li>E2E Tests</li>
+                                    <li>Security (SAST)</li>
+                                </ul>
+                            </div>
+                            <!-- Arrow -->
+                            <div class="hidden md:flex items-center text-gray-300">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                                    stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                                </svg>
+                            </div>
+                            <!-- Stage 4: Deploy -->
+                            <div
+                                class="flex-1 p-3 bg-gray-50 rounded border border-gray-200 relative hover:border-accent transition-colors">
+                                <div
+                                    class="absolute -top-3 left-3 bg-accent text-black text-[10px] font-bold px-2 py-0.5 rounded">
+                                    CD</div>
+                                <h5 class="text-sm font-bold mb-2 mt-1">4. Deploy</h5>
+                                <ul class="text-xs text-gray-600 space-y-1 list-disc pl-3">
+                                    <li>Staging (UAT)</li>
+                                    <li>Production</li>
+                                    <li>Monitoring</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="bg-accent-light border border-accent p-4 rounded mb-6">
+                            <h5 class="text-sm font-bold text-black mb-2">DevSecOps</h5>
+                            <p class="text-xs text-black mb-2">Integrating security practices within the DevOps
+                                process.</p>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div class="bg-white p-2 rounded border border-accent">
+                                    <span class="text-[10px] font-bold uppercase text-gray-400 block mb-1">Static
+                                        Analysis</span>
+                                    <span class="text-xs font-bold">SAST</span>
+                                    <p class="text-[10px] text-gray-500">Scanning source code for vulnerabilities (White
+                                        Box).</p>
+                                </div>
+                                <div class="bg-white p-2 rounded border border-accent">
+                                    <span class="text-[10px] font-bold uppercase text-gray-400 block mb-1">Dynamic
+                                        Analysis</span>
+                                    <span class="text-xs font-bold">DAST</span>
+                                    <p class="text-[10px] text-gray-500">Scanning running application (Black Box).</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 06. Testing -->
+                <section id="testing" class="mb-20 md:mb-24">
+                    <span class="rams-label">06 / Delivery</span>
+                    <h3 class="text-xl font-medium mb-4">Software Testing</h3>
+                    <p class="text-sm text-gray-600 mb-6 max-w-xl">
+                        Testing is the process of exercising a program with the specific intent of finding errors prior
+                        to delivery to the end user.
+                    </p>
+
+                    <!-- Verification vs Validation -->
+                    <div class="mb-12">
+                        <h4 class="font-bold text-base mb-4">Verification vs Validation (V&V)</h4>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="p-4 border border-accent bg-accent-light rounded relative overflow-hidden">
+                                <div
+                                    class="absolute top-0 right-0 w-16 h-16 transform translate-x-8 -translate-y-8 bg-accent opacity-20 rounded-full">
+                                </div>
+                                <h5 class="text-sm font-bold text-black mb-2">Verification</h5>
+                                <p class="text-xs text-gray-700 italic mb-2">"Are we building the product right?"</p>
+                                <p class="text-xs text-gray-600">Ensures the software meets specifications. Primarily
+                                    static activities like <span class="font-bold">Reviews</span>, <span
+                                        class="font-bold">Walkthroughs</span>, and <span
+                                        class="font-bold">Inspections</span>.</p>
+                            </div>
+                            <div class="p-4 border border-accent bg-accent-light rounded relative overflow-hidden">
+                                <div
+                                    class="absolute bottom-0 right-0 w-12 h-12 transform translate-x-4 translate-y-4 bg-accent opacity-20 rounded-full">
+                                </div>
+                                <h5 class="text-sm font-bold text-black mb-2">Validation</h5>
+                                <p class="text-xs text-gray-700 italic mb-2">"Are we building the right product?"</p>
+                                <p class="text-xs text-gray-600">Ensures the software meets customer needs. Primarily
+                                    dynamic activities like <span class="font-bold">Execution</span> and <span
+                                        class="font-bold">Testing</span>.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Testing Strategies -->
+                    <div class="mb-12">
+                        <h4 class="font-bold text-base mb-4">Testing Strategies</h4>
+                        <div class="rams-card">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 relative">
+                                <!-- Divider -->
+                                <div class="hidden md:block absolute top-0 bottom-0 left-1/2 w-px bg-gray-200 -ml-px">
+                                </div>
+
+                                <div>
+                                    <div class="flex items-center gap-2 mb-3">
+                                        <div
+                                            class="w-6 h-6 rounded bg-gray-200 flex items-center justify-center text-xs font-bold">
+                                            W</div>
+                                        <h5 class="text-sm font-bold">White Box Testing</h5>
+                                    </div>
+                                    <p class="text-xs text-gray-600 mb-3"><strong>"Glass Box"</strong>. Testing with
+                                        full knowledge of internal logic and code structure.</p>
+                                    <ul class="text-[10px] text-gray-500 space-y-1 list-disc pl-4">
+                                        <li><strong>Basis Path Testing:</strong> Ensuring every path is executed.</li>
+                                        <li><strong>Control Structure:</strong> Condition, Data Flow, and Loop testing.
+                                        </li>
+                                        <li>Focus: Logic, complexity, paths.</li>
+                                    </ul>
+                                </div>
+                                <div>
+                                    <div class="flex items-center gap-2 mb-3">
+                                        <div
+                                            class="w-6 h-6 rounded bg-black text-white flex items-center justify-center text-xs font-bold">
+                                            B</div>
+                                        <h5 class="text-sm font-bold">Black Box Testing</h5>
+                                    </div>
+                                    <p class="text-xs text-gray-600 mb-3"><strong>"Opaque Box"</strong>. Testing based
+                                        on requirements and functionality without seeing code.</p>
+                                    <ul class="text-[10px] text-gray-500 space-y-1 list-disc pl-4">
+                                        <li><strong>Equivalence Partitioning:</strong> Valid/Invalid input classes.</li>
+                                        <li><strong>Boundary Value Analysis:</strong> Testing edges (e.g., &lt;, &gt;,
+                                            =).</li>
+                                        <li>Focus: Input/Output, interface, behavior.</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Levels of Testing -->
+                    <div>
+                        <h4 class="font-bold text-base mb-4">Levels of Testing</h4>
+                        <div class="space-y-3">
+                            <div
+                                class="flex items-start gap-4 p-3 border border-gray-100 rounded hover:bg-accent-light hover:border-accent transition-colors">
+                                <div class="w-16 text-right font-mono text-xs font-bold text-gray-400 mt-0.5">Level 1
+                                </div>
+                                <div>
+                                    <h5 class="text-sm font-bold">Unit Testing</h5>
+                                    <p class="text-xs text-gray-600">Testing individual components in isolation. Heavy
+                                        use of White Box techniques.</p>
+                                </div>
+                            </div>
+                            <div
+                                class="flex items-start gap-4 p-3 border border-gray-100 rounded hover:bg-gray-50 transition-colors">
+                                <div class="w-16 text-right font-mono text-xs font-bold text-gray-400 mt-0.5">Level 2
+                                </div>
+                                <div>
+                                    <h5 class="text-sm font-bold">Integration Testing</h5>
+                                    <p class="text-xs text-gray-600">Testing the interface between components.
+                                        Strategies: <em>Big Bang</em> (all at once) or <em>Incremental</em> (Top-down /
+                                        Bottom-up).</p>
+                                </div>
+                            </div>
+                            <div
+                                class="flex items-start gap-4 p-3 border border-gray-100 rounded hover:bg-gray-50 transition-colors">
+                                <div class="w-16 text-right font-mono text-xs font-bold text-gray-400 mt-0.5">Level 3
+                                </div>
+                                <div>
+                                    <h5 class="text-sm font-bold">Validation Testing</h5>
+                                    <p class="text-xs text-gray-600">Validating against requirements. Includes
+                                        <strong>Alpha</strong> (at developer site) and <strong>Beta</strong> (at
+                                        customer site) testing.
+                                    </p>
+                                </div>
+                            </div>
+                            <div
+                                class="flex items-start gap-4 p-3 border border-gray-100 rounded hover:bg-gray-50 transition-colors">
+                                <div class="w-16 text-right font-mono text-xs font-bold text-gray-400 mt-0.5">Level 4
+                                </div>
+                                <div>
+                                    <h5 class="text-sm font-bold">System Testing</h5>
+                                    <p class="text-xs text-gray-600">Testing the entire system in context. Includes
+                                        <strong>Recovery</strong>, <strong>Security</strong>, <strong>Stress</strong>,
+                                        and <strong>Performance</strong> testing.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+
+
+                <!-- Glossary Section -->
+                <section id="glossary" class="mb-20">
+                    <span class="rams-label">Glossary</span>
+                    <h3 class="text-xl font-medium mb-8">Key Definitions</h3>
+                    <div class="rams-card">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <h4 class="font-bold text-sm mb-2">Refactoring</h4>
+                                <p class="text-xs text-gray-600">Restructuring existing code without changing its
+                                    external behavior.</p>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-sm mb-2">Tech Debt</h4>
+                                <p class="text-xs text-gray-600">The implied cost of additional rework caused by
+                                    choosing an easy solution now instead of a better approach that would take longer.
+                                </p>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-sm mb-2">MVP</h4>
+                                <p class="text-xs text-gray-600">Minimum Viable Product. A product with just enough
+                                    features to satisfy early customers.</p>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-sm mb-2">Pull Request</h4>
+                                <p class="text-xs text-gray-600">A method of submitting contributions to a software
+                                    project.</p>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-sm mb-2">Sprint</h4>
+                                <p class="text-xs text-gray-600">A set period of time during which specific work has to
+                                    be completed and made ready for review.</p>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-sm mb-2">Backlog</h4>
+                                <p class="text-xs text-gray-600">A prioritized list of work for the development team.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <div class="divider hidden md:block border-t border-gray-100 my-10"></div>
+
+                <!-- 06. Quiz -->
+                <section id="quiz" class="mb-20 md:mb-24 border-t border-gray-200 pt-12">
+                    <span class="rams-label">06 / Knowledge Check</span>
+                    <h3 class="text-xl font-medium mb-6">Knowledge Check</h3>
+                    <p class="text-sm text-gray-600 mb-8 max-w-lg">
+                        Verify your understanding of Software Engineering. Pass the exam with a perfect score to earn
+                        your
+                        completion certificate.
+                    </p>
+
+                    <div id="quiz-container" class="rams-card mb-12">
+                        <!-- Dynamic Quiz Content -->
+                    </div>
+
+                    <!-- Certificate (Initially Hidden) -->
+                    <div id="certificate" class="hidden">
+                        <span class="rams-label mb-4 block">06.1 / Certification</span>
+                        <h3 class="text-xl font-medium mb-6">Completion Certificate</h3>
+
+                        <div class="rams-card !p-0 overflow-hidden">
+                            <div class="p-6 md:p-8">
+                                <div class="flex flex-col md:flex-row gap-8 items-start">
+                                    <div class="w-full md:w-1/3 space-y-4">
+                                        <p class="text-sm text-gray-600">
+                                            Enter your name below to generate your personalized certificate of
+                                            completion for the Software Engineering series.
+                                        </p>
+                                        <div>
+                                            <label for="cert-name"
+                                                class="block text-xs font-bold text-gray-500 uppercase mb-1">Full
+                                                Name</label>
+                                            <input type="text" id="cert-name"
+                                                class="w-full border border-gray-300 p-2 font-mono text-sm focus:border-black outline-none"
+                                                placeholder="Watts Humphrey">
+                                            <p id="cert-error" class="text-red-500 text-xs mt-1 hidden"></p>
+                                        </div>
+                                        <button onclick="generateCert()"
+                                            class="w-full bg-black text-white p-3 font-bold text-sm hover:bg-gray-800 transition-colors">
+                                            Generate Certificate
+                                        </button>
+                                        <button id="btn-download" onclick="downloadCert()"
+                                            class="w-full border border-black p-3 font-bold text-sm hover:bg-gray-50 transition-colors hidden">
+                                            Download PNG
+                                        </button>
+                                    </div>
+                                    <div class="w-full md:w-2/3 bg-gray-50 border border-gray-200 p-4">
+                                        <canvas id="cert-canvas" class="w-full h-auto shadow-sm bg-white"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="bg-gray-50 px-6 py-3 border-t border-gray-100 text-center">
+                                <p class="text-[10px] text-gray-400 italic">
+                                    This certificate confirms successful completion of learning and assessment on this
+                                    platform
+                                    and is not an accredited or government-recognized qualification.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+
+
+                <footer class="w-full mt-12 mb-12">
+                    <div class="border-t border-gray-200 pt-8 flex justify-between items-center">
+                        <span class="text-[10px] mono uppercase text-gray-400">Undrstanding</span>
+                        <span class="text-[10px] mono uppercase text-gray-400">For Humans, From Humans</span>
+                    </div>
+                </footer>
+
+            </div>
+        </main>
+    </div>
+
+    <script>
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobile-menu');
+            menu.classList.toggle('hidden');
+            menu.classList.toggle('flex');
+
+            // Prevent scrolling on body when menu is open
+            if (menu.classList.contains('flex')) {
+                document.body.style.overflow = 'hidden';
+            } else {
+                document.body.style.overflow = 'auto';
+            }
+        }
+    </script>
+    <script src="js/script.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // 1. Process Model Check
+            new InlineQuiz('qc-process', {
+                question: "Which process model is best suited for a project with highly uncertain requirements?",
+                options: [
+                    "Waterfall Model",
+                    "Evolutionary (Spiral) Model",
+                    "V-Model"
+                ],
+                answer: 1,
+                explanation: "The <strong>Evolutionary (Spiral)</strong> model is risk-driven and designed to accommodate change through repeated cycles of prototyping and refinement."
+            });
+
+            // 2. Requirements Check
+            new InlineQuiz('qc-requirements', {
+                question: "What is the key difference between a User Story and a Use Case?",
+                options: [
+                    "User Stories are for developers, Use Cases are for users",
+                    "User Stories are high-level needs; Use Cases detail specific interaction steps",
+                    "They are exactly the same thing"
+                ],
+                answer: 1,
+                explanation: "A <strong>User Story</strong> is a high-level statement of need, while a <strong>Use Case</strong> describes the specific interaction steps between a User and the System to achieve a goal."
+            });
+
+            // 3. Agile Check
+            new InlineQuiz('qc-agile', {
+                question: "True or False: Agile means \"no documentation\".",
+                options: [
+                    "True",
+                    "False"
+                ],
+                answer: 1,
+                explanation: "<strong>False.</strong> Agile values \"working software over <em>comprehensive</em> documentation\". It encourages just enough documentation to be useful, but not pages of specifications that no one reads."
+            });
+
+            // 4. Final Knowledge Check
+            const finalQuestions = [{
+                question: "Which phase of the SDLC typically involves 'Gathering requirements from stakeholders'?",
+                options: ["Testing", "Planning & Requirements", "Deployment", "Maintenance"],
+                answer: 1
+            },
+            {
+                question: "'Are we building the product right?' refers to:",
+                options: ["Verification", "Validation", "System Testing", "Beta Testing"],
+                answer: 0
+            },
+            {
+                question: "Which testing strategy treats the software as an 'Opaque Box'?",
+                options: ["White Box Testing", "Unit Testing", "Black Box Testing", "Integration Testing"],
+                answer: 2
+            },
+            {
+                question: "Which CMMI Level is characterized by 'Optimizing' and continuous improvement?",
+                options: ["Level 1", "Level 2", "Level 3", "Level 5"],
+                answer: 3
+            },
+            {
+                question: "In Scrum, who is responsible for maximizing the value of the product?",
+                options: ["Scrum Master", "Product Owner", "Development Team", "Stakeholder"],
+                answer: 1
+            },
+            {
+                question: "Which feature best characterizes the Waterfall Model?",
+                options: ["Iterative development", "Sequential phases", "Risk-driven", "Continuous deployment"],
+                answer: 1
+            },
+            {
+                question: "What is 'Technical Debt'?",
+                options: ["The financial cost of buying software", "The cost of rework caused by choosing an easy solution now", "Interest on business loans", "The cost of server maintenance"],
+                answer: 1
+            },
+            {
+                question: "The primary goal of Refactoring is to:",
+                options: ["Change external behavior", "Improve internal structure without changing behavior", "Add new features", "Fix bugs"],
+                answer: 1
+            },
+            {
+                question: "What is the main goal of Continuous Integration (CI)?",
+                options: ["Deploy to production manually", "Merge code changes frequently to detect errors early", "Write comprehensive documentation", "Manage project budget"],
+                answer: 1
+            },
+            {
+                question: "Which value is part of the Agile Manifesto?",
+                options: ["Processes and tools over individuals", "Comprehensive documentation over working software", "Contract negotiation over customer collaboration", "Responding to change over following a plan"],
+                answer: 3
+            }
+            ];
+
+            // Global instance to allow access from buttons
+            window.cert = null;
+
+            new QuizManager('quiz-container', finalQuestions, () => {
+                // On Success
+                const certSection = document.getElementById('certificate');
+                certSection.classList.remove('hidden');
+
+                // Initialize Generator
+                window.cert = new CertificateGenerator('cert-canvas', 'Software Engineering');
+
+                // Scroll to cert area
+                setTimeout(() => {
+                    certSection.scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                }, 100);
+            });
+        });
+
+        // Certificate Functions
+        function generateCert() {
+            const nameInput = document.getElementById('cert-name');
+            const errorMsg = document.getElementById('cert-error');
+            const name = nameInput.value.trim();
+            const nameRegex = /^[a-zA-Z\s\-\.'’]+$/;
+
+            // Reset error state
+            errorMsg.classList.add('hidden');
+            nameInput.classList.remove('border-red-500');
+
+            if (!name) {
+                errorMsg.textContent = "Please enter your name.";
+                errorMsg.classList.remove('hidden');
+                nameInput.classList.add('border-red-500');
+                return;
+            }
+
+            if (name.length < 3 || name.length > 35) {
+                errorMsg.textContent = "Name must be between 3 and 35 characters.";
+                errorMsg.classList.remove('hidden');
+                nameInput.classList.add('border-red-500');
+                return;
+            }
+
+            if (!nameRegex.test(name)) {
+                errorMsg.textContent = "Name cannot contain numbers or special characters.";
+                errorMsg.classList.remove('hidden');
+                nameInput.classList.add('border-red-500');
+                return;
+            }
+
+            if (window.cert) {
+                window.cert.generate(name);
+                document.getElementById('btn-download').classList.remove('hidden');
+            }
+        }
+
+        function downloadCert() {
+            if (window.cert) {
+                // Use the name for the filename if available
+                const name = document.getElementById('cert-name').value.trim() || 'Student';
+                window.cert.download(`Undrstanding_SE_${name.replace(/\s+/g, '_')}.png`);
+            }
+        }
+
+        function switchTab(event, tabId, element) {
+            const container = element.closest('.rams-card');
+            const contents = container.querySelectorAll('.model-content');
+            contents.forEach(content => content.classList.remove('active'));
+            const tabs = container.querySelectorAll('.model-tab');
+            tabs.forEach(tab => tab.classList.remove('active'));
+            container.querySelector('#' + tabId).classList.add('active');
+            element.classList.add('active');
+        }
+    </script>
+</body>
+
+</html>

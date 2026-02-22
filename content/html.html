@@ -1,0 +1,1780 @@
+﻿<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HTML</title>
+    <link rel="icon" type="image/svg+xml" href="../assests/undrlogo.svg">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Roboto+Mono:wght@400;500&display=swap');
+
+        /* Global Scrollbar */
+        ::-webkit-scrollbar {
+            width: 1px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #000;
+        }
+
+        :root {
+            /* Rams Palette - HTML Variation */
+            --bg-color: #f4f4f4;
+            --card-bg: #ffffff;
+            --text-main: #111111;
+            --text-muted: #737373;
+            --accent: #E34C26;
+            /* Official HTML5 Orange */
+            --accent-light: #E34C26;
+            --border: #e5e5e5;
+            --line: #d4d4d4;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            -webkit-font-smoothing: antialiased;
+            line-height: 1.5;
+        }
+
+        h1,
+        h2,
+        h3,
+        h4,
+        h5 {
+            font-weight: 600;
+            letter-spacing: -0.03em;
+            color: var(--text-main);
+        }
+
+        .mono {
+            font-family: 'Roboto Mono', monospace;
+        }
+
+        .rams-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        @media (min-width: 768px) {
+            .rams-card {
+                padding: 2rem;
+            }
+        }
+
+        .rams-label {
+            font-family: 'Inter', sans-serif;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+            margin-bottom: 1rem;
+            display: block;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.5rem 1.25rem;
+            font-size: 0.85rem;
+            font-weight: 500;
+            border-radius: 2px;
+            transition: all 0.1s ease;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            white-space: nowrap;
+        }
+
+        .btn-primary {
+            background-color: var(--accent);
+            color: #ffffff;
+            border: 1px solid var(--accent);
+            font-weight: 600;
+        }
+
+        .btn-primary:hover {
+            opacity: 0.9;
+        }
+
+        .btn-secondary {
+            background-color: transparent;
+            color: var(--text-main);
+            border: 1px solid #a3a3a3;
+        }
+
+        .btn-secondary:hover {
+            background-color: #e5e5e5;
+            border-color: #737373;
+        }
+
+        .nav-link {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            padding: 0.5rem 0;
+            display: block;
+            transition: color 0.2s;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            color: var(--text-main);
+            font-weight: 500;
+        }
+
+        .nav-link.active::before {
+            content: "• ";
+            color: var(--accent);
+        }
+
+        .mobile-nav-link {
+            font-size: 1.25rem;
+            font-weight: 500;
+            color: var(--text-main);
+            padding: 1rem 0;
+            border-bottom: 1px solid #e5e5e5;
+            display: block;
+        }
+
+        .divider {
+            height: 1px;
+            background-color: var(--border);
+            width: 100%;
+            margin: 3rem 0;
+        }
+
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        .thin-scrollbar::-webkit-scrollbar {
+            width: 1px;
+        }
+
+        .thin-scrollbar::-webkit-scrollbar-thumb {
+            background: #d4d4d4;
+        }
+
+        .section-reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 1s cubic-bezier(0.25, 1, 0.25, 1), transform 1s cubic-bezier(0.25, 1, 0.25, 1);
+        }
+
+        .section-reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Code Block Styles */
+        pre {
+            background: #1e1e1e;
+            color: #abb2bf;
+            padding: 1rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            overflow-x: auto;
+            margin: 1rem 0;
+            line-height: 1.5;
+        }
+
+        /* Syntax Highlighting */
+        .hl-tag {
+            color: #e06c75;
+        }
+
+        .hl-attr {
+            color: #d19a66;
+        }
+
+        .hl-val {
+            color: #98c379;
+        }
+
+        .hl-cm {
+            color: #5c6370;
+            font-style: italic;
+        }
+
+        /* Semantic Diagram */
+        .sem-label {
+            font-family: 'Roboto Mono', monospace;
+            font-size: 0.65rem;
+            font-weight: 700;
+            display: inline-block;
+        }
+
+        .sem-chip {
+            font-family: 'Roboto Mono', monospace;
+            font-size: 0.6rem;
+            padding: 1px 5px;
+            border-radius: 3px;
+            display: inline-block;
+        }
+
+        /* Tag Preview Rows */
+        .tag-preview-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            align-items: center;
+            gap: 1rem;
+            border: 1px solid var(--border);
+            background: #fff;
+            padding: 0.6rem 1rem;
+        }
+
+        .tag-preview-row:hover {
+            border-color: var(--accent);
+        }
+
+        .tag-code {
+            font-family: 'Roboto Mono', monospace;
+            font-size: 0.72rem;
+            color: #555;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .tag-render {
+            border-left: 1px solid var(--border);
+            padding-left: 1rem;
+            min-height: 28px;
+            display: flex;
+            align-items: center;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.85rem;
+            color: var(--text-main);
+        }
+
+        @media (max-width: 640px) {
+            .tag-preview-row {
+                grid-template-columns: 1fr;
+            }
+
+            .tag-render {
+                border-left: none;
+                border-top: 1px solid var(--border);
+                padding-left: 0;
+                padding-top: 0.5rem;
+            }
+        }
+
+        /* Lab Styles */
+        #preview-frame {
+            width: 100%;
+            height: 300px;
+            background: white;
+            border: 1px solid var(--border);
+        }
+
+        .editor-wrapper {
+            position: relative;
+            width: 100%;
+            height: 300px;
+            background: #1e1e1e;
+            overflow: hidden;
+        }
+
+        #code-editor,
+        #highlighting-content {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 1.5rem;
+            border: none;
+            width: 100%;
+            height: 100%;
+            font-family: 'Roboto Mono', monospace;
+            font-size: 0.85rem;
+            line-height: 1.6;
+            tab-size: 2;
+            word-wrap: break-word;
+            white-space: pre-wrap;
+            position: absolute;
+            top: 0;
+            left: 0;
+            overflow: auto;
+            text-rendering: optimizeLegibility;
+            -webkit-font-smoothing: antialiased;
+            letter-spacing: normal;
+        }
+
+        #code-editor {
+            z-index: 1;
+            background: transparent;
+            color: transparent;
+            caret-color: var(--accent);
+            resize: none;
+            outline: none;
+            -webkit-text-fill-color: transparent;
+        }
+
+        #highlighting-content {
+            /* Fully override global pre styles to prevent any vertical offset */
+            z-index: 0;
+            pointer-events: none;
+            color: #abb2bf;
+            margin: 0 !important;
+            padding: 1.5rem !important;
+            border-radius: 0 !important;
+            background: transparent !important;
+            font-size: 0.85rem !important;
+            line-height: 1.6 !important;
+            overflow: hidden !important;
+        }
+
+        #highlighting-content code {
+            font-family: inherit;
+            font-size: inherit;
+            line-height: inherit;
+            background: transparent !important;
+            padding: 0 !important;
+            border-radius: 0 !important;
+            color: inherit;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="flex min-h-screen flex-col lg:flex-row">
+
+        <!-- Mobile Header -->
+        <header
+            class="lg:hidden fixed top-0 w-full bg-[#f4f4f4] border-b border-[#e5e5e5] z-[100] px-6 py-4 flex justify-between items-center h-16">
+            <div>
+                <h1 class="text-sm font-semibold tracking-wide uppercase text-black leading-tight">HTML</h1>
+            </div>
+            <button onclick="toggleMobileMenu()" class="text-black focus:outline-none p-2 rounded">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+            </button>
+        </header>
+
+        <!-- Mobile Menu Overlay -->
+        <div id="mobile-menu" class="fixed inset-0 bg-[#f4f4f4] z-[90] hidden flex-col pt-20 px-6 overflow-y-auto">
+            <nav class="flex flex-col">
+                <a href="#origins" class="mobile-nav-link" onclick="toggleMobileMenu()">The Origins</a>
+                <a href="#structure" class="mobile-nav-link" onclick="toggleMobileMenu()">Structure</a>
+                <a href="#elements" class="mobile-nav-link" onclick="toggleMobileMenu()">Elements & Tags</a>
+                <a href="#semantic" class="mobile-nav-link" onclick="toggleMobileMenu()">Semantic Web</a>
+                <a href="#forms" class="mobile-nav-link" onclick="toggleMobileMenu()">Forms & Data</a>
+                <a href="#media" class="mobile-nav-link" onclick="toggleMobileMenu()">Rich Media</a>
+                <a href="#lab" class="mobile-nav-link" onclick="toggleMobileMenu()">Sandbox</a>
+                <a href="#glossary" class="mobile-nav-link border-b-0" onclick="toggleMobileMenu()">Glossary</a>
+            </nav>
+        </div>
+
+        <!-- Sidebar -->
+        <aside
+            class="hidden lg:block w-64 fixed h-screen bg-[#f4f4f4] border-r border-[#e5e5e5] z-50 overflow-y-auto thin-scrollbar">
+            <div class="p-8 h-full flex flex-col justify-between">
+                <div>
+                    <a href="../index.html"
+                        class="inline-flex items-center gap-2 px-4 py-2 mb-8 text-[10px] font-mono uppercase tracking-wider text-gray-600 border border-gray-300 hover:bg-black hover:text-white hover:border-black transition-all duration-200">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                        </svg>
+                        Back to Home
+                    </a>
+                    <div class="mb-12">
+                        <h1 class="text-sm font-semibold tracking-wide uppercase text-black">HTML<br>Structural Data
+                        </h1>
+                        <p class="text-[10px] text-gray-500 mt-1 uppercase tracking-wider">Markup Language</p>
+                    </div>
+
+                    <nav class="space-y-1">
+                        <a href="#origins" class="nav-link font-medium text-black">The Origins</a>
+                        <a href="#structure" class="nav-link">Structure</a>
+                        <a href="#elements" class="nav-link">Elements & Tags</a>
+                        <a href="#semantic" class="nav-link">Semantic Web</a>
+                        <a href="#forms" class="nav-link">Forms & Data</a>
+                        <a href="#media" class="nav-link">Rich Media</a>
+                        <div class="pt-4 pb-1 text-[10px] text-gray-400 font-bold uppercase tracking-wider">Interactive
+                        </div>
+                        <a href="#lab" class="nav-link">Live Sandbox</a>
+                        <a href="#glossary" class="nav-link">Glossary</a>
+                    </nav>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 lg:ml-64 bg-white w-full">
+            <div class="max-w-3xl mx-auto px-4 sm:px-8 py-24 lg:py-20">
+
+                <!-- Hero Section -->
+                <section id="intro" class="mb-16 md:mb-24">
+                    <h2 class="text-3xl md:text-5xl font-semibold mb-6 text-black tracking-tight leading-tight">
+                        The Skeleton of <br>Human Knowledge
+                    </h2>
+                    <p class="text-base md:text-lg text-[#555] max-w-xl font-light leading-relaxed mb-4">
+                        HyperText Markup Language is not a programming language; it is the <strong>universal
+                            scaffolding</strong> for the web. It defines the meaning and structure of web content.
+                    </p>
+                    <p class="text-sm text-gray-500 max-w-lg leading-relaxed">
+                        Every button you click, every video you watch, and every word you read on the internet exists
+                        within an HTML element.
+                    </p>
+                </section>
+
+                <!-- 01. The Origins -->
+                <section id="origins" class="mb-20 md:mb-24 section-reveal">
+                    <span class="rams-label">01 / The Origins</span>
+                    <h3 class="text-xl font-medium mb-8">History & Evolution</h3>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-12">
+                        <div class="lg:col-span-2 space-y-6">
+                            <p class="text-sm text-gray-600 font-light leading-relaxed">
+                                In 1989, <strong>Tim Berners-Lee</strong>, a physicist at CERN, proposed a system based
+                                on "hypertext" to allow researchers to share documents. This proposal became the World
+                                Wide Web.
+                            </p>
+
+                            <p
+                                class="text-[11px] text-gray-500 bg-orange-50/40 p-4 border-l-2 border-accent leading-relaxed italic">
+                                <strong>The Markup Concept:</strong> The word "Markup" comes from the traditional
+                                practice of "marking up" a manuscript -putting instructions for the printer in the
+                                margins. HTML does this for the browser.
+                            </p>
+
+                            <p class="text-sm text-gray-600 font-light leading-relaxed">
+                                HTML has evolved from a simple set of 18 tags to the powerful <strong>HTML5</strong>
+                                standard we use today, which supports native video, complex graphics (Canvas/SVG), and
+                                offline capabilities.
+                            </p>
+                        </div>
+
+                        <!-- Timeline -->
+                        <div class="border-l border-gray-100 pl-8 space-y-8 relative">
+                            <div class="relative">
+                                <div
+                                    class="absolute -left-[37px] top-1 w-4 h-4 rounded-full bg-white border-2 border-accent">
+                                </div>
+                                <h4 class="text-[10px] font-bold uppercase tracking-widest text-accent mb-1">1991</h4>
+                                <p class="text-[11px] text-gray-500 font-light">HTML 1.0 released (18 tags).</p>
+                            </div>
+                            <div class="relative">
+                                <div
+                                    class="absolute -left-[37px] top-1 w-4 h-4 rounded-full bg-white border-2 border-gray-200">
+                                </div>
+                                <h4 class="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-1">1999</h4>
+                                <p class="text-[11px] text-gray-500 font-light">HTML 4.01: The golden standard.</p>
+                            </div>
+                            <div class="relative">
+                                <div
+                                    class="absolute -left-[37px] top-1 w-4 h-4 rounded-full bg-white border-2 border-accent">
+                                </div>
+                                <h4 class="text-[10px] font-bold uppercase tracking-widest text-accent mb-1">2014</h4>
+                                <p class="text-[11px] text-gray-500 font-light">HTML5: The Modern Web Era.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="qc-html-doctype"></div>
+                </section>
+
+                <div class="divider hidden md:block"></div>
+
+                <!-- 02. Structure -->
+                <section id="structure" class="mb-20 md:mb-24 section-reveal">
+                    <span class="rams-label">02 / Structure</span>
+                    <h3 class="text-xl font-medium mb-4">The Anatomy of a Document</h3>
+                    <p class="text-sm text-gray-600 mb-8 font-light leading-relaxed">
+                        An HTML document is like an <strong>envelope</strong>. The outside (the
+                        <code>&lt;html&gt;</code> tag) contains everything. The <code>&lt;head&gt;</code> is the
+                        metadata (like the stamp and return address), and the <code>&lt;body&gt;</code> is the actual
+                        letter inside.
+                    </p>
+
+                    <div class="rams-card">
+                        <pre class="!m-0 text-[11px] leading-relaxed"><code><span class="hl-cm">&lt;!-- The Document Type Declaration --&gt;</span>
+<span class="hl-tag">&lt;!DOCTYPE <span class="hl-attr">html</span>&gt;</span>
+<span class="hl-tag">&lt;html <span class="hl-attr">lang</span>=<span class="hl-val">"en"</span>&gt;</span>
+  <span class="hl-tag">&lt;head&gt;</span>
+    <span class="hl-tag">&lt;meta <span class="hl-attr">charset</span>=<span class="hl-val">"UTF-8"</span>&gt;</span>
+    <span class="hl-tag">&lt;title&gt;</span>My Web Page<span class="hl-tag">&lt;/title&gt;</span>
+  <span class="hl-tag">&lt;/head&gt;</span>
+  <span class="hl-tag">&lt;body&gt;</span>
+    <span class="hl-tag">&lt;h1&gt;</span>Hello, World!<span class="hl-tag">&lt;/h1&gt;</span>
+  <span class="hl-tag">&lt;/body&gt;</span>
+<span class="hl-tag">&lt;/html&gt;</span></code></pre>
+                    </div>
+
+                    <div id="qc-html-structure"></div>
+                </section>
+
+                <div class="divider hidden md:block"></div>
+
+                <!-- 03. Elements & Tags -->
+                <section id="elements" class="mb-20 md:mb-24 section-reveal">
+                    <span class="rams-label">03 / Elements & Tags</span>
+                    <h3 class="text-xl font-medium mb-4">Tag Reference with Live Previews</h3>
+                    <p class="text-sm text-gray-500 mb-10 font-light">Every tag below shows its code on the left and how
+                        the browser renders it on the right.</p>
+
+                    <!-- Tag Category: Headings -->
+                    <div class="mb-10">
+                        <h4 class="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-4">Headings</h4>
+                        <div class="space-y-2">
+                            <div class="tag-preview-row">
+                                <code class="tag-code">&lt;h1&gt;Heading 1&lt;/h1&gt;</code>
+                                <div class="tag-render">
+                                    <h1 style="font-size:1.6rem;font-weight:700;margin:0;line-height:1.2">Heading 1</h1>
+                                </div>
+                            </div>
+                            <div class="tag-preview-row">
+                                <code class="tag-code">&lt;h2&gt;Heading 2&lt;/h2&gt;</code>
+                                <div class="tag-render">
+                                    <h2 style="font-size:1.3rem;font-weight:700;margin:0;line-height:1.2">Heading 2</h2>
+                                </div>
+                            </div>
+                            <div class="tag-preview-row">
+                                <code class="tag-code">&lt;h3&gt;Heading 3&lt;/h3&gt;</code>
+                                <div class="tag-render">
+                                    <h3 style="font-size:1.1rem;font-weight:600;margin:0;line-height:1.2">Heading 3</h3>
+                                </div>
+                            </div>
+                            <div class="tag-preview-row">
+                                <code class="tag-code">&lt;h4&gt;Heading 4&lt;/h4&gt;</code>
+                                <div class="tag-render">
+                                    <h4 style="font-size:0.95rem;font-weight:600;margin:0;line-height:1.2">Heading 4
+                                    </h4>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tag Category: Text -->
+                    <div class="mb-10">
+                        <h4 class="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-4">Text & Inline
+                        </h4>
+                        <div class="space-y-2">
+                            <div class="tag-preview-row">
+                                <code class="tag-code">&lt;p&gt;Paragraph text&lt;/p&gt;</code>
+                                <div class="tag-render">
+                                    <p style="margin:0;font-size:0.9rem;line-height:1.5;color:#333">Paragraph text</p>
+                                </div>
+                            </div>
+                            <div class="tag-preview-row">
+                                <code class="tag-code">&lt;strong&gt;Bold text&lt;/strong&gt;</code>
+                                <div class="tag-render"><strong>Bold text</strong></div>
+                            </div>
+                            <div class="tag-preview-row">
+                                <code class="tag-code">&lt;em&gt;Italic text&lt;/em&gt;</code>
+                                <div class="tag-render"><em>Italic text</em></div>
+                            </div>
+                            <div class="tag-preview-row">
+                                <code class="tag-code">&lt;mark&gt;Highlighted&lt;/mark&gt;</code>
+                                <div class="tag-render"><mark>Highlighted</mark></div>
+                            </div>
+                            <div class="tag-preview-row">
+                                <code class="tag-code">&lt;del&gt;Deleted text&lt;/del&gt;</code>
+                                <div class="tag-render"><del>Deleted text</del></div>
+                            </div>
+                            <div class="tag-preview-row">
+                                <code class="tag-code">&lt;ins&gt;Inserted text&lt;/ins&gt;</code>
+                                <div class="tag-render"><ins>Inserted text</ins></div>
+                            </div>
+                            <div class="tag-preview-row">
+                                <code class="tag-code">&lt;small&gt;Fine print&lt;/small&gt;</code>
+                                <div class="tag-render"><small>Fine print</small></div>
+                            </div>
+                            <div class="tag-preview-row">
+                                <code class="tag-code">&lt;code&gt;inline code&lt;/code&gt;</code>
+                                <div class="tag-render"><code
+                                        style="background:#f4f4f4;padding:2px 5px;border-radius:3px;font-size:0.8rem">inline code</code>
+                                </div>
+                            </div>
+                            <div class="tag-preview-row">
+                                <code class="tag-code">&lt;blockquote&gt;A quote&lt;/blockquote&gt;</code>
+                                <div class="tag-render">
+                                    <blockquote
+                                        style="border-left:3px solid #E34C26;margin:0;padding:4px 10px;color:#666;font-style:italic;font-size:0.85rem">
+                                        A quote</blockquote>
+                                </div>
+                            </div>
+                            <div class="tag-preview-row">
+                                <code class="tag-code">&lt;abbr title="HyperText"&gt;HTML&lt;/abbr&gt;</code>
+                                <div class="tag-render"><abbr title="HyperText"
+                                        style="text-decoration:underline dotted;cursor:help">HTML</abbr></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tag Category: Links & Media -->
+                    <div class="mb-10">
+                        <h4 class="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-4">Links & Media
+                        </h4>
+                        <div class="space-y-2">
+                            <div class="tag-preview-row">
+                                <code class="tag-code">&lt;a href="#"&gt;A hyperlink&lt;/a&gt;</code>
+                                <div class="tag-render"><a href="#"
+                                        style="color:#E34C26;text-decoration:underline;font-size:0.875rem"
+                                        onclick="return false">A hyperlink</a></div>
+                            </div>
+                            <div class="tag-preview-row">
+                                <code class="tag-code">&lt;img src="…" alt="An image"&gt;</code>
+                                <div class="tag-render"><img
+                                        src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='40' viewBox='0 0 80 40'%3E%3Crect width='80' height='40' fill='%23f0f0f0'/%3E%3Ctext x='40' y='25' text-anchor='middle' font-size='10' fill='%23999'%3Eimage%3C/text%3E%3C/svg%3E"
+                                        alt="An image" style="height:40px;border:1px solid #eee"></div>
+                            </div>
+                            <div class="tag-preview-row">
+                                <code class="tag-code">&lt;hr&gt;</code>
+                                <div class="tag-render" style="padding:8px 0">
+                                    <hr style="border:none;border-top:1px solid #ccc;margin:0">
+                                </div>
+                            </div>
+                            <div class="tag-preview-row">
+                                <code class="tag-code">&lt;br&gt; (line break)</code>
+                                <div class="tag-render" style="font-size:0.8rem;color:#555">Line one<br>Line two</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tag Category: Lists -->
+                    <div class="mb-10">
+                        <h4 class="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-4">Lists</h4>
+                        <div class="space-y-2">
+                            <div class="tag-preview-row">
+                                <code class="tag-code">&lt;ul&gt;&lt;li&gt;Item&lt;/li&gt;&lt;/ul&gt;</code>
+                                <div class="tag-render">
+                                    <ul style="margin:0;padding-left:1.2rem;font-size:0.85rem">
+                                        <li>Apple</li>
+                                        <li>Banana</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="tag-preview-row">
+                                <code class="tag-code">&lt;ol&gt;&lt;li&gt;Item&lt;/li&gt;&lt;/ol&gt;</code>
+                                <div class="tag-render">
+                                    <ol style="margin:0;padding-left:1.2rem;font-size:0.85rem">
+                                        <li>First</li>
+                                        <li>Second</li>
+                                    </ol>
+                                </div>
+                            </div>
+                            <div class="tag-preview-row">
+                                <code
+                                    class="tag-code">&lt;dl&gt;&lt;dt&gt;…&lt;/dt&gt;&lt;dd&gt;…&lt;/dd&gt;&lt;/dl&gt;</code>
+                                <div class="tag-render">
+                                    <dl style="margin:0;font-size:0.85rem">
+                                        <dt style="font-weight:600">HTML</dt>
+                                        <dd style="margin-left:1rem;color:#555">Markup language</dd>
+                                    </dl>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tag Category: Forms -->
+                    <div class="mb-10">
+                        <h4 class="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-4">Form Elements
+                        </h4>
+                        <div class="space-y-2">
+                            <div class="tag-preview-row">
+                                <code class="tag-code">&lt;input type="text"&gt;</code>
+                                <div class="tag-render"><input type="text" placeholder="Type here…"
+                                        style="border:1px solid #ccc;padding:4px 8px;font-size:0.8rem;outline:none;width:160px">
+                                </div>
+                            </div>
+                            <div class="tag-preview-row">
+                                <code class="tag-code">&lt;input type="checkbox"&gt;</code>
+                                <div class="tag-render"><label
+                                        style="font-size:0.85rem;display:flex;align-items:center;gap:6px"><input
+                                            type="checkbox"> Check me</label></div>
+                            </div>
+                            <div class="tag-preview-row">
+                                <code class="tag-code">&lt;input type="range"&gt;</code>
+                                <div class="tag-render"><input type="range" style="width:140px"></div>
+                            </div>
+                            <div class="tag-preview-row">
+                                <code
+                                    class="tag-code">&lt;select&gt;&lt;option&gt;…&lt;/option&gt;&lt;/select&gt;</code>
+                                <div class="tag-render"><select
+                                        style="border:1px solid #ccc;padding:4px 8px;font-size:0.8rem;background:#fff">
+                                        <option>Option A</option>
+                                        <option>Option B</option>
+                                    </select></div>
+                            </div>
+                            <div class="tag-preview-row">
+                                <code class="tag-code">&lt;button&gt;Click me&lt;/button&gt;</code>
+                                <div class="tag-render"><button
+                                        style="padding:5px 14px;background:#E34C26;color:#fff;border:none;cursor:pointer;font-size:0.8rem;border-radius:2px">Click
+                                        me</button></div>
+                            </div>
+                            <div class="tag-preview-row">
+                                <code class="tag-code">&lt;textarea&gt;&lt;/textarea&gt;</code>
+                                <div class="tag-render"><textarea
+                                        style="border:1px solid #ccc;padding:4px;font-size:0.8rem;resize:none;width:160px;height:48px"
+                                        placeholder="Multi-line…"></textarea></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tag Category: Table -->
+                    <div class="mb-10">
+                        <h4 class="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-4">Table</h4>
+                        <div class="space-y-2">
+                            <div class="tag-preview-row items-start">
+                                <code class="tag-code">&lt;table&gt; &lt;tr&gt; &lt;th&gt; &lt;td&gt;</code>
+                                <div class="tag-render">
+                                    <table style="border-collapse:collapse;font-size:0.8rem;width:100%">
+                                        <tr>
+                                            <th style="border:1px solid #ddd;padding:4px 8px;background:#f9f9f9">Name
+                                            </th>
+                                            <th style="border:1px solid #ddd;padding:4px 8px;background:#f9f9f9">Role
+                                            </th>
+                                        </tr>
+                                        <tr>
+                                            <td style="border:1px solid #ddd;padding:4px 8px">Tim</td>
+                                            <td style="border:1px solid #ddd;padding:4px 8px">Inventor</td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tag Category: Self-Closing -->
+                    <div class="mb-2">
+                        <h4 class="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-4">Void /
+                            Self-Closing Tags</h4>
+                        <div class="rams-card bg-orange-50/20">
+                            <p class="text-[11px] text-gray-600 leading-relaxed mb-4">These tags don't need a closing
+                                tag — they cannot have children.</p>
+                            <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
+                                <div class="text-[10px] mono text-gray-500 p-2 bg-white border border-gray-100">
+                                    <code>&lt;img&gt;</code><span class="block text-gray-400 mt-0.5">Image</span>
+                                </div>
+                                <div class="text-[10px] mono text-gray-500 p-2 bg-white border border-gray-100">
+                                    <code>&lt;br&gt;</code><span class="block text-gray-400 mt-0.5">Line Break</span>
+                                </div>
+                                <div class="text-[10px] mono text-gray-500 p-2 bg-white border border-gray-100">
+                                    <code>&lt;hr&gt;</code><span class="block text-gray-400 mt-0.5">Horizontal
+                                        Rule</span>
+                                </div>
+                                <div class="text-[10px] mono text-gray-500 p-2 bg-white border border-gray-100">
+                                    <code>&lt;input&gt;</code><span class="block text-gray-400 mt-0.5">Input
+                                        Field</span>
+                                </div>
+                                <div class="text-[10px] mono text-gray-500 p-2 bg-white border border-gray-100">
+                                    <code>&lt;meta&gt;</code><span class="block text-gray-400 mt-0.5">Metadata</span>
+                                </div>
+                                <div class="text-[10px] mono text-gray-500 p-2 bg-white border border-gray-100">
+                                    <code>&lt;link&gt;</code><span class="block text-gray-400 mt-0.5">External
+                                        Resource</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="qc-html-elements"></div>
+                </section>
+
+                <div class="divider hidden md:block"></div>
+
+                <!-- 04. Semantic Web -->
+                <section id="semantic" class="mb-20 md:mb-24 section-reveal">
+                    <span class="rams-label">04 / Semantic Web</span>
+                    <h3 class="text-xl font-medium mb-4">Giving Meaning to Content</h3>
+                    <p class="text-sm text-gray-600 mb-10 max-w-lg font-light">
+                        A <strong>Semantic</strong> tag tells the browser and search engines exactly what its content
+                        is.
+                        Hover over each region below to explore.
+                    </p>
+
+                    <!-- Interactive Page Layout Diagram -->
+                    <div class="rams-card !p-0 overflow-hidden mb-10">
+
+                        <!-- Legend & Detail Panel -->
+                        <div id="sem-detail"
+                            class="px-5 py-3 bg-[#1e1e1e] text-[11px] font-mono text-gray-300 border-b border-gray-700 flex items-center gap-3 min-h-[40px] transition-all">
+                            <span id="sem-tag" class="text-[#e06c75] font-bold">&lt;body&gt;</span>
+                            <span id="sem-desc" class="text-gray-400">Hover any region to learn about it.</span>
+                        </div>
+
+                        <!-- The Page Diagram -->
+                        <div class="p-4 bg-white select-none" style="font-family:'Roboto Mono',monospace">
+                            <div class="border border-gray-200 rounded" style="font-size:0">
+
+                                <!-- html -->
+                                <div class="sem-region border-2 border-transparent hover:border-[#61afef] rounded p-1.5 transition-all cursor-pointer"
+                                    data-tag="&lt;html&gt;"
+                                    data-desc="The root element. Everything on the page lives inside this.">
+
+                                    <!-- head -->
+                                    <div class="sem-region bg-gray-50 border border-gray-200 rounded px-3 py-2 mb-1.5 flex items-center gap-2 hover:bg-blue-50 hover:border-[#61afef] cursor-pointer transition-all"
+                                        data-tag="&lt;head&gt;"
+                                        data-desc="Contains metadata: title, CSS links, scripts, charset. Not visible on the page.">
+                                        <span class="sem-label" style="color:#61afef">&lt;head&gt;</span>
+                                        <div class="flex gap-2 items-center">
+                                            <span class="sem-chip"
+                                                style="background:#e8f4fd;color:#0a6ebd">&lt;title&gt;</span>
+                                            <span class="sem-chip"
+                                                style="background:#e8f4fd;color:#0a6ebd">&lt;meta&gt;</span>
+                                            <span class="sem-chip"
+                                                style="background:#e8f4fd;color:#0a6ebd">&lt;link&gt;</span>
+                                        </div>
+                                    </div>
+
+                                    <!-- body wrapper -->
+                                    <div class="sem-region border border-gray-200 rounded p-1.5 hover:border-[#98c379] cursor-pointer transition-all"
+                                        data-tag="&lt;body&gt;"
+                                        data-desc="All the visible content of the web page. The browser renders everything inside this.">
+
+                                        <!-- header -->
+                                        <div class="sem-region bg-orange-50 border border-[#E34C26]/30 rounded px-3 py-3 mb-1.5 flex items-center justify-between hover:border-[#E34C26] cursor-pointer transition-all"
+                                            data-tag="&lt;header&gt;"
+                                            data-desc="Top banner of the page — site name, logo, and primary navigation links.">
+                                            <span class="sem-label" style="color:#E34C26">&lt;header&gt;</span>
+                                            <div class="flex gap-1 items-center">
+                                                <div class="h-2 w-2 rounded-full bg-[#E34C26]/40"></div>
+                                                <div class="h-2 w-10 rounded bg-[#E34C26]/20"></div>
+                                                <div class="h-2 w-10 rounded bg-[#E34C26]/20"></div>
+                                                <div class="h-2 w-10 rounded bg-[#E34C26]/20"></div>
+                                            </div>
+                                        </div>
+
+                                        <!-- nav -->
+                                        <div class="sem-region bg-yellow-50 border border-yellow-200 rounded px-3 py-2 mb-1.5 flex items-center gap-3 hover:border-yellow-400 cursor-pointer transition-all"
+                                            data-tag="&lt;nav&gt;"
+                                            data-desc="A section of the page with navigation links — menus, breadcrumbs, or table of contents.">
+                                            <span class="sem-label text-yellow-600">&lt;nav&gt;</span>
+                                            <div class="flex gap-3">
+                                                <div class="h-2 w-10 rounded bg-yellow-300/60"></div>
+                                                <div class="h-2 w-10 rounded bg-yellow-300/60"></div>
+                                                <div class="h-2 w-10 rounded bg-yellow-300/60"></div>
+                                                <div class="h-2 w-10 rounded bg-yellow-300/60"></div>
+                                            </div>
+                                        </div>
+
+                                        <!-- main row -->
+                                        <div class="flex gap-1.5 mb-1.5">
+
+                                            <!-- aside -->
+                                            <div class="sem-region bg-purple-50 border border-purple-200 rounded px-2 py-3 w-1/4 hover:border-purple-400 cursor-pointer transition-all flex flex-col items-center"
+                                                data-tag="&lt;aside&gt;"
+                                                data-desc="A sidebar with supplementary content — ads, related links, or a table of contents.">
+                                                <span class="sem-label text-purple-500 mb-2">&lt;aside&gt;</span>
+                                                <div class="space-y-1 w-full">
+                                                    <div class="h-1.5 rounded bg-purple-200"></div>
+                                                    <div class="h-1.5 rounded bg-purple-200"></div>
+                                                    <div class="h-1.5 rounded bg-purple-200 w-3/4"></div>
+                                                </div>
+                                            </div>
+
+                                            <!-- main -->
+                                            <div class="sem-region flex-1 bg-green-50 border border-green-200 rounded p-2 hover:border-green-400 cursor-pointer transition-all"
+                                                data-tag="&lt;main&gt;"
+                                                data-desc="The dominant, unique content of the page. Only one &lt;main&gt; element should exist per page.">
+                                                <span class="sem-label text-green-600 mb-2 block">&lt;main&gt;</span>
+
+                                                <!-- article -->
+                                                <div class="sem-region bg-white border border-green-200 rounded p-2 hover:border-green-500 cursor-pointer transition-all"
+                                                    data-tag="&lt;article&gt;"
+                                                    data-desc="A self-contained piece of content: a blog post, news story, or forum post. Can be syndicated on its own.">
+                                                    <span
+                                                        class="sem-label text-green-700 mb-2 block">&lt;article&gt;</span>
+
+                                                    <!-- section -->
+                                                    <div class="sem-region bg-green-50 border border-green-100 rounded p-2 mb-1.5 hover:border-green-300 cursor-pointer transition-all"
+                                                        data-tag="&lt;section&gt;"
+                                                        data-desc="A thematic grouping of content within a document. Should have its own heading.">
+                                                        <span
+                                                            class="sem-label text-green-600 mb-1 block">&lt;section&gt;</span>
+                                                        <div class="space-y-1">
+                                                            <div class="h-2 w-3/4 rounded bg-green-200"></div>
+                                                            <div class="h-1.5 rounded bg-green-100"></div>
+                                                            <div class="h-1.5 rounded bg-green-100 w-5/6"></div>
+                                                        </div>
+                                                    </div>
+
+                                                    <!-- figure -->
+                                                    <div class="sem-region bg-green-50 border border-green-100 rounded p-2 hover:border-green-300 cursor-pointer transition-all flex items-center gap-2"
+                                                        data-tag="&lt;figure&gt;"
+                                                        data-desc="Wraps an image, illustration, or code sample with an optional &lt;figcaption&gt; caption.">
+                                                        <span class="sem-label text-green-600">&lt;figure&gt;</span>
+                                                        <div
+                                                            class="flex-1 h-8 rounded bg-green-200/50 border border-green-200 flex items-center justify-center">
+                                                            <div class="w-4 h-4 rounded bg-green-400/40"></div>
+                                                        </div>
+                                                        <div class="w-1/3 space-y-1">
+                                                            <div class="h-1 rounded bg-green-200 w-full"></div>
+                                                            <div class="h-1 rounded bg-green-200 w-3/4"></div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- footer -->
+                                        <div class="sem-region bg-gray-100 border border-gray-200 rounded px-3 py-3 flex items-center justify-between hover:border-gray-400 cursor-pointer transition-all"
+                                            data-tag="&lt;footer&gt;"
+                                            data-desc="Bottom of the page — copyright, social links, sitemap, legal information.">
+                                            <span class="sem-label text-gray-500">&lt;footer&gt;</span>
+                                            <div class="flex gap-2">
+                                                <div class="h-1.5 w-8 rounded bg-gray-300"></div>
+                                                <div class="h-1.5 w-8 rounded bg-gray-300"></div>
+                                                <div class="h-1.5 w-12 rounded bg-gray-300"></div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tag Grid -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+                        <div class="p-4 border border-gray-100 bg-gray-50 hover:border-accent transition-colors">
+                            <code class="text-xs font-bold text-accent">&lt;header&gt;</code>
+                            <p class="text-[10px] text-gray-500 mt-1">Introductory content or navigation links.</p>
+                        </div>
+                        <div class="p-4 border border-gray-100 bg-gray-50 hover:border-accent transition-colors">
+                            <code class="text-xs font-bold text-accent">&lt;nav&gt;</code>
+                            <p class="text-[10px] text-gray-500 mt-1">Section containing navigation menus.</p>
+                        </div>
+                        <div class="p-4 border border-gray-100 bg-gray-50 hover:border-accent transition-colors">
+                            <code class="text-xs font-bold text-accent">&lt;main&gt;</code>
+                            <p class="text-[10px] text-gray-500 mt-1">Dominant unique content of the document.</p>
+                        </div>
+                        <div class="p-4 border border-gray-100 bg-gray-50 hover:border-accent transition-colors">
+                            <code class="text-xs font-bold text-accent">&lt;article&gt;</code>
+                            <p class="text-[10px] text-gray-500 mt-1">Independent, self-contained content.</p>
+                        </div>
+                        <div class="p-4 border border-gray-100 bg-gray-50 hover:border-accent transition-colors">
+                            <code class="text-xs font-bold text-accent">&lt;section&gt;</code>
+                            <p class="text-[10px] text-gray-500 mt-1">A thematic grouping with its own heading.</p>
+                        </div>
+                        <div class="p-4 border border-gray-100 bg-gray-50 hover:border-accent transition-colors">
+                            <code class="text-xs font-bold text-accent">&lt;aside&gt;</code>
+                            <p class="text-[10px] text-gray-500 mt-1">Sidebar content tangentially related to main.</p>
+                        </div>
+                        <div class="p-4 border border-gray-100 bg-gray-50 hover:border-accent transition-colors">
+                            <code class="text-xs font-bold text-accent">&lt;footer&gt;</code>
+                            <p class="text-[10px] text-gray-500 mt-1">Footer for its nearest sectioning content.</p>
+                        </div>
+                        <div class="p-4 border border-gray-100 bg-gray-50 hover:border-accent transition-colors">
+                            <code class="text-xs font-bold text-accent">&lt;figure&gt;</code>
+                            <p class="text-[10px] text-gray-500 mt-1">Figure with optional figcaption.</p>
+                        </div>
+                    </div>
+
+                    <div class="rams-card">
+                        <h4 class="text-xs font-bold mb-3 uppercase tracking-widest text-gray-400">Why Semantics Matter?
+                        </h4>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                            <div class="space-y-4">
+                                <h5 class="text-[10px] font-bold">1. Accessibility</h5>
+                                <p class="text-[10px] text-gray-500 leading-relaxed">Screen readers use these tags to
+                                    navigate the page for visually impaired users.</p>
+                            </div>
+                            <div class="space-y-4">
+                                <h5 class="text-[10px] font-bold">2. SEO</h5>
+                                <p class="text-[10px] text-gray-500 leading-relaxed">Search engines understand the
+                                    importance of different sections, helping with ranking.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <script>
+                        // Semantic diagram hover interactions
+                        document.querySelectorAll('.sem-region').forEach(el => {
+                            el.addEventListener('mouseenter', () => {
+                                const tag = el.dataset.tag || '';
+                                const desc = el.dataset.desc || '';
+                                document.getElementById('sem-tag').innerHTML = tag;
+                                document.getElementById('sem-desc').textContent = desc;
+                            });
+                        });
+                    </script>
+
+                    <div id="qc-html-semantic"></div>
+                </section>
+
+                <div class="divider hidden md:block"></div>
+
+                <!-- 05. Forms & Data -->
+                <section id="forms" class="mb-20 md:mb-24 section-reveal">
+                    <span class="rams-label">05 / Forms & Data</span>
+                    <h3 class="text-xl font-medium mb-4">Forms in Depth</h3>
+                    <p class="text-sm text-gray-500 mb-10 font-light max-w-lg">
+                        Forms are the primary way users send data to a server. They wrap <strong>inputs</strong>,
+                        <strong>labels</strong>, and a <strong>submit</strong> button inside a
+                        <code>&lt;form&gt;</code> element.
+                    </p>
+
+                    <!-- Form Anatomy -->
+                    <div class="mb-10">
+                        <h4 class="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-4">Form Anatomy</h4>
+                        <div class="rams-card !p-0 overflow-hidden">
+                            <div class="grid grid-cols-1 md:grid-cols-2">
+                                <!-- Code side -->
+                                <div class="border-r border-gray-100">
+                                    <div
+                                        class="bg-gray-800 px-4 py-2 text-[9px] font-mono text-gray-400 uppercase tracking-widest">
+                                        Code</div>
+                                    <pre class="!m-0 !rounded-none text-[10px] leading-relaxed bg-[#1e1e1e] !border-0 p-4"
+                                        style="min-height:100%"><code><span class="hl-tag">&lt;form</span> <span class="hl-attr">action</span>=<span class="hl-val">"/submit"</span>
+      <span class="hl-attr">method</span>=<span class="hl-val">"POST"</span><span class="hl-tag">&gt;</span>
+
+  <span class="hl-cm">&lt;!-- Label + Input pair --&gt;</span>
+  <span class="hl-tag">&lt;label</span> <span class="hl-attr">for</span>=<span class="hl-val">"email"</span><span class="hl-tag">&gt;</span>Email<span class="hl-tag">&lt;/label&gt;</span>
+
+  <span class="hl-tag">&lt;input</span> <span class="hl-attr">type</span>=<span class="hl-val">"email"</span>
+         <span class="hl-attr">id</span>=<span class="hl-val">"email"</span>
+         <span class="hl-attr">name</span>=<span class="hl-val">"email"</span>
+         <span class="hl-attr">required</span><span class="hl-tag">&gt;</span>
+
+  <span class="hl-tag">&lt;button</span> <span class="hl-attr">type</span>=<span class="hl-val">"submit"</span><span class="hl-tag">&gt;</span>Send<span class="hl-tag">&lt;/button&gt;</span>
+
+<span class="hl-tag">&lt;/form&gt;</span></code></pre>
+                                </div>
+                                <!-- Anatomy labels -->
+                                <div class="p-6 space-y-4">
+                                    <div class="bg-orange-50 border border-[#E34C26]/20 p-3 rounded">
+                                        <code class="text-xs font-bold text-accent">&lt;form&gt;</code>
+                                        <p class="text-[10px] text-gray-500 mt-1"><strong>action</strong> — URL where
+                                            data is sent.<br><strong>method</strong> — GET (data in URL) or POST (data
+                                            in body).</p>
+                                    </div>
+                                    <div class="bg-gray-50 border border-gray-100 p-3 rounded">
+                                        <code class="text-xs font-bold">&lt;label&gt;</code>
+                                        <p class="text-[10px] text-gray-500 mt-1">Links to an input via the
+                                            <strong>for</strong> attribute matching the input's <strong>id</strong>.
+                                            Clicking the label focuses the input.
+                                        </p>
+                                    </div>
+                                    <div class="bg-gray-50 border border-gray-100 p-3 rounded">
+                                        <code class="text-xs font-bold">&lt;input&gt;</code>
+                                        <p class="text-[10px] text-gray-500 mt-1"><strong>name</strong> is the key sent
+                                            to the server. <strong>id</strong> connects to the label.
+                                            <strong>required</strong> blocks submit if empty.
+                                        </p>
+                                    </div>
+                                    <div class="bg-gray-50 border border-gray-100 p-3 rounded">
+                                        <code class="text-xs font-bold">&lt;button type="submit"&gt;</code>
+                                        <p class="text-[10px] text-gray-500 mt-1">Triggers form submission. You can also
+                                            use <code>&lt;input type="submit"&gt;</code>.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- All Input Types -->
+                    <div class="mb-10">
+                        <h4 class="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-4">All Input Types —
+                            Live</h4>
+                        <div class="space-y-2">
+
+                            <div class="tag-preview-row">
+                                <code class="tag-code">type="text"</code>
+                                <div class="tag-render"><input type="text" placeholder="Plain text"
+                                        style="border:1px solid #ccc;padding:5px 8px;font-size:0.8rem;outline:none;width:160px;font-family:inherit">
+                                </div>
+                            </div>
+                            <div class="tag-preview-row">
+                                <code class="tag-code">type="password"</code>
+                                <div class="tag-render"><input type="password" value="secret"
+                                        style="border:1px solid #ccc;padding:5px 8px;font-size:0.8rem;outline:none;width:160px;font-family:inherit">
+                                </div>
+                            </div>
+                            <div class="tag-preview-row">
+                                <code class="tag-code">type="email"</code>
+                                <div class="tag-render"><input type="email" placeholder="user@example.com"
+                                        style="border:1px solid #ccc;padding:5px 8px;font-size:0.8rem;outline:none;width:180px;font-family:inherit">
+                                </div>
+                            </div>
+                            <div class="tag-preview-row">
+                                <code class="tag-code">type="number"</code>
+                                <div class="tag-render"><input type="number" value="42" min="0" max="100"
+                                        style="border:1px solid #ccc;padding:5px 8px;font-size:0.8rem;outline:none;width:100px;font-family:inherit">
+                                </div>
+                            </div>
+                            <div class="tag-preview-row">
+                                <code class="tag-code">type="range"</code>
+                                <div class="tag-render"><input type="range" min="0" max="100" value="60"
+                                        style="width:160px"></div>
+                            </div>
+                            <div class="tag-preview-row">
+                                <code class="tag-code">type="date"</code>
+                                <div class="tag-render"><input type="date"
+                                        style="border:1px solid #ccc;padding:5px 8px;font-size:0.8rem;outline:none;font-family:inherit">
+                                </div>
+                            </div>
+                            <div class="tag-preview-row">
+                                <code class="tag-code">type="color"</code>
+                                <div class="tag-render"><input type="color" value="#E34C26"
+                                        style="width:40px;height:32px;border:1px solid #ccc;cursor:pointer"></div>
+                            </div>
+                            <div class="tag-preview-row">
+                                <code class="tag-code">type="checkbox"</code>
+                                <div class="tag-render" style="gap:1rem">
+                                    <label style="font-size:0.8rem;display:flex;align-items:center;gap:5px"><input
+                                            type="checkbox" checked> Option A</label>
+                                    <label style="font-size:0.8rem;display:flex;align-items:center;gap:5px"><input
+                                            type="checkbox"> Option B</label>
+                                </div>
+                            </div>
+                            <div class="tag-preview-row">
+                                <code class="tag-code">type="radio"</code>
+                                <div class="tag-render" style="gap:1rem">
+                                    <label style="font-size:0.8rem;display:flex;align-items:center;gap:5px"><input
+                                            type="radio" name="r1" checked> Yes</label>
+                                    <label style="font-size:0.8rem;display:flex;align-items:center;gap:5px"><input
+                                            type="radio" name="r1"> No</label>
+                                </div>
+                            </div>
+                            <div class="tag-preview-row">
+                                <code class="tag-code">type="file"</code>
+                                <div class="tag-render"><input type="file" style="font-size:0.75rem"></div>
+                            </div>
+                            <div class="tag-preview-row">
+                                <code class="tag-code">&lt;select&gt;</code>
+                                <div class="tag-render">
+                                    <select
+                                        style="border:1px solid #ccc;padding:5px 8px;font-size:0.8rem;background:#fff;font-family:inherit">
+                                        <option>Vanilla</option>
+                                        <option>Chocolate</option>
+                                        <option>Strawberry</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="tag-preview-row items-start">
+                                <code class="tag-code">&lt;textarea&gt;</code>
+                                <div class="tag-render"><textarea rows="3"
+                                        style="border:1px solid #ccc;padding:5px 8px;font-size:0.8rem;resize:vertical;width:200px;font-family:inherit">Multi-line text…</textarea>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <!-- Key Attributes -->
+                    <div class="mb-10">
+                        <h4 class="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-4">Key Input
+                            Attributes</h4>
+                        <div class="rams-card !p-0 overflow-hidden">
+                            <table style="width:100%;border-collapse:collapse;font-size:0.78rem">
+                                <thead>
+                                    <tr style="background:#f9f9f9;border-bottom:1px solid #eee">
+                                        <th
+                                            style="text-align:left;padding:8px 14px;font-size:0.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#888">
+                                            Attribute</th>
+                                        <th
+                                            style="text-align:left;padding:8px 14px;font-size:0.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#888">
+                                            What it does</th>
+                                        <th
+                                            style="text-align:left;padding:8px 14px;font-size:0.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#888">
+                                            Example</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr style="border-bottom:1px solid #f0f0f0">
+                                        <td style="padding:8px 14px"><code class="text-accent"
+                                                style="font-size:0.75rem">name</code></td>
+                                        <td style="padding:8px 14px;color:#555">Key sent to the server</td>
+                                        <td style="padding:8px 14px;color:#888;font-size:0.72rem">
+                                            <code>name="username"</code>
+                                        </td>
+                                    </tr>
+                                    <tr style="border-bottom:1px solid #f0f0f0">
+                                        <td style="padding:8px 14px"><code class="text-accent"
+                                                style="font-size:0.75rem">placeholder</code></td>
+                                        <td style="padding:8px 14px;color:#555">Ghost text when empty</td>
+                                        <td style="padding:8px 14px;color:#888;font-size:0.72rem">
+                                            <code>placeholder="Search…"</code>
+                                        </td>
+                                    </tr>
+                                    <tr style="border-bottom:1px solid #f0f0f0">
+                                        <td style="padding:8px 14px"><code class="text-accent"
+                                                style="font-size:0.75rem">required</code></td>
+                                        <td style="padding:8px 14px;color:#555">Blocks submit if empty</td>
+                                        <td style="padding:8px 14px;color:#888;font-size:0.72rem"><code>required</code>
+                                        </td>
+                                    </tr>
+                                    <tr style="border-bottom:1px solid #f0f0f0">
+                                        <td style="padding:8px 14px"><code class="text-accent"
+                                                style="font-size:0.75rem">disabled</code></td>
+                                        <td style="padding:8px 14px;color:#555">Greyed out, not submitted</td>
+                                        <td style="padding:8px 14px;color:#888;font-size:0.72rem"><code>disabled</code>
+                                        </td>
+                                    </tr>
+                                    <tr style="border-bottom:1px solid #f0f0f0">
+                                        <td style="padding:8px 14px"><code class="text-accent"
+                                                style="font-size:0.75rem">min / max</code></td>
+                                        <td style="padding:8px 14px;color:#555">Range for number / date</td>
+                                        <td style="padding:8px 14px;color:#888;font-size:0.72rem">
+                                            <code>min="1" max="100"</code>
+                                        </td>
+                                    </tr>
+                                    <tr style="border-bottom:1px solid #f0f0f0">
+                                        <td style="padding:8px 14px"><code class="text-accent"
+                                                style="font-size:0.75rem">maxlength</code></td>
+                                        <td style="padding:8px 14px;color:#555">Character limit</td>
+                                        <td style="padding:8px 14px;color:#888;font-size:0.72rem">
+                                            <code>maxlength="140"</code>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding:8px 14px"><code class="text-accent"
+                                                style="font-size:0.75rem">autocomplete</code></td>
+                                        <td style="padding:8px 14px;color:#555">Browser autofill hint</td>
+                                        <td style="padding:8px 14px;color:#888;font-size:0.72rem">
+                                            <code>autocomplete="email"</code>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Fieldset & Legend + Sample Form -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- Fieldset -->
+                        <div>
+                            <h4 class="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-4">Fieldset &
+                                Legend</h4>
+                            <div class="rams-card">
+                                <p class="text-[10px] text-gray-500 leading-relaxed mb-4">Use
+                                    <code>&lt;fieldset&gt;</code> to group related inputs and
+                                    <code>&lt;legend&gt;</code> to give the group a title.
+                                </p>
+                                <fieldset style="border:1px solid #ddd;padding:12px 16px;border-radius:4px">
+                                    <legend style="font-size:0.7rem;font-weight:700;padding:0 6px;color:#555">Preferred
+                                        Contact</legend>
+                                    <label
+                                        style="font-size:0.8rem;display:flex;align-items:center;gap:6px;margin-bottom:6px"><input
+                                            type="radio" name="contact"> Email</label>
+                                    <label style="font-size:0.8rem;display:flex;align-items:center;gap:6px"><input
+                                            type="radio" name="contact"> Phone</label>
+                                </fieldset>
+                                <pre class="!mt-4 text-[9px] !mb-0"><code><span class="hl-tag">&lt;fieldset&gt;</span>
+  <span class="hl-tag">&lt;legend&gt;</span>Preferred Contact<span class="hl-tag">&lt;/legend&gt;</span>
+  <span class="hl-tag">&lt;label&gt;</span><span class="hl-tag">&lt;input <span class="hl-attr">type</span>=<span class="hl-val">"radio"</span>&gt;</span> Email<span class="hl-tag">&lt;/label&gt;</span>
+<span class="hl-tag">&lt;/fieldset&gt;</span></code></pre>
+                            </div>
+                        </div>
+
+                        <!-- Live Working Form -->
+                        <div>
+                            <h4 class="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-4">Live Sample
+                                Form</h4>
+                            <div class="rams-card">
+                                <form onsubmit="handleFormDemo(event)" class="space-y-3">
+                                    <div>
+                                        <label
+                                            style="display:block;font-size:0.72rem;font-weight:600;margin-bottom:3px;color:#444">Name</label>
+                                        <input type="text" placeholder="Your name" required
+                                            style="width:100%;border:1px solid #ddd;padding:6px 10px;font-size:0.8rem;outline:none;box-sizing:border-box;font-family:inherit">
+                                    </div>
+                                    <div>
+                                        <label
+                                            style="display:block;font-size:0.72rem;font-weight:600;margin-bottom:3px;color:#444">Email</label>
+                                        <input type="email" placeholder="you@example.com" required
+                                            style="width:100%;border:1px solid #ddd;padding:6px 10px;font-size:0.8rem;outline:none;box-sizing:border-box;font-family:inherit">
+                                    </div>
+                                    <div>
+                                        <label
+                                            style="display:block;font-size:0.72rem;font-weight:600;margin-bottom:3px;color:#444">Topic</label>
+                                        <select
+                                            style="width:100%;border:1px solid #ddd;padding:6px 10px;font-size:0.8rem;background:#fff;box-sizing:border-box;font-family:inherit">
+                                            <option>HTML</option>
+                                            <option>CSS</option>
+                                            <option>JavaScript</option>
+                                        </select>
+                                    </div>
+                                    <button type="submit"
+                                        style="width:100%;padding:8px;background:#E34C26;color:#fff;border:none;cursor:pointer;font-size:0.8rem;font-weight:600;letter-spacing:.04em;font-family:inherit">Submit
+                                        →</button>
+                                    <div id="form-demo-msg"
+                                        style="display:none;font-size:0.75rem;color:#16a34a;text-align:center;padding:4px">
+                                        ✓ Form submitted! (demo only)</div>
+                                </form>
+                                <script>
+                                    function handleFormDemo(e) {
+                                        e.preventDefault();
+                                        const msg = document.getElementById('form-demo-msg');
+                                        msg.style.display = 'block';
+                                        setTimeout(() => msg.style.display = 'none', 3000);
+                                    }
+                                </script>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="qc-html-forms"></div>
+                </section>
+
+
+                <div class="divider hidden md:block"></div>
+
+                <!-- 06. Live Sandbox -->
+                <section id="lab" class="mb-20 md:mb-24 section-reveal">
+                    <span class="rams-label">06 / Live Sandbox</span>
+                    <h3 class="text-xl font-medium mb-8">Live HTML Previewer</h3>
+
+                    <div class="rams-card overflow-hidden !p-0">
+                        <div class="flex flex-col lg:flex-row">
+                            <div class="w-full lg:w-1/2 border-r border-gray-200">
+                                <div
+                                    class="bg-gray-100 px-4 py-2 border-b border-gray-200 flex justify-between items-center">
+                                    <span
+                                        class="text-[10px] font-bold uppercase tracking-widest text-gray-500">Editor</span>
+                                    <span class="text-[10px] text-gray-400">HTML</span>
+                                </div>
+                                <div class="editor-wrapper">
+                                    <pre id="highlighting-content"
+                                        aria-hidden="true"><code class="language-html" id="highlighting-code"></code></pre>
+                                    <textarea id="code-editor" spellcheck="false" oninput="updatePreview()"
+                                        onscroll="syncScroll()"><!-- Write some HTML here! -->
+<h1 style="color: #E34C26;">Hello HTML!</h1>
+<p>Change this code to see the preview update live.</p>
+<button style="padding: 10px; background: #333; color: white; border: none;">I am a button</button></textarea>
+                                </div>
+                            </div>
+                            <div class="w-full lg:w-1/2">
+                                <div
+                                    class="bg-gray-100 px-4 py-2 border-b border-gray-200 flex justify-between items-center">
+                                    <span
+                                        class="text-[10px] font-bold uppercase tracking-widest text-gray-500">Preview</span>
+                                    <div class="flex gap-1">
+                                        <div class="w-1.5 h-1.5 rounded-full bg-red-400"></div>
+                                        <div class="w-1.5 h-1.5 rounded-full bg-yellow-400"></div>
+                                        <div class="w-1.5 h-1.5 rounded-full bg-green-400"></div>
+                                    </div>
+                                </div>
+                                <iframe id="preview-frame" frameborder="0"></iframe>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <div class="divider hidden md:block"></div>
+
+                <!-- Glossary Section -->
+                <section id="glossary" class="mb-20 md:mb-24 section-reveal">
+                    <span class="rams-label">Glossary</span>
+                    <h3 class="text-xl font-medium mb-8">Key Definitions</h3>
+                    <div class="rams-card">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <h4 class="font-bold text-sm mb-2">HTML</h4>
+                                <p class="text-xs text-gray-600">HyperText Markup Language. The standard language for
+                                    describing the structure of web pages.</p>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-sm mb-2">Element</h4>
+                                <p class="text-xs text-gray-600">A complete HTML unit: an opening tag, its content, and
+                                    a closing tag. E.g. <code class="text-xs">&lt;p&gt;Hello&lt;/p&gt;</code>.</p>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-sm mb-2">Tag</h4>
+                                <p class="text-xs text-gray-600">The markup syntax that defines an element, enclosed in
+                                    angle brackets, e.g. <code class="text-xs">&lt;div&gt;</code>.</p>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-sm mb-2">Attribute</h4>
+                                <p class="text-xs text-gray-600">Extra information placed inside an opening tag. E.g.
+                                    <code class="text-xs">href</code>, <code class="text-xs">class</code>, <code
+                                        class="text-xs">id</code>, <code class="text-xs">src</code>.</p>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-sm mb-2">Void Element</h4>
+                                <p class="text-xs text-gray-600">An element with no content and no closing tag.
+                                    Examples: <code class="text-xs">&lt;br&gt;</code>, <code
+                                        class="text-xs">&lt;img&gt;</code>, <code class="text-xs">&lt;input&gt;</code>.
+                                </p>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-sm mb-2">Semantic HTML</h4>
+                                <p class="text-xs text-gray-600">Using elements that carry meaning about the content
+                                    inside, like <code class="text-xs">&lt;article&gt;</code>, <code
+                                        class="text-xs">&lt;nav&gt;</code>, and <code
+                                        class="text-xs">&lt;footer&gt;</code>.</p>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-sm mb-2">DOM</h4>
+                                <p class="text-xs text-gray-600">Document Object Model. The browser's live, tree-like
+                                    representation of a parsed HTML document.</p>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-sm mb-2">DOCTYPE</h4>
+                                <p class="text-xs text-gray-600">A declaration at the top of an HTML file (<code
+                                        class="text-xs">&lt;!DOCTYPE html&gt;</code>) that tells the browser which
+                                    version of HTML to use.</p>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-sm mb-2">Metadata</h4>
+                                <p class="text-xs text-gray-600">Data about the document that is not displayed to users.
+                                    Lives in <code class="text-xs">&lt;head&gt;</code> via tags like <code
+                                        class="text-xs">&lt;meta&gt;</code> and <code
+                                        class="text-xs">&lt;title&gt;</code>.</p>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-sm mb-2">Hyperlink</h4>
+                                <p class="text-xs text-gray-600">A reference to another resource, created with <code
+                                        class="text-xs">&lt;a href="..."&gt;</code>. The core of the "Hyper" in
+                                    HyperText.</p>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-sm mb-2">Form</h4>
+                                <p class="text-xs text-gray-600">An HTML structure that collects user input and submits
+                                    it to a server via GET or POST.</p>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-sm mb-2">Viewport</h4>
+                                <p class="text-xs text-gray-600">The visible area of a web page in the browser window.
+                                    Controlled for mobile via the <code
+                                        class="text-xs">&lt;meta name="viewport"&gt;</code> tag.</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <div class="divider hidden md:block"></div>
+
+                <!-- 08. Knowledge Check -->
+                <section id="quiz" class="mb-20 md:mb-24 section-reveal">
+                    <span class="rams-label">08 / Knowledge Check</span>
+                    <div id="quiz-container" class="rams-card">
+                        <!-- Quiz loads here -->
+                    </div>
+                </section>
+
+
+                <!-- 09. Certificate (Initially Hidden) -->
+                <section id="certificate" class="mb-20 md:mb-24 hidden">
+                    <span class="rams-label">09 / Certification</span>
+                    <h3 class="text-xl font-medium mb-6">Completion Certificate</h3>
+
+                    <div class="rams-card !p-0 overflow-hidden">
+                        <div class="p-6 md:p-8">
+                            <div class="flex flex-col md:flex-row gap-8 items-start">
+                                <div class="w-full md:w-1/3 space-y-4">
+                                    <p class="text-sm text-gray-600">
+                                        Enter your name below to generate your personalized certificate of completion
+                                        for the HTML Fundamentals series.
+                                    </p>
+                                    <div>
+                                        <label for="cert-name"
+                                            class="block text-xs font-bold text-gray-500 uppercase mb-1">Full
+                                            Name</label>
+                                        <input type="text" id="cert-name"
+                                            class="w-full border border-gray-300 p-2 font-mono text-sm focus:border-black outline-none"
+                                            placeholder="Tim Berners-Lee">
+                                        <p id="cert-error" class="text-red-500 text-xs mt-2 hidden">Please enter your
+                                            name.
+                                        </p>
+                                    </div>
+                                    <button onclick="generateCert()"
+                                        class="btn btn-primary bg-black border-black text-white w-full hover:bg-gray-800">Generate
+                                        Certificate</button>
+                                    <button onclick="downloadCert()" id="btn-download"
+                                        class="btn btn-secondary w-full hidden">Download PNG</button>
+                                </div>
+
+                                <div
+                                    class="w-full md:w-2/3 bg-gray-50 border border-gray-200 p-4 flex items-center justify-center">
+                                    <canvas id="cert-canvas" class="w-full shadow-lg bg-white"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="bg-gray-50 px-6 py-3 border-t border-gray-100 text-center">
+                            <p class="text-[10px] text-gray-400 italic">
+                                This certificate confirms successful completion of learning and assessment on this
+                                platform and is not an accredited or government-recognized qualification.
+                            </p>
+                        </div>
+                    </div>
+                </section>
+
+
+                <!-- Navigation Footer -->
+
+                <footer class="w-full mt-12 mb-12">
+                    <div class="border-t border-gray-200 pt-8 flex justify-between items-center">
+                        <span class="text-[10px] mono uppercase text-gray-400">Undrstanding</span>
+                        <span class="text-[10px] mono uppercase text-gray-400">For Humans, From Humans</span>
+                    </div>
+                </footer>
+
+            </div>
+        </main>
+    </div>
+
+    <!-- Scripts -->
+    <script>
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobile-menu');
+            menu.classList.toggle('hidden');
+            menu.classList.toggle('flex');
+            document.body.classList.toggle('overflow-hidden');
+        }
+
+        // ── Sandbox Logic ─────────────────────────────────────────────
+        const editor = document.getElementById('code-editor');
+        const preview = document.getElementById('preview-frame');
+        const hlCode = document.getElementById('highlighting-code');
+
+        // Single-pass tokenizer — never re-processes its own span output
+        function highlightHTML(code) {
+            const esc = s => s
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;');
+
+            // Single master regex matching (in priority order):
+            // 1. HTML comments  <!-- ... -->
+            // 2. Open tags      <tagname attr="val"...>
+            // 3. Close tags     </tagname>
+            const TOKEN = /(<!--[\s\S]*?-->)|(<[a-zA-Z][^>]*?\/?>)|(<\/[a-zA-Z][^>]*?>)/g;
+
+            let result = '';
+            let last = 0;
+            let m;
+
+            while ((m = TOKEN.exec(code)) !== null) {
+                // escape plain text before this token
+                if (m.index > last) result += esc(code.slice(last, m.index));
+                last = TOKEN.lastIndex;
+
+                if (m[1]) {
+                    // Comment
+                    result += `<span class="hl-cm">${esc(m[1])}</span>`;
+                } else {
+                    // Open or close tag — highlight its internals
+                    const tag = m[2] || m[3];
+                    result += colorTag(tag, esc);
+                }
+            }
+
+            // remaining plain text
+            result += esc(code.slice(last));
+            return result;
+        }
+
+        function colorTag(tag, esc) {
+            // Match: optional </, tag name, attributes, optional />
+            const head = tag.match(/^(<\/?\s*)([a-zA-Z][a-zA-Z0-9]*)/);
+            if (!head) return esc(tag);
+
+            let result = `<span class="hl-tag">${esc(head[1])}${esc(head[2])}</span>`;
+            let rest = tag.slice(head[0].length);
+
+            // Match attributes inside the rest (before the closing bracket)
+            // We process attribute=value pairs and boolean attributes
+            const CLOSE = /(\/?>)$/.exec(rest);
+            const closeStr = CLOSE ? CLOSE[1] : '';
+            const attrPart = CLOSE ? rest.slice(0, rest.length - closeStr.length) : rest;
+
+            const ATTR = /\s+([a-zA-Z][a-zA-Z0-9\-:@.]*)(?:(=)("[^"]*"|'[^']*'|[^\s>]*))?/g;
+            let attrResult = '';
+            let attrLast = 0;
+            let am;
+
+            while ((am = ATTR.exec(attrPart)) !== null) {
+                if (am.index > attrLast) attrResult += esc(attrPart.slice(attrLast, am.index));
+                attrLast = ATTR.lastIndex;
+
+                if (am[2]) {
+                    // name=value
+                    attrResult += ` <span class="hl-attr">${esc(am[1])}</span>${esc(am[2])}<span class="hl-val">${esc(am[3])}</span>`;
+                } else {
+                    // boolean attr
+                    attrResult += ` <span class="hl-attr">${esc(am[1])}</span>`;
+                }
+            }
+            attrResult += esc(attrPart.slice(attrLast));
+
+            result += attrResult;
+            if (closeStr) result += `<span class="hl-tag">${esc(closeStr)}</span>`;
+            return result;
+        }
+
+        function updatePreview() {
+            const content = editor.value;
+
+            // Live preview
+            const doc = preview.contentDocument || preview.contentWindow.document;
+            doc.open();
+            doc.write(`<style>body{font-family:sans-serif;padding:20px;color:#333;line-height:1.6}</style>${content}`);
+            doc.close();
+
+            // Syntax highlighting
+            hlCode.innerHTML = highlightHTML(content);
+        }
+
+        function syncScroll() {
+            const pre = document.getElementById('highlighting-content');
+            pre.scrollTop = editor.scrollTop;
+            pre.scrollLeft = editor.scrollLeft;
+        }
+
+        window.addEventListener('load', updatePreview);
+
+        // Intersection Observer for section reveals
+        const observerOptions = {
+            threshold: 0.1
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('active');
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.section-reveal').forEach(section => {
+            observer.observe(section);
+        });
+
+        // Active Link Handling
+        window.addEventListener('scroll', () => {
+            let current = "";
+            const sections = document.querySelectorAll("section");
+            const navLinks = document.querySelectorAll(".nav-link");
+
+            sections.forEach((section) => {
+                const sectionTop = section.offsetTop;
+                if (scrollY >= sectionTop - 150) {
+                    current = section.getAttribute("id");
+                }
+            });
+
+            navLinks.forEach((link) => {
+                link.classList.remove("active");
+                if (link.getAttribute("href").includes(current)) {
+                    link.classList.add("active");
+                }
+            });
+        });
+    </script>
+
+    <!-- Shared scripts (QuizManager, InlineQuiz, CertificateGenerator) -->
+    <script src="js/script.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            new InlineQuiz('qc-html-doctype', {
+                question: 'What must every HTML5 page start with?',
+                options: ['<html>', '<!DOCTYPE html>', '<head>', '<!-- comment -->'],
+                answer: 1,
+                explanation: '&lt;!DOCTYPE html&gt; puts the browser in standards mode. Without it, the browser enters quirks mode and renders inconsistently.'
+            });
+            new InlineQuiz('qc-html-structure', {
+                question: 'Which tag wraps ALL visible content on a web page?',
+                options: ['<html>', '<head>', '<body>', '<main>'],
+                answer: 2,
+                explanation: '&lt;body&gt; contains everything the user sees. &lt;head&gt; holds invisible metadata like the title and stylesheet links.'
+            });
+            new InlineQuiz('qc-html-elements', {
+                question: 'A void (self-closing) element is one that...',
+                options: ['Cannot have child content and needs no closing tag', 'Closes itself with a </self> closing tag', 'Is only used inside forms', 'Is deprecated in HTML5'],
+                answer: 0,
+                explanation: 'Void elements like &lt;img&gt;, &lt;br&gt;, and &lt;input&gt; cannot have children, so they never need a closing tag.'
+            });
+            new InlineQuiz('qc-html-semantic', {
+                question: 'Why prefer <article> over <div> for a blog post?',
+                options: ['It loads faster', '<div> is removed in HTML5', 'Semantic elements communicate content role to screen readers and bots', 'It adds automatic styling'],
+                answer: 2,
+                explanation: '&lt;article&gt; signals self-contained distributable content. Assistive tech and search engines use this to understand your page.'
+            });
+            new InlineQuiz('qc-html-forms', {
+                question: 'What does the name attribute on <input> do?',
+                options: ['Shows a label', 'Becomes the key sent to the server on form submission', 'Sets placeholder text', 'Specifies input type'],
+                answer: 1,
+                explanation: 'name is the key in the key=value pair sent to the server. Without it, the field value is ignored on submission.'
+            });
+            new InlineQuiz('qc-html-sandbox', {
+                question: 'What does the action attribute on <form> specify?',
+                options: ['What JavaScript runs on submit', 'The URL the form data is sent to', 'Which field is required', 'The HTTP status code expected'],
+                answer: 1,
+                explanation: 'action is the destination URL for submitted data. If omitted, the form posts back to the current page URL.'
+            });
+
+            new QuizManager('quiz-container', [
+                { question: 'What is the correct DOCTYPE for HTML5?', options: ['<!DOCTYPE HTML5>', '<!DOCTYPE html>', '<DOCTYPE html>', '<!html>'], answer: 1 },
+                { question: 'Which tag holds metadata like the title and CSS links?', options: ['<body>', '<meta>', '<head>', '<html>'], answer: 2 },
+                { question: 'Which is a void (self-closing) element?', options: ['<p>', '<div>', '<span>', '<br>'], answer: 3 },
+                { question: 'Which attribute links a <label> to its <input>?', options: ['name', 'link', 'for', 'placeholder'], answer: 2 },
+                { question: 'The correct semantic tag for a site-wide navigation menu:', options: ['<div id="nav">', '<menu>', '<nav>', '<header>'], answer: 2 },
+                { question: 'The method attribute on <form> controls:', options: ['CSS styling', 'Whether data goes via URL (GET) or request body (POST)', 'Server language', 'JS requirement'], answer: 1 },
+                { question: '<main> should appear:', options: ['Inside <header>', 'Outside <body>', 'Once per page, wrapping the primary unique content', 'Inside <footer>'], answer: 2 },
+                { question: 'The required attribute on <input> does what?', options: ['Adds a red border', 'Makes the field read-only', 'Prevents form submission if the field is empty', 'Sets a default value'], answer: 2 },
+                { question: 'Which tag wraps an image together with its caption?', options: ['<img>', '<picture>', '<figure>', '<media>'], answer: 2 },
+                { question: 'Which input attribute becomes the KEY sent to the server?', options: ['id', 'name', 'placeholder', 'value'], answer: 1 }
+            ], function () {
+                var s = document.getElementById('certificate');
+                if (s) { s.classList.remove('hidden'); setTimeout(function () { s.scrollIntoView({ behavior: 'smooth' }); }, 300); }
+            });
+
+        });
+
+        // --- Cert Logic ---
+        const certGen = new CertificateGenerator('cert-canvas', 'HTML Fundamentals');
+        function generateCert() {
+            const nameInput = document.getElementById('cert-name');
+            const errorMsg = document.getElementById('cert-error');
+            const name = nameInput.value.trim();
+            const nameRegex = /^[a-zA-Z\s\-\.'']+$/;
+
+            // Reset error state
+            errorMsg.classList.add('hidden');
+            nameInput.classList.remove('border-red-500');
+
+            if (!name) {
+                errorMsg.textContent = 'Please enter your name.';
+                errorMsg.classList.remove('hidden');
+                nameInput.classList.add('border-red-500');
+                return;
+            }
+
+            if (name.length < 3 || name.length > 35) {
+                errorMsg.textContent = 'Name must be between 3 and 35 characters.';
+                errorMsg.classList.remove('hidden');
+                nameInput.classList.add('border-red-500');
+                return;
+            }
+
+            if (!nameRegex.test(name)) {
+                errorMsg.textContent = 'Name cannot contain numbers or special characters.';
+                errorMsg.classList.remove('hidden');
+                nameInput.classList.add('border-red-500');
+                return;
+            }
+
+            certGen.generate(name);
+            document.getElementById('btn-download').classList.remove('hidden');
+        }
+        function downloadCert() {
+            certGen.download('html-certificate.png');
+        }
+
+    </script>
+</body>
+
+</html>

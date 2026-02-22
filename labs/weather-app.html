@@ -1,0 +1,972 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather App Lab</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&family=Outfit:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="icon" type="image/svg+xml" href="../assests/undrlogo.svg">
+    <style>
+        :root {
+            --surface: #ffffff;
+            --border: #e5e7eb;
+            --text-main: #000000;
+            --text-muted: #666666;
+            --accent: #61dafb;
+            /* React Cyan */
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        /* Nearly invisible global scrollbar (1px/2px look) */
+        ::-webkit-scrollbar {
+            width: 2px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #fafafa;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #e5e7eb;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: #fafafa;
+            color: var(--text-main);
+            overflow-x: hidden;
+            user-select: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+        }
+
+        .mono {
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .lab-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 2rem;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Mac-style Code Window */
+        .code-window {
+            background: #1e1e1e;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            margin: 2rem 0;
+            border: 1px solid #333;
+        }
+
+        .code-header {
+            background: #2d2d2d;
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border-bottom: 1px solid #3d3d3d;
+        }
+
+        .dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+
+        .dot-red {
+            background: #ff5f56;
+        }
+
+        .dot-yellow {
+            background: #ffbd2e;
+        }
+
+        .dot-green {
+            background: #27c93f;
+        }
+
+        .file-name {
+            color: #888;
+            font-size: 0.75rem;
+            font-family: 'JetBrains Mono';
+            margin-left: 8px;
+        }
+
+        pre {
+            padding: 1.5rem;
+            color: #dcdcdc;
+            font-family: 'JetBrains Mono';
+            overflow-x: auto;
+            font-size: 0.85rem;
+            line-height: 1.6;
+        }
+
+        /* 1px Scrollbar for code */
+        pre::-webkit-scrollbar {
+            height: 1px;
+        }
+
+        pre::-webkit-scrollbar-track {
+            background: #1e1e1e;
+        }
+
+        pre::-webkit-scrollbar-thumb {
+            background: #333;
+        }
+
+        .keyword {
+            color: #569cd6;
+        }
+
+        .string {
+            color: #ce9178;
+        }
+
+        .comment {
+            color: #6a9955;
+        }
+
+        .tag {
+            color: #e06c75;
+        }
+
+        .attr {
+            color: #d19a66;
+        }
+
+        /* Step Logic */
+        .step-content {
+            display: none;
+            animation: slideUp 0.4s ease-out forwards;
+        }
+
+        .step-content.active {
+            display: block;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(15px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .progress-bar {
+            height: 6px;
+            background: #f3f4f6;
+            border-radius: 99px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--accent);
+            transition: width 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .why-box {
+            background: #f0faff;
+            border-left: 4px solid var(--accent);
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .why-title {
+            font-weight: 700;
+            color: #0369a1;
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            font-size: 0.7rem;
+            letter-spacing: 0.08em;
+            font-family: 'JetBrains Mono';
+        }
+
+        .nav-btn {
+            padding: 0.75rem 2rem;
+            font-family: 'Outfit';
+            font-weight: 600;
+            border-radius: 999px;
+            transition: all 0.2s;
+            font-size: 0.9rem;
+        }
+
+        .nav-btn-prev {
+            color: #666;
+            background: transparent;
+        }
+
+        .nav-btn-prev:hover:not(:disabled) {
+            color: #000;
+            background: #f3f4f6;
+        }
+
+        .nav-btn-next {
+            background: #000;
+            color: #fff;
+        }
+
+        .nav-btn-next:hover:not(:disabled) {
+            background: #333;
+            transform: translateY(-1px);
+        }
+
+        .nav-btn:disabled {
+            opacity: 0.2;
+            cursor: not-allowed;
+        }
+
+        /* Anti-Copy deleted */
+
+        /* Mobile Guidance Modal */
+        #mobile-guidance-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.4);
+            z-index: 2000;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            padding: 1.5rem;
+            backdrop-filter: blur(12px);
+        }
+
+        .modal-content {
+            background: #fff;
+            padding: 3rem 2rem;
+            border-radius: 20px;
+            text-align: center;
+            max-width: 360px;
+            border: 1px solid #eee;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.1);
+            animation: modalPop 0.5s cubic-bezier(0.19, 1, 0.22, 1);
+        }
+
+        @keyframes modalPop {
+            from {
+                transform: scale(0.95) translateY(10px);
+                opacity: 0;
+            }
+
+            to {
+                transform: scale(1) translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .modal-icon-box {
+            width: 56px;
+            height: 56px;
+            background: #fbfbfb;
+            border: 1px solid #eee;
+            color: #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem;
+            border-radius: 12px;
+        }
+
+        .modal-title {
+            font-family: 'JetBrains Mono';
+            font-size: 0.65rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.3em;
+            color: #aaa;
+            margin-bottom: 0.75rem;
+            display: block;
+        }
+
+        .modal-text {
+            font-size: 1.15rem;
+            font-weight: 600;
+            line-height: 1.4;
+            color: #000;
+            margin-bottom: 2.5rem;
+            letter-spacing: -0.02em;
+        }
+
+        .modal-btn {
+            background: var(--accent);
+            color: #000;
+            padding: 1rem 2rem;
+            border-radius: 99px;
+            font-weight: 600;
+            font-family: 'Outfit';
+            font-size: 0.9rem;
+            transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+            width: 100%;
+            border: none;
+            cursor: pointer;
+        }
+
+        .modal-btn:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(97, 218, 251, 0.2);
+        }
+
+        /* Mockup Containers */
+        .mockup-container {
+            border-radius: 2rem;
+            border: 1px solid #eee;
+            margin: 2rem 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
+            overflow: hidden;
+        }
+
+        @media (max-width: 768px) {
+            .lab-container {
+                padding: 1.25rem;
+                max-width: 100%;
+            }
+
+            h1 {
+                font-size: 2rem !important;
+                line-height: 1.1;
+            }
+
+            .mockup-container {
+                padding: 1rem;
+                border-radius: 1.5rem;
+                margin: 1.5rem 0;
+            }
+
+            .nav-btn {
+                padding: 0.75rem 1.25rem;
+                font-size: 0.8rem;
+            }
+
+            #mobile-guidance-modal.active {
+                display: flex;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="lab-container">
+        <!-- Header -->
+        <nav class="flex justify-between items-center mb-12">
+            <a href="../index.html"
+                class="mono text-xs font-bold tracking-widest hover:text-cyan-500 transition-colors uppercase">&larr;
+                Repository</a>
+            <div class="mono text-[10px] font-bold uppercase tracking-widest text-gray-300">Phase <span
+                    id="current-step-num">1</span> / 11</div>
+        </nav>
+
+        <div class="progress-bar mb-12">
+            <div id="progress-fill" class="progress-fill" style="width: 9.09%;"></div>
+        </div>
+
+        <main class="flex-grow">
+            <!-- STEP 1: THE TOOLBELT (NEW) -->
+            <div class="step-content active" id="step-1">
+                <h1 class="text-5xl font-bold tracking-tighter mb-6">The Toolbelt</h1>
+                <p class="text-xl text-gray-600 font-light mb-8 max-w-2xl">
+                    Before we write a single line of React, we need the runtime and the environment to build it.
+                </p>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
+                    <div
+                        class="p-8 border border-gray-100 rounded-2xl bg-white shadow-sm hover:border-cyan-200 transition-all group">
+                        <div
+                            class="w-12 h-12 bg-green-50 rounded-xl flex items-center justify-center text-green-600 mb-6 group-hover:scale-110 transition-transform">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
+                            </svg>
+                        </div>
+                        <h3 class="font-bold mb-2">Node.js</h3>
+                        <p class="text-sm text-gray-400 mb-4">The JS runtime environment.</p>
+                        <a href="https://nodejs.org/" target="_blank"
+                            class="text-xs font-bold uppercase tracking-widest text-cyan-500 hover:text-cyan-600">Download
+                            LTS &rarr;</a>
+                    </div>
+                    <div
+                        class="p-8 border border-gray-100 rounded-2xl bg-white shadow-sm hover:border-blue-200 transition-all group">
+                        <div
+                            class="w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center text-blue-600 mb-6 group-hover:scale-110 transition-transform">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <rect x="2" y="3" width="20" height="14" rx="2" ry="2" />
+                                <line x1="8" y1="21" x2="16" y2="21" />
+                                <line x1="12" y1="17" x2="12" y2="21" />
+                            </svg>
+                        </div>
+                        <h3 class="font-bold mb-2">VS Code</h3>
+                        <p class="text-sm text-gray-400 mb-4">The industry standard editor.</p>
+                        <a href="https://code.visualstudio.com/" target="_blank"
+                            class="text-xs font-bold uppercase tracking-widest text-cyan-500 hover:text-cyan-600">Get
+                            Code &rarr;</a>
+                    </div>
+                </div>
+                <div class="mt-12 space-y-6">
+                    <h3 class="mono text-xs font-black uppercase tracking-[0.3em] text-gray-400">The Action Plan</h3>
+                    <ul class="space-y-4 text-gray-600 font-light text-lg">
+                        <li class="flex gap-4">
+                            <div class="w-2 h-2 rounded-full bg-cyan-400 mt-2.5 shrink-0"></div>
+                            <span>Install <strong>Node.js</strong> (LTS) to enable terminal commands.</span>
+                        </li>
+                        <li class="flex gap-4">
+                            <div class="w-2 h-2 rounded-full bg-cyan-400 mt-2.5 shrink-0"></div>
+                            <span>Open <strong>VS Code</strong> and install the "ES7+ React/Redux/React-Native snippets"
+                                extension.</span>
+                        </li>
+                    </ul>
+                </div>
+                <div class="why-box">
+                    <div class="why-title">Why Node?</div>
+                    <p class="text-sm">React doesn't run in a vacuum. <strong>Node.js</strong> allows us to use
+                        <code>npm</code> (Node Package Manager) to pull in libraries like React, Vite, and Lucide Icons
+                        into our local workspace.
+                    </p>
+                </div>
+            </div>
+
+            <!-- STEP 2: INITIALIZATION -->
+            <div class="step-content" id="step-2">
+                <h1 class="text-5xl font-bold tracking-tighter mb-6">Spinning up Vite</h1>
+                <p class="text-xl text-gray-600 font-light mb-8 max-w-2xl">
+                    Initializing a React environment that's optimized for speed and development experience.
+                </p>
+                <div class="mockup-container bg-[#080808] border-none py-12">
+                    <svg viewBox="0 0 480 240" fill="none" style="width: 100%; height: auto; max-width: 480px;">
+                        <!-- Terminal Base -->
+                        <rect x="40" y="20" width="400" height="200" rx="16" fill="#111" stroke="#333"
+                            stroke-width="1" />
+                        <rect x="40" y="20" width="400" height="36" rx="16" fill="#1a1a1a" />
+                        <circle cx="64" cy="38" r="4" fill="#ff5f56" />
+                        <circle cx="78" cy="38" r="4" fill="#ffbd2e" />
+                        <circle cx="92" cy="38" r="4" fill="#27c93f" />
+
+                        <!-- Core Engine Animation -->
+                        <g>
+                            <circle cx="240" cy="120" r="50" stroke="#61dafb" stroke-width="1" stroke-dasharray="12 8"
+                                opacity="0.3">
+                                <animateTransform attributeName="transform" type="rotate" from="0 240 120"
+                                    to="360 240 120" dur="20s" repeatCount="indefinite" />
+                            </circle>
+                            <circle cx="240" cy="120" r="40" stroke="#61dafb" stroke-width="2" stroke-dasharray="4 4"
+                                opacity="0.6">
+                                <animateTransform attributeName="transform" type="rotate" from="360 240 120"
+                                    to="0 240 120" dur="15s" repeatCount="indefinite" />
+                            </circle>
+
+                            <!-- React Logo Core -->
+                            <path d="M240 105c3.5 0 6.5 6.7 6.5 15s-3 15-6.5 15-6.5-6.7-6.5-15 3-15 6.5-15z"
+                                stroke="#61dafb" stroke-width="1.5" opacity="0.8" />
+                            <path d="M240 105c3.5 0 6.5 6.7 6.5 15s-3 15-6.5 15-6.5-6.7-6.5-15 3-15 6.5-15z"
+                                stroke="#61dafb" stroke-width="1.5" opacity="0.8" transform="rotate(60 240 120)" />
+                            <path d="M240 105c3.5 0 6.5 6.7 6.5 15s-3 15-6.5 15-6.5-6.7-6.5-15 3-15 6.5-15z"
+                                stroke="#61dafb" stroke-width="1.5" opacity="0.8" transform="rotate(-60 240 120)" />
+                            <circle cx="240" cy="120" r="2.5" fill="#61dafb" />
+                        </g>
+
+                        <!-- Floating Tags -->
+                        <rect x="320" y="70" width="70" height="24" rx="12" fill="#61dafb" fill-opacity="0.1"
+                            stroke="#61dafb" stroke-width="1" />
+                        <text x="355" y="86" text-anchor="middle" fill="#61dafb" font-family="JetBrains Mono"
+                            font-size="9" font-weight="bold">VITE ENG.</text>
+
+                        <text x="70" y="190" fill="#444" font-family="JetBrains Mono" font-size="10">$ vite init:
+                            success</text>
+                        <text x="70" y="205" fill="#61dafb" font-family="JetBrains Mono" font-size="10">> Ready in
+                            254ms</text>
+                    </svg>
+                </div>
+                <div class="code-window">
+                    <div class="code-header">
+                        <div class="dot dot-red"></div>
+                        <div class="dot dot-yellow"></div>
+                        <div class="dot dot-green"></div>
+                        <span class="file-name">Terminal</span>
+                    </div>
+                    <pre><code>npm create vite@latest weather-app -- --template react
+<span class="keyword">cd</span> weather-app
+npm install</code></pre>
+                </div>
+
+                <div class="mt-8 space-y-4 text-gray-600 font-light">
+                    <p class="text-sm">&bull; Open your terminal or Command Prompt.</p>
+                    <p class="text-sm">&bull; Paste the first command to scaffold the project.</p>
+                    <p class="text-sm">&bull; Select <strong>"JavaScript"</strong> (not TypeScript) when prompted.</p>
+                    <p class="text-sm">&bull; <code>cd</code> into the folder and run <code>npm install</code> to
+                        download React.</p>
+                </div>
+            </div>
+
+            <!-- STEP 3: THE ANATOMY (NEW PREVIEW) -->
+            <div class="step-content" id="step-3">
+                <h1 class="text-5xl font-bold tracking-tighter mb-6">App Anatomy</h1>
+                <p class="text-xl text-gray-600 font-light mb-8 max-w-2xl">
+                    Visualizing how our components will communicate and where the data flows.
+                </p>
+                <div class="mockup-container bg-white border-gray-100 py-12">
+                    <svg viewBox="0 0 600 320" fill="none" style="width: 100%; height: auto; max-width: 600px;">
+                        <!-- Component Tree -->
+                        <g opacity="0.6">
+                            <circle cx="300" cy="50" r="24" fill="#111" />
+                            <text x="300" y="54" text-anchor="middle" fill="white" font-family="JetBrains Mono"
+                                font-size="10" font-weight="bold">App</text>
+
+                            <path d="M280 65l-60 40" stroke="#e2e8f0" stroke-width="2" stroke-dasharray="4 4" />
+                            <path d="M320 65l60 40" stroke="#e2e8f0" stroke-width="2" stroke-dasharray="4 4" />
+
+                            <circle cx="210" cy="120" r="20" fill="#f8fafc" stroke="#e2e8f0" />
+                            <text x="210" y="124" text-anchor="middle" fill="#64748b" font-family="JetBrains Mono"
+                                font-size="9">Search</text>
+
+                            <circle cx="390" cy="120" r="20" fill="#f8fafc" stroke="#e2e8f0" />
+                            <text x="390" y="124" text-anchor="middle" fill="#64748b" font-family="JetBrains Mono"
+                                font-size="9">Card</text>
+                        </g>
+
+                        <!-- Data Flow Visualization -->
+                        <path d="M300 160v100" stroke="#61dafb" stroke-width="2" stroke-dasharray="8 4">
+                            <animate attributeName="stroke-dashoffset" from="48" to="0" dur="2s"
+                                repeatCount="indefinite" />
+                        </path>
+                        <rect x="250" y="270" width="100" height="30" rx="15" fill="#61dafb" fill-opacity="0.1"
+                            stroke="#61dafb" stroke-width="1" />
+                        <text x="300" y="289" text-anchor="middle" fill="#61dafb" font-family="JetBrains Mono"
+                            font-size="10" font-weight="bold">UNIDIRECTIONAL</text>
+
+                        <text x="300" y="200" text-anchor="middle" fill="#94a3b8" font-family="Outfit" font-size="12"
+                            font-style="italic">Props & State flow downwards</text>
+                    </svg>
+                </div>
+                <div class="why-box">
+                    <div class="why-title">Component Thinking</div>
+                    <p class="text-sm">In React, we break the UI into <strong>independent, reusable pieces</strong>.
+                        The Search bar handles input, while the WeatherCard handles display. They don't know about each
+                        other; they only know about the <strong>Data</strong>.</p>
+                </div>
+            </div>
+
+            <!-- STEP 4: API CONFIG -->
+            <div class="step-content" id="step-4">
+                <h1 class="text-5xl font-bold tracking-tighter mb-6">Managing Credentials</h1>
+                <p class="text-xl text-gray-600 font-light mb-8 max-w-2xl">
+                    We'll use environment variables to keep our API keys secure and accessible.
+                </p>
+                <div class="code-window">
+                    <div class="code-header">
+                        <div class="dot dot-red"></div>
+                        <div class="dot dot-yellow"></div>
+                        <div class="dot dot-green"></div>
+                        <span class="file-name">.env</span>
+                    </div>
+                    <pre><code>VITE_WEATHER_API_KEY=your_key_here
+VITE_API_BASE_URL=https://api.openweathermap.org/data/2.5</code></pre>
+                </div>
+
+                <div class="mt-8 p-6 bg-slate-100 rounded-2xl">
+                    <p class="text-slate-400 text-xs mono uppercase tracking-widest mb-4">Action Items</p>
+                    <ol class="space-y-3 text-sm text-slate-600">
+                        <li>1. Create a file named <code>.env</code> in the project root.</li>
+                        <li>2. Register at <a href="https://openweathermap.org/api"
+                                class="text-cyan-600 underline">OpenWeatherMap</a> for a free key.</li>
+                        <li>3. Paste your key into the file above.</li>
+                    </ol>
+                </div>
+            </div>
+
+            <!-- STEP 5: SERVICE -->
+            <div class="step-content" id="step-5">
+                <h1 class="text-5xl font-bold tracking-tighter mb-6">The Weather Service</h1>
+                <p class="text-xl text-gray-600 font-light mb-8 max-w-2xl">Abstraction is key. We'll create a dedicated
+                    file for networking.</p>
+                <div class="code-window">
+                    <div class="code-header">
+                        <div class="dot dot-red"></div>
+                        <div class="dot dot-yellow"></div>
+                        <div class="dot dot-green"></div>
+                        <span class="file-name">src/services/weather.js</span>
+                    </div>
+                    <pre><code><span class="keyword">const</span> API_KEY = import.meta.env.VITE_WEATHER_API_KEY;
+<span class="keyword">const</span> BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
+<span class="keyword">export const</span> <span class="function">fetchWeather</span> = <span class="keyword">async</span> (city) => {
+  <span class="keyword">const</span> response = <span class="keyword">await</span> <span class="function">fetch</span>(
+    <span class="string">`${BASE_URL}/weather?q=${city}&units=metric&appid=${API_KEY}`</span>
+  );
+  <span class="keyword">if</span> (!response.ok) <span class="keyword">throw new</span> <span class="function">Error</span>(<span class="string">'Metadata fetch failed'</span>);
+  <span class="keyword">return</span> <span class="keyword">await</span> response.<span class="function">json</span>();
+};</code></pre>
+                </div>
+            </div>
+
+            <!-- STEP 6: APPLICATION STATE -->
+            <div class="step-content" id="step-6">
+                <h1 class="text-5xl font-bold tracking-tighter mb-6">Reactive State</h1>
+                <p class="text-xl text-gray-600 font-light mb-8 max-w-2xl">Using hooks to track user interactions and
+                    API responses.</p>
+                <div class="code-window">
+                    <div class="code-header">
+                        <div class="dot dot-red"></div>
+                        <div class="dot dot-yellow"></div>
+                        <div class="dot dot-green"></div>
+                        <span class="file-name">src/App.jsx</span>
+                    </div>
+                    <pre><code><span class="keyword">import</span> { useState } <span class="keyword">from</span> <span class="string">'react'</span>;
+
+<span class="keyword">function</span> <span class="function">App</span>() {
+  <span class="keyword">const</span> [weather, setWeather] = <span class="function">useState</span>(<span class="keyword">null</span>);
+  <span class="keyword">const</span> [loading, setLoading] = <span class="function">useState</span>(<span class="keyword">false</span>);
+
+  <span class="keyword">return</span> ( <span class="comment">/* UI */</span> );
+}</code></pre>
+                </div>
+
+                <div class="mt-8 space-y-4">
+                    <div class="flex gap-4 p-4 border border-cyan-100 rounded-xl bg-white shadow-sm">
+                        <div
+                            class="w-8 h-8 rounded-full bg-cyan-50 flex items-center justify-center text-cyan-500 shrink-0 font-bold text-xs">
+                            &rarr;</div>
+                        <p class="text-sm text-gray-500">Open <code>src/App.jsx</code> and replace the boilerplate code
+                            with the state hooks shown above. These will hold our weather data throughout the app
+                            session.</p>
+                    </div>
+                </div>
+                <div class="why-box">
+                    <div class="why-title">What is state?</div>
+                    <p class="text-sm">State is data that <strong>changes over time</strong>. When
+                        <code>setWeather</code> is called, React notices the change and automatically "re-renders"
+                        (updates) only the parts of the screen that use that data.
+                    </p>
+                </div>
+            </div>
+
+            <!-- STEP 7: HANDLERS -->
+            <div class="step-content" id="step-7">
+                <h1 class="text-5xl font-bold tracking-tighter mb-6">Interaction Logic</h1>
+                <p class="text-xl text-gray-600 font-light mb-8 max-w-2xl">Implementing async handlers to link user
+                    input to data.</p>
+                <div class="code-window">
+                    <div class="code-header">
+                        <div class="dot dot-red"></div>
+                        <div class="dot dot-yellow"></div>
+                        <div class="dot dot-green"></div>
+                        <span class="file-name">src/App.jsx</span>
+                    </div>
+                    <pre><code><span class="keyword">const</span> <span class="function">handleSearch</span> = <span class="keyword">async</span> (city) => {
+  <span class="function">setLoading</span>(<span class="keyword">true</span>);
+  <span class="keyword">try</span> {
+    <span class="keyword">const</span> data = <span class="keyword">await</span> <span class="function">fetchWeather</span>(city);
+    <span class="function">setWeather</span>(data);
+  } <span class="keyword">finally</span> {
+    <span class="function">setLoading</span>(<span class="keyword">false</span>);
+  }
+};</code></pre>
+                </div>
+            </div>
+
+            <!-- STEP 8: SEARCH UI -->
+            <div class="step-content" id="step-8">
+                <h1 class="text-5xl font-bold tracking-tighter mb-6">The Search Node</h1>
+                <p class="text-xl text-gray-600 font-light mb-8 max-w-2xl">Building the input interface with Tailwind
+                    classes.</p>
+                <div class="code-window">
+                    <div class="code-header">
+                        <div class="dot dot-red"></div>
+                        <div class="dot dot-yellow"></div>
+                        <div class="dot dot-green"></div>
+                        <span class="file-name">src/components/Search.jsx</span>
+                    </div>
+                    <pre><code><span class="keyword">export default function</span> <span class="function">Search</span>({ onSearch }) {
+  <span class="keyword">return</span> (
+    <span class="tag">&lt;div</span> <span class="attr">className</span>=<span class="string">"w-full max-w-md flex bg-white rounded-lg shadow-sm border overflow-hidden"</span><span class="tag">&gt;</span>
+      <span class="tag">&lt;input</span> <span class="attr">className</span>=<span class="string">"flex-1 p-4 outline-none"</span> <span class="attr">placeholder</span>=<span class="string">"Search..."</span> <span class="tag">/&gt;</span>
+      <span class="tag">&lt;button</span> <span class="attr">className</span>=<span class="string">"bg-cyan-400 px-6 font-bold"</span><span class="tag">&gt;</span>GO<span class="tag">&lt;/button&gt;</span>
+    <span class="tag">&lt;/div&gt;</span>
+  );
+}</code></pre>
+                </div>
+
+                <div class="mt-8 space-y-4">
+                    <p class="text-sm font-bold mono text-gray-400 uppercase tracking-widest">Component Setup</p>
+                    <div class="p-4 bg-slate-50 border border-slate-100 rounded-xl text-xs text-slate-500 font-mono">
+                        1. Create folder: <code>src/components</code><br>
+                        2. Create file: <code>Search.jsx</code><br>
+                        3. Paste the component code.
+                    </div>
+                </div>
+            </div>
+
+            <!-- STEP 9: CARD UI -->
+            <div class="step-content" id="step-9">
+                <h1 class="text-5xl font-bold tracking-tighter mb-6">The Atmosphere Card</h1>
+                <p class="text-xl text-gray-600 font-light mb-8 max-w-2xl">Presenting data in a high-fidelity visual
+                    container.</p>
+                <div class="code-window">
+                    <div class="code-header">
+                        <div class="dot dot-red"></div>
+                        <div class="dot dot-yellow"></div>
+                        <div class="dot dot-green"></div>
+                        <span class="file-name">src/components/WeatherCard.jsx</span>
+                    </div>
+                    <pre><code><span class="keyword">export default function</span> <span class="function">WeatherCard</span>({ data }) {
+  <span class="keyword">return</span> (
+    <span class="tag">&lt;div</span> <span class="attr">className</span>=<span class="string">"mt-12 p-8 bg-white rounded-3xl shadow-2xl border w-full max-w-sm"</span><span class="tag">&gt;</span>
+      <span class="tag">&lt;h2</span> <span class="attr">className</span>=<span class="string">"text-7xl font-bold"</span><span class="tag">&gt;</span>{Math.<span class="function">round</span>(data.main.temp)}°<span class="tag">&lt;/h2&gt;</span>
+      <span class="tag">&lt;p</span> <span class="attr">className</span>=<span class="string">"text-gray-400 font-medium"</span><span class="tag">&gt;</span>{data.name}<span class="tag">&lt;/p&gt;</span>
+    <span class="tag">&lt;/div&gt;</span>
+  );
+}</code></pre>
+                </div>
+
+                <div class="mt-8 p-6 bg-cyan-900 rounded-2xl relative overflow-hidden group">
+                    <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+                            <path
+                                d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41" />
+                        </svg>
+                    </div>
+                    <p class="text-cyan-300 text-[10px] mono uppercase tracking-widest mb-2 font-black">Visual
+                        Implementation</p>
+                    <p class="text-white text-sm font-light leading-relaxed">
+                        Create <code>src/components/WeatherCard.jsx</code>. This component uses <strong>Props</strong>
+                        (the <code>data</code> object) to dynamically display the temperature and city name.
+                    </p>
+                </div>
+            </div>
+
+            <!-- STEP 10: REFINEMENT -->
+            <div class="step-content" id="step-10">
+                <h1 class="text-5xl font-bold tracking-tighter mb-6">Optimization</h1>
+                <p class="text-xl text-gray-600 font-light mb-8 max-w-2xl">Hardening the build and cleaning up
+                    dependencies.</p>
+                <div class="code-window">
+                    <div class="code-header">
+                        <div class="dot dot-red"></div>
+                        <div class="dot dot-yellow"></div>
+                        <div class="dot dot-green"></div>
+                        <span class="file-name">Terminal</span>
+                    </div>
+                    <pre><code><span class="comment"># Verify local build</span>
+npm run build
+
+<span class="comment"># Preview production build locally</span>
+npm run preview</code></pre>
+                </div>
+                <div class="why-box">
+                    <div class="why-title">Why Build?</div>
+                    <p class="text-sm">The code you write isn't what the browser sees. `npm run build`
+                        <strong>minifies</strong> your styles and <strong>uglifies</strong> your JavaScript to ensure
+                        the smallest possible file sizes for your users.
+                    </p>
+                </div>
+
+                <div class="mt-12 space-y-6">
+                    <h3 class="mono text-xs font-black uppercase tracking-[0.3em] text-gray-400">Action Plan</h3>
+                    <ul class="space-y-4 text-gray-600 font-light text-lg">
+                        <li class="flex gap-4">
+                            <div
+                                class="w-8 h-8 rounded-full bg-black text-white flex items-center justify-center text-xs font-bold shrink-0">
+                                1</div>
+                            <span>Run <code>npm run build</code> and check the <code>dist/</code> folder.</span>
+                        </li>
+                        <li class="flex gap-4">
+                            <div
+                                class="w-8 h-8 rounded-full bg-black text-white flex items-center justify-center text-xs font-bold shrink-0">
+                                2</div>
+                            <span>Run <code>npm run preview</code> to see how the app looks in "Production Mode".</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- STEP 11: BLAST OFF -->
+            <div class="step-content" id="step-11">
+                <h1 class="text-5xl font-bold tracking-tighter mb-6">System Online</h1>
+                <p class="text-xl text-gray-600 font-light mb-8 max-w-2xl">
+                    Behold your creation. A clean, responsive weather station built with React and Tailwind CSS.
+                </p>
+
+                <!-- FINAL UI PREVIEW (SYNCED WITH CODE) -->
+                <div class="mockup-container bg-slate-50 border-cyan-100 py-16">
+                    <div class="w-full max-w-md flex flex-col items-center">
+                        <!-- Search Mockup (Matching Phase 8) -->
+                        <div
+                            class="w-full flex bg-white rounded-lg shadow-sm border border-gray-100 overflow-hidden mb-12">
+                            <div class="flex-1 p-4 text-gray-400 text-sm italic">London...</div>
+                            <div
+                                class="bg-cyan-400 px-6 flex items-center justify-center text-white font-black text-xs">
+                                GO</div>
+                        </div>
+
+                        <!-- Weather Card Mockup (Matching Phase 9) -->
+                        <div
+                            class="p-12 bg-white rounded-[2.5rem] shadow-2xl shadow-cyan-100 border border-white text-center w-full max-w-xs">
+                            <h2 class="text-8xl font-black tracking-tighter text-[#111] mb-2">24°</h2>
+                            <p class="text-gray-400 font-bold uppercase tracking-widest text-xs">London</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="code-window">
+                    <div class="code-header">
+                        <div class="dot dot-red"></div>
+                        <div class="dot dot-yellow"></div>
+                        <div class="dot dot-green"></div>
+                        <span class="file-name">Terminal</span>
+                    </div>
+                    <pre><code>npm run dev</code></pre>
+                </div>
+            </div>
+        </main>
+
+        <!-- Navigation -->
+        <footer class="flex justify-between items-center py-12 border-t border-gray-100">
+            <button id="prevBtn" class="nav-btn nav-btn-prev" disabled onclick="changeStep(-1)">Previous</button>
+            <button id="nextBtn" class="nav-btn nav-btn-next" onclick="changeStep(1)">Next Phase</button>
+        </footer>
+    </div>
+
+    <script>
+        let currentStep = 1;
+        const totalSteps = 11;
+
+        function changeStep(delta) {
+            const nextStep = currentStep + delta;
+            if (nextStep < 1 || nextStep > totalSteps) return;
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+
+            setTimeout(() => {
+                document.getElementById(`step-${currentStep}`).classList.remove('active');
+                currentStep = nextStep;
+                document.getElementById(`step-${currentStep}`).classList.add('active');
+                updateUI();
+            }, 50);
+        }
+
+        function updateUI() {
+            document.getElementById('current-step-num').innerText = currentStep;
+            document.getElementById('progress-fill').style.width = `${(currentStep / totalSteps) * 100}%`;
+            document.getElementById('prevBtn').disabled = currentStep === 1;
+
+            const nextBtn = document.getElementById('nextBtn');
+            if (currentStep === totalSteps) {
+                nextBtn.innerText = "Complete Lab";
+                nextBtn.onclick = () => showCompletionModal();
+            } else {
+                nextBtn.innerText = "Next Phase";
+                nextBtn.onclick = () => changeStep(1);
+            }
+        }
+
+        let badgeGen = null;
+        function showCompletionModal() {
+            const modal = document.getElementById('completion-modal');
+            const content = document.getElementById('completion-content');
+            modal.classList.remove('hidden');
+
+            // Initialize Badge
+            if (!badgeGen) {
+                badgeGen = new BadgeGenerator('badge-canvas', 'React.js Development', 'Weather App');
+            }
+
+            setTimeout(() => {
+                content.classList.remove('scale-95', 'opacity-0');
+                content.classList.add('scale-100', 'opacity-100');
+            }, 10);
+        }
+
+        function downloadBadge() {
+            if (badgeGen) {
+                badgeGen.download('weather-app-badge.png');
+            }
+        }
+
+        // Mobile Guidance Logic
+        window.addEventListener('DOMContentLoaded', () => {
+            if (window.innerWidth <= 768) {
+                document.getElementById('mobile-guidance-modal').classList.add('active');
+            }
+        });
+
+        function closeMobileModal() {
+            document.getElementById('mobile-guidance-modal').classList.remove('active');
+        }
+    </script>
+
+    <!-- Modal UI -->
+    <div id="mobile-guidance-modal">
+        <div class="modal-content">
+            <div class="modal-icon-box">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+                    <line x1="8" y1="21" x2="16" y2="21"></line>
+                    <line x1="12" y1="17" x2="12" y2="21"></line>
+                </svg>
+            </div>
+            <span class="modal-title">Desktop Recommended</span>
+            <p class="modal-text">Interactive labs are designed for desktop. You can still keep this open on your mobile
+                to follow
+                along while you build on your workstation.</p>
+            <button class="modal-btn" onclick="closeMobileModal()">Understood</button>
+        </div>
+    </div>
+
+    <!-- Toast UI deleted -->
+
+    <!-- Completion Modal -->
+    <div id="completion-modal"
+        class="fixed inset-0 z-[3000] hidden flex items-center justify-center p-4 backdrop-blur-xl bg-black/40">
+        <div class="bg-white rounded-[2rem] p-5 sm:p-8 max-w-[min(400px,90vw)] w-full text-center shadow-3xl scale-95 opacity-0 transition-all duration-500"
+            id="completion-content">
+            <div class="mb-4 flex justify-center">
+                <canvas id="badge-canvas" class="rounded-3xl border border-gray-100 max-w-full h-auto"></canvas>
+            </div>
+            <h2 class="text-2xl font-bold mb-1">Congratulations!</h2>
+            <p class="text-gray-600 text-sm mb-6">You've successfully mastered the <strong>Weather App</strong> lab.</p>
+
+            <div class="flex flex-col gap-2">
+                <button onclick="downloadBadge()"
+                    class="w-full py-3 bg-black text-white rounded-xl font-bold hover:bg-gray-800 transition-all flex items-center justify-center gap-2 text-sm">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                        <polyline points="7 10 12 15 17 10" />
+                        <line x1="12" y1="15" x2="12" y2="3" />
+                    </svg>
+                    Download Badge
+                </button>
+                <button onclick="window.location.href='../index.html'"
+                    class="w-full py-2 text-gray-400 font-semibold hover:text-black transition-all text-xs">
+                    Return to Repository
+                </button>
+            </div>
+        </div>
+    </div>
+    <script src="../content/js/script.js"></script>
+</body>
+
+</html>

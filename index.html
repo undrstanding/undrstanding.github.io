@@ -1,0 +1,2767 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Undrstanding</title>
+    <link rel="icon" type="image/svg+xml" href="assests/undrlogo.svg">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
+        /* Global Scrollbar */
+        ::-webkit-scrollbar {
+            width: 1px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #000;
+        }
+
+        :root {
+            --bg-color: #f7f7f7;
+            /* Very light grey, almost white */
+            --surface: #ffffff;
+            --text-main: #0a0a0a;
+            --text-muted: #666666;
+            --border: #e0e0e0;
+            /* Light crisp border */
+            --border-hover: #000000;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            -webkit-font-smoothing: antialiased;
+            line-height: 1.5;
+            /* Technical Grid Background (using lines, not gradients) */
+            background-image:
+                linear-gradient(to right, #e5e5e5 1px, transparent 1px),
+                linear-gradient(to bottom, #e5e5e5 1px, transparent 1px);
+            background-size: 60px 60px;
+        }
+
+        h1,
+        h2,
+        h3 {
+            letter-spacing: -0.04em;
+        }
+
+        .mono {
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        /* Card System */
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            position: relative;
+            transition: all 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        .card-header {
+            background-color: #fafafa;
+            border-bottom: 1px solid var(--border);
+            padding: 1.5rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .card-body {
+            padding: 2rem;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        /* The 'Active' Border Top */
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background-color: currentColor;
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.3s ease;
+            z-index: 10;
+        }
+
+        .card:hover {
+            border-color: var(--border-hover);
+            transform: translateY(-4px);
+        }
+
+        .card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .icon-box {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+
+
+        /* Search Styles */
+        .search-container {
+            position: relative;
+        }
+
+        .search-input {
+            width: 100%;
+            background: #ffffff;
+            border: 1px solid #000000;
+            padding: 0.5rem 0.75rem 0.5rem 2.25rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            color: var(--text-main);
+            transition: all 0.2s;
+            border-radius: 0;
+            box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.05);
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #000;
+            background: #fff;
+        }
+
+        .voice-icon {
+            position: absolute;
+            right: 0.75rem;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 16px;
+            height: 16px;
+            color: #666;
+            cursor: pointer;
+            background: none;
+            border: none;
+            padding: 0;
+            transition: color 0.2s;
+            z-index: 20;
+        }
+
+        .voice-icon:hover {
+            color: #000;
+        }
+
+        .voice-icon.listening {
+            color: #ef4444;
+            /* Red-500 */
+            animation: pulse-red 1.5s infinite;
+        }
+
+        @keyframes pulse-red {
+            0% {
+                transform: translateY(-50%) scale(1);
+                opacity: 1;
+            }
+
+            50% {
+                transform: translateY(-50%) scale(1.2);
+                opacity: 0.8;
+            }
+
+            100% {
+                transform: translateY(-50%) scale(1);
+                opacity: 1;
+            }
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 0.75rem;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 14px;
+            height: 14px;
+            color: #000000;
+            pointer-events: none;
+        }
+
+        .search-results {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            left: 0;
+            margin-top: 4px;
+            background: #fff;
+            border: 1px solid #000;
+            max-height: 300px;
+            overflow-y: auto;
+            z-index: 50;
+            display: none;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+
+        .search-results::-webkit-scrollbar {
+            width: 1px;
+        }
+
+        .search-results::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .search-results::-webkit-scrollbar-thumb {
+            background: #000;
+        }
+
+        .search-results.active {
+            display: block;
+        }
+
+        .result-item {
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid #eee;
+            cursor: pointer;
+            transition: background 0.1s;
+        }
+
+        .result-item:last-child {
+            border-bottom: none;
+        }
+
+        .result-item:hover,
+        .result-item.selected {
+            background: #f4f4f4;
+        }
+
+        .result-series {
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+            display: block;
+            margin-bottom: 2px;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .result-title {
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: #000;
+        }
+
+        .result-context {
+            font-size: 0.75rem;
+            color: #666;
+            margin-top: 2px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .arrow-link {
+            display: inline-flex;
+            align-items: center;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-top: 2rem;
+            opacity: 0.6;
+            transition: opacity 0.2s, transform 0.2s;
+        }
+
+        .card:hover .arrow-link {
+            opacity: 1;
+            transform: translateX(4px);
+        }
+
+        /* Header Styling */
+        .hero-title {
+            font-size: clamp(3rem, 8vw, 6rem);
+            line-height: 0.9;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+        }
+
+        .hero-desc {
+            font-size: 1.125rem;
+            color: var(--text-muted);
+            max-width: 36rem;
+            font-weight: 300;
+        }
+
+        .grid-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            pointer-events: none;
+            z-index: -1;
+            /* Fading out the grid at the bottom */
+            mask-image: linear-gradient(to bottom, black 80%, transparent);
+            -webkit-mask-image: linear-gradient(to bottom, black 80%, transparent);
+        }
+
+        /* Liquid Bloom Transition */
+        #random-overlay {
+            position: fixed;
+            inset: 0;
+            background: #000;
+            z-index: 1000;
+            clip-path: circle(0% at center);
+            pointer-events: none;
+            transition: clip-path 0.8s cubic-bezier(0.77, 0, 0.175, 1);
+        }
+
+        #random-overlay.active {
+            clip-path: circle(150% at center);
+            pointer-events: auto;
+        }
+
+        /* Card Pulse/Warp on Click */
+        .random-card-pumping {
+            animation: cardWarp 0.4s ease-out;
+        }
+
+        @keyframes cardWarp {
+            0% {
+                transform: scale(1);
+                filter: blur(0px);
+            }
+
+            50% {
+                transform: scale(0.95) skew(1deg);
+                filter: blur(2px);
+            }
+
+            100% {
+                transform: scale(1.05);
+                filter: blur(0px);
+            }
+        }
+
+        /* Pill Navbar Styling */
+        .pill-nav-container {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 4rem;
+            margin-top: -1rem;
+            /* Adjusting for balance */
+        }
+
+        .pill-nav {
+            display: flex;
+            background: #f4f4f4;
+            padding: 4px;
+            border-radius: 9999px;
+            border: 1px solid #000;
+            box-shadow: 4px 4px 0 rgba(0, 0, 0, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .pill-nav button {
+            padding: 0.75rem 2.5rem;
+            border-radius: 9999px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            transition: color 0.3s ease;
+            position: relative;
+            z-index: 2;
+        }
+
+        .pill-nav button.active {
+            color: #fff;
+        }
+
+        .pill-nav button:not(.active):hover {
+            background: rgba(0, 0, 0, 0.05);
+        }
+
+        /* Sliding Indicator */
+        .nav-indicator {
+            position: absolute;
+            top: 4px;
+            left: 4px;
+            bottom: 4px;
+            background: #000;
+            border-radius: 9999px;
+            transition: all 0.4s cubic-bezier(0.645, 0.045, 0.355, 1);
+            z-index: 1;
+        }
+
+        /* Section Transitions */
+        .content-section {
+            transition: opacity 0.5s ease, transform 0.5s ease;
+            transform-origin: top;
+        }
+
+        .content-section.hidden {
+            display: none;
+            opacity: 0;
+            transform: translateY(20px) scale(0.98);
+        }
+
+        .content-section.fade-in {
+            display: block;
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+
+        /* Lab Card Specifics (if any, but usually same as cards) */
+        .lab-tag {
+            display: inline-block;
+            padding: 2px 8px;
+            background: #000;
+            color: #fff;
+            font-size: 0.6rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            margin-bottom: 0.5rem;
+        }
+
+        /* Custom Animations */
+        @keyframes spin-slow {
+            from {
+                transform: rotate(0deg);
+            }
+
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        @keyframes spin-slow-reverse {
+            from {
+                transform: rotate(360deg);
+            }
+
+            to {
+                transform: rotate(0deg);
+            }
+        }
+
+        .animate-spin-slow {
+            animation: spin-slow 20s linear infinite;
+        }
+
+        .animate-spin-slow-reverse {
+            animation: spin-slow-reverse 25s linear infinite;
+        }
+    </style>
+</head>
+
+<body class="min-h-screen flex flex-col pt-12 pb-12">
+
+    <!-- Header -->
+    <header class="max-w-6xl mx-auto px-6 w-full mb-12 md:mb-16">
+        <div class="border-b border-black pb-8">
+            <div class="flex flex-col md:flex-row md:items-end justify-between gap-6">
+                <div>
+                    <div class="flex items-center gap-2 mb-4">
+                        <div class="w-3 h-3 bg-black"></div>
+                        <span class="mono text-xs font-bold uppercase tracking-widest text-[#666]">Educational
+                            Repository</span>
+                    </div>
+                    <h1 class="hero-title">Undrstanding.</h1>
+                </div>
+                <div class="md:text-right pb-2 flex flex-col items-end gap-6">
+                    <p class="hero-desc">Interactive explorations For<br>Humans, From Humans.</p>
+
+                    <!-- Search Input -->
+                    <div class="search-container w-full md:w-64">
+                        <svg class="search-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="square" stroke-linejoin="miter" stroke-width="2"
+                                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                        </svg>
+                        <input type="text" id="site-search" class="search-input" placeholder="Search topics..."
+                            autocomplete="off" style="padding-right: 2.5rem;">
+                        <button id="voice-search-btn" class="voice-icon" aria-label="Search by voice"
+                            title="Voice Search">
+                            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
+                            </svg>
+                        </button>
+                        <div id="search-results" class="search-results thin-scrollbar"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Pill Navbar Toggle -->
+    <nav class="pill-nav-container">
+        <div class="pill-nav">
+            <div id="nav-indicator" class="nav-indicator"></div>
+            <button id="btn-learning" class="active" onclick="switchSection('learning')">Learning</button>
+            <button id="btn-labs" onclick="switchSection('labs')">Labs</button>
+        </div>
+    </nav>
+    <script>
+        // Initialize indicator immediately to avoid load delay
+        (function () {
+            const savedSection = localStorage.getItem('activeSection') || 'learning';
+            const btnId = savedSection === 'learning' ? 'btn-learning' : 'btn-labs';
+            const activeBtn = document.getElementById(btnId);
+            const indicator = document.getElementById('nav-indicator');
+            if (activeBtn && indicator) {
+                indicator.style.width = `${activeBtn.offsetWidth}px`;
+                indicator.style.left = `${activeBtn.offsetLeft}px`;
+            }
+        })();
+    </script>
+
+    <!-- Content Sections -->
+    <main class="max-w-6xl mx-auto px-6 w-full flex-grow">
+        <!-- Learning Section -->
+        <div id="learning-section" class="content-section fade-in">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8">
+
+                <!-- 01: Algorithms (A) -->
+                <a href="content/algo.html" class="block group text-pink-600">
+                    <article class="card">
+                        <div class="card-header relative overflow-hidden border-none text-white py-12 bg-pink-600">
+                            <!-- Primary Background Spin (Top-Left) -->
+                            <div class="absolute -left-12 -top-12 opacity-20 animate-spin-slow pointer-events-none">
+                                <svg width="220" height="220" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="1.5">
+                                    <rect x="3" y="3" width="6" height="6" rx="1" />
+                                    <rect x="15" y="15" width="6" height="6" rx="1" />
+                                    <path d="M6 9v3a2 2 0 0 0 2 2h8a2 2 0 0 1 2 2v-1" />
+                                    <path d="M18 9h.01" />
+                                    <path d="M6 18h.01" />
+                                </svg>
+                            </div>
+                            <!-- Secondary Background Spin (Bottom-Right) -->
+                            <div
+                                class="absolute -right-8 -bottom-8 opacity-10 animate-spin-slow-reverse pointer-events-none">
+                                <svg width="140" height="140" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="1.5">
+                                    <rect x="3" y="3" width="6" height="6" rx="1" />
+                                    <rect x="15" y="15" width="6" height="6" rx="1" />
+                                    <path d="M6 9v3a2 2 0 0 0 2 2h8a2 2 0 0 1 2 2v-1" />
+                                </svg>
+                            </div>
+
+                            <div class="relative z-10 flex flex-col items-center">
+                                <div
+                                    class="icon-box text-white border border-white/30 p-2 rounded-lg bg-white/10 backdrop-blur-sm transition-all duration-500 group-hover:scale-125 group-hover:rotate-12">
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                        <rect x="3" y="3" width="6" height="6" rx="1" />
+                                        <rect x="15" y="15" width="6" height="6" rx="1" />
+                                        <path d="M6 9v3a2 2 0 0 0 2 2h8a2 2 0 0 1 2 2v-1" />
+                                        <path d="M18 9h.01" />
+                                        <path d="M6 18h.01" />
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div>
+                                <h3
+                                    class="text-2xl text-black font-semibold mb-3 group-hover:text-pink-600 transition-colors">
+                                    Algorithms</h3>
+                                <p class="text-sm text-gray-500 font-light leading-relaxed">
+                                    Recipes for logic. Sorting, searching, and the fundamental steps of computation.
+                                </p>
+                            </div>
+                            <div class="arrow-link text-black font-mono">
+                                Optimize <span class="ml-2">&rarr;</span>
+                            </div>
+                        </div>
+                    </article>
+                </a>
+
+                <!-- 16: Android (A) -->
+                <a href="content/android.html" class="block group text-[#3DDC84]">
+                    <article class="card">
+                        <div class="card-header relative overflow-hidden border-none text-white py-12 bg-[#3DDC84]">
+                            <!-- Primary Background Spin (Top-Left) -->
+                            <div class="absolute -left-12 -top-12 opacity-20 animate-spin-slow pointer-events-none">
+                                <svg width="220" height="220" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="1.5">
+                                    <rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect>
+                                    <line x1="12" y1="18" x2="12.01" y2="18"></line>
+                                </svg>
+                            </div>
+                            <!-- Secondary Background Spin (Bottom-Right) -->
+                            <div
+                                class="absolute -right-8 -bottom-8 opacity-10 animate-spin-slow-reverse pointer-events-none">
+                                <svg width="140" height="140" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="1.5">
+                                    <rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect>
+                                </svg>
+                            </div>
+
+                            <div class="relative z-10 flex flex-col items-center">
+                                <div
+                                    class="icon-box text-white border border-white/30 p-2 rounded-lg bg-white/10 backdrop-blur-sm transition-all duration-500 group-hover:scale-125 group-hover:rotate-12">
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                        <rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect>
+                                        <line x1="12" y1="18" x2="12.01" y2="18"></line>
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div>
+                                <h3
+                                    class="text-2xl text-black font-semibold mb-3 group-hover:text-[#3DDC84] transition-colors">
+                                    Android & Kotlin</h3>
+                                <p class="text-sm text-gray-500 font-light leading-relaxed">
+                                    Mobile development evolved. Studio, Kotlin safety, and Jetpack Compose.
+                                </p>
+                            </div>
+                            <div class="arrow-link text-black font-mono">
+                                Build <span class="ml-2">&rarr;</span>
+                            </div>
+                        </div>
+                    </article>
+                </a>
+
+                <!-- 02: AI (A) -->
+                <a href="content/ai.html" class="block group text-indigo-600">
+                    <article class="card">
+                        <div class="card-header relative overflow-hidden border-none text-white py-12 bg-indigo-600">
+                            <!-- Primary Background Spin (Top-Left) -->
+                            <div class="absolute -left-12 -top-12 opacity-20 animate-spin-slow pointer-events-none">
+                                <svg width="220" height="220" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="1.5">
+                                    <path
+                                        d="M12 4.5a2.5 2.5 0 0 0-4.96-.46 2.5 2.5 0 0 0-1.98 3 2.5 2.5 0 0 0-1.32 4.24 3 3 0 0 0 .34 5.58 2.5 2.5 0 0 0 2.96 3.08 2.5 2.5 0 0 0 4.96.44v-15.88Z" />
+                                    <path
+                                        d="M12 4.5a2.5 2.5 0 0 1 4.96-.46 2.5 2.5 0 0 1 1.98 3 2.5 2.5 0 0 1 1.32 4.24 3 3 0 0 1-.34 5.58 2.5 2.5 0 0 1-2.96 3.08 2.5 2.5 0 0 1-4.96.44v-15.88Z" />
+                                </svg>
+                            </div>
+                            <!-- Secondary Background Spin (Bottom-Right) -->
+                            <div
+                                class="absolute -right-8 -bottom-8 opacity-10 animate-spin-slow-reverse pointer-events-none">
+                                <svg width="140" height="140" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="1.5">
+                                    <path
+                                        d="M12 4.5a2.5 2.5 0 0 0-4.96-.46 2.5 2.5 0 0 0-1.98 3 2.5 2.5 0 0 0-1.32 4.24 3 3 0 0 0 .34 5.58 2.5 2.5 0 0 0 2.96 3.08 2.5 2.5 0 0 0 4.96.44v-15.88Z" />
+                                </svg>
+                            </div>
+
+                            <div class="relative z-10 flex flex-col items-center">
+                                <div
+                                    class="icon-box text-white border border-white/30 p-2 rounded-lg bg-white/10 backdrop-blur-sm transition-all duration-500 group-hover:scale-125 group-hover:rotate-12">
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                        <path
+                                            d="M12 4.5a2.5 2.5 0 0 0-4.96-.46 2.5 2.5 0 0 0-1.98 3 2.5 2.5 0 0 0-1.32 4.24 3 3 0 0 0 .34 5.58 2.5 2.5 0 0 0 2.96 3.08 2.5 2.5 0 0 0 4.96.44v-15.88Z" />
+                                        <path
+                                            d="M12 4.5a2.5 2.5 0 0 1 4.96-.46 2.5 2.5 0 0 1 1.98 3 2.5 2.5 0 0 1 1.32 4.24 3 3 0 0 1-.34 5.58 2.5 2.5 0 0 1-2.96 3.08 2.5 2.5 0 0 1-4.96.44v-15.88Z" />
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div>
+                                <h3
+                                    class="text-2xl text-black font-semibold mb-3 group-hover:text-indigo-600 transition-colors">
+                                    Artificial Intelligence</h3>
+                                <p class="text-sm text-gray-500 font-light leading-relaxed">
+                                    A functional deconstruction of synthetic cognition. From the Perceptron to
+                                    Transformers.
+                                </p>
+                            </div>
+                            <div class="arrow-link text-black font-mono">
+                                Initialize <span class="ml-2">&rarr;</span>
+                            </div>
+                        </div>
+                    </article>
+                </a>
+
+                <!-- 04: Big Data (B) -->
+                <a href="content/bigdata.html" class="block group text-[#85193C]">
+                    <article class="card">
+                        <div class="card-header relative overflow-hidden border-none text-white py-12 bg-[#85193C]">
+                            <!-- Primary Background Spin (Top-Left) -->
+                            <div class="absolute -left-12 -top-12 opacity-20 animate-spin-slow pointer-events-none">
+                                <svg width="220" height="220" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="1.5">
+                                    <circle cx="12" cy="12" r="3"></circle>
+                                    <line x1="12" y1="9" x2="12" y2="4"></line>
+                                    <line x1="12" y1="20" x2="12" y2="15"></line>
+                                    <line x1="9" y1="12" x2="4" y2="12"></line>
+                                    <line x1="20" y1="12" x2="15" y2="12"></line>
+                                    <circle cx="12" cy="4" r="1"></circle>
+                                    <circle cx="12" cy="20" r="1"></circle>
+                                    <circle cx="4" cy="12" r="1"></circle>
+                                    <circle cx="20" cy="12" r="1"></circle>
+                                </svg>
+                            </div>
+                            <!-- Secondary Background Spin (Bottom-Right) -->
+                            <div
+                                class="absolute -right-8 -bottom-8 opacity-10 animate-spin-slow-reverse pointer-events-none">
+                                <svg width="140" height="140" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="1.5">
+                                    <circle cx="12" cy="12" r="3"></circle>
+                                </svg>
+                            </div>
+
+                            <div class="relative z-10 flex flex-col items-center">
+                                <div
+                                    class="icon-box text-white border border-white/30 p-2 rounded-lg bg-white/10 backdrop-blur-sm transition-all duration-500 group-hover:scale-125 group-hover:rotate-12">
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                        <circle cx="12" cy="12" r="3"></circle>
+                                        <line x1="12" y1="9" x2="12" y2="4"></line>
+                                        <line x1="12" y1="20" x2="12" y2="15"></line>
+                                        <line x1="9" y1="12" x2="4" y2="12"></line>
+                                        <line x1="20" y1="12" x2="15" y2="12"></line>
+                                        <circle cx="12" cy="4" r="1"></circle>
+                                        <circle cx="12" cy="20" r="1"></circle>
+                                        <circle cx="4" cy="12" r="1"></circle>
+                                        <circle cx="20" cy="12" r="1"></circle>
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div>
+                                <h3
+                                    class="text-2xl text-black font-semibold mb-3 group-hover:text-[#85193C] transition-colors">
+                                    Big Data Analytics</h3>
+                                <p class="text-sm text-gray-500 font-light leading-relaxed">
+                                    Processing at scale. Hadoop, MapReduce, Spark, and the distributed ecosystem.
+                                </p>
+                            </div>
+                            <div class="arrow-link text-black font-mono">
+                                Analyze <span class="ml-2">&rarr;</span>
+                            </div>
+                        </div>
+                    </article>
+                </a>
+
+                <!-- 05: Computer Networks (N) -->
+                <a href="content/networks.html" class="block group text-cyan-700">
+                    <article class="card">
+                        <div class="card-header relative overflow-hidden border-none text-white py-12 bg-cyan-700">
+                            <!-- Primary Background Spin (Top-Left) -->
+                            <div class="absolute -left-12 -top-12 opacity-20 animate-spin-slow pointer-events-none">
+                                <svg width="220" height="220" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="1.5">
+                                    <circle cx="12" cy="12" r="10" />
+                                    <line x1="2" y1="12" x2="22" y2="12" />
+                                    <path
+                                        d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
+                                </svg>
+                            </div>
+                            <!-- Secondary Background Spin (Bottom-Right) -->
+                            <div
+                                class="absolute -right-8 -bottom-8 opacity-10 animate-spin-slow-reverse pointer-events-none">
+                                <svg width="140" height="140" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="1.5">
+                                    <circle cx="12" cy="12" r="10" />
+                                </svg>
+                            </div>
+
+                            <div class="relative z-10 flex flex-col items-center">
+                                <div
+                                    class="icon-box text-white border border-white/30 p-2 rounded-lg bg-white/10 backdrop-blur-sm transition-all duration-500 group-hover:scale-125 group-hover:rotate-12">
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                        <circle cx="12" cy="12" r="10" />
+                                        <line x1="2" y1="12" x2="22" y2="12" />
+                                        <path
+                                            d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div>
+                                <h3
+                                    class="text-2xl text-black font-semibold mb-3 group-hover:text-cyan-700 transition-colors">
+                                    Computer Networks</h3>
+                                <p class="text-sm text-gray-500 font-light leading-relaxed">
+                                    The invisible infrastructure. OSI Model, TCP/IP, and how the internet actually
+                                    works.
+                                </p>
+                            </div>
+                            <div class="arrow-link text-black font-mono">
+                                Connect <span class="ml-2">&rarr;</span>
+                            </div>
+                        </div>
+                    </article>
+                </a>
+
+                <!-- 06: Cryptography & Security (C) -->
+                <a href="content/crypto.html" class="block group text-[#5DD3B6]">
+                    <article class="card">
+                        <div class="card-header relative overflow-hidden border-none text-white py-12 bg-[#5DD3B6]">
+                            <!-- Primary Background Spin (Top-Left) -->
+                            <div class="absolute -left-12 -top-12 opacity-20 animate-spin-slow pointer-events-none">
+                                <svg width="220" height="220" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="1.5">
+                                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                                    <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                                </svg>
+                            </div>
+                            <!-- Secondary Background Spin (Bottom-Right) -->
+                            <div
+                                class="absolute -right-8 -bottom-8 opacity-10 animate-spin-slow-reverse pointer-events-none">
+                                <svg width="140" height="140" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="1.5">
+                                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                                </svg>
+                            </div>
+
+                            <div class="relative z-10 flex flex-col items-center">
+                                <div
+                                    class="icon-box text-white border border-white/30 p-2 rounded-lg bg-white/10 backdrop-blur-sm transition-all duration-500 group-hover:scale-125 group-hover:rotate-12">
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                                        <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div>
+                                <h3
+                                    class="text-2xl text-black font-semibold mb-3 group-hover:text-[#5DD3B6] transition-colors">
+                                    Cryptography & Security</h3>
+                                <p class="text-sm text-gray-500 font-light leading-relaxed">
+                                    The science of secrets. CIA Triad, Symmetric/Asymmetric encryption, Hashing, and TLS
+                                    protocols.
+                                </p>
+                            </div>
+                            <div class="arrow-link text-black font-mono">
+                                Secure <span class="ml-2">&rarr;</span>
+                            </div>
+                        </div>
+                    </article>
+                </a>
+
+                <!-- 07: DataBase (D) -->
+                <a href="content/dbms.html" class="block group text-neutral-600">
+                    <article class="card">
+                        <div class="card-header relative overflow-hidden border-none text-white py-12 bg-neutral-600">
+                            <!-- Primary Background Spin (Top-Left) -->
+                            <div class="absolute -left-12 -top-12 opacity-20 animate-spin-slow pointer-events-none">
+                                <svg width="220" height="220" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="1.5">
+                                    <path d="M12 4c-4.418 0-8 1.79-8 4s3.582 4 8 4 8-1.79 8-4-3.582-4-8-4Z" />
+                                    <path d="M4 8v8c0 2.21 3.582 4 8 4s8-1.79 8-4V8" />
+                                    <path d="M4 12c0 2.21 3.582 4 8 4s8-1.79 8-4" />
+                                </svg>
+                            </div>
+                            <!-- Secondary Background Spin (Bottom-Right) -->
+                            <div
+                                class="absolute -right-8 -bottom-8 opacity-10 animate-spin-slow-reverse pointer-events-none">
+                                <svg width="140" height="140" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="1.5">
+                                    <path d="M12 4c-4.418 0-8 1.79-8 4s3.582 4 8 4 8-1.79 8-4-3.582-4-8-4Z" />
+                                </svg>
+                            </div>
+
+                            <div class="relative z-10 flex flex-col items-center">
+                                <div
+                                    class="icon-box text-white border border-white/30 p-2 rounded-lg bg-white/10 backdrop-blur-sm transition-all duration-500 group-hover:scale-125 group-hover:rotate-12">
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M12 4c-4.418 0-8 1.79-8 4s3.582 4 8 4 8-1.79 8-4-3.582-4-8-4Z" />
+                                        <path d="M4 8v8c0 2.21 3.582 4 8 4s8-1.79 8-4V8" />
+                                        <path d="M4 12c0 2.21 3.582 4 8 4s8-1.79 8-4" />
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div>
+                                <h3
+                                    class="text-2xl text-black font-semibold mb-3 group-hover:text-neutral-600 transition-colors">
+                                    Database Systems</h3>
+                                <p class="text-sm text-gray-500 font-light leading-relaxed">
+                                    Engines of information. ACID, indexing, scaling paradigms, and the physics of
+                                    storage.
+                                </p>
+                            </div>
+                            <div class="arrow-link text-black font-mono">
+                                Query <span class="ml-2">&rarr;</span>
+                            </div>
+                        </div>
+                    </article>
+                </a>
+
+                <!-- 08: Data Structures (D) -->
+                <a href="content/ds.html" class="block group text-green-700">
+                    <article class="card">
+                        <div class="card-header relative overflow-hidden border-none text-white py-12 bg-green-700">
+                            <!-- Primary Background Spin (Top-Left) -->
+                            <div class="absolute -left-12 -top-12 opacity-20 animate-spin-slow pointer-events-none">
+                                <svg width="220" height="220" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="1.5">
+                                    <rect x="9" y="3" width="6" height="6" rx="1" />
+                                    <path d="M12 9v3" />
+                                    <path d="M12 12H5v3" />
+                                    <path d="M12 12h7v3" />
+                                    <rect x="2" y="15" width="6" height="6" rx="1" />
+                                    <rect x="16" y="15" width="6" height="6" rx="1" />
+                                </svg>
+                            </div>
+                            <!-- Secondary Background Spin (Bottom-Right) -->
+                            <div
+                                class="absolute -right-8 -bottom-8 opacity-10 animate-spin-slow-reverse pointer-events-none">
+                                <svg width="140" height="140" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="1.5">
+                                    <rect x="9" y="3" width="6" height="6" rx="1" />
+                                </svg>
+                            </div>
+
+                            <div class="relative z-10 flex flex-col items-center">
+                                <div
+                                    class="icon-box text-white border border-white/30 p-2 rounded-lg bg-white/10 backdrop-blur-sm transition-all duration-500 group-hover:scale-125 group-hover:rotate-12">
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                        <rect x="9" y="3" width="6" height="6" rx="1" />
+                                        <path d="M12 9v3" />
+                                        <path d="M12 12H5v3" />
+                                        <path d="M12 12h7v3" />
+                                        <rect x="2" y="15" width="6" height="6" rx="1" />
+                                        <rect x="16" y="15" width="6" height="6" rx="1" />
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div>
+                                <h3
+                                    class="text-2xl text-black font-semibold mb-3 group-hover:text-green-700 transition-colors">
+                                    Data Structures</h3>
+                                <p class="text-sm text-gray-500 font-light leading-relaxed">
+                                    The physics of memory. Linear vs non-linear organization. Arrays, Trees, and Graphs.
+                                </p>
+                            </div>
+                            <div class="arrow-link text-black font-mono">
+                                Organize <span class="ml-2">&rarr;</span>
+                            </div>
+                        </div>
+                    </article>
+                </a>
+
+                <!-- 22: HTML (H) -->
+                <a href="content/html.html" class="block group text-[#E34C26]">
+                    <article class="card">
+                        <div class="card-header relative overflow-hidden border-none text-white py-12 bg-[#E34C26]">
+                            <!-- Primary Background Spin (Top-Left) -->
+                            <div class="absolute -left-12 -top-12 opacity-20 animate-spin-slow pointer-events-none">
+                                <svg width="220" height="220" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="1.5">
+                                    <path d="M4 2v20l8-4 8 4V2H4z" />
+                                    <path d="M8 6h8" />
+                                    <path d="M8 10h8" />
+                                    <path d="M8 14h4" />
+                                </svg>
+                            </div>
+                            <!-- Secondary Background Spin (Bottom-Right) -->
+                            <div
+                                class="absolute -right-8 -bottom-8 opacity-10 animate-spin-slow-reverse pointer-events-none">
+                                <svg width="140" height="140" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="1.5">
+                                    <path d="M4 2v20l8-4 8 4V2H4z" />
+                                </svg>
+                            </div>
+
+                            <div class="relative z-10 flex flex-col items-center">
+                                <div
+                                    class="icon-box text-white border border-white/30 p-2 rounded-lg bg-white/10 backdrop-blur-sm transition-all duration-500 group-hover:scale-125 group-hover:rotate-12">
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M4 2v20l8-4 8 4V2H4z" />
+                                        <polyline points="8 10 12 14 16 10" />
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div>
+                                <h3
+                                    class="text-2xl text-black font-semibold mb-3 group-hover:text-[#E34C26] transition-colors">
+                                    HTML</h3>
+                                <p class="text-sm text-gray-500 font-light leading-relaxed">
+                                    The global scaffolding. Tags, attributes, and the structural foundations of the
+                                    digital web.
+                                </p>
+                            </div>
+                            <div class="arrow-link text-black font-mono">
+                                Structure <span class="ml-2">&rarr;</span>
+                            </div>
+                        </div>
+                    </article>
+                </a>
+
+                <!-- 21: JavaScript (J) -->
+                <a href="content/js.html" class="block group text-[#F7DF1E]">
+                    <article class="card">
+                        <div class="card-header relative overflow-hidden border-none text-white py-12 bg-[#F7DF1E]">
+                            <!-- Primary Background Spin (Top-Left) -->
+                            <div class="absolute -left-12 -top-12 opacity-20 animate-spin-slow pointer-events-none">
+                                <svg width="220" height="220" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="1.5">
+                                    <path d="M3 3h18v18H3z" />
+                                    <path d="M7 15l1 1h1a2 2 0 0 0 2-2V9" />
+                                    <path
+                                        d="M14 15h3a1 1 0 0 0 1-1v-1a1 1 0 0 0-1-1h-2a1 1 0 0 1-1-1v-1a1 1 0 0 1 1-1h3" />
+                                </svg>
+                            </div>
+                            <!-- Secondary Background Spin (Bottom-Right) -->
+                            <div
+                                class="absolute -right-8 -bottom-8 opacity-10 animate-spin-slow-reverse pointer-events-none">
+                                <svg width="140" height="140" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="1.5">
+                                    <path d="M3 3h18v18H3z" />
+                                    <path d="M7 15l1 1h1a2 2 0 0 0 2-2V9" />
+                                    <path
+                                        d="M14 15h3a1 1 0 0 0 1-1v-1a1 1 0 0 0-1-1h-2a1 1 0 0 1-1-1v-1a1 1 0 0 1 1-1h3" />
+                                </svg>
+                            </div>
+
+                            <div class="relative z-10 flex flex-col items-center">
+                                <div
+                                    class="icon-box text-white border border-white/30 p-2 rounded-lg bg-white/10 backdrop-blur-sm transition-all duration-500 group-hover:scale-125 group-hover:rotate-12">
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M3 3h18v18H3z" />
+                                        <path d="M7 15l1 1h1a2 2 0 0 0 2-2V9" />
+                                        <path
+                                            d="M14 15h3a1 1 0 0 0 1-1v-1a1 1 0 0 0-1-1h-2a1 1 0 0 1-1-1v-1a1 1 0 0 1 1-1h3" />
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div>
+                                <h3
+                                    class="text-2xl text-black font-semibold mb-3 group-hover:text-[#F7DF1E] transition-colors">
+                                    JavaScript</h3>
+                                <p class="text-sm text-gray-500 font-light leading-relaxed">
+                                    The engine of the web. Scopes, closures, and the asynchronous world of interactive
+                                    sites.
+                                </p>
+                            </div>
+                            <div class="arrow-link text-black font-mono">
+                                Script <span class="ml-2">&rarr;</span>
+                            </div>
+                        </div>
+                    </article>
+                </a>
+
+                <!-- 09: Linux (L) -->
+                <a href="content/linux.html" class="block group text-yellow-600">
+                    <article class="card">
+                        <div class="card-header relative overflow-hidden border-none text-white py-12 bg-yellow-600">
+                            <!-- Primary Background Spin (Top-Left) -->
+                            <div class="absolute -left-12 -top-12 opacity-20 animate-spin-slow pointer-events-none">
+                                <svg width="220" height="220" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="1.5">
+                                    <polyline points="4 17 10 11 4 5" />
+                                    <line x1="12" y1="19" x2="20" y2="19" />
+                                </svg>
+                            </div>
+                            <!-- Secondary Background Spin (Bottom-Right) -->
+                            <div
+                                class="absolute -right-8 -bottom-8 opacity-10 animate-spin-slow-reverse pointer-events-none">
+                                <svg width="140" height="140" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="1.5">
+                                    <polyline points="4 17 10 11 4 5" />
+                                </svg>
+                            </div>
+
+                            <div class="relative z-10 flex flex-col items-center">
+                                <div
+                                    class="icon-box text-white border border-white/30 p-2 rounded-lg bg-white/10 backdrop-blur-sm transition-all duration-500 group-hover:scale-125 group-hover:rotate-12">
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                        <polyline points="4 17 10 11 4 5" />
+                                        <line x1="12" y1="19" x2="20" y2="19" />
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div>
+                                <h3
+                                    class="text-2xl text-black font-semibold mb-3 group-hover:text-yellow-600 transition-colors">
+                                    Linux & Commands</h3>
+                                <p class="text-sm text-gray-500 font-light leading-relaxed">
+                                    The Kernel and the Shell. File manipulation, permissions, processes, and the power
+                                    of
+                                    the command line.
+                                </p>
+                            </div>
+                            <div class="arrow-link text-black font-mono">
+                                Execute <span class="ml-2">&rarr;</span>
+                            </div>
+                        </div>
+                    </article>
+                </a>
+
+                <!-- 10: OOPS (O) -->
+                <a href="content/oops.html" class="block group text-red-600">
+                    <article class="card">
+                        <div class="card-header relative overflow-hidden border-none text-white py-12 bg-red-600">
+                            <!-- Primary Background Spin (Top-Left) -->
+                            <div class="absolute -left-12 -top-12 opacity-20 animate-spin-slow pointer-events-none">
+                                <svg width="220" height="220" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="1.5">
+                                    <rect x="3" y="3" width="7" height="7" rx="1" />
+                                    <rect x="14" y="3" width="7" height="7" rx="1" />
+                                    <rect x="14" y="14" width="7" height="7" rx="1" />
+                                    <rect x="3" y="14" width="7" height="7" rx="1" />
+                                    <path d="M10 7h4" />
+                                    <path d="M10 17h4" />
+                                    <path d="M7 10v4" />
+                                    <path d="M17 10v4" />
+                                </svg>
+                            </div>
+                            <!-- Secondary Background Spin (Bottom-Right) -->
+                            <div
+                                class="absolute -right-8 -bottom-8 opacity-10 animate-spin-slow-reverse pointer-events-none">
+                                <svg width="140" height="140" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="1.5">
+                                    <rect x="3" y="3" width="7" height="7" rx="1" />
+                                    <rect x="14" y="3" width="7" height="7" rx="1" />
+                                </svg>
+                            </div>
+
+                            <div class="relative z-10 flex flex-col items-center">
+                                <div
+                                    class="icon-box text-white border border-white/30 p-2 rounded-lg bg-white/10 backdrop-blur-sm transition-all duration-500 group-hover:scale-125 group-hover:rotate-12">
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                        <rect x="3" y="3" width="7" height="7" rx="1" />
+                                        <rect x="14" y="3" width="7" height="7" rx="1" />
+                                        <rect x="14" y="14" width="7" height="7" rx="1" />
+                                        <rect x="3" y="14" width="7" height="7" rx="1" />
+                                        <path d="M10 7h4" />
+                                        <path d="M10 17h4" />
+                                        <path d="M7 10v4" />
+                                        <path d="M17 10v4" />
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div>
+                                <h3
+                                    class="text-2xl text-black font-semibold mb-3 group-hover:text-red-600 transition-colors">
+                                    Object Oriented Programming</h3>
+                                <p class="text-sm text-gray-500 font-light leading-relaxed">
+                                    Blueprint of reality. Encapsulation, Polymorphism, and the art of Abstraction.
+                                </p>
+                            </div>
+                            <div class="arrow-link text-black font-mono">
+                                Abstract <span class="ml-2">&rarr;</span>
+                            </div>
+                        </div>
+                    </article>
+                </a>
+
+                <!-- 11: Operating Systems (O) -->
+                <a href="content/os.html" class="block group text-[#ACBFA4]">
+                    <article class="card">
+                        <div class="card-header relative overflow-hidden border-none text-white py-12 bg-[#ACBFA4]">
+                            <!-- Primary Background Spin (Top-Left) -->
+                            <div class="absolute -left-12 -top-12 opacity-20 animate-spin-slow pointer-events-none">
+                                <svg width="220" height="220" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="1.5">
+                                    <rect x="4" y="4" width="16" height="16" rx="2" />
+                                    <rect x="9" y="9" width="6" height="6" />
+                                    <line x1="9" y1="1" x2="9" y2="4" />
+                                    <line x1="15" y1="1" x2="15" y2="4" />
+                                    <line x1="9" y1="20" x2="9" y2="23" />
+                                    <line x1="15" y1="20" x2="15" y2="23" />
+                                    <line x1="20" y1="9" x2="23" y2="9" />
+                                    <line x1="20" y1="14" x2="23" y2="14" />
+                                    <line x1="1" y1="9" x2="4" y2="9" />
+                                    <line x1="1" y1="14" x2="4" y2="14" />
+                                </svg>
+                            </div>
+                            <!-- Secondary Background Spin (Bottom-Right) -->
+                            <div
+                                class="absolute -right-8 -bottom-8 opacity-10 animate-spin-slow-reverse pointer-events-none">
+                                <svg width="140" height="140" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="1.5">
+                                    <rect x="4" y="4" width="16" height="16" rx="2" />
+                                </svg>
+                            </div>
+
+                            <div class="relative z-10 flex flex-col items-center">
+                                <div
+                                    class="icon-box text-white border border-white/30 p-2 rounded-lg bg-white/10 backdrop-blur-sm transition-all duration-500 group-hover:scale-125 group-hover:rotate-12">
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                        <rect x="4" y="4" width="16" height="16" rx="2" />
+                                        <rect x="9" y="9" width="6" height="6" />
+                                        <line x1="9" y1="1" x2="9" y2="4" />
+                                        <line x1="15" y1="1" x2="15" y2="4" />
+                                        <line x1="9" y1="20" x2="9" y2="23" />
+                                        <line x1="15" y1="20" x2="15" y2="23" />
+                                        <line x1="20" y1="9" x2="23" y2="9" />
+                                        <line x1="20" y1="14" x2="23" y2="14" />
+                                        <line x1="1" y1="9" x2="4" y2="9" />
+                                        <line x1="1" y1="14" x2="4" y2="14" />
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div>
+                                <h3
+                                    class="text-2xl text-black font-semibold mb-3 group-hover:text-[#ACBFA4] transition-colors">
+                                    Operating Systems</h3>
+                                <p class="text-sm text-gray-500 font-light leading-relaxed">
+                                    The conductor of the digital orchestra. Kernels, Processes, Threads, and Memory
+                                    Management.
+                                </p>
+                            </div>
+                            <div class="arrow-link text-black font-mono">
+                                Manage <span class="ml-2">&rarr;</span>
+                            </div>
+                        </div>
+                    </article>
+                </a>
+
+                <!-- 12: Pigeonhole (P) -->
+                <a href="content/pigeon.html" class="block group text-blue-600">
+                    <article class="card">
+                        <div class="card-header relative overflow-hidden border-none text-white py-12 bg-blue-600">
+                            <!-- Primary Background Spin (Top-Left) -->
+                            <div class="absolute -left-12 -top-12 opacity-20 animate-spin-slow pointer-events-none">
+                                <svg width="220" height="220" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="1.5">
+                                    <rect x="4" y="4" width="7" height="7" rx="1" />
+                                    <rect x="4" y="15" width="7" height="7" rx="1" />
+                                    <rect x="15" y="4" width="7" height="7" rx="1" />
+                                    <rect x="15" y="15" width="7" height="7" rx="1" />
+                                    <circle cx="18.5" cy="18.5" r="1.5" fill="currentColor" />
+                                    <circle cx="18.5" cy="16.5" r="1.5" fill="currentColor" />
+                                    <circle cx="7.5" cy="18.5" r="1.5" fill="currentColor" />
+                                </svg>
+                            </div>
+                            <!-- Secondary Background Spin (Bottom-Right) -->
+                            <div
+                                class="absolute -right-8 -bottom-8 opacity-10 animate-spin-slow-reverse pointer-events-none">
+                                <svg width="140" height="140" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="1.5">
+                                    <rect x="4" y="4" width="7" height="7" rx="1" />
+                                </svg>
+                            </div>
+
+                            <div class="relative z-10 flex flex-col items-center">
+                                <div
+                                    class="icon-box text-white border border-white/30 p-2 rounded-lg bg-white/10 backdrop-blur-sm transition-all duration-500 group-hover:scale-125 group-hover:rotate-12">
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                        <rect x="4" y="4" width="7" height="7" rx="1" />
+                                        <rect x="4" y="15" width="7" height="7" rx="1" />
+                                        <rect x="15" y="4" width="7" height="7" rx="1" />
+                                        <rect x="15" y="15" width="7" height="7" rx="1" />
+                                        <circle cx="18.5" cy="18.5" r="1.5" fill="currentColor" />
+                                        <circle cx="18.5" cy="16.5" r="1.5" fill="currentColor" />
+                                        <circle cx="7.5" cy="18.5" r="1.5" fill="currentColor" />
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div>
+                                <h3
+                                    class="text-2xl text-black font-semibold mb-3 group-hover:text-blue-600 transition-colors">
+                                    Pigeonhole Principle</h3>
+                                <p class="text-sm text-gray-500 font-light leading-relaxed">
+                                    The mathematics of limit. Why perfect compression is impossible and collisions
+                                    inevitable.
+                                </p>
+                            </div>
+                            <div class="arrow-link text-black font-mono">
+                                Calculate <span class="ml-2">&rarr;</span>
+                            </div>
+                        </div>
+                    </article>
+                </a>
+
+                <!-- 13: Design (D) -->
+                <a href="content/design.html" class="block group text-zinc-600">
+                    <article class="card">
+                        <div class="card-header relative overflow-hidden border-none text-white py-12 bg-zinc-600">
+                            <!-- Primary Background Spin (Top-Left) -->
+                            <div class="absolute -left-12 -top-12 opacity-20 animate-spin-slow pointer-events-none">
+                                <svg width="220" height="220" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="1.5">
+                                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+                                    <line x1="3" y1="9" x2="21" y2="9" />
+                                    <line x1="9" y1="21" x2="9" y2="9" />
+                                </svg>
+                            </div>
+                            <!-- Secondary Background Spin (Bottom-Right) -->
+                            <div
+                                class="absolute -right-8 -bottom-8 opacity-10 animate-spin-slow-reverse pointer-events-none">
+                                <svg width="140" height="140" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="1.5">
+                                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+                                </svg>
+                            </div>
+
+                            <div class="relative z-10 flex flex-col items-center">
+                                <div
+                                    class="icon-box text-white border border-white/30 p-2 rounded-lg bg-white/10 backdrop-blur-sm transition-all duration-500 group-hover:scale-125 group-hover:rotate-12">
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+                                        <line x1="3" y1="9" x2="21" y2="9" />
+                                        <line x1="9" y1="21" x2="9" y2="9" />
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div>
+                                <h3
+                                    class="text-2xl text-black font-semibold mb-3 group-hover:text-zinc-600 transition-colors">
+                                    Principles of Design</h3>
+                                <p class="text-sm text-gray-500 font-light leading-relaxed">
+                                    Less, but better. The ten commandments of good design by Dieter Rams.
+                                </p>
+                            </div>
+                            <div class="arrow-link text-black font-mono">
+                                Refine <span class="ml-2">&rarr;</span>
+                            </div>
+                        </div>
+                    </article>
+                </a>
+
+                <!-- 14: Quantum (Q) -->
+                <a href="content/quanta.html" class="block group text-orange-600">
+                    <article class="card">
+                        <div class="card-header relative overflow-hidden border-none text-white py-12 bg-orange-600">
+                            <!-- Primary Background Spin (Top-Left) -->
+                            <div class="absolute -left-12 -top-12 opacity-20 animate-spin-slow pointer-events-none">
+                                <svg width="220" height="220" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="1.5">
+                                    <ellipse cx="12" cy="12" rx="10" ry="4" transform="rotate(45 12 12)" />
+                                    <ellipse cx="12" cy="12" rx="10" ry="4" transform="rotate(-45 12 12)" />
+                                    <circle cx="12" cy="12" r="2.5" fill="currentColor" />
+                                </svg>
+                            </div>
+                            <!-- Secondary Background Spin (Bottom-Right) -->
+                            <div
+                                class="absolute -right-8 -bottom-8 opacity-10 animate-spin-slow-reverse pointer-events-none">
+                                <svg width="140" height="140" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="1.5">
+                                    <ellipse cx="12" cy="12" rx="10" ry="4" transform="rotate(45 12 12)" />
+                                </svg>
+                            </div>
+
+                            <div class="relative z-10 flex flex-col items-center">
+                                <div
+                                    class="icon-box text-white border border-white/30 p-2 rounded-lg bg-white/10 backdrop-blur-sm transition-all duration-500 group-hover:scale-125 group-hover:rotate-12">
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                        <ellipse cx="12" cy="12" rx="10" ry="4" transform="rotate(45 12 12)" />
+                                        <ellipse cx="12" cy="12" rx="10" ry="4" transform="rotate(-45 12 12)" />
+                                        <circle cx="12" cy="12" r="2.5" fill="currentColor" />
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div>
+                                <h3
+                                    class="text-2xl text-black font-semibold mb-3 group-hover:text-orange-600 transition-colors">
+                                    Quantum Computing</h3>
+                                <p class="text-sm text-gray-500 font-light leading-relaxed">
+                                    Not just faster, but different. Qubits, Superposition, and Entanglement explained.
+                                </p>
+                            </div>
+                            <div class="arrow-link text-black font-mono">
+                                Entangle <span class="ml-2">&rarr;</span>
+                            </div>
+                        </div>
+                    </article>
+                </a>
+
+                <!-- 15: React (R) -->
+                <a href="content/react.html" class="block group text-sky-500">
+                    <article class="card">
+                        <div class="card-header relative overflow-hidden border-none text-white py-12 bg-sky-500">
+                            <!-- Primary Background Spin (Top-Left) -->
+                            <div class="absolute -left-12 -top-12 opacity-20 animate-spin-slow pointer-events-none">
+                                <svg width="220" height="220" viewBox="-11.5 -10.23174 23 20.46348" fill="none"
+                                    stroke="currentColor" stroke-width="1.2">
+                                    <circle cx="0" cy="0" r="2" fill="currentColor" stroke="none" />
+                                    <g fill="none">
+                                        <ellipse rx="11" ry="4.2" />
+                                        <ellipse rx="11" ry="4.2" transform="rotate(60)" />
+                                        <ellipse rx="11" ry="4.2" transform="rotate(120)" />
+                                    </g>
+                                </svg>
+                            </div>
+                            <!-- Secondary Background Spin (Bottom-Right) -->
+                            <div
+                                class="absolute -right-8 -bottom-8 opacity-10 animate-spin-slow-reverse pointer-events-none">
+                                <svg width="140" height="140" viewBox="-11.5 -10.23174 23 20.46348" fill="none"
+                                    stroke="currentColor" stroke-width="1.2">
+                                    <ellipse rx="11" ry="4.2" />
+                                </svg>
+                            </div>
+
+                            <div class="relative z-10 flex flex-col items-center">
+                                <div
+                                    class="icon-box text-white border border-white/30 p-2 rounded-lg bg-white/10 backdrop-blur-sm transition-all duration-500 group-hover:scale-125 group-hover:rotate-12">
+                                    <svg width="24" height="24" viewBox="-11.5 -10.23174 23 20.46348" fill="none"
+                                        stroke="currentColor" stroke-width="1.2" stroke-linecap="round"
+                                        stroke-linejoin="round">
+                                        <circle cx="0" cy="0" r="2" fill="currentColor" stroke="none" />
+                                        <g fill="none">
+                                            <ellipse rx="11" ry="4.2" />
+                                            <ellipse rx="11" ry="4.2" transform="rotate(60)" />
+                                            <ellipse rx="11" ry="4.2" transform="rotate(120)" />
+                                        </g>
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div>
+                                <h3
+                                    class="text-2xl text-black font-semibold mb-3 group-hover:text-sky-500 transition-colors">
+                                    React.js</h3>
+                                <p class="text-sm text-gray-500 font-light leading-relaxed">
+                                    The UI as a function. Components, Hooks, Virtual DOM, and state management.
+                                </p>
+                            </div>
+                            <div class="arrow-link text-black font-mono">
+                                Render <span class="ml-2">&rarr;</span>
+                            </div>
+                        </div>
+                    </article>
+                </a>
+
+                <!-- 16: Software Eng (S) -->
+                <a href="content/software.html" class="block group text-[#E6B800]">
+                    <article class="card">
+                        <div class="card-header relative overflow-hidden border-none text-white py-12 bg-[#E6B800]">
+                            <!-- Primary Background Spin (Top-Left) -->
+                            <div class="absolute -left-12 -top-12 opacity-20 animate-spin-slow pointer-events-none">
+                                <svg width="220" height="220" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="1.5">
+                                    <path
+                                        d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" />
+                                </svg>
+                            </div>
+                            <!-- Secondary Background Spin (Bottom-Right) -->
+                            <div
+                                class="absolute -right-8 -bottom-8 opacity-10 animate-spin-slow-reverse pointer-events-none">
+                                <svg width="140" height="140" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="1.5">
+                                    <path
+                                        d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" />
+                                </svg>
+                            </div>
+
+                            <div class="relative z-10 flex flex-col items-center">
+                                <div
+                                    class="icon-box text-white border border-white/30 p-2 rounded-lg bg-white/10 backdrop-blur-sm transition-all duration-500 group-hover:scale-125 group-hover:rotate-12">
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                        <path
+                                            d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z">
+                                        </path>
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div>
+                                <h3
+                                    class="text-2xl text-black font-semibold mb-3 group-hover:text-[#E6B800] transition-colors">
+                                    Software Eng & PM</h3>
+                                <p class="text-sm text-gray-500 font-light leading-relaxed">
+                                    Building bits and managing chaos. SDLC, Agile, Jira, and the art of delivery.
+                                </p>
+                            </div>
+                            <div class="arrow-link text-black font-mono">
+                                Deploy <span class="ml-2">&rarr;</span>
+                            </div>
+                        </div>
+                    </article>
+                </a>
+
+                <!-- 17: System Architecture (S) -->
+                <a href="content/system.html" class="block group text-amber-900">
+                    <article class="card">
+                        <div class="card-header relative overflow-hidden border-none text-white py-12 bg-amber-800">
+                            <!-- Primary Background Spin (Top-Left) -->
+                            <div class="absolute -left-12 -top-12 opacity-20 animate-spin-slow pointer-events-none">
+                                <svg width="220" height="220" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="1.5">
+                                    <rect x="2" y="2" width="20" height="8" rx="2" ry="2" />
+                                    <rect x="2" y="14" width="20" height="8" rx="2" ry="2" />
+                                    <line x1="6" y1="6" x2="6.01" y2="6" />
+                                    <line x1="6" y1="18" x2="6.01" y2="18" />
+                                </svg>
+                            </div>
+                            <!-- Secondary Background Spin (Bottom-Right) -->
+                            <div
+                                class="absolute -right-8 -bottom-8 opacity-10 animate-spin-slow-reverse pointer-events-none">
+                                <svg width="140" height="140" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="1.5">
+                                    <rect x="2" y="2" width="20" height="8" rx="2" ry="2" />
+                                </svg>
+                            </div>
+
+                            <div class="relative z-10 flex flex-col items-center">
+                                <div
+                                    class="icon-box text-white border border-white/30 p-2 rounded-lg bg-white/10 backdrop-blur-sm transition-all duration-500 group-hover:scale-125 group-hover:rotate-12">
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                        <rect x="2" y="2" width="20" height="8" rx="2" ry="2" />
+                                        <rect x="2" y="14" width="20" height="8" rx="2" ry="2" />
+                                        <line x1="6" y1="6" x2="6.01" y2="6" />
+                                        <line x1="6" y1="18" x2="6.01" y2="18" />
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div>
+                                <h3
+                                    class="text-2xl text-black font-semibold mb-3 group-hover:text-amber-900 transition-colors">
+                                    System Architecture</h3>
+                                <p class="text-sm text-gray-500 font-light leading-relaxed">
+                                    Designing for scale. Load balancing, Caching, CAP Theorem, and Microservices.
+                                </p>
+                            </div>
+                            <div class="arrow-link text-black font-mono">
+                                Scale <span class="ml-2">&rarr;</span>
+                            </div>
+                        </div>
+                    </article>
+                </a>
+
+                <!-- 18: Theory of Computation (T) -->
+                <a href="content/computation.html" class="block group text-purple-800">
+                    <article class="card">
+                        <div class="card-header relative overflow-hidden border-none text-white py-12 bg-purple-800">
+                            <!-- Primary Background Spin (Top-Left) -->
+                            <div class="absolute -left-12 -top-12 opacity-20 animate-spin-slow pointer-events-none">
+                                <svg width="220" height="220" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="1.5">
+                                    <circle cx="6" cy="6" r="3" />
+                                    <circle cx="18" cy="6" r="3" />
+                                    <circle cx="12" cy="18" r="3" />
+                                    <path d="M9 6h6" />
+                                    <path d="M6 9v5" />
+                                    <path d="M18 9v5" />
+                                </svg>
+                            </div>
+                            <!-- Secondary Background Spin (Bottom-Right) -->
+                            <div
+                                class="absolute -right-8 -bottom-8 opacity-10 animate-spin-slow-reverse pointer-events-none">
+                                <svg width="140" height="140" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="1.5">
+                                    <circle cx="6" cy="6" r="3" />
+                                </svg>
+                            </div>
+
+                            <div class="relative z-10 flex flex-col items-center">
+                                <div
+                                    class="icon-box text-white border border-white/30 p-2 rounded-lg bg-white/10 backdrop-blur-sm transition-all duration-500 group-hover:scale-125 group-hover:rotate-12">
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                        <circle cx="6" cy="6" r="3" />
+                                        <circle cx="18" cy="6" r="3" />
+                                        <circle cx="12" cy="18" r="3" />
+                                        <path d="M9 6h6" />
+                                        <path d="M6 9v5" />
+                                        <path d="M18 9v5" />
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div>
+                                <h3
+                                    class="text-2xl text-black font-semibold mb-3 group-hover:text-violet-600 transition-colors">
+                                    Theory of Computation</h3>
+                                <p class="text-sm text-gray-500 font-light leading-relaxed">
+                                    Mathematical models of calculation. Automata, Turing Machines, and P vs NP.
+                                </p>
+                            </div>
+                            <div class="arrow-link text-black font-mono">
+                                Compute <span class="ml-2">&rarr;</span>
+                            </div>
+                        </div>
+                    </article>
+                </a>
+
+                <!-- 19: UI/UX (U) -->
+                <a href="content/uiux.html" class="block group text-[#6594B1]">
+                    <article class="card">
+                        <div class="card-header relative overflow-hidden border-none text-white py-12 bg-[#6594B1]">
+                            <!-- Primary Background Spin (Top-Left) -->
+                            <div class="absolute -left-12 -top-12 opacity-20 animate-spin-slow pointer-events-none">
+                                <svg width="220" height="220" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="1.5">
+                                    <path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"></path>
+                                    <path d="M12 19l7-7 3 3-7 7-3-3z"></path>
+                                    <path d="M2 2l7.586 7.586"></path>
+                                    <circle cx="11" cy="11" r="2"></circle>
+                                </svg>
+                            </div>
+                            <!-- Secondary Background Spin (Bottom-Right) -->
+                            <div
+                                class="absolute -right-8 -bottom-8 opacity-10 animate-spin-slow-reverse pointer-events-none">
+                                <svg width="140" height="140" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="1.5">
+                                    <path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"></path>
+                                </svg>
+                            </div>
+
+                            <div class="relative z-10 flex flex-col items-center">
+                                <div
+                                    class="icon-box text-white border border-white/30 p-2 rounded-lg bg-white/10 backdrop-blur-sm transition-all duration-500 group-hover:scale-125 group-hover:rotate-12">
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M12 19l7-7 3 3-7 7-3-3z"></path>
+                                        <path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"></path>
+                                        <path d="M2 2l7.586 7.586"></path>
+                                        <circle cx="11" cy="11" r="2"></circle>
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div>
+                                <h3
+                                    class="text-2xl text-black font-semibold mb-3 group-hover:text-[#6594B1] transition-colors">
+                                    UI/UX Design</h3>
+                                <p class="text-sm text-gray-500 font-light leading-relaxed">
+                                    Form follows Empathy. Wireframing, Color Theory, Typography, and the Laws of UX.
+                                </p>
+                            </div>
+                            <div class="arrow-link text-black font-mono">
+                                Design <span class="ml-2">&rarr;</span>
+                            </div>
+                        </div>
+                    </article>
+                </a>
+
+                <!-- 20: Version Control (G) -->
+                <a href="content/git.html" class="block group text-orange-700">
+                    <article class="card">
+                        <div class="card-header relative overflow-hidden border-none text-white py-12 bg-orange-700">
+                            <!-- Primary Background Spin (Top-Left) -->
+                            <div class="absolute -left-12 -top-12 opacity-20 animate-spin-slow pointer-events-none">
+                                <svg width="220" height="220" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="1.5">
+                                    <circle cx="12" cy="18" r="3" />
+                                </svg>
+                            </div>
+                            <!-- Secondary Background Spin (Bottom-Right) -->
+                            <div
+                                class="absolute -right-8 -bottom-8 opacity-10 animate-spin-slow-reverse pointer-events-none">
+                                <svg width="140" height="140" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="1.5">
+                                    <circle cx="12" cy="18" r="3" />
+                                </svg>
+                            </div>
+
+                            <div class="relative z-10 flex flex-col items-center">
+                                <div
+                                    class="icon-box text-white border border-white/30 p-2 rounded-lg bg-white/10 backdrop-blur-sm transition-all duration-500 group-hover:scale-125 group-hover:rotate-12">
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                        <circle cx="12" cy="18" r="3" />
+                                        <circle cx="6" cy="6" r="3" />
+                                        <circle cx="18" cy="6" r="3" />
+                                        <path d="M18 9v1a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2V9" />
+                                        <path d="M12 12v3" />
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div>
+                                <h3
+                                    class="text-2xl text-black font-semibold mb-3 group-hover:text-orange-700 transition-colors">
+                                    Version Control</h3>
+                                <p class="text-sm text-gray-500 font-light leading-relaxed">
+                                    The Time Machine for Code. Git architecture, branching, and distributed systems.
+                                </p>
+                            </div>
+                            <div class="arrow-link text-black font-mono">
+                                Track <span class="ml-2">&rarr;</span>
+                            </div>
+                        </div>
+                    </article>
+                </a>
+
+
+
+                <!-- Flash Cards -->
+                <a href="content/flashcards.html"
+                    class="block group relative overflow-hidden bg-teal-800 text-white hover:scale-[1.02] transition-all duration-500 shadow-xl hover:shadow-2xl">
+
+                    <!-- Geometric Pattern Overlay (Dots) -->
+                    <div class="absolute inset-0 opacity-10 pointer-events-none"
+                        style="background-image: radial-gradient(circle, #ffffff 1px, transparent 1px); background-size: 20px 20px;">
+                    </div>
+
+                    <!-- Hover Effect: Large Badge Rotation -->
+                    <div
+                        class="absolute -right-12 -bottom-12 opacity-10 text-white group-hover:rotate-12 group-hover:scale-110 transition-all duration-700 pointer-events-none">
+                        <svg width="240" height="240" viewBox="0 0 24 24" fill="currentColor">
+                            <path
+                                d="M4 2h16c1.1 0 2 .9 2 2v16c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2zm0 2v16h16V4H4z" />
+                        </svg>
+                    </div>
+
+                    <article
+                        class="card bg-transparent border-none h-full flex flex-col items-center justify-center py-12 relative z-10">
+                        <div <div
+                            class="card-header bg-transparent border-none p-0 mb-6 scale-110 group-hover:scale-125 transition-all duration-500 ease-out">
+                            <div
+                                class="icon-box text-white border-2 border-white/20 p-4 rounded-xl bg-teal-900/10 backdrop-blur-sm group-hover:border-white/50 transition-colors">
+                                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"></path>
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="card-body bg-transparent p-0 text-center">
+                            <div>
+                                <h3
+                                    class="text-3xl text-white font-bold font-mono tracking-widest uppercase mb-2 group-hover:tracking-[0.25em] transition-all">
+                                    Flash Cards
+                                </h3>
+                                <p
+                                    class="text-xs text-teal-200 font-mono uppercase tracking-widest opacity-80 group-hover:opacity-100 transition-opacity">
+                                    Knowledge Refresher
+                                </p>
+                            </div>
+
+                            <!-- Simple Line Indicator -->
+                            <div
+                                class="w-12 h-1 bg-teal-500 mx-auto mt-6 rounded-full group-hover:w-24 group-hover:bg-white transition-all duration-500">
+                            </div>
+                        </div>
+                    </article>
+                </a>
+
+                <a href="#" id="random-card" onclick="event.preventDefault(); 
+                         this.classList.add('random-card-pumping');
+                         const overlay = document.getElementById('random-overlay');
+                         overlay.classList.add('active');
+                         const urls = ['content/crypto.html', 'content/linux.html', 'content/software.html', 'content/ai.html', 'content/ds.html', 'content/oops.html', 'content/pigeon.html', 'content/quanta.html', 'content/algo.html', 'content/dbms.html', 'content/design.html', 'content/git.html', 'content/system.html', 'content/computation.html', 'content/react.html', 'content/networks.html', 'content/uiux.html', 'content/android.html', 'content/bigdata.html', 'content/os.html', 'content/software.html'];
+                         const target = urls[Math.floor(Math.random() * urls.length)];
+                         setTimeout(() => { window.location.href = target; }, 800);"
+                    class="block group relative overflow-hidden bg-black text-white hover:scale-[1.02] transition-all duration-500 shadow-xl hover:shadow-2xl">
+                    <!-- Simple Noise Texture Overlay -->
+                    <div class="absolute inset-0 opacity-10 pointer-events-none"
+                        style="background-image: url('data:image/svg+xml,%3Csvg viewBox=%220 0 200 200%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cfilter id=%22noise%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.65%22 numOctaves=%223%22 stitchTiles=%22stitch%22/%3E%3C/filter%3E%3Crect width=%22100%25%22 height=%22100%25%22 filter=%22url(%22noise)%22 opacity=%221%22/%3E%3C/svg%3E');">
+                    </div>
+
+                    <!-- Hover Gradient Blob -->
+                    <div
+                        class="absolute -top-1/2 -left-1/2 w-[200%] h-[200%] bg-gradient-to-br from-indigo-500/20 via-purple-500/0 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 blur-3xl pointer-events-none">
+                    </div>
+
+                    <article
+                        class="card bg-transparent border-black h-full flex flex-col items-center justify-center py-12 md:py-16 relative z-10">
+                        <div
+                            class="icon-box text-white mb-6 md:mb-8 scale-110 md:scale-125 group-hover:scale-125 md:group-hover:scale-150 group-hover:rotate-12 transition-all duration-500 ease-out">
+                            <!-- Large Dice Icon -->
+                            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="3" y="3" width="18" height="18" rx="4" ry="4" stroke-width="2" />
+                                <circle cx="8.5" cy="8.5" r="2" fill="currentColor" />
+                                <circle cx="15.5" cy="8.5" r="2" fill="currentColor" />
+                                <circle cx="8.5" cy="15.5" r="2" fill="currentColor" />
+                                <circle cx="15.5" cy="15.5" r="2" fill="currentColor" />
+                            </svg>
+                        </div>
+                        <h3
+                            class="text-2xl md:text-3xl lg:text-4xl text-white font-bold font-mono tracking-[0.1em] md:tracking-[0.2em] uppercase group-hover:tracking-[0.2em] md:group-hover:tracking-[0.3em] transition-all duration-500">
+                            Random
+                        </h3>
+                        <div class="h-0.5 w-0 bg-white group-hover:w-16 transition-all duration-500 mt-4 rounded-full">
+                        </div>
+                    </article>
+                </a>
+
+            </div>
+        </div>
+
+        <!-- Labs Section -->
+        <div id="labs-section" class="content-section hidden">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8">
+                <!-- Lab 01: Budget Expense Tracker -->
+                <a href="labs/budget-tracker.html" class="block group text-green-600 md:col-span-2">
+                    <article class="card md:flex-row md:items-stretch overflow-hidden relative">
+                        <!-- Vibrant Android Icon Section (Left Pane) -->
+                        <div
+                            class="card-header md:border-b-0 md:border-r md:w-1/4 md:flex-col md:justify-center md:items-center py-10 relative bg-[#3DDC84] overflow-hidden border-none text-white">
+
+                            <!-- Android Logo Overlay -->
+                            <div
+                                class="absolute -left-8 -top-8 opacity-20 group-hover:-rotate-12 group-hover:scale-110 transition-all duration-1000 pointer-events-none">
+                                <svg width="200" height="200" viewBox="0 0 24 24" fill="currentColor">
+                                    <path
+                                        d="M17.525 10.091c-.021-.013-.042-.027-.062-.041.021.014.041.028.062.041zm.019.123v-.001.001zm-11.088-.112c-.019.013-.039.026-.058.039.019-.013.039-.026.058-.039zm-.016.101v-.001.001zm15.429 2.053c-.504 0-.91-.406-.91-.91V9.083c0-.504.406-.91.91-.91s.91.406.91.91v2.261c0 .504-.406.91-.91.91zm-15.738 0c-.504 0-.91-.406-.91-.91V9.083c0-.504.406-.91.91-.91s.91.406.91.91v2.261c0 .504-.406.91-.91.91zM11.961 19c-3.141 0-5.723-2.316-6.142-5.321h12.285c-.419 3.005-3.001 5.321-6.143 5.321zm6.204-6.321H5.757c.078-4.508 3.738-8.125 8.242-8.125 4.542 0 8.225 3.617 8.225 8.125h.105c0-4.508-3.738-8.125-8.242-8.125.042-.14.086-.279.13-.418.146-.464.444-.813.916-.813.298 0 .546.064.643.328l.453 1.258a.455.455 0 0 0 .584.269.455.455 0 0 0 .269-.584l-.453-1.258c-.352-.977-1.299-1.341-2.115-1.341-1.033 0-1.898.66-2.261 1.639l-.491 1.342c-.221-.019-.444-.029-.67-.029s-.449.011-.67.029l-.491-1.342c-.363-.979-1.228-1.639-2.261-1.639-.816 0-1.763.364-2.115 1.341l-.453 1.258a.455.455 0 1 0 .853.315l.453-1.258c.097-.264.345-.328.643-.328.472 0 .77.349.916.813.044.139.088.278.13.418-4.503 0-8.242 3.617-8.242 8.125h.105zm-3.094-3.125c-.414 0-.75-.336-.75-.75s.336-.75.75-.75.75.336.75.75-.336.75-.75.75zm-6.219 0c-.414 0-.75-.336-.75-.75s.336-.75.75-.75.75.336.75.75-.336.75-.75.75zm3.109 9.125c-.414 0-.75.336-.75.75v1.25c0 .414.336.75.75.75s.75-.336.75-.75v-1.25c0-.414-.336-.75-.75-.75zm3.5 0c-.414 0-.75.336-.75.75v1.25c0 .414.336.75.75.75s.75-.336.75-.75v-1.25c0-.414-.336-.75-.75-.75z" />
+                                </svg>
+                            </div>
+
+                            <!-- Mobile SVG Overlay -->
+                            <div
+                                class="absolute -right-4 -bottom-4 opacity-10 group-hover:rotate-6 group-hover:scale-110 transition-all duration-700 pointer-events-none">
+                                <svg width="140" height="140" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="1.5">
+                                    <rect x="5" y="2" width="14" height="20" rx="2" ry="2" />
+                                    <line x1="12" y1="18" x2="12" y2="18.01" />
+                                </svg>
+                            </div>
+
+                            <!-- Main Icon and Label -->
+                            <span
+                                class="mono text-[10px] font-bold uppercase tracking-[0.2em] text-white/60 mb-6 relative z-10">Interactive
+                                Lab</span>
+                            <div
+                                class="icon-box text-white relative z-10 border border-white/30 p-2 rounded-lg bg-white/10 backdrop-blur-sm transition-all duration-500 group-hover:scale-125 group-hover:rotate-12">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M10 2v8" />
+                                    <path d="M14 2v8" />
+                                    <path d="M8 2h8" />
+                                    <path d="M14 10l5 10c.5 1 0 2-1 2H6c-1 0-1.5-1-1-2l5-10" />
+                                    <path d="M8 14h8" />
+                                </svg>
+                            </div>
+                        </div>
+
+                        <!-- Content Section -->
+                        <div class="card-body md:w-3/4 md:p-12 bg-white flex flex-col justify-between">
+                            <div>
+                                <div class="flex items-center gap-3 mb-4">
+                                    <span
+                                        class="mono text-[10px] font-bold uppercase tracking-widest text-[#3DDC84]">Android
+                                        Series</span>
+                                    <div class="h-px w-8 bg-gray-200"></div>
+                                    <span class="mono text-[10px] font-bold uppercase tracking-widest text-black/20">Lab
+                                        01</span>
+                                </div>
+                                <h3
+                                    class="text-4xl text-black font-semibold mb-6 group-hover:text-[#3DDC84] transition-colors leading-tight">
+                                    Build: Budget Tracker</h3>
+                                <p class="text-lg text-gray-500 font-light leading-relaxed max-w-2xl">
+                                    Construct a professional finance application from the ground up.
+                                    Master <strong>Android Studio</strong>, <strong>Jetpack Compose</strong>, and
+                                    industrial architecture
+                                    in this deep-dive building experience.
+                                </p>
+                            </div>
+                            <div
+                                class="arrow-link text-black font-mono text-sm uppercase tracking-widest mt-8 flex items-center gap-4 group-hover:gap-6 transition-all">
+                                <span>Initialize Lab</span>
+                                <span class="text-xl">&rarr;</span>
+                            </div>
+                        </div>
+                    </article>
+                </a>
+
+                <!-- Lab 02: React Weather App -->
+                <a href="labs/weather-app.html" class="block group text-cyan-500 md:col-span-2">
+                    <article class="card md:flex-row md:items-stretch overflow-hidden relative border-cyan-100">
+                        <!-- Vibrant React Icon Section (Left Pane) -->
+                        <div
+                            class="card-header md:border-b-0 md:border-r md:w-1/4 md:flex-col md:justify-center md:items-center py-10 relative bg-[#61dafb] overflow-hidden border-none text-white">
+
+                            <!-- React Logo Overlay -->
+                            <div
+                                class="absolute -left-8 -top-8 opacity-20 group-hover:rotate-12 group-hover:scale-110 transition-all duration-1000 pointer-events-none">
+                                <svg width="240" height="240" viewBox="-11.5 -10.23174 23 20.46348" fill="currentColor">
+                                    <circle cx="0" cy="0" r="2.05" />
+                                    <g stroke="currentColor" stroke-width="1" fill="none">
+                                        <ellipse rx="11" ry="4.2" />
+                                        <ellipse rx="11" ry="4.2" transform="rotate(60)" />
+                                        <ellipse rx="11" ry="4.2" transform="rotate(120)" />
+                                    </g>
+                                </svg>
+                            </div>
+
+                            <!-- Mobile SVG Overlay -->
+                            <div
+                                class="absolute -right-4 -bottom-4 opacity-10 group-hover:rotate-6 group-hover:scale-110 transition-all duration-700 pointer-events-none">
+                                <svg width="140" height="140" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="1.5">
+                                    <rect x="5" y="2" width="14" height="20" rx="2" ry="2" />
+                                    <line x1="12" y1="18" x2="12" y2="18.01" />
+                                </svg>
+                            </div>
+
+                            <!-- Main Icon and Label -->
+                            <span
+                                class="mono text-[10px] font-bold uppercase tracking-[0.2em] text-white/60 mb-6 relative z-10">Interactive
+                                Lab</span>
+                            <div
+                                class="icon-box text-white relative z-10 border border-white/30 p-2 rounded-lg bg-white/10 backdrop-blur-sm transition-all duration-500 group-hover:scale-125 group-hover:rotate-12">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M10 2v8" />
+                                    <path d="M14 2v8" />
+                                    <path d="M8 2h8" />
+                                    <path d="M14 10l5 10c.5 1 0 2-1 2H6c-1 0-1.5-1-1-2l5-10" />
+                                    <path d="M8 14h8" />
+                                </svg>
+                            </div>
+                        </div>
+
+                        <!-- Content Section -->
+                        <div class="card-body md:w-3/4 md:p-12 bg-white flex flex-col justify-between">
+                            <div>
+                                <div class="flex items-center gap-3 mb-4">
+                                    <span
+                                        class="mono text-[10px] font-bold uppercase tracking-widest text-[#61dafb]">React
+                                        Series</span>
+                                    <div class="h-px w-8 bg-gray-200"></div>
+                                    <span class="mono text-[10px] font-bold uppercase tracking-widest text-black/20">Lab
+                                        02</span>
+                                </div>
+                                <h3
+                                    class="text-4xl text-black font-semibold mb-6 group-hover:text-[#61dafb] transition-colors leading-tight">
+                                    Build: Weather App</h3>
+                                <p class="text-lg text-gray-500 font-light leading-relaxed max-w-2xl">
+                                    Build a dynamic, real-time weather dashboard.
+                                    Master <strong>React.js</strong> hooks, <strong>REST API</strong> integration with
+                                    OpenWeather, and
+                                    modern UI component architecture.
+                                </p>
+                            </div>
+                            <div
+                                class="arrow-link text-black font-mono text-sm uppercase tracking-widest mt-8 flex items-center gap-4 group-hover:gap-6 transition-all">
+                                <span>Initialize Lab</span>
+                                <span class="text-xl">&rarr;</span>
+                            </div>
+                        </div>
+                    </article>
+                </a>
+
+                <!-- Lab 03: Git Essentials -->
+                <a href="labs/git-essentials.html" class="block group text-[#f05032] md:col-span-2">
+                    <article class="card md:flex-row md:items-stretch overflow-hidden relative">
+                        <!-- Vibrant Git Icon Section (Left Pane) -->
+                        <div
+                            class="card-header md:border-b-0 md:border-r md:w-1/4 md:flex-col md:justify-center md:items-center py-10 relative bg-[#f05032] overflow-hidden border-none text-white">
+
+                            <!-- Git Logo Overlay (Synced with Learning Main Icon) -->
+                            <div
+                                class="absolute -left-8 -top-8 opacity-20 group-hover:-rotate-12 group-hover:scale-110 transition-all duration-1000 pointer-events-none">
+                                <svg width="220" height="220" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                    <circle cx="12" cy="18" r="3" />
+                                    <circle cx="6" cy="6" r="3" />
+                                    <circle cx="18" cy="6" r="3" />
+                                    <path d="M18 9v1a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2V9" />
+                                    <path d="M12 12v3" />
+                                </svg>
+                            </div>
+
+                            <!-- Mobile SVG Overlay (Synced with other Lab Cards) -->
+                            <div
+                                class="absolute -right-4 -bottom-4 opacity-10 group-hover:rotate-6 group-hover:scale-110 transition-all duration-700 pointer-events-none">
+                                <svg width="140" height="140" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="1.5">
+                                    <rect x="5" y="2" width="14" height="20" rx="2" ry="2" />
+                                    <line x1="12" y1="18" x2="12" y2="18.01" />
+                                </svg>
+                            </div>
+
+                            <!-- Main Icon and Label -->
+                            <span
+                                class="mono text-[10px] font-bold uppercase tracking-[0.2em] text-white/60 mb-6 relative z-10">Interactive
+                                Lab</span>
+                            <div
+                                class="icon-box text-white relative z-10 border border-white/30 p-2 rounded-lg bg-white/10 backdrop-blur-sm transition-all duration-500 group-hover:scale-125 group-hover:rotate-12">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M10 2v8" />
+                                    <path d="M14 2v8" />
+                                    <path d="M8 2h8" />
+                                    <path d="M14 10l5 10c.5 1 0 2-1 2H6c-1 0-1.5-1-1-2l5-10" />
+                                    <path d="M8 14h8" />
+                                </svg>
+                            </div>
+                        </div>
+
+                        <!-- Content Section -->
+                        <div class="card-body md:w-3/4 md:p-12 bg-white flex flex-col justify-between">
+                            <div>
+                                <div class="flex items-center gap-3 mb-4">
+                                    <span
+                                        class="mono text-[10px] font-bold uppercase tracking-widest text-[#f05032]">Version
+                                        Control
+                                        Series</span>
+                                    <div class="h-px w-8 bg-gray-200"></div>
+                                    <span class="mono text-[10px] font-bold uppercase tracking-widest text-black/20">Lab
+                                        03</span>
+                                </div>
+                                <h3
+                                    class="text-4xl text-black font-semibold mb-6 group-hover:text-[#f05032] transition-colors leading-tight">
+                                    Learn: Git Essentials</h3>
+                                <p class="text-lg text-gray-500 font-light leading-relaxed max-w-2xl">
+                                    Master the time machine for code.
+                                    Learn <strong>Installation</strong>, <strong>Branching</strong>,
+                                    <strong>Forking</strong>,
+                                    and the industrial workflow of <strong>Git</strong> from the ground up.
+                                </p>
+                            </div>
+                            <div
+                                class="arrow-link text-black font-mono text-sm uppercase tracking-widest mt-8 flex items-center gap-4 group-hover:gap-6 transition-all">
+                                <span>Initialize Lab</span>
+                                <span class="text-xl">&rarr;</span>
+                            </div>
+                        </div>
+                    </article>
+                </a>
+
+                <!-- Random Lab Card -->
+                <a href="#" id="random-lab-card" onclick="event.preventDefault(); 
+                         this.classList.add('random-card-pumping');
+                         const overlay = document.getElementById('random-overlay');
+                         overlay.classList.add('active');
+                         const urls = ['labs/budget-tracker.html', 'labs/weather-app.html', 'labs/git-essentials.html'];
+                         const target = urls[Math.floor(Math.random() * urls.length)];
+                         setTimeout(() => { window.location.href = target; }, 800);"
+                    class="block group relative overflow-hidden bg-black text-white hover:scale-[1.02] transition-all duration-500 shadow-xl hover:shadow-2xl md:col-span-2">
+                    <!-- Simple Noise Texture Overlay -->
+                    <div class="absolute inset-0 opacity-10 pointer-events-none"
+                        style="background-image: url('data:image/svg+xml,%3Csvg viewBox=%220 0 200 200%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cfilter id=%22noise%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.65%22 numOctaves=%223%22 stitchTiles=%22stitch%22/%3E%3C/filter%3E%3Crect width=%22100%25%22 height=%22100%25%22 filter=%22url(%22noise)%22 opacity=%221%22/%3E%3C/svg%3E');">
+                    </div>
+
+                    <!-- Hover Gradient Blob -->
+                    <div
+                        class="absolute -top-1/2 -left-1/2 w-[200%] h-[200%] bg-gradient-to-br from-indigo-500/20 via-purple-500/0 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 blur-3xl pointer-events-none">
+                    </div>
+
+                    <article
+                        class="card bg-transparent border-black h-full flex flex-col items-center justify-center py-12 md:py-16 relative z-10">
+                        <div
+                            class="icon-box text-white mb-6 md:mb-8 scale-110 md:scale-125 group-hover:scale-125 md:group-hover:scale-150 group-hover:rotate-12 transition-all duration-500 ease-out">
+                            <!-- Large Dice Icon -->
+                            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="3" y="3" width="18" height="18" rx="4" ry="4" stroke-width="2" />
+                                <circle cx="8.5" cy="8.5" r="2" fill="currentColor" />
+                                <circle cx="15.5" cy="8.5" r="2" fill="currentColor" />
+                                <circle cx="8.5" cy="15.5" r="2" fill="currentColor" />
+                                <circle cx="15.5" cy="15.5" r="2" fill="currentColor" />
+                            </svg>
+                        </div>
+                        <h3
+                            class="text-2xl md:text-3xl lg:text-4xl text-white font-bold font-mono tracking-[0.1em] md:tracking-[0.2em] uppercase group-hover:tracking-[0.2em] md:group-hover:tracking-[0.3em] transition-all duration-500">
+                            Random Lab
+                        </h3>
+                        <div class="h-0.5 w-0 bg-white group-hover:w-16 transition-all duration-500 mt-4 rounded-full">
+                        </div>
+                    </article>
+                </a>
+            </div>
+        </div>
+    </main>
+
+    <footer class="max-w-6xl mx-auto px-6 w-full mt-24">
+        <div class="border-t border-gray-300 pt-8 flex justify-between items-center">
+            <span class="text-[10px] mono uppercase text-gray-400">Undrstanding</span>
+            <span class="text-[10px] mono uppercase text-gray-400">For Humans, From Humans</span>
+        </div>
+    </footer>
+
+    <!-- Shared Search State -->
+    <script>
+        let activeSection = 'learning';
+        // Initialize immediately as elements are already in DOM
+        const input = document.getElementById('site-search');
+        const resultsBox = document.getElementById('search-results');
+        const voiceBtn = document.getElementById('voice-search-btn');
+    </script>
+
+    <!-- Navigation Logic -->
+    <script>
+        function switchSection(section, isInitial = false) {
+            const learning = document.getElementById('learning-section');
+            const labs = document.getElementById('labs-section');
+            const btnLearning = document.getElementById('btn-learning');
+            const btnLabs = document.getElementById('btn-labs');
+            const indicator = document.getElementById('nav-indicator');
+
+            // Persist state
+            localStorage.setItem('activeSection', section);
+
+            // Update indicator position
+            const activeBtn = section === 'learning' ? btnLearning : btnLabs;
+            indicator.style.width = `${activeBtn.offsetWidth}px`;
+            indicator.style.left = `${activeBtn.offsetLeft}px`;
+
+            if (section === 'learning') {
+                activeSection = 'learning';
+                input.placeholder = "Search topics...";
+                btnLearning.classList.add('active');
+                btnLabs.classList.remove('active');
+
+                if (isInitial) {
+                    labs.classList.add('hidden');
+                    labs.classList.remove('fade-in');
+                    learning.classList.remove('hidden');
+                    learning.classList.add('fade-in');
+                } else {
+                    labs.classList.remove('fade-in');
+                    setTimeout(() => {
+                        labs.classList.add('hidden');
+                        learning.classList.remove('hidden');
+                        setTimeout(() => learning.classList.add('fade-in'), 50);
+                    }, 400);
+                }
+            } else {
+                activeSection = 'lab';
+                input.placeholder = "Search labs...";
+                btnLabs.classList.add('active');
+                btnLearning.classList.remove('active');
+
+                if (isInitial) {
+                    learning.classList.add('hidden');
+                    learning.classList.remove('fade-in');
+                    labs.classList.remove('hidden');
+                    labs.classList.add('fade-in');
+                } else {
+                    learning.classList.remove('fade-in');
+                    setTimeout(() => {
+                        learning.classList.add('hidden');
+                        labs.classList.remove('hidden');
+                        setTimeout(() => labs.classList.add('fade-in'), 50);
+                    }, 400);
+                }
+            }
+        }
+
+        // Initialize state from localStorage
+        window.addEventListener('DOMContentLoaded', () => {
+            const savedSection = localStorage.getItem('activeSection') || 'learning';
+            if (savedSection === 'labs') {
+                switchSection('labs', true);
+            } else {
+                switchSection('learning', true);
+            }
+        });
+
+        // Mobile Swipe Functionality
+        let touchstartX = 0;
+        let touchstartY = 0;
+        let touchendX = 0;
+        let touchendY = 0;
+
+        const mainContent = document.querySelector('main');
+
+        mainContent.addEventListener('touchstart', e => {
+            touchstartX = e.changedTouches[0].screenX;
+            touchstartY = e.changedTouches[0].screenY;
+        }, { passive: true });
+
+        mainContent.addEventListener('touchend', e => {
+            touchendX = e.changedTouches[0].screenX;
+            touchendY = e.changedTouches[0].screenY;
+            handleSwipe();
+        }, { passive: true });
+
+        function handleSwipe() {
+            const deltaX = touchendX - touchstartX;
+            const deltaY = touchendY - touchstartY;
+            const threshold = 70; // minimum distance for a swipe
+
+            // Only trigger if horizontal movement is dominant and exceeds threshold
+            if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > threshold) {
+                if (deltaX < 0 && activeSection === 'learning') {
+                    // Swipe left: Go to Labs
+                    switchSection('labs');
+                } else if (deltaX > 0 && activeSection === 'lab') {
+                    // Swipe right: Go to Learning
+                    switchSection('learning');
+                }
+            }
+        }
+    </script>
+
+    <!-- Search Logic -->
+    <script>
+        const searchIndex = [
+            // Series 01: Algorithms
+            { s: "ALGO", t: "Algorithms", u: "content/algo.html", k: "intro logic steps computation flowcharts recipes mechanics", y: "learning" },
+            { s: "ALGO", t: "Sorting Algorithms", u: "content/algo.html#sorting", k: "bubble sort quick merge selection insertion heapsort heap sort bogo sort random shuffle order efficiency complexity big o", y: "learning" },
+            { s: "ALGO", t: "Searching Algorithms", u: "content/algo.html#searching", k: "binary search linear find lookup divide conquer logarithmic", y: "learning" },
+            { s: "ALGO", t: "Recursion", u: "content/algo.html#recursion", k: "base case self-reference factorial fibonacci stack memory russian dolls", y: "learning" },
+            { s: "ALGO", t: "Backtracking (N-Queens)", u: "content/algo.html#backtracking", k: "n-queens maze solving trial error game theory constraints", y: "learning" },
+            { s: "ALGO", t: "Graph Traversal (BFS/DFS)", u: "content/algo.html#pathfinding", k: "bfs dfs nodes edges pathfinding shortest path maze queue stack", y: "learning" },
+            { s: "ALGO", t: "Dijkstra's Algorithm", u: "content/algo.html#pathfinding", k: "shortest path weighted graph uniform cost search pathfinding optimization queue", y: "learning" },
+            { s: "ALGO", t: "A* Search (A-Star)", u: "content/algo.html#pathfinding", k: "heuristic pathfinding euclidean distance shortest path optimization best first", y: "learning" },
+            { s: "ALGO", t: "Knapsack Problem (0/1)", u: "content/algo.html#knapsack", k: "optimization dynamic programming value capacity constraints packing", y: "learning" },
+            { s: "ALGO", t: "Traveling Salesman (TSP)", u: "content/algo.html#tsp", k: "optimization NP-hard shortest path route planning permutations factorial", y: "learning" },
+            { s: "ALGO", t: "Greedy Algorithms", u: "content/algo.html#greedy", k: "coin change optimization local global optimal interval scheduling", y: "learning" },
+            { s: "ALGO", t: "Huffman Coding", u: "content/algo.html#huffman", k: "compression lossless greedy prefix codes binary tree frequency", y: "learning" },
+            { s: "ALGO", t: "Dynamic Programming", u: "content/algo.html#dp", k: "optimization memoization overlapping subproblems caching fibonacci bottom up top down", y: "learning" },
+            { s: "ALGO", t: "Euclid's Algorithm (GCD)", u: "content/algo.html#euclid", k: "greatest common divisor gcd math number theory modulo ancient", y: "learning" },
+            { s: "ALGO", t: "Union-Find (DSU)", u: "content/algo.html#union-find", k: "disjoint set union find connectivity components kruskal mst dsu inverse ackermann", y: "learning" },
+
+            // Series 02: AI
+            { s: "AI", t: "Artificial Intelligence", u: "content/ai.html", k: "intro history overview symbolism turing test ada lovelace", y: "learning" },
+            { s: "AI", t: "Taxonomy of Intelligence", u: "content/ai.html#taxonomy", k: "hierarchy machine learning deep learning nlp symbolic gofai", y: "learning" },
+            { s: "AI", t: "Evolution of Thought", u: "content/ai.html#history", k: "timeline history symbolic connectionist backpropagation alexnet transformer attention imagenet", y: "learning" },
+            { s: "AI", t: "Foundations of Thought", u: "content/ai.html#foundations", k: "turing test thinking humanly acting rationally rational agent laws of thought cognitive modeling immitation game", y: "learning" },
+            { s: "AI", t: "Inference Engines", u: "content/ai.html#chaining", k: "forward chaining backward chaining expert systems logic rules reasoning deduction", y: "learning" },
+            { s: "AI", t: "What is Machine Learning?", u: "content/ai.html#ml-intro", k: "ml definition supervised unsupervised semisupervised reinforcement learning patterns types", y: "learning" },
+            { s: "AI", t: "The Perceptron", u: "content/ai.html#neuron", k: "artificial neuron weights bias activation function rosenblatt linear classifier", y: "learning" },
+            { s: "AI", t: "Gradient Descent", u: "content/ai.html#gradient", k: "learning rate loss function optimization backpropagation calculus slope", y: "learning" },
+            { s: "AI", t: "Neural Networks", u: "content/ai.html#networks", k: "layers hidden deep learning architecture mlp feedforward", y: "learning" },
+            { s: "AI", t: "Computer Vision (CNN)", u: "content/ai.html#cnn", k: "convolutional filter kernel image processing pooling stride features", y: "learning" },
+            { s: "AI", t: "Vector Embeddings", u: "content/ai.html#embeddings", k: "nlp semantic meaning vectors word2vec cosine similarity latent space", y: "learning" },
+            { s: "AI", t: "Self-Attention", u: "content/ai.html#attention", k: "transformers attention mechanism context weighting tokens self-attention", y: "learning" },
+            { s: "AI", t: "Generative Text (LLMs)", u: "content/ai.html#gen-text", k: "large language models gpt training inference prediction engine tokens", y: "learning" },
+            { s: "AI", t: "Diffusion Models", u: "content/ai.html#diffusion", k: "image generation denoising stable diffusion midjourney dall-e latent space", y: "learning" },
+            { s: "AI", t: "Reinforcement Learning", u: "content/ai.html#rl", k: "agents rewards environment trial and error wumpus world", y: "learning" },
+            { s: "AI", t: "Artificial General Intelligence", u: "content/ai.html#agi", k: "agi general intelligence human-level ai theoretical strong ai asi super intelligence coffee test student test", y: "learning" },
+            { s: "AI", t: "The Alignment Problem", u: "content/ai.html#alignment", k: "alignment safety ethics reward hacking paperclip maximizer instrumental convergence", y: "learning" },
+
+            // Series 03: Computer Networks
+            { s: "NET", t: "Computer Networks", u: "content/networks.html", k: "internet infrastructure lan wan pan man topology bandwidth latency packets bits signals cables fiber wifi", y: "learning" },
+            { s: "NET", t: "Network Topologies", u: "content/networks.html#topologies", k: "star mesh bus ring hybrid central hub switch redundancy reliability", y: "learning" },
+            { s: "NET", t: "The OSI Model", u: "content/networks.html#osi", k: "7 layers physical data link network transport session presentation application abstraction encapsulation de-encapsulation", y: "learning" },
+            { s: "NET", t: "Encapsulation", u: "content/networks.html#encapsulation", k: "data flow header footer unit segment packet frame bit payload", y: "learning" },
+            { s: "NET", t: "TCP/IP Stack", u: "content/networks.html#tcpip", k: "packet switching routing internet protocol transmission control protocol reliability 3-way handshake segmenting", y: "learning" },
+            { s: "NET", t: "DNS (Domain Name System)", u: "content/networks.html#protocols", k: "phonebook ip address domain resolution a record cname mx nameserver resolving resolver", y: "learning" },
+            { s: "NET", t: "HTTP & HTTPS", u: "content/networks.html#protocols", k: "web request response methods get post put delete status codes ssl tls encryption browser world wide web", y: "learning" },
+            { s: "NET", t: "IP Addressing", u: "content/networks.html#ip", k: "ipv4 ipv6 addresses subnet mask gateway private public static dynamic dhcp", y: "learning" },
+            { s: "NET", t: "Wireless & Mobile", u: "content/networks.html#wireless", k: "wi-fi 5g cellular mobile communication radio frequencies bluetooth", y: "learning" },
+            { s: "NET", t: "Network Security", u: "content/networks.html#security", k: "ssl tls handshake cia triad firewall vpn encryption public key private key cryptography asymmetric symmetric", y: "learning" },
+
+            // Series 04: Data Structures
+            { s: "DATA", t: "Data Structures", u: "content/ds.html", k: "intro organization memory container storage types", y: "learning" },
+            { s: "DATA", t: "Arrays", u: "content/ds.html#arrays", k: "linear contiguous memory access index random O(1)", y: "learning" },
+            { s: "DATA", t: "Strings", u: "content/ds.html#strings", k: "text sequence immutable array char characters words text processing", y: "learning" },
+            { s: "DATA", t: "Linked Lists", u: "content/ds.html#linked-lists", k: "nodes pointers dynamic memory traversal head tail singly doubly circular prev", y: "learning" },
+            { s: "DATA", t: "Stacks (LIFO)", u: "content/ds.html#stacks", k: "push pop recursion call stack undo depth first", y: "learning" },
+            { s: "DATA", t: "Queues (FIFO)", u: "content/ds.html#queues", k: "enqueue dequeue buffering processing breadth first line printer priority queue triage", y: "learning" },
+            { s: "DATA", t: "Binary Trees", u: "content/ds.html#trees", k: "hierarchical root nodes binary search bst leaves height depth traversal inorder preorder postorder", y: "learning" },
+            { s: "DATA", t: "Graphs", u: "content/ds.html#graphs", k: "network nodes edges connections bfs dfs social maps directed undirected weighted", y: "learning" },
+            { s: "DATA", t: "Hash Maps (Dictionaries)", u: "content/ds.html#hashmaps", k: "key value association collision buckets dictionary set lookup O(1) objects map", y: "learning" },
+            { s: "DATA", t: "Sets", u: "content/ds.html#sets", k: "unique distinct collection no duplicates mathematical set theory venn diagram", y: "learning" },
+            { s: "DATA", t: "Big O Notation", u: "content/ds.html#complexity", k: "analysis efficiency time complexity growth scaling asymptotic constant linear quadratic logarithmic", y: "learning" },
+
+            // Series 05: Database Systems
+            { s: "DBMS", t: "Database Systems", u: "content/dbms.html", k: "intro engines sql nosql transactions memory storage internals", y: "learning" },
+            { s: "DBMS", t: "SQL Joins", u: "content/dbms.html#joins", k: "inner left right relations foreign key tables", y: "learning" },
+            { s: "DBMS", t: "Indexing (B-Tree)", u: "content/dbms.html#indexing", k: "b-tree search optimization performance full scan logarithmic", y: "learning" },
+            { s: "DBMS", t: "Normalization", u: "content/dbms.html#normalization", k: "1nf 2nf 3nf unf redundancy dependency structure", y: "learning" },
+            { s: "DBMS", t: "ACID Transactions", u: "content/dbms.html#acid", k: "atomicity consistency isolation durability wal commit rollback integrity", y: "learning" },
+            { s: "DBMS", t: "Concurrency Control", u: "content/dbms.html#locking", k: "locking x-lock row-level isolation levels", y: "learning" },
+            { s: "DBMS", t: "Architectures", u: "content/dbms.html#arch", k: "2-tier 3-tier client server web app", y: "learning" },
+            { s: "DBMS", t: "Sharding", u: "content/dbms.html#sharding", k: "horizontal scaling partition key cluster distribution", y: "learning" },
+            { s: "DBMS", t: "Replication", u: "content/dbms.html#replication", k: "master slave read replicas redundancy availability", y: "learning" },
+            { s: "DBMS", t: "CAP Theorem", u: "content/dbms.html#cap", k: "consistency availability partition tolerance distributed systems", y: "learning" },
+
+            // Series 06: Linux & Commands
+            { s: "LINUX", t: "Linux & Commands", u: "content/linux.html", k: "linux unix bash shell kernel operating system ubuntu debian redhat centos arch history shell navigation permissions process networking io redirection", y: "learning" },
+            { s: "LINUX", t: "History of Linux", u: "content/linux.html#history", k: "linus torvalds git open source gnu minix free software foundation fsf", y: "learning" },
+            { s: "LINUX", t: "Kernel vs Shell", u: "content/linux.html#concepts", k: "architecture kernel shell user space hardware abstraction concepts layer", y: "learning" },
+            { s: "LINUX", t: "Filesystem Navigation", u: "content/linux.html#basics", k: "ls cd pwd basics directories folders paths absolute relative", y: "learning" },
+            { s: "LINUX", t: "File Manipulation", u: "content/linux.html#manipulation", k: "cp v rm touch mkdir cat less head tail", y: "learning" },
+            { s: "LINUX", t: "Content Search (Grep)", u: "content/linux.html#content-search", k: "grep find search patterns regex regular expressions content text", y: "learning" },
+            { s: "LINUX", t: "Permissions (chmod)", u: "content/linux.html#permissions", k: "chmod chown user group others read write execute security sudo root", y: "learning" },
+            { s: "LINUX", t: "System Info", u: "content/linux.html#sysinfo", k: "uname df du free top htop disk memory cpu system information", y: "learning" },
+            { s: "LINUX", t: "Process Management", u: "content/linux.html#processes", k: "ps top kill htop pid jobs bg fg", y: "learning" },
+            { s: "LINUX", t: "Networking Tools", u: "content/linux.html#networking", k: "ping ifconfig ip ssh curl wget netstat ss scp remote connection", y: "learning" },
+            { s: "LINUX", t: "I/O Redirection", u: "content/linux.html#io", k: "pipes redirection stdin stdout stderr grep awk sed echo pipeline flow", y: "learning" },
+
+            // Series 07: Object Oriented Programming
+            { s: "OOPS", t: "Object Oriented Programming", u: "content/oops.html", k: "class object instance blueprint factory encapsulation inheritance polymorphism abstraction", y: "learning" },
+            { s: "OOPS", t: "Constructors", u: "content/oops.html#constructors", k: "init new this copy constructor parameter attributes", y: "learning" },
+            { s: "OOPS", t: "Encapsulation", u: "content/oops.html#encapsulation", k: "private public protected access modifiers hiding security getter setter", y: "learning" },
+            { s: "OOPS", t: "Inheritance", u: "content/oops.html#inheritance", k: "parent child super extends relationships hierarchy reuse is-a", y: "learning" },
+            { s: "OOPS", t: "Polymorphism (Runtime)", u: "content/oops.html#polymorphism", k: "overriding dynamic binding interface abstract virtual methods", y: "learning" },
+            { s: "OOPS", t: "Polymorphism (Compile)", u: "content/oops.html#overloading", k: "overloading static binding signatures parameters", y: "learning" },
+            { s: "OOPS", t: "Interfaces", u: "content/oops.html#interfaces", k: "contracts implements abstract can-do loose coupling", y: "learning" },
+            { s: "OOPS", t: "Abstraction", u: "content/oops.html#abstraction", k: "complexity hiding simplicity layers implementation", y: "learning" },
+            { s: "OOPS", t: "The Final Trinity", u: "content/oops.html#final", k: "final finally finalize immutability constant try catch gc", y: "learning" },
+            { s: "OOPS", t: "Multi-Threading", u: "content/oops.html#threading", k: "concurrency parallel process thread background worker async", y: "learning" },
+            { s: "OOPS", t: "Static vs Instance", u: "content/oops.html#static", k: "shared memory class variables counters utility", y: "learning" },
+            { s: "OOPS", t: "Relationships", u: "content/oops.html#relationships", k: "association composition aggregation has-a part-of uml diamond", y: "learning" },
+            { s: "OOPS", t: "Garbage Collection", u: "content/oops.html#gc", k: "memory management heap stack sweep release", y: "learning" },
+
+            // Series 08: Pigeonhole Principle
+            { s: "PIGEON", t: "Pigeonhole Principle", u: "content/pigeon.html", k: "intro dirichlet box counting combinatorics finiteness overlap proof basics holes pigeons demonstration container overflow", y: "learning" },
+            { s: "PIGEON", t: "Generalized Formula", u: "content/pigeon.html#generalized", k: "math ceiling function calculation average distribution", y: "learning" },
+            { s: "PIGEON", t: "Real World Examples", u: "content/pigeon.html#hair", k: "population proof hair london birthday problem paradox probability", y: "learning" },
+            { s: "PIGEON", t: "Geometry Proof", u: "content/pigeon.html#geometry", k: "points square distance spatial area subdivision packing", y: "learning" },
+            { s: "PIGEON", t: "Compression Limits", u: "content/pigeon.html#compression", k: "pied piper impossible limits data shannon entropy lossless", y: "learning" },
+
+            // Series 13: Principles of Good Design
+            { s: "DESIGN", t: "Principles of Good Design", u: "content/design.html", k: "dieter rams ten principles good design less but better", y: "learning" },
+            { s: "DESIGN", t: "Innovative Design", u: "content/design.html#p1", k: "innovative technology development progression", y: "learning" },
+            { s: "DESIGN", t: "Useful Product", u: "content/design.html#p2", k: "function utility criteria psychological aesthetic", y: "learning" },
+            { s: "DESIGN", t: "Aesthetic Design", u: "content/design.html#p3", k: "beauty well-being integral quality", y: "learning" },
+            { s: "DESIGN", t: "Understandable Product", u: "content/design.html#p4", k: "clarity self-explanatory structure intuition", y: "learning" },
+            { s: "DESIGN", t: "Unobtrusive Design", u: "content/design.html#p5", k: "neutral restrained tools decor", y: "learning" },
+            { s: "DESIGN", t: "Honest Design", u: "content/design.html#p6", k: "integrity promise value manipulation", y: "learning" },
+            { s: "DESIGN", t: "Long-lasting Design", u: "content/design.html#p7", k: "timeless fashion obsolescence durability", y: "learning" },
+            { s: "DESIGN", t: "Thorough Design", u: "content/design.html#p8", k: "precision care accuracy arbitrary respect", y: "learning" },
+            { s: "DESIGN", t: "Eco-friendly Design", u: "content/design.html#p9", k: "environment resources pollution sustainability", y: "learning" },
+            { s: "DESIGN", t: "Minimalist Design", u: "content/design.html#p10", k: "less but better simplicity essential purity", y: "learning" },
+
+            // Series 14: Quantum Computing
+            { s: "QUANTA", t: "Quantum Computing", u: "content/quanta.html", k: "intro physics mechanics subatomic weirdness probability superposition entanglement qubits bloch sphere measurement collapse", y: "learning" },
+            { s: "QUANTA", t: "Heisenberg Uncertainty", u: "content/quanta.html#heisenberg", k: "position momentum precision measurement limit observation", y: "learning" },
+            { s: "QUANTA", t: "Bit vs Qubit", u: "content/quanta.html#qubits", k: "bloch sphere binary superposition 0 and 1 simultaneous", y: "learning" },
+            { s: "QUANTA", t: "Superposition", u: "content/quanta.html#superposition", k: "wave function interference states amplitudes probability", y: "learning" },
+            { s: "QUANTA", t: "Measurement Collapse", u: "content/quanta.html#measurement", k: "observation schrodinger cat probability decoherence eigenstate", y: "learning" },
+            { s: "QUANTA", t: "Entanglement", u: "content/quanta.html#entanglement", k: "spooky action correlation bell pair non-locality einstein podolsky rosen", y: "learning" },
+            { s: "QUANTA", t: "No-Cloning Theorem", u: "content/quanta.html#no-cloning", k: "copy duplication security encryption cryptography theorem", y: "learning" },
+            { s: "QUANTA", t: "Quantum Tunneling", u: "content/quanta.html#tunneling", k: "barrier annealing optimization wave penetration energy activation", y: "learning" },
+            { s: "QUANTA", t: "Cooper Pairs", u: "content/quanta.html#cooper", k: "superconductivity electrons bcs theory phonon attraction resistance zero", y: "learning" },
+            { s: "QUANTA", t: "Josephson Junction", u: "content/quanta.html#josephson", k: "hardware superconducting anharmonicity transmon squid artificial atom", y: "learning" },
+
+            // Series 16: Software Engineering & PM
+            { s: "SE", t: "Software Engineering", u: "content/software.html", k: "software engineering sdlc agile scrum kanban jira waterfall spiral model v-model qa pm devops maintenance refactoring tech debt mvp pull request sprint backlog system analysis design patterns", y: "learning" },
+            { s: "SE", t: "Nature of Software", u: "content/software.html#nature", k: "malleability complexity invisibility deterioration entropy", y: "learning" },
+            { s: "SE", t: "WebApps", u: "content/software.html#webapps", k: "network intensiveness concurrency unpredictable load availability", y: "learning" },
+            { s: "SE", t: "Software Process", u: "content/software.html#process", k: "communication planning modeling construction deployment framework", y: "learning" },
+            { s: "SE", t: "SE Practice", u: "content/software.html#practice", k: "understand problem plan solution carry out examine result polya", y: "learning" },
+            { s: "SE", t: "Software Myths", u: "content/software.html#myths", k: "management customer practitioner myths reality standards requirements", y: "learning" },
+            { s: "SE", t: "Process Models", u: "content/software.html#generic-process", k: "generic process framework assessment cmmi spice", y: "learning" },
+            { s: "SE", t: "Waterfall Model", u: "content/software.html#prescriptive-models", k: "waterfall classic life cycle linear sequential communication planning modeling construction deployment", y: "learning" },
+            { s: "SE", t: "Incremental & Spiral", u: "content/software.html#prescriptive-models", k: "incremental model spiral model evolutionary risk driven prototyping", y: "learning" },
+            { s: "SE", t: "Unified Process (UP)", u: "content/software.html#unified-process", k: "unified process up inception elaboration construction transition phases workflows", y: "learning" },
+            { s: "SE", t: "PSP & TSP", u: "content/software.html#psp-tsp", k: "personal software process team software process psp tsp discipline self-directed", y: "learning" },
+            { s: "SE", t: "Understanding Requirements", u: "content/software.html#requirements-engineering", k: "requirements engineering elicitation elaboration negotiation specification validation management srs", y: "learning" },
+            { s: "SE", t: "Requirement Scenarios", u: "content/software.html#modeling-scenarios", k: "modeling scenarios use cases user stories actor system boundary", y: "learning" },
+            { s: "SE", t: "Modeling Strategies", u: "content/software.html#modeling-strategies", k: "modeling strategies flow oriented class based behavioral dfd data flow diagram state diagram", y: "learning" },
+            { s: "SE", t: "SDLC", u: "content/software.html#sdlc", k: "sdlc software development life cycle planning analysis design implementation testing deployment maintenance srs hld lld requirements", y: "learning" },
+            { s: "SE", t: "Agile Development", u: "content/software.html#agile", k: "agile manifesto scrum master product owner sprint standup backlog user stories individuals interactions working software customer collaboration responding to change", y: "learning" },
+            { s: "SE", t: "Extreme Programming (XP)", u: "content/software.html#agile", k: "xp extreme programming kent beck pair programming tdd test driven development refactoring continuous integration small releases planning game metaphor simple design collective ownership sustainable pace on-site customer coding standards", y: "learning" },
+            { s: "SE", t: "Project Management Tools", u: "content/software.html#pm-tools", k: "jira trello linear asana notion tracking kanban board gantt chart", y: "learning" },
+            { s: "SE", t: "Soft. Estimation", u: "content/software.html#estimation", k: "estimation loc lines of code function points cocomo constructive cost model effort sizing", y: "learning" },
+            { s: "SE", t: "Project Scheduling", u: "content/software.html#scheduling", k: "scheduling pert program evaluation review technique cpm critical path method gantt chart timeline dependencies", y: "learning" },
+            { s: "SE", t: "Risk Management", u: "content/software.html#risk", k: "risk management rmmm mitigation monitoring management proactive reactive contingency plan", y: "learning" },
+            { s: "SE", t: "Version Control (Git)", u: "content/software.html#version-control", k: "git version control branching merging commit push pull request code review", y: "learning" },
+            { s: "SE", t: "CI/CD Pipelines", u: "content/software.html#cicd", k: "continuous integration continuous delivery deployment jenkins github actions gitlab ci automation build test deploy devsecops sast dast security static analysis", y: "learning" },
+            { s: "SE", t: "Software Testing", u: "content/software.html#testing", k: "testing unit integration system validation verification white box black box alpha beta stress performance recovery security glass box opaque box qa quality assurance bugs defects test cases", y: "learning" },
+
+            // Series 15: React.js
+            { s: "REACT", t: "React.js", u: "content/react.html", k: "react ui library javascript frontend facebook meta components jsx props state hooks vdom context", y: "learning" },
+            { s: "REACT", t: "Components & JSX", u: "content/react.html#components", k: "functional components class components jsx syntax html in js props render markup", y: "learning" },
+            { s: "REACT", t: "Props vs State", u: "content/react.html#props-state", k: "data flow props immutable state mutable transfer communication", y: "learning" },
+            { s: "REACT", t: "Hooks (useState, useEffect)", u: "content/react.html#hooks", k: "hooks functional logic lifecycle side effects usestate useeffect rules of hooks", y: "learning" },
+            { s: "REACT", t: "Virtual DOM", u: "content/react.html#vdom", k: "performance diffing reconciliation shadow dom rendering update batching", y: "learning" },
+            { s: "REACT", t: "Context API", u: "content/react.html#context", k: "global state prop drilling context provider consumer usecontext", y: "learning" },
+            { s: "REACT", t: "Performance", u: "content/react.html#performance", k: "optimization memo usememo usecallback prevent re-render", y: "learning" },
+            { s: "REACT", t: "React Ecosystem", u: "content/react.html#ecosystem", k: "nextjs remix router react native spa ssr framework tools", y: "learning" },
+
+            // Series 17: System Architecture
+            { s: "SYS", t: "System Architecture", u: "content/system.html", k: "system design scale architecture distributed reliability trade-offs high availability fault tolerance sharding replication cap theorem monolith microservices load balancing caching eda observability", y: "learning" },
+            { s: "SYS", t: "Monolith vs Microservices", u: "content/system.html#monolith", k: "structural patterns modular microservices decoupling independent scaling soa service oriented architecture api gateway bff monolithic", y: "learning" },
+            { s: "SYS", t: "Load Balancing", u: "content/system.html#loadbalancing", k: "traffic control distribution round robin least connections ip hash nginx haproxy l4 l7 load balancer horizontal scaling", y: "learning" },
+            { s: "SYS", t: "Caching Strategy", u: "content/system.html#caching", k: "speed latency redis memcached lru ttl write-through cache-aside read-through write-back eviction policies cdn content delivery network", y: "learning" },
+            { s: "SYS", t: "CAP Theorem", u: "content/system.html#principles", k: "consistency availability partition tolerance distributed systems trade-offs eventual consistency strong consistency pacelc theorem", y: "learning" },
+            { s: "SYS", t: "Event-Driven (EDA)", u: "content/system.html#eda", k: "asynchronous producers consumers events message queue decoupling kafka rabbitmq pub sub publish subscribe event sourcing cqrs", y: "learning" },
+            { s: "SYS", t: "Databases & Scaling", u: "content/system.html#databases", k: "sql nosql sharding replication vertical horizontal scaling acid base master slave leader follower consistent hashing", y: "learning" },
+            { s: "SYS", t: "Observability", u: "content/system.html#observability", k: "monitoring logging tracing metrics latency errors saturation traffic golden signals prometheus grafana elk stack distributed tracing jaeger", y: "learning" },
+
+            // Series 18: Theory of Computation
+            { s: "THEORY", t: "Theory of Computation", u: "content/computation.html", k: "automata turing machine dfa nfa computation logic halting problem regex grammars chomsky complexity", y: "learning" },
+            { s: "THEORY", t: "Finite Automata", u: "content/computation.html#automata", k: "dfa nfa states transition deterministic nondeterministic regex patterns", y: "learning" },
+            { s: "THEORY", t: "Regular Languages", u: "content/computation.html#regex", k: "regex regular expressions concatenation union kleene star", y: "learning" },
+            { s: "THEORY", t: "Context-Free Grammars", u: "content/computation.html#grammars", k: "cfg pushdown automata stack memory pda nesting parentheses", y: "learning" },
+            { s: "THEORY", t: "Chomsky Hierarchy", u: "content/computation.html#chomsky", k: "hierarchy recursion production rules context sensitive recursively enumerable power", y: "learning" },
+            { s: "THEORY", t: "Turing Machine", u: "content/computation.html#turing", k: "tape head infinite memory universal computer computability", y: "learning" },
+            { s: "THEORY", t: "The Halting Problem", u: "content/computation.html#halting", k: "undecidable logic paradox godel incompleteness proof impossible", y: "learning" },
+            { s: "THEORY", t: "P vs NP", u: "content/computation.html#complexity", k: "complexity classes polynomial time hard optimization millenium prize", y: "learning" },
+
+            // Series 19: UI/UX Design
+            { s: "UIUX", t: "UI/UX Design", u: "content/uiux.html", k: "user interface experience design wireframe prototype figma adobe xd sketch theory creative accessibility a11y inclusive wcag heuristics glossary", y: "learning" },
+            { s: "UIUX", t: "UI vs UX Definitions", u: "content/uiux.html#definitions", k: "definition difference interface experience horse saddle reins analogy distinguish core distinction", y: "learning" },
+            { s: "UIUX", t: "The Design Process", u: "content/uiux.html#process", k: "methodology design thinking empathize define ideate prototype test lifecycle iterative", y: "learning" },
+            { s: "UIUX", t: "User Research & Personas", u: "content/uiux.html#research", k: "research qualitative quantitative interviews personas archetypes users empathy", y: "learning" },
+            { s: "UIUX", t: "Information Architecture", u: "content/uiux.html#ia", k: "ia sitemaps navigation structure hierarchy content organization", y: "learning" },
+            { s: "UIUX", t: "Visual Composition", u: "content/uiux.html#composition", k: "rule of thirds golden ratio composition 1.618 grid intersections balance harmony", y: "learning" },
+            { s: "UIUX", t: "Wireframing & Fidelity", u: "content/uiux.html#wireframing", k: "lo-fi hi-fi fidelity blueprint mockups layout structure skeleton low fidelity high fidelity prototyping", y: "learning" },
+            { s: "UIUX", t: "Color Theory & Psychology", u: "content/uiux.html#color", k: "palette 60-30-10 rule contrast psychology color emotions blue trust red urgency green growth yellow optimism purple luxury black power accent hex rgb hsl", y: "learning" },
+            { s: "UIUX", t: "Typography", u: "content/uiux.html#typography", k: "fonts typeface hierarchy serif sans-serif leading kerning readability scanability visual hierarchy font pairing scale contrast proximity weights x-height", y: "learning" },
+            { s: "UIUX", t: "Accessibility (A11y)", u: "content/uiux.html#accessibility", k: "contrast ratio wcag compliance inclusive design vision impairment screen readers", y: "learning" },
+            { s: "UIUX", t: "Laws of UX", u: "content/uiux.html#laws", k: "fitts law hicks law jakobs law millers law peak-end rule aesthetic usability doherty threshold zeigarnik von restorff psychology cognitive load decision making usability heuristics mental models chunking", y: "learning" },
+            { s: "UIUX", t: "7 Core UI Principles", u: "content/uiux.html#principles", k: "7 principles clarity feedback control consistency efficiency familiarity structure hierarchy foundations rules", y: "learning" },
+            { s: "UIUX", t: "UI/UX Glossary", u: "content/uiux.html#glossary", k: "definitions terms dictionary kerning affordance mapping collision", y: "learning" },
+
+            // Series 20: Version Control (Git)
+            { s: "GIT", t: "Version Control", u: "content/git.html", k: "git github version control vcs branching merging commit checkout repository snapshot lifecyle conflict remote", y: "learning" },
+            { s: "GIT", t: "The Three States", u: "content/git.html#lifecycle", k: "modified staged committed snapshot lifecycle", y: "learning" },
+            { s: "GIT", t: "Branching", u: "content/git.html#branching", k: "branch checkout main feature parallel development", y: "learning" },
+            { s: "GIT", t: "Merge Conflicts", u: "content/git.html#conflicts", k: "resolution ours theirs both markers", y: "learning" },
+            { s: "GIT", t: "Cherry Pick & Rebase", u: "content/git.html#advanced-tools", k: "precision history rewrite linear base", y: "learning" },
+            { s: "GIT", t: "Remote (GitHub)", u: "content/git.html#remote", k: "cloud clone origin push pull distributed", y: "learning" },
+
+            // Series 21: JavaScript
+            { s: "JS", t: "JavaScript Masterclass", u: "content/js.html", k: "javascript js programming language web development frontend backend nodejs interactive engine v8", y: "learning" },
+            { s: "JS", t: "JS: Origins & History", u: "content/js.html#origins", k: "ecmascript tc39 historical netscape brendan eich standards", y: "learning" },
+            { s: "JS", t: "JS: Fundamentals", u: "content/js.html#fundamentals", k: "syntax strict equality triple equals variables let const var control flow operators", y: "learning" },
+            { s: "JS", t: "JS: Memory & Engine", u: "content/js.html#engine", k: "lifo management memory heap callstack engine performance v8 execution context", y: "learning" },
+            { s: "JS", t: "JS: Scopes & Closures", u: "content/js.html#scopes", k: "scope closure nested function lexical scope environment memory encapsulation", y: "learning" },
+            { s: "JS", t: "JS: The DOM", u: "content/js.html#dom", k: "dom events manipulation element selector hierarchy browser api web", y: "learning" },
+            { s: "JS", t: "JS: Asynchronous JS", u: "content/js.html#async", k: "async await promises callback event loop concurrency parallel non-blocking fetch network", y: "learning" },
+            { s: "JS", t: "JS: The Event Loop", u: "content/js.html#event-loop", k: "fifo microtasks macrotasks task scheduling performance single threaded event loop animation", y: "learning" },
+            { s: "JS", t: "JS: OOP & Prototypes", u: "content/js.html#prototypes", k: "prototype chain objects classes inheritance this context binding new super", y: "learning" },
+            { s: "JS", t: "JS: Modern Tooling", u: "content/js.html#modern", k: "optional chaining nullish coalescing destructuring syntax features es2020", y: "learning" },
+            { s: "JS", t: "JS: Glossary", u: "content/js.html#glossary", k: "definitions terms hoisting terminology help reference", y: "learning" },
+            { s: "JS", t: "JS: Knowledge Check", u: "content/js.html#quiz", k: "quiz test exam certificate certification verification validation check", y: "learning" },
+
+            // Series 22: HTML
+            { s: "HTML", t: "HTML Masterclass", u: "content/html.html", k: "html structure web development frontend basic scaffolding markup semantic tags accessibility metadata dom layout framework", y: "learning" },
+            { s: "HTML", t: "HTML: Origins & History", u: "content/html.html#origins", k: "tim berners-lee cern history evolution web standards markup world wide web", y: "learning" },
+            { s: "HTML", t: "HTML: Structure", u: "content/html.html#structure", k: "doctype html head body skeleton anatomy envelope viewport metadata encoding utf-8", y: "learning" },
+            { s: "HTML", t: "HTML: Elements & Tags", u: "content/html.html#elements", k: "tags attributes nesting self-closing void elements dom object model hierarchy", y: "learning" },
+            { s: "HTML", t: "HTML: Semantic Web", u: "content/html.html#semantic", k: "semantic markup header nav main footer article header layout meaning seo accessibility screen readers", y: "learning" },
+            { s: "HTML", t: "HTML: Forms & Data", u: "content/html.html#forms", k: "forms input submit validation email password checkbox interaction get post action name", y: "learning" },
+            { s: "HTML", t: "HTML: Rich Media", u: "content/html.html#media", k: "images video audio figure caption multimedia source fallback iframe", y: "learning" },
+            { s: "HTML", t: "HTML: Live Sandbox", u: "content/html.html#lab", k: "sandbox editor preview playground test code live code interactive lab practice", y: "learning" },
+            { s: "HTML", t: "HTML: Glossary", u: "content/html.html#glossary", k: "definitions terms html terminology dictionary reference help glossary", y: "learning" },
+            { s: "HTML", t: "HTML: Knowledge Check", u: "content/html.html#quiz", k: "quiz test exam certificate certification verification validation check assessment", y: "learning" },
+
+            // Series 02: Android & Kotlin
+            { s: "ANDROID", t: "Android & Kotlin", u: "content/android.html", k: "android studio mobile app development apk sdk manifest gradle avd emulator intellij google play store logcat virtual device", y: "learning" },
+            { s: "ANDROID", t: "Kotlin Language", u: "content/android.html#kotlin", k: "kotlin java jvm null safety val var data classes coroutines smart cast extension functions lambda npe null pointer exception", y: "learning" },
+            { s: "ANDROID", t: "Project Structure", u: "content/android.html#project", k: "app module gradle build scripts res resources layout xml values strings colors themes manifest.xml", y: "learning" },
+            { s: "ANDROID", t: "App Components", u: "content/android.html#components", k: "activity lifecycle service broadcast receiver content provider background intent context oncreate ui", y: "learning" },
+            { s: "ANDROID", t: "Jetpack Compose", u: "content/android.html#compose", k: "compose ui declarative modern toolkit modifier column row box state hoisting preview material design lazycolumn", y: "learning" },
+
+            // Series 04: Big Data Analytics
+            { s: "BIGDATA", t: "Big Data Analytics", u: "content/bigdata.html", k: "big data analytics intro strategy overview distributed computing", y: "learning" },
+            { s: "BIGDATA", t: "The 6 Vs of Big Data", u: "content/bigdata.html#intro", k: "volume velocity variety veracity value variability theory definition characteristics", y: "learning" },
+            { s: "BIGDATA", t: "Apache Hadoop", u: "content/bigdata.html#hadoop", k: "hadoop history commodity hardware scalability gfs google mapreduce paper", y: "learning" },
+            { s: "BIGDATA", t: "HDFS (Storage)", u: "content/bigdata.html#hdfs", k: "hdfs namenode datanode replication blocks storage rack awareness secondary namenode", y: "learning" },
+            { s: "BIGDATA", t: "MapReduce (Processing)", u: "content/bigdata.html#mapreduce", k: "mapreduce map shuffle sort reduce processing data locality phases inputformat partitioner", y: "learning" },
+            { s: "BIGDATA", t: "YARN (Negotiator)", u: "content/bigdata.html#yarn", k: "yarn resource manager node manager applicationmaster container scheduler negotiation heartbeats", y: "learning" },
+            { s: "BIGDATA", t: "Apache Spark", u: "content/bigdata.html#spark", k: "spark rdd dag lazy evaluation dataframes in-memory processing catalyst transformation action", y: "learning" },
+            { s: "BIGDATA", t: "Apache Storm", u: "content/bigdata.html#storm", k: "storm topology spout bolt stream processing groupings nimbus real-time reliability", y: "learning" },
+            { s: "BIGDATA", t: "Apache Pig", u: "content/bigdata.html#pig", k: "pig latin schema-on-read etl filter group load foreach store", y: "learning" },
+            { s: "BIGDATA", t: "Big Data Glossary", u: "content/bigdata.html#glossary", k: "terminology definitions dictionary big data terms", y: "learning" },
+            { s: "BIGDATA", t: "Big Data Knowledge Check", u: "content/bigdata.html#exam", k: "quiz test exam certificate certification verification validation check", y: "learning" },
+
+            // Series 11: Operating Systems
+            { s: "OS", t: "Operating Systems", u: "content/os.html", k: "os kernel process thread scheduling memory paging file system deadlock concurrency virtual machine", y: "learning" },
+            { s: "OS", t: "Kernel vs User Mode", u: "content/os.html#kernel", k: "privileged ring 0 syscall system call hardware abstraction protection", y: "learning" },
+            { s: "OS", t: "Process Scheduling", u: "content/os.html#scheduling", k: "scheduler cpu time slice round robin context switch pcb queue", y: "learning" },
+            { s: "OS", t: "Concurrency & Deadlocks", u: "content/os.html#concurrency", k: "race condition mutex semaphore deadlock starvation dining philosophers", y: "learning" },
+            { s: "OS", t: "Memory Management", u: "content/os.html#memory", k: "ram virtual memory paging segmentation tlb fragmentation thrashing", y: "learning" },
+            { s: "OS", t: "File Systems", u: "content/os.html#storage", k: "ntfs fat32 inode disk storage fragmentation contiguous linked indexed", y: "learning" },
+            { s: "OS", t: "CPU Scheduling Algorithms", u: "content/os.html#scheduling", k: "fcfs sjf srtf round robin priority scheduling preemptive non-preemptive burst time arrival time quantum", y: "learning" },
+            { s: "OS", t: "Page Replacement Algorithms", u: "content/os.html#memory", k: "fifo lru optimal clock algorithm belady's anomaly page fault frames", y: "learning" },
+            { s: "OS", t: "OS Certification", u: "content/os.html#quiz", k: "certificate quiz knowledge check exam test diploma verification", y: "learning" },
+
+            // Series 06: Cryptography & Security
+            { s: "SEC", t: "Cryptography & Security", u: "content/crypto.html", k: "cryptography security encryption decryption cia triad confidentiality integrity availability aes des rsa ecc hashing sha md5 tls ssl handshake digital signatures firewalls vpn zero knowledge proofs pqc", y: "learning" },
+            { s: "SEC", t: "CIA Triad", u: "content/crypto.html#cia", k: "confidentiality integrity availability triad foundations core principles", y: "learning" },
+            { s: "SEC", t: "Symmetric Encryption", u: "content/crypto.html#symmetric", k: "symmetric key aes des chacha20 private key secret", y: "learning" },
+            { s: "SEC", t: "Asymmetric Encryption", u: "content/crypto.html#asymmetric", k: "asymmetric public key rsa ecc diffie-hellman key pair", y: "learning" },
+            { s: "SEC", t: "Hashing & Integrity", u: "content/crypto.html#hashing", k: "hashing sha sha-256 md5 fingerpint avalanche effect collision resistant", y: "learning" },
+            { s: "SEC", t: "TLS Handshake", u: "content/crypto.html#tls", k: "tls ssl handshake https secure communication protocol certificate", y: "learning" },
+
+            // Features
+            { s: "FEATURE", t: "Flash Cards", u: "content/flashcards.html", k: "flash cards memory learning quiz review undrstood lightning quick fire practice deck study active recall spaced repetition", y: "learning" },
+
+            // --- Interactive Labs (type: lab) ---
+            { s: "LAB", t: "Lab: Budget Tracker", u: "labs/budget-tracker.html", k: "android studio jetpack compose kotlin finance sqlite room database mobile prototyping software engineering series 16", y: "lab" },
+            { s: "LAB", t: "Lab: Weather App", u: "labs/weather-app.html", k: "react.js rest api hooks openweather weather real-time dashboard web development series 15", y: "lab" },
+            { s: "LAB", t: "Lab: Git Essentials", u: "labs/git-essentials.html", k: "version control git github terminal workflow forking setup installation branching configuration history", y: "lab" }
+        ];
+
+
+
+
+        let selectedIndex = -1;
+
+        // --- Voice Search Logic ---
+        if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            const recognition = new SpeechRecognition();
+            recognition.continuous = false;
+            recognition.interimResults = false;
+            recognition.lang = 'en-US';
+
+            voiceBtn.addEventListener('click', () => {
+                if (voiceBtn.classList.contains('listening')) {
+                    recognition.stop();
+                } else {
+                    // Explicitly request mic permission first to handle 'audio-capture' errors better
+                    navigator.mediaDevices.getUserMedia({ audio: true })
+                        .then(stream => {
+                            // Permission granted, stop the stream immediately (we just needed permission)
+                            stream.getTracks().forEach(track => track.stop());
+                            recognition.start();
+                            voiceBtn.classList.add('listening');
+                            input.placeholder = "Listening...";
+                        })
+                        .catch(err => {
+                            console.error("Mic permission invalid:", err);
+                            voiceBtn.classList.remove('listening');
+                            if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
+                                input.placeholder = "Mic Permission Denied";
+                            } else if (err.name === 'NotFoundError' || err.name === 'DevicesNotFoundError') {
+                                input.placeholder = "No Mic Found";
+                            } else {
+                                input.placeholder = "Error: Check Settings";
+                            }
+                            setTimeout(() => input.placeholder = "Search topics...", 3000);
+                        });
+                }
+            });
+
+            recognition.onresult = (event) => {
+                const transcript = event.results[0][0].transcript;
+                input.value = transcript;
+                input.placeholder = "Search topics...";
+                // Trigger search directly using the new function
+                performSearch(transcript);
+                input.focus();
+                voiceBtn.classList.remove('listening');
+            };
+
+            recognition.onerror = (event) => {
+                console.error("Voice search error details:", event.error);
+                voiceBtn.classList.remove('listening');
+
+                let errorMsg = "Error: " + event.error;
+                if (event.error === 'not-allowed') errorMsg = "Mic Blocked";
+                if (event.error === 'no-speech') errorMsg = "No speech detected";
+                if (event.error === 'audio-capture') errorMsg = "No Mic Found (Check OS)";
+
+                input.placeholder = errorMsg;
+                setTimeout(() => input.placeholder = "Search topics...", 3000);
+            };
+
+            recognition.onend = () => {
+                voiceBtn.classList.remove('listening');
+                if (input.placeholder === "Listening...") input.placeholder = "Search topics...";
+            };
+        } else {
+            console.warn("Web Speech API not supported in this browser.");
+            voiceBtn.style.display = 'none'; // Hide if not supported
+            input.style.paddingRight = '0.75rem'; // Reset padding
+        }
+
+
+
+        // --- Extracted Search Logic ---
+        function performSearch(rawQuery) {
+            const query = rawQuery.toLowerCase();
+            selectedIndex = -1;
+
+            if (query.length < 2) {
+                resultsBox.classList.remove('active');
+                return;
+            }
+
+            // Contextual Filtering: Match both query AND current section type
+            const results = searchIndex.filter(item => {
+                const matchesQuery = item.t.toLowerCase().includes(query) ||
+                    item.k.includes(query) ||
+                    item.s.toLowerCase().includes(query);
+
+                const matchesContext = item.y === activeSection;
+
+                return matchesQuery && matchesContext;
+            });
+
+            if (results.length > 0) {
+                resultsBox.innerHTML = results.map((item, index) => `
+                    <div class="result-item" data-url="${item.u}" data-index="${index}">
+                        <span class="result-series">Series: ${item.s}</span>
+                         <div class="result-title">${item.t}</div>
+                        ${item.k.includes(query) ? `<div class="result-context">Matches: "${query}"</div>` : ''}
+                    </div>
+                `).join('');
+                resultsBox.classList.add('active');
+
+                // Add click listeners
+                document.querySelectorAll('.result-item').forEach(el => {
+                    el.addEventListener('click', () => {
+                        window.location.href = el.dataset.url;
+                    });
+                });
+            } else {
+                resultsBox.innerHTML = `<div class="p-3 text-xs text-gray-400 text-center">No results found.</div>`;
+                resultsBox.classList.add('active');
+            }
+        }
+
+        input.addEventListener('input', (e) => {
+            performSearch(e.target.value);
+        });
+
+        // Keyboard Navigation
+        input.addEventListener('keydown', (e) => {
+            const items = document.querySelectorAll('.result-item');
+            if (!items.length) return;
+
+            if (e.key === 'ArrowDown') {
+                e.preventDefault();
+                selectedIndex = Math.min(selectedIndex + 1, items.length - 1);
+                updateSelection(items);
+            } else if (e.key === 'ArrowUp') {
+                e.preventDefault();
+                selectedIndex = Math.max(selectedIndex - 1, 0);
+                updateSelection(items);
+            } else if (e.key === 'Enter') {
+                e.preventDefault();
+                if (selectedIndex >= 0) {
+                    window.location.href = items[selectedIndex].dataset.url;
+                }
+            } else if (e.key === 'Escape') {
+                resultsBox.classList.remove('active');
+                input.blur();
+            }
+        });
+
+        function updateSelection(items) {
+            items.forEach((item, idx) => {
+                if (idx === selectedIndex) {
+                    item.classList.add('selected');
+                    item.scrollIntoView({ block: 'nearest' });
+                } else {
+                    item.classList.remove('selected');
+                }
+            });
+        }
+
+        // Close on click outside
+        document.addEventListener('click', (e) => {
+            if (!document.querySelector('.search-container').contains(e.target)) {
+                resultsBox.classList.remove('active');
+            }
+        });
+
+        // Fix: Reset Overlay on Page Show (handles browser back button)
+        window.addEventListener('pageshow', (event) => {
+            const overlay = document.getElementById('random-overlay');
+            if (overlay) overlay.classList.remove('active');
+
+            const card = document.getElementById('random-card');
+            if (card) card.classList.remove('random-card-pumping');
+        });
+        // Desktop Recommendation Modal Logic
+        window.addEventListener('DOMContentLoaded', () => {
+            const isMobile = window.innerWidth < 768;
+
+            // Check localStorage for dismissal timestamp
+            const dismissedTime = localStorage.getItem('desktopModalDismissedTime');
+            const now = Date.now();
+            const ONE_DAY_MS = 24 * 60 * 60 * 1000;
+
+            // Show if mobile AND (never dismissed OR dismissed > 24 hours ago)
+            const shouldShow = isMobile && (!dismissedTime || (now - parseInt(dismissedTime) > ONE_DAY_MS));
+
+            if (shouldShow) {
+                const modal = document.getElementById('desktop-modal');
+                const btn = document.getElementById('close-desktop-modal');
+
+                if (modal && btn) {
+                    // Show
+                    setTimeout(() => {
+                        modal.classList.remove('hidden');
+                        modal.style.display = 'flex';
+                        setTimeout(() => {
+                            modal.classList.remove('opacity-0');
+                            modal.querySelector('div').classList.remove('scale-95');
+                            modal.querySelector('div').classList.add('scale-100');
+                        }, 10);
+                    }, 1000);
+
+                    // Close Logic
+                    const closeDesktopModal = () => {
+                        modal.classList.add('opacity-0');
+                        modal.querySelector('div').classList.remove('scale-100');
+                        modal.querySelector('div').classList.add('scale-95');
+                        setTimeout(() => {
+                            modal.classList.add('hidden');
+                            modal.style.display = 'none';
+                        }, 300);
+
+                        // Save current timestamp to localStorage
+                        localStorage.setItem('desktopModalDismissedTime', Date.now().toString());
+                    };
+
+                    // Manual Close
+                    btn.addEventListener('click', closeDesktopModal);
+
+                    // Auto-dismiss after 7 seconds (plus 1s initial delay)
+                    setTimeout(() => {
+                        // Check if it's still visible only to avoid double-triggering animation (optional but cleaner)
+                        if (!modal.classList.contains('hidden')) {
+                            closeDesktopModal();
+                        }
+                    }, 8000);
+                }
+            }
+        });
+    </script>
+
+    <!-- Liquid Transition Overlay -->
+    <div id="random-overlay"></div>
+    <!-- Desktop Recommendation Modal -->
+    <div id="desktop-modal"
+        class="fixed inset-0 z-[2000] hidden flex-col items-center justify-center p-4 bg-black/50 backdrop-blur-sm transition-opacity duration-300 opacity-0">
+        <div
+            class="bg-white border border-black p-6 max-w-sm w-full shadow-2xl transform scale-95 transition-transform duration-300">
+            <div class="flex flex-col items-center text-center gap-4">
+                <div class="icon-box text-black">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+                        <line x1="8" y1="21" x2="16" y2="21"></line>
+                        <line x1="12" y1="17" x2="12" y2="21"></line>
+                    </svg>
+                </div>
+                <h3 class="font-bold text-lg font-mono uppercase tracking-tight">Desktop Recommended</h3>
+                <p class="text-sm text-gray-600 leading-relaxed">
+                    This repository features complex visualizations that are best experienced on a larger screen.
+                </p>
+                <button id="close-desktop-modal"
+                    class="w-full py-3 bg-black text-white font-mono text-xs uppercase tracking-widest hover:bg-gray-800 transition-colors">
+                    Continue Anyway
+                </button>
+            </div>
+        </div>
+    </div>
+    <script src="content/js/script.js"></script>
+</body>
+
+</html>

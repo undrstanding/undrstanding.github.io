@@ -1,0 +1,1303 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Linux & Commands</title>
+    <link rel="icon" type="image/svg+xml" href="../assests/undrlogo.svg">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Roboto+Mono:wght@400;500&display=swap');
+
+        ::-webkit-scrollbar {
+            width: 1px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #000;
+        }
+
+        :root {
+            --bg-color: #f4f4f4;
+            --card-bg: #ffffff;
+            --text-main: #111111;
+            --text-muted: #737373;
+            --accent: #ca8a04;
+            /* Yellow-600 */
+            --accent-light: #fef9c3;
+            --border: #e5e5e5;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            -webkit-font-smoothing: antialiased;
+            line-height: 1.6;
+            overflow-x: hidden;
+            max-width: 100vw;
+        }
+
+        h1,
+        h2,
+        h3,
+        h4,
+        h5 {
+            font-weight: 600;
+            letter-spacing: -0.02em;
+            color: var(--text-main);
+        }
+
+        p {
+            color: #404040;
+        }
+
+        .mono {
+            font-family: 'Roboto Mono', monospace;
+        }
+
+        .rams-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            transition: all 0.3s ease;
+        }
+
+        .rams-card:hover {
+            border-color: #a3a3a3;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        }
+
+        @media (min-width: 768px) {
+            .rams-card {
+                padding: 2.5rem;
+            }
+        }
+
+        .rams-label {
+            font-family: 'Inter', sans-serif;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        .nav-link {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            padding: 0.5rem 0;
+            display: block;
+            transition: color 0.2s;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            color: var(--text-main);
+            font-weight: 500;
+        }
+
+        .nav-link.active::before {
+            content: "• ";
+            color: var(--accent);
+        }
+
+        .cmd-block {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 1rem;
+            border-radius: 4px;
+            font-family: 'Roboto Mono', monospace;
+            font-size: 0.85rem;
+            overflow-x: auto;
+            margin-top: 1rem;
+            border-left: 3px solid var(--accent);
+        }
+
+        .cmd-prompt {
+            color: #f59e0b;
+            margin-right: 0.5rem;
+            user-select: none;
+        }
+
+        .cmd-comment {
+            color: #6a9955;
+            display: block;
+            margin-bottom: 0.25rem;
+        }
+
+        .deep-dive {
+            background-color: #f9fafb;
+            border: 1px solid #e5e5e5;
+            padding: 1.5rem;
+            margin-top: 1.5rem;
+            font-size: 0.9rem;
+            line-height: 1.7;
+            color: #4b5563;
+        }
+
+        .deep-dive h4 {
+            color: #111;
+            font-weight: 600;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .deep-dive h4::before {
+            content: "";
+            display: inline-block;
+            width: 4px;
+            height: 4px;
+            background: var(--accent);
+            border-radius: 50%;
+        }
+
+        /* Controls */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.5rem 1.25rem;
+            font-size: 0.85rem;
+            font-weight: 500;
+            border-radius: 2px;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            white-space: nowrap;
+        }
+
+        .btn-primary {
+            background-color: var(--accent);
+            color: white;
+            border: 1px solid var(--accent);
+        }
+
+        .btn-primary:hover {
+            opacity: 0.9;
+            filter: brightness(1.1);
+        }
+
+        .btn-secondary {
+            background-color: transparent;
+            color: var(--text-main);
+            border: 1px solid #a3a3a3;
+        }
+
+        .btn-secondary:hover {
+            background-color: #f0f0f0;
+            border-color: #555;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="flex min-h-screen flex-col lg:flex-row">
+
+        <!-- Mobile Header -->
+        <header
+            class="lg:hidden fixed top-0 w-full bg-[#f4f4f4] border-b border-[#e5e5e5] z-[100] px-6 py-4 flex justify-between items-center h-16">
+            <div>
+                <h1 class="text-sm font-semibold tracking-wide uppercase text-black leading-tight">Linux<br>& Commands
+                </h1>
+            </div>
+            <button onclick="toggleMobileMenu()" class="text-black focus:outline-none p-2 rounded">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+            </button>
+        </header>
+
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="fixed inset-0 bg-[#f4f4f4] z-[90] hidden flex-col pt-20 px-6 overflow-y-auto">
+            <nav class="flex flex-col">
+                <span class="text-[10px] text-gray-400 font-bold uppercase tracking-wider px-0 py-2">00. Intro</span>
+                <a href="#history" class="mobile-nav-link" onclick="toggleMobileMenu()">History</a>
+                <a href="#concepts" class="mobile-nav-link" onclick="toggleMobileMenu()">Concepts</a>
+                <span class="text-[10px] text-gray-400 font-bold uppercase tracking-wider px-0 py-2 mt-4">02.
+                    Filesystem</span>
+                <a href="#basics" class="mobile-nav-link" onclick="toggleMobileMenu()">Navigation</a>
+                <a href="#manipulation" class="mobile-nav-link" onclick="toggleMobileMenu()">Manipulation</a>
+                <span class="text-[10px] text-gray-400 font-bold uppercase tracking-wider px-0 py-2 mt-4">03.
+                    System</span>
+                <a href="#permissions" class="mobile-nav-link" onclick="toggleMobileMenu()">Permissions</a>
+                <a href="#processes" class="mobile-nav-link" onclick="toggleMobileMenu()">Processes</a>
+                <span class="text-[10px] text-gray-400 font-bold uppercase tracking-wider px-0 py-2 mt-4">04.
+                    Network</span>
+                <a href="#networking" class="mobile-nav-link" onclick="toggleMobileMenu()">Networking</a>
+                <a href="#io" class="mobile-nav-link" onclick="toggleMobileMenu()">I/O Redirection</a>
+                <a href="#glossary" class="mobile-nav-link" onclick="toggleMobileMenu()">Glossary</a>
+                <span class="text-[10px] text-gray-400 font-bold uppercase tracking-wider px-0 py-2 mt-4">05.
+                    Assessment</span>
+                <a href="#quiz" class="mobile-nav-link border-b-0" onclick="toggleMobileMenu()">Knowledge Check</a>
+            </nav>
+        </div>
+
+        <!-- Sidebar -->
+        <aside
+            class="hidden lg:block w-64 fixed h-screen bg-[#f4f4f4] border-r border-[#e5e5e5] z-50 overflow-y-auto thin-scrollbar">
+            <div class="p-8 h-full flex flex-col justify-between">
+                <div>
+                    <a href="../index.html"
+                        class="inline-flex items-center gap-2 px-4 py-2 mb-8 text-[10px] font-mono uppercase tracking-wider text-gray-600 border border-gray-300 hover:bg-black hover:text-white hover:border-black transition-all duration-200">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                        </svg>
+                        Back to Home
+                    </a>
+                    <div class="mb-12">
+                        <h1 class="text-sm font-semibold tracking-wide uppercase text-black">Linux<br>& Commands</h1>
+                        <p class="text-[10px] text-gray-500 mt-1 uppercase tracking-wider">OS & Utilities</p>
+                    </div>
+                    <nav class="space-y-1">
+                        <a href="#intro" class="nav-link font-medium text-black">Introduction</a>
+                        <div class="pt-4 pb-1 text-[10px] text-gray-400 font-bold uppercase tracking-wider">00.
+                            Foundation</div>
+                        <a href="#history" class="nav-link">History</a>
+                        <a href="#concepts" class="nav-link">Concepts</a>
+                        <div class="pt-4 pb-1 text-[10px] text-gray-400 font-bold uppercase tracking-wider">02.
+                            Filesystem</div>
+                        <a href="#basics" class="nav-link">Navigation</a>
+                        <a href="#manipulation" class="nav-link">Manipulation</a>
+                        <div class="pt-4 pb-1 text-[10px] text-gray-400 font-bold uppercase tracking-wider">03. System
+                        </div>
+                        <a href="#permissions" class="nav-link">Permissions</a>
+                        <a href="#processes" class="nav-link">Processes</a>
+                        <div class="pt-4 pb-1 text-[10px] text-gray-400 font-bold uppercase tracking-wider">04. Network
+                        </div>
+                        <a href="#networking" class="nav-link">Networking</a>
+                        <a href="#io" class="nav-link">I/O Redirection</a>
+                        <a href="#glossary" class="nav-link">Glossary</a>
+                        <div class="pt-4 pb-1 text-[10px] text-gray-400 font-bold uppercase tracking-wider">05.
+                            Assessment</div>
+                        <a href="#quiz" class="nav-link">Knowledge Check</a>
+                    </nav>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 lg:ml-64 bg-white w-full">
+            <div class="max-w-3xl mx-auto px-4 sm:px-8 py-24 lg:py-20">
+
+                <!-- Hero -->
+                <section id="intro" class="mb-16 md:mb-24">
+                    <h2 class="text-3xl md:text-5xl font-semibold mb-6 text-black tracking-tight leading-tight">The
+                        Kernel<br>& The Shell</h2>
+                    <p class="text-base md:text-lg text-gray-600 max-w-xl font-light leading-relaxed mb-6">
+                        Linux is the backbone of the internet, cloud computing, and supercomputers. It is a Unix-like
+                        operating system that gives users direct control over hardware through powerful command-line
+                        tools.
+                    </p>
+                </section>
+
+                <div class="divider hidden md:block border-t border-gray-100 my-10"></div>
+
+                <!-- 00. History -->
+                <section id="history" class="mb-20 md:mb-24">
+                    <span class="rams-label">00 / The Origin</span>
+                    <h3 class="text-xl font-medium mb-4">A Hobby that Changed the World</h3>
+                    <p class="text-sm text-gray-600 mb-6 max-w-xl">
+                        In 1991, a Finnish student named <strong class="text-black">Linus Torvalds</strong> announced a
+                        "hobby" project: a free operating system kernel. He wanted something like Minix (a small Unix
+                        system) but for his 386 personal computer.
+                    </p>
+                    <div class="rams-card bg-gray-50 border-none">
+                        <blockquote class="italic text-sm text-gray-700 border-l-2 border-amber-500 pl-4 py-1 mb-2">
+                            "I'm doing a (free) operating system (just a hobby, won't be big and professional like gnu)
+                            for 386(486) AT clones..."
+                        </blockquote>
+                        <div class="text-xs text-right text-gray-400 font-mono">— Linus Torvalds, comp.os.minix, 1991
+                        </div>
+                    </div>
+                    <p class="text-sm text-gray-600 mt-6 max-w-xl">
+                        This project combined with the <strong>GNU Project</strong> (started by Richard Stallman to
+                        create free software tools) to form the complete GNU/Linux operating system. Today, Linux runs
+                        everything from the world's top 500 supercomputers to the Android phone in your pocket.
+                    </p>
+                </section>
+
+                <!-- 01. Core Concepts -->
+                <section id="concepts" class="mb-20 md:mb-24">
+                    <span class="rams-label">01 / Architecture</span>
+                    <h3 class="text-xl font-medium mb-4">Understanding the Beast</h3>
+                    <p class="text-sm text-gray-600 mb-6 max-w-xl">
+                        Before typing commands, it helps to know what you are actually talking to. Linux isn't just one
+                        program; it's a layered system.
+                    </p>
+
+                    <div
+                        class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8 items-center bg-white border border-gray-200 rounded-lg p-6">
+                        <div>
+                            <h4 class="text-sm font-bold mb-4">Layers of Abstraction</h4>
+                            <p class="text-sm text-gray-600 mb-4">Hover over the diagram to explore the system layers.
+                            </p>
+                            <ul class="text-xs space-y-3 text-gray-500">
+                                <li class="flex items-center gap-2">
+                                    <div class="w-3 h-3 rounded-full bg-gray-100 border border-gray-300"></div> <strong
+                                        class="text-black">User:</strong> You & your applications.
+                                </li>
+                                <li class="flex items-center gap-2">
+                                    <div class="w-3 h-3 rounded-full bg-gray-200 border border-gray-300"></div> <strong
+                                        class="text-black">Shell:</strong> The command interpreter.
+                                </li>
+                                <li class="flex items-center gap-2">
+                                    <div class="w-3 h-3 rounded-full bg-gray-800 border border-black"></div> <strong
+                                        class="text-black">Kernel:</strong> Core OS & Resource Management.
+                                </li>
+                                <li class="flex items-center gap-2">
+                                    <div class="w-3 h-3 rounded-full bg-red-600 border border-red-700"></div> <strong
+                                        class="text-black">Hardware:</strong> The physical machine.
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="flex justify-center">
+                            <canvas id="canvas-kernel-shell" width="350" height="350"
+                                class="w-full max-w-[350px]"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="deep-dive">
+                        <h4 class="uppercase tracking-widest text-xs font-bold mb-3 text-amber-600">The Filesystem
+                            Hierarchy</h4>
+                        <p class="mb-3">Unlike Windows (C:\, D:\), Linux has a single tree starting at root
+                            <code>/</code>.
+                        </p>
+                        <div class="space-y-2 font-mono text-xs">
+                            <div class="flex"><span class="w-16 font-bold text-gray-800">/</span> <span
+                                    class="text-gray-500">The Root. Start of everything.</span></div>
+                            <div class="flex"><span class="w-16 font-bold text-gray-800">/bin</span> <span
+                                    class="text-gray-500">Essential command binaries (ls, cp, cat).</span></div>
+                            <div class="flex"><span class="w-16 font-bold text-gray-800">/home</span> <span
+                                    class="text-gray-500">User directories (like C:\Users).</span></div>
+                            <div class="flex"><span class="w-16 font-bold text-gray-800">/etc</span> <span
+                                    class="text-gray-500">Configuration files (network settings, user lists).</span>
+                            </div>
+                            <div class="flex"><span class="w-16 font-bold text-gray-800">/var</span> <span
+                                    class="text-gray-500">Variable files (logs, temp files).</span></div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Check 0: Concepts -->
+                <div id="quiz-linux-concepts"></div>
+
+                <div class="divider hidden md:block border-t border-gray-100 my-10"></div>
+
+                <!-- 02. Filesystem Basics -->
+                <section id="basics" class="mb-20 md:mb-24">
+                    <span class="rams-label">02 / Navigation</span>
+                    <h3 class="text-xl font-medium mb-4">Filesystem Navigation</h3>
+                    <p class="text-sm text-gray-600 mb-6 max-w-xl">
+                        Moving through the directory tree. In Linux, everything starts from root (<code>/</code>).
+                    </p>
+
+                    <div class="rams-card">
+                        <p class="text-sm mb-4">Essential commands for orienting yourself in the hierarchy.</p>
+                        <div class="cmd-block">
+                            <span class="cmd-comment"># Print Working Directory - Where am I?</span>
+                            <span class="cmd-prompt">$</span>pwd
+                            <br>/home/user/projects
+
+                            <br><br><span class="cmd-comment"># List files - What is here?</span>
+                            <span class="cmd-comment"># -l: long format, -a: all files (hidden), -h: human readable
+                                sizes</span>
+                            <span class="cmd-prompt">$</span>ls -lah
+
+                            <br><br><span class="cmd-comment"># Change Directory - Go somewhere else</span>
+                            <span class="cmd-prompt">$</span>cd /var/log <span class="text-gray-500">// Go to absolute
+                                path</span>
+                            <span class="cmd-prompt">$</span>cd .. <span class="text-gray-500">// Go up one level</span>
+                            <span class="cmd-prompt">$</span>cd ~ <span class="text-gray-500">// Go to home
+                                directory</span>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 02. File Manipulation -->
+                <section id="manipulation" class="mb-20 md:mb-24">
+                    <span class="rams-label">02 / Manipulation</span>
+                    <h3 class="text-xl font-medium mb-4">File Operations</h3>
+                    <div class="rams-card">
+                        <p class="text-sm mb-4">Creating, moving, copying, and destroying files.</p>
+                        <div class="cmd-block">
+                            <span class="cmd-comment"># Create an empty file</span>
+                            <span class="cmd-prompt">$</span>touch newfile.txt
+
+                            <br><br><span class="cmd-comment"># Make a directory (and parents if needed)</span>
+                            <span class="cmd-prompt">$</span>mkdir -p project/src/assets
+
+                            <br><br><span class="cmd-comment"># Copy files</span>
+                            <span class="cmd-comment"># -r: recursive (for directories)</span>
+                            <span class="cmd-prompt">$</span>cp -r source_folder backup_folder
+
+                            <br><br><span class="cmd-comment"># Move or Rename files</span>
+                            <span class="cmd-prompt">$</span>mv oldname.txt newname.txt
+
+                            <br><br><span class="cmd-comment"># Remove files (Careful!)</span>
+                            <span class="cmd-comment"># -rf: recursive and force (No confirmation)</span>
+                            <span class="cmd-prompt">$</span>rm -rf junk_folder
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 02.b File Content & Search -->
+                <section id="content-search" class="mb-20 md:mb-24">
+                    <span class="rams-label">02 / Inspection</span>
+                    <h3 class="text-xl font-medium mb-4">Content & Search</h3>
+                    <div class="rams-card">
+                        <p class="text-sm mb-4">Reading files and finding them.</p>
+                        <div class="cmd-block">
+                            <span class="cmd-comment"># Concatenate - Read entire file</span>
+                            <span class="cmd-prompt">$</span>cat config.json
+
+                            <br><br><span class="cmd-comment"># Head & Tail - First/Last 10 lines</span>
+                            <span class="cmd-prompt">$</span>head -n 5 large_log.txt
+                            <span class="cmd-prompt">$</span>tail -f server.log <span class="text-gray-500">// Follow
+                                live updates</span>
+
+                            <br><br><span class="cmd-comment"># Find files by name</span>
+                            <span class="cmd-prompt">$</span>find . -name "*.js"
+
+                            <br><br><span class="cmd-comment"># Grep - Search text INSIDE files</span>
+                            <span class="cmd-comment"># -r: recursive, -i: case insensitive</span>
+                            <span class="cmd-prompt">$</span>grep -r "TODO" src/
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 02.c Archiving -->
+                <section id="archiving" class="mb-20 md:mb-24">
+                    <span class="rams-label">02 / Archives</span>
+                    <h3 class="text-xl font-medium mb-4">Archiving & Compression</h3>
+                    <div class="rams-card">
+                        <div class="cmd-block">
+                            <span class="cmd-comment"># Tar - Tape Archive (Standard Linux format)</span>
+                            <span class="cmd-comment"># c: create, v: verbose, f: file, z: gzip compression</span>
+                            <span class="cmd-prompt">$</span>tar -cvzf backup.tar.gz /home/user/project
+
+                            <br><br><span class="cmd-comment"># Extract Tarball</span>
+                            <span class="cmd-comment"># x: extract</span>
+                            <span class="cmd-prompt">$</span>tar -xvzf backup.tar.gz
+
+                            <br><br><span class="cmd-comment"># Zip / Unzip</span>
+                            <span class="cmd-prompt">$</span>zip -r static.zip static/
+                            <span class="cmd-prompt">$</span>unzip static.zip
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Check 1: Basics -->
+                <div id="quiz-linux-basics"></div>
+
+                <!-- 03. Permissions -->
+                <section id="permissions" class="mb-20 md:mb-24">
+                    <span class="rams-label">03 / System & Security</span>
+                    <h3 class="text-xl font-medium mb-4">Permissions & Ownership</h3>
+                    <p class="text-sm text-gray-600 mb-6 max-w-xl">
+                        Linux is multi-user. Every file has read (r), write (w), and execute (x) permissions for User,
+                        Group, and Others.
+                    </p>
+                    <div class="rams-card">
+                        <div class="grid grid-cols-3 gap-4 text-center text-xs font-mono mb-6">
+                            <div class="p-2 bg-gray-100 rounded">
+                                <span class="block font-bold">User (u)</span>
+                                <span class="text-green-600">rwx</span>
+                            </div>
+                            <div class="p-2 bg-gray-100 rounded">
+                                <span class="block font-bold">Group (g)</span>
+                                <span class="text-yellow-600">r-x</span>
+                            </div>
+                            <div class="p-2 bg-gray-100 rounded">
+                                <span class="block font-bold">Others (o)</span>
+                                <span class="text-red-600">r--</span>
+                            </div>
+                        </div>
+
+                        <div class="cmd-block">
+                            <span class="cmd-comment"># Change Mode (Permissions)</span>
+                            <span class="cmd-comment"># 755: u=rwx (4+2+1), g=rx (4+1), o=rx (4+1)</span>
+                            <span class="cmd-prompt">$</span>chmod 755 script.sh
+
+                            <br><br><span class="cmd-comment"># Add execute permission for everyone</span>
+                            <span class="cmd-prompt">$</span>chmod +x run.sh
+
+                            <br><br><span class="cmd-comment"># Change Owner</span>
+                            <span class="cmd-comment"># user:group</span>
+                            <span class="cmd-prompt">$</span>chown human:undrstanding file.txt
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Check 2: Permissions -->
+                <div id="quiz-linux-permissions"></div>
+
+                <!-- 03.b System Information -->
+                <section id="sysinfo" class="mb-20 md:mb-24">
+                    <span class="rams-label">03 / Insights</span>
+                    <h3 class="text-xl font-medium mb-4">System Information</h3>
+                    <div class="rams-card">
+                        <div class="cmd-block">
+                            <span class="cmd-comment"># Kernel & System Info</span>
+                            <span class="cmd-prompt">$</span>uname -a
+
+                            <br><br><span class="cmd-comment"># Disk Usage (Free space)</span>
+                            <span class="cmd-comment"># -h: human readable (GB/MB)</span>
+                            <span class="cmd-prompt">$</span>df -h
+
+                            <br><br><span class="cmd-comment"># Directory Space Usage</span>
+                            <span class="cmd-prompt">$</span>du -sh node_modules/
+
+                            <br><br><span class="cmd-comment"># Memory (RAM) Usage</span>
+                            <span class="cmd-prompt">$</span>free -h
+
+                            <br><br><span class="cmd-comment"># System Uptime</span>
+                            <span class="cmd-prompt">$</span>uptime
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 04. Processes -->
+                <section id="processes" class="mb-20 md:mb-24">
+                    <span class="rams-label">03 / Runtime</span>
+                    <h3 class="text-xl font-medium mb-4">Process Management</h3>
+                    <div class="rams-card">
+                        <div class="cmd-block">
+                            <span class="cmd-comment"># Task Manager (Real-time)</span>
+                            <span class="cmd-prompt">$</span>top
+
+                            <br><br><span class="cmd-comment"># Snapshot of current processes</span>
+                            <span class="cmd-prompt">$</span>ps aux | grep node
+
+                            <br><br><span class="cmd-comment"># Kill a process by PID</span>
+                            <span class="cmd-prompt">$</span>kill 1234
+
+                            <br><br><span class="cmd-comment"># Force kill</span>
+                            <span class="cmd-prompt">$</span>kill -9 1234
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Check 3: Processes -->
+                <div id="quiz-linux-processes"></div>
+
+                <!-- 05. Networking -->
+                <section id="networking" class="mb-20 md:mb-24">
+                    <span class="rams-label">04 / Communication</span>
+                    <h3 class="text-xl font-medium mb-4">Networking</h3>
+                    <div class="rams-card">
+                        <div class="cmd-block">
+                            <span class="cmd-comment"># Check connectivity (Ping)</span>
+                            <span class="cmd-prompt">$</span>ping -c 4 google.com
+
+                            <br><br><span class="cmd-comment"># IP Address Configuration (Modern way)</span>
+                            <span class="cmd-prompt">$</span>ip addr show
+
+                            <br><br><span class="cmd-comment"># Network Statistics (Ports listening)</span>
+                            <span class="cmd-comment"># -t: tcp, -u: udp, -l: listening, -p: program name</span>
+                            <span class="cmd-prompt">$</span>netstat -tulpn <span class="text-gray-500"># or 'ss
+                                -tulpn'</span>
+
+                            <br><br><span class="cmd-comment"># Secure Shell (SSH)</span>
+                            <span class="cmd-prompt">$</span>ssh -i key.pem user@server.com
+
+                            <br><br><span class="cmd-comment"># File Transfer over SSH (SCP)</span>
+                            <span class="cmd-prompt">$</span>scp file.txt user@server.com:/var/www
+
+                            <br><br><span class="cmd-comment"># HTTP Requests</span>
+                            <span class="cmd-prompt">$</span>curl -I https://google.com
+                            <span class="cmd-prompt">$</span>wget https://example.com/file.zip
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Check 4: Networking -->
+                <div id="quiz-linux-networking"></div>
+
+                <!-- 06. I/O Redirection -->
+                <section id="io" class="mb-20 md:mb-24">
+                    <span class="rams-label">04 / Pipes</span>
+                    <h3 class="text-xl font-medium mb-4">Input/Output Redirection</h3>
+                    <div class="deep-dive mb-6">
+                        <h4>The Unix Philosophy</h4>
+                        <p>Write programs that do one thing and do it well. Write programs to work together. Write
+                            programs to handle text streams, because that is a universal interface.</p>
+                    </div>
+                    <div class="rams-card">
+                        <div class="cmd-block">
+                            <span class="cmd-comment"># Output Redirection (Overwrite)</span>
+                            <span class="cmd-prompt">$</span>echo "Hello World" > hello.txt
+
+                            <br><br><span class="cmd-comment"># Output Redirection (Append)</span>
+                            <span class="cmd-prompt">$</span>echo "Another line" >> hello.txt
+
+                            <br><br><span class="cmd-comment"># The Pipe (|) - Connect output of one to input of
+                                next</span>
+                            <span class="cmd-comment"># Count lines in files containing "error"</span>
+                            <span class="cmd-prompt">$</span>grep "error" server.log | wc -l
+                        </div>
+                    </div>
+
+                    <div class="rams-card bg-gray-50 border-gray-200">
+                        <h4 class="text-xs font-bold uppercase tracking-widest text-gray-500 mb-4">Pipeline
+                            Visualization</h4>
+                        <canvas id="canvas-pipeline" width="600" height="150" class="w-full"></canvas>
+                        <p class="text-[10px] text-gray-400 mt-2 text-center">Green = Info (Ignored), Red = Error
+                            (Passed through grep)</p>
+                    </div>
+                </section>
+
+                <div class="divider hidden md:block border-t border-gray-100 my-10"></div>
+
+                <!-- Glossary Section -->
+                <section id="glossary" class="mb-20">
+                    <span class="rams-label">Glossary</span>
+                    <h3 class="text-xl font-medium mb-8">Key Definitions</h3>
+                    <div class="rams-card">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <h4 class="font-bold text-sm mb-2">Linux</h4>
+                                <p class="text-xs text-gray-600">A free, open-source operating system kernel created by
+                                    Linus Torvalds.</p>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-sm mb-2">Kernel</h4>
+                                <p class="text-xs text-gray-600">The core component of an OS that manages hardware and
+                                    system resources.</p>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-sm mb-2">Shell</h4>
+                                <p class="text-xs text-gray-600">A program that takes commands from the keyboard and
+                                    gives them to the OS to perform.</p>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-sm mb-2">Root (/)</h4>
+                                <p class="text-xs text-gray-600">The top-level directory of the Linux filesystem
+                                    hierarchy.</p>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-sm mb-2">Sudo</h4>
+                                <p class="text-xs text-gray-600">"SuperUser DO". A command that allows a permitted user
+                                    to execute a command as the superuser.</p>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-sm mb-2">Permissions</h4>
+                                <p class="text-xs text-gray-600">Rights given to users and groups to read, write, or
+                                    execute files.</p>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-sm mb-2">Process</h4>
+                                <p class="text-xs text-gray-600">An instance of a running program.</p>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-sm mb-2">SSH (Secure Shell)</h4>
+                                <p class="text-xs text-gray-600">A protocol for operating network services securely over
+                                    an unsecured network.</p>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-sm mb-2">Pipe (|)</h4>
+                                <p class="text-xs text-gray-600">A mechanism for inter-process communication, taking the
+                                    output of one process and using it as input for another.</p>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-sm mb-2">Daemon</h4>
+                                <p class="text-xs text-gray-600">A background process that answers requests for
+                                    services.</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 07. Assessment -->
+                <section id="quiz" class="mb-20">
+                    <span class="rams-label">05 / Assessment</span>
+                    <h3 class="text-xl font-medium mb-8">Knowledge Check</h3>
+                    <div class="rams-card">
+                        <div id="quiz-linux-final"></div>
+                    </div>
+                </section>
+
+                <!-- 09. Certificate (Initially Hidden) -->
+                <section id="certificate" class="mb-20 md:mb-24 hidden">
+                    <span class="rams-label">06 / Certification</span>
+                    <h3 class="text-xl font-medium mb-6">Completion Certificate</h3>
+
+                    <div class="rams-card !p-0 overflow-hidden">
+                        <div class="p-6 md:p-8">
+                            <div class="flex flex-col md:flex-row gap-8 items-start">
+                                <div class="w-full md:w-1/3 space-y-4">
+                                    <p class="text-sm text-gray-600">
+                                        Enter your name below to generate your personalized certificate of completion
+                                        for the Linux & Commands series.
+                                    </p>
+                                    <div>
+                                        <label for="cert-name"
+                                            class="block text-xs font-bold text-gray-500 uppercase mb-1">Full
+                                            Name</label>
+                                        <input type="text" id="cert-name"
+                                            class="w-full border border-gray-300 p-2 font-mono text-sm focus:border-black outline-none"
+                                            placeholder="Linus Torvalds">
+                                        <p id="cert-error" class="text-red-500 text-xs mt-2 hidden">Please enter your
+                                            name.
+                                        </p>
+                                    </div>
+                                    <button onclick="generateCert()"
+                                        class="btn btn-primary bg-black border-black text-white w-full hover:bg-gray-800 p-2 rounded text-sm font-medium transition-colors">Generate
+                                        Certificate</button>
+                                    <button onclick="downloadCert()" id="btn-download"
+                                        class="btn btn-secondary w-full hidden border border-gray-300 text-gray-700 p-2 rounded text-sm font-medium hover:bg-gray-50 transition-colors">Download
+                                        PNG</button>
+
+                                </div>
+
+                                <div
+                                    class="w-full md:w-2/3 bg-gray-50 border border-gray-200 p-4 flex items-center justify-center">
+                                    <canvas id="cert-canvas" class="w-full shadow-lg bg-white"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="bg-gray-50 px-6 py-3 border-t border-gray-100 text-center">
+                            <p class="text-[10px] text-gray-400 italic">
+                                This certificate confirms successful completion of learning and assessment on this
+                                platform and is not an accredited or government-recognized qualification.
+                            </p>
+                        </div>
+                    </div>
+                </section>
+
+                <footer class="w-full mt-12 mb-12">
+                    <div class="border-t border-gray-200 pt-8 flex justify-between items-center">
+                        <span class="text-[10px] mono uppercase text-gray-400">Undrstanding</span>
+                        <span class="text-[10px] mono uppercase text-gray-400">For Humans, From Humans</span>
+                    </div>
+                </footer>
+
+            </div>
+        </main>
+    </div>
+
+    <script>
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobile-menu');
+            menu.classList.toggle('hidden');
+            menu.classList.toggle('flex');
+
+            // Prevent scrolling on body when menu is open
+            if (menu.classList.contains('flex')) {
+                document.body.style.overflow = 'hidden';
+            } else {
+                document.body.style.overflow = '';
+            }
+        }
+
+        // Active Link Highlight
+        const sections = document.querySelectorAll('section');
+        const navLinks = document.querySelectorAll('.nav-link');
+
+        window.addEventListener('scroll', () => {
+            let current = '';
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                if (pageYOffset >= sectionTop - 150) {
+                    current = section.getAttribute('id');
+                }
+            });
+
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href').includes(current) && current !== '') {
+                    link.classList.add('active');
+                }
+            });
+        });
+    </script>
+
+    <!-- Global Scripts -->
+    <script src="js/script.js"></script>
+    <script>
+        class KernelShellVisualizer {
+            constructor(canvasId) {
+                this.canvas = document.getElementById(canvasId);
+                if (!this.canvas) return;
+                this.ctx = this.canvas.getContext('2d');
+
+                // Initial sizing
+                this.resize();
+
+                // Layers Metadata (Colors & Text stay same)
+                this.layerInfo = [{
+                    name: "USER",
+                    color: "#f3f4f6",
+                    text: "Applications & Users"
+                }, {
+                    name: "SHELL",
+                    color: "#e5e7eb",
+                    text: "CLI / GUI Interface"
+                }, {
+                    name: "KERNEL",
+                    color: "#000000",
+                    text: "Core Operating System"
+                }, {
+                    name: "HARDWARE",
+                    color: "#ef4444",
+                    text: "CPU, RAM, Disk"
+                }];
+
+                this.hoveredLayer = null;
+                this.init();
+            }
+
+            init() {
+                this.canvas.addEventListener('mousemove', (e) => this.handleMouseMove(e));
+                // Add resize listener
+                window.addEventListener('resize', () => this.resize());
+                this.animate();
+            }
+
+            resize() {
+                // Parent container width governs the canvas
+                // We set canvas internal resolution to match display size for sharpness
+                const rect = this.canvas.getBoundingClientRect();
+                this.width = this.canvas.width = rect.width;
+                // Keep height proportional or fixed? Fixed 350 is fine as defined in HTML.
+                // Or make it square?
+                this.height = this.canvas.height = Math.min(rect.width, 350);
+
+                // Recalculate radii based on new size
+                // Max radius is half of the smaller dimension, minus padding
+                const maxRadius = Math.min(this.width, this.height) / 2 * 0.95;
+
+                // Assign calculated radii to layers
+                // 4 Layers: 100%, 75%, 55%, 30% of maxRadius
+                this.radii = [
+                    maxRadius, // User
+                    maxRadius * 0.75, // Shell
+                    maxRadius * 0.55, // Kernel
+                    maxRadius * 0.30 // Hardware
+                ];
+            }
+
+            handleMouseMove(e) {
+                const rect = this.canvas.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+
+                const cx = this.width / 2;
+                const cy = this.height / 2;
+                const dist = Math.sqrt((x - cx) ** 2 + (y - cy) ** 2);
+
+                this.hoveredLayer = null;
+
+                // Check from smallest (Hardware) to largest (User)
+                // because smaller circles are on top of larger ones
+                if (dist <= this.radii[3]) this.hoveredLayer = 3;
+                else if (dist <= this.radii[2]) this.hoveredLayer = 2;
+                else if (dist <= this.radii[1]) this.hoveredLayer = 1;
+                else if (dist <= this.radii[0]) this.hoveredLayer = 0;
+            }
+
+            animate() {
+                this.ctx.clearRect(0, 0, this.width, this.height);
+                const cx = this.width / 2;
+                const cy = this.height / 2;
+
+                // Draw Layers (Outer to Inner)
+                this.layerInfo.forEach((layer, index) => {
+                    const r = this.radii[index];
+                    this.ctx.beginPath();
+                    this.ctx.arc(cx, cy, r, 0, Math.PI * 2);
+
+                    // Style
+                    if (this.hoveredLayer === index) {
+                        this.ctx.fillStyle = layer.name === "KERNEL" ? "#333" : "#d1d5db";
+                        if (layer.name === "HARDWARE") this.ctx.fillStyle = "#dc2626";
+                    } else {
+                        this.ctx.fillStyle = layer.color;
+                    }
+
+                    this.ctx.fill();
+                    this.ctx.strokeStyle = "#fff";
+                    this.ctx.lineWidth = 2;
+                    this.ctx.stroke();
+                });
+
+                // Draw Labels
+                this.ctx.textAlign = "center";
+                this.ctx.textBaseline = "middle";
+
+                this.layerInfo.forEach((layer, index) => {
+                    const r = this.radii[index];
+                    this.ctx.fillStyle = layer.name === "KERNEL" || layer.name === "HARDWARE" ? "white" : "black";
+                    this.ctx.font = "bold 11px Inter";
+
+                    if (index === 3) {
+                        this.ctx.fillText(layer.name, cx, cy);
+                    } else {
+                        // Place at top edge of this layer
+                        this.ctx.fillText(layer.name, cx, cy - r + 10);
+                    }
+                });
+
+                // Tooltip description (Fixed at bottom)
+                if (this.hoveredLayer !== null) {
+                    const layer = this.layerInfo[this.hoveredLayer];
+                    this.ctx.fillStyle = "rgba(0,0,0,0.8)";
+                    // Ensure tooltip fits
+                    const boxWidth = Math.min(200, this.width - 20);
+                    this.ctx.fillRect(cx - boxWidth / 2, this.height - 35, boxWidth, 25);
+                    this.ctx.fillStyle = "white";
+                    this.ctx.font = "12px Inter";
+                    this.ctx.fillText(layer.text, cx, this.height - 22);
+                }
+
+                requestAnimationFrame(() => this.animate());
+            }
+        }
+
+        class PipelineVisualizer {
+            constructor(canvasId) {
+                this.canvas = document.getElementById(canvasId);
+                if (!this.canvas) return;
+                this.ctx = this.canvas.getContext('2d');
+
+                this.particles = [];
+                this.timer = 0;
+
+                this.resize();
+                this.init();
+            }
+
+            init() {
+                window.addEventListener('resize', () => this.resize());
+                this.animate();
+            }
+
+            resize() {
+                // Use parent width because w-full is set in CSS
+                // The canvas 'width' attribute is merely the render resolution.
+                // It should match offsetWidth for 1:1 pixel mapping.
+                this.width = this.canvas.width = this.canvas.offsetWidth;
+                this.height = this.canvas.height = 150; // Keep fixed height
+
+                // Recalculate layout based on width
+                const pad = this.width * 0.05;
+                const availableW = this.width - (pad * 2);
+
+                // 3 Blocks, roughly 22% width each
+                this.blockW = availableW * 0.22;
+                // Spacing/Pipe length
+                this.pipeLen = (availableW - (this.blockW * 3)) / 2;
+
+                // Positions (Y is centered)
+                this.y = this.height / 2 - 35; // 70px height rect
+                this.blockH = 70;
+
+                this.pos = [
+                    pad, // Block 1 X
+                    pad + this.blockW, // Pipe 1 Start
+                    pad + this.blockW + this.pipeLen, // Block 2 X
+                    pad + this.blockW * 2 + this.pipeLen, // Pipe 2 Start
+                    pad + this.blockW * 2 + this.pipeLen * 2 // Block 3 X
+                ];
+            }
+
+            spawnParticle() {
+                const isError = Math.random() > 0.7;
+                this.particles.push({
+                    x: 0, // Starts at 0, relative
+                    y: this.height / 2 + (Math.random() * 20 - 10),
+                    speed: (this.width / 300) + Math.random(), // Speed relative to width
+                    color: isError ? "#ef4444" : "#22c55e",
+                    type: isError ? "error" : "info",
+                    stage: 0
+                });
+            }
+
+            animate() {
+                this.ctx.clearRect(0, 0, this.width, this.height);
+
+                this.timer++;
+                if (this.timer % 20 === 0) this.spawnParticle();
+
+                this.ctx.font = "bold 12px monospace";
+                this.ctx.textAlign = "left"; // Ensure text alignment is left for blocks
+                const centerY = this.y + this.blockH / 2 + 4;
+
+                // Block 1: Input (cat file)
+                this.ctx.fillStyle = "#e5e5e5";
+                this.ctx.fillRect(this.pos[0], this.y, this.blockW, this.blockH);
+                this.ctx.fillStyle = "#000";
+                this.ctx.fillText("cat log", this.pos[0] + 10, centerY);
+
+                // Pipe 1
+                this.ctx.fillStyle = "#9ca3af";
+                this.ctx.fillRect(this.pos[1], this.y + 30, this.pipeLen, 10);
+
+                // Block 2: Filter (grep)
+                this.ctx.fillStyle = "#e5e5e5";
+                this.ctx.fillRect(this.pos[2], this.y, this.blockW, this.blockH);
+                this.ctx.fillStyle = "#000";
+                this.ctx.fillText("grep 'err'", this.pos[2] + 10, centerY);
+
+                // Pipe 2
+                this.ctx.fillStyle = "#9ca3af";
+                this.ctx.fillRect(this.pos[3], this.y + 30, this.pipeLen, 10);
+
+                // Block 3: Output (wc)
+                this.ctx.fillStyle = "#e5e5e5";
+                this.ctx.fillRect(this.pos[4], this.y, this.blockW, this.blockH);
+                this.ctx.fillStyle = "#000";
+                this.ctx.fillText("wc -l", this.pos[4] + 10, centerY);
+
+                // Draw Particles
+                for (let i = this.particles.length - 1; i >= 0; i--) {
+                    const p = this.particles[i];
+                    p.x += p.speed;
+
+                    const currentX = p.x;
+
+                    // Check Stages
+                    // Stage 0: -> Before Block 2
+                    // Block 2 starts at pos[2]
+                    // Particle starts at 0, so its absolute position is p.x + this.pos[0]
+                    // Let's adjust particle x to be absolute from the start of the first block
+                    // For simplicity, let's assume particles start at this.pos[0] and move right.
+                    // So, p.x is relative to this.pos[0]
+
+                    // Re-evaluating particle x:
+                    // If p.x is 0, it means it's at the start of the canvas.
+                    // The blocks are drawn starting at this.pos[0].
+                    // So, a particle at x=0 is at the very left edge of the canvas.
+                    // The first block starts at this.pos[0].
+                    // The second block starts at this.pos[2].
+                    // The third block starts at this.pos[4].
+
+                    if (p.stage === 0 && currentX > this.pos[2] + (this.blockW / 2)) { // Particle reached middle of Block 2
+                        p.stage = 1;
+                        if (p.type !== "error") {
+                            this.particles.splice(i, 1);
+                            continue;
+                        }
+                    }
+
+                    // Stage 1: -> Block 3
+                    if (currentX > this.pos[4] + (this.blockW / 2)) { // Particle reached middle of Block 3
+                        this.particles.splice(i, 1);
+                        // Flash counter effect - not implemented here
+                        continue;
+                    }
+
+                    this.ctx.beginPath();
+                    this.ctx.arc(currentX, p.y, 4, 0, Math.PI * 2);
+                    this.ctx.fillStyle = p.color;
+                    this.ctx.fill();
+                }
+
+                requestAnimationFrame(() => this.animate());
+            }
+        }
+
+        // Auto-init if canvasses exist
+        document.addEventListener("DOMContentLoaded", () => {
+            new KernelShellVisualizer('canvas-kernel-shell');
+            new PipelineVisualizer('canvas-pipeline');
+        });
+    </script>
+
+    <!-- Quiz Data & Init -->
+    <script>
+        // Quiz Data
+        const linuxBasicsData = {
+            question: "Which command would you use to move a file named 'data.txt' from the current directory to a folder named 'backup'?",
+            options: [
+                "cp data.txt backup",
+                "mv data.txt backup",
+                "rm data.txt backup",
+                "ls data.txt backup"
+            ],
+            answer: 1,
+            explanation: "The <code>mv</code> (move) command is used to move files or directories. <code>cp</code> copies them, and <code>rm</code> removes them."
+        };
+
+        const linuxPermsData = {
+            question: "What does the permission '755' mean for a file?",
+            options: [
+                "Owner can read/write; Group/Others can only read.",
+                "Owner has full access; Group/Others have read/execute access.",
+                "Owner has full access; Group/Others have no access.",
+                " Everyone has full access."
+            ],
+            answer: 1,
+            explanation: "7 = 4+2+1 (rwx) for Owner. 5 = 4+1 (r-x) for Group and Others. So Owner can Read/Write/Execute, while others can Read/Execute."
+        };
+
+        const linuxConceptsData = {
+            question: "Which component of the Linux operating system interacts directly with the computer hardware?",
+            options: [
+                "The Shell",
+                "The Kernel",
+                "User Space Applications",
+                "The Desktop Environment"
+            ],
+            answer: 1,
+            explanation: "The <strong>Kernel</strong> is the core of the OS that manages differing hardware resources (CPU, RAM, I/O) and provides a standard interface for applications."
+        };
+
+        const linuxProcessesData = {
+            question: "Which command would you use to forcefully terminate a frozen process with PID 1234 that is ignoring standard kill signals?",
+            options: [
+                "kill 1234",
+                "stop 1234",
+                "kill -9 1234",
+                "end 1234"
+            ],
+            answer: 2,
+            explanation: "<code>kill -9</code> sends the SIGKILL signal, which cannot be ignored or intercepted by the process, forcing it to stop immediately."
+        };
+
+        const linuxNetworkingData = {
+            question: "Which command is most commonly used to test if a remote server is reachable and measure the round-trip time?",
+            options: [
+                "ssh",
+                "curl",
+                "netstat",
+                "ping"
+            ],
+            answer: 3,
+            explanation: "<code>ping</code> sends ICMP echo request packets to the target and reports whether it receives a response and how long it took."
+        };
+
+        const finalQuizQuestions = [
+            {
+                question: "Which symbol represents the root directory in Linux?",
+                options: ["~", "/", "#", "@"],
+                answer: 1
+            },
+            {
+                question: "Which command is used to change the current directory?",
+                options: ["pwd", "ls", "cd", "mv"],
+                answer: 2
+            },
+            {
+                question: "How do you create a new directory named 'Projects'?",
+                options: ["new dir Projects", "mkdir Projects", "touch Projects", "create Projects"],
+                answer: 1
+            },
+            {
+                question: "Which command lists all files, including hidden ones?",
+                options: ["ls -l", "ls -a", "ls -h", "show all"],
+                answer: 1
+            },
+            {
+                question: "What does the 'sudo' command do?",
+                options: ["Super User Do - Executes command with root privileges", "Sudden Undo - Reverts the last change", "System Update - Updates the OS", "Switch User - Logs into another account"],
+                answer: 0
+            },
+            {
+                question: "Which command displays the current contents of a file?",
+                options: ["cat", "dog", "show", "read"],
+                answer: 0
+            },
+            {
+                question: "How do you remove a directory and all its contents?",
+                options: ["rm dir", "rmdir dir", "rm -rf dir", "delete dir"],
+                answer: 2
+            },
+            {
+                question: "Which command shows the current running processes?",
+                options: ["proc", "tasklist", "top", "run"],
+                answer: 2
+            },
+            {
+                question: "What is the correct syntax to change file ownership to user 'dave'?",
+                options: ["chmod dave file", "chown dave file", "owner dave file", "usermod dave file"],
+                answer: 1
+            },
+            {
+                question: "Which operator is used to redirect output to a file, overwriting it?",
+                options: [">>", "|", "<", ">"],
+                answer: 3
+            }
+        ];
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            // 1. Inline Quizzes
+            new InlineQuiz('quiz-linux-concepts', linuxConceptsData);
+            new InlineQuiz('quiz-linux-basics', linuxBasicsData);
+            new InlineQuiz('quiz-linux-permissions', linuxPermsData);
+            new InlineQuiz('quiz-linux-processes', linuxProcessesData);
+            new InlineQuiz('quiz-linux-networking', linuxNetworkingData);
+
+            // 2. Final Quiz & Certificate
+            // Logic handles showing the UI
+            new QuizManager('quiz-linux-final', finalQuizQuestions, () => {
+                document.getElementById('certificate').classList.remove('hidden');
+                setTimeout(() => {
+                    document.getElementById('certificate').scrollIntoView({ behavior: 'smooth' });
+                }, 100);
+            });
+        });
+
+        // Certificate Logic
+        const certGen = new CertificateGenerator('cert-canvas', 'Linux Command Line');
+
+        function generateCert() {
+            const nameInput = document.getElementById('cert-name');
+            const errorMsg = document.getElementById('cert-error');
+            const name = nameInput.value.trim();
+            const nameRegex = /^[a-zA-Z\s\-\.'’]+$/;
+
+            // Reset error state
+            errorMsg.classList.add('hidden');
+            nameInput.classList.remove('border-red-500');
+
+            if (!name) {
+                errorMsg.textContent = "Please enter your name.";
+                errorMsg.classList.remove('hidden');
+                nameInput.classList.add('border-red-500');
+                return;
+            }
+
+            if (name.length < 3 || name.length > 35) {
+                errorMsg.textContent = "Name must be between 3 and 35 characters.";
+                errorMsg.classList.remove('hidden');
+                nameInput.classList.add('border-red-500');
+                return;
+            }
+            if (!nameRegex.test(name)) {
+                errorMsg.textContent = "Name cannot contain numbers or special characters.";
+                errorMsg.classList.remove('hidden');
+                nameInput.classList.add('border-red-500');
+                return;
+            }
+
+            certGen.generate(name);
+            document.getElementById('btn-download').classList.remove('hidden');
+        }
+
+        function downloadCert() {
+            const name = document.getElementById('cert-name').value.trim();
+            certGen.download(`Undrstanding_Linux_Certificate_${name.replace(/\s+/g, '_')}.png`);
+        }
+    </script>
+</body>
+
+</html>

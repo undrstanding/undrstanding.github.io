@@ -1,0 +1,1179 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Budget Tracker Lab</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&family=Outfit:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="icon" type="image/svg+xml" href="../assests/undrlogo.svg">
+    <style>
+        :root {
+            --surface: #ffffff;
+            --border: #e5e7eb;
+            --text-main: #000000;
+            --text-muted: #666666;
+            --accent: #3DDC84;
+            /* Android Brand Green */
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        /* Nearly invisible global scrollbar */
+        ::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #fafafa;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #e5e7eb;
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #d1d5db;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: #fafafa;
+            color: var(--text-main);
+            overflow-x: hidden;
+            user-select: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+        }
+
+        .mono {
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .lab-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 2rem;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Premium Mockup Containers */
+        .mockup-container {
+            background: #fff;
+            border: 1px solid #eee;
+            border-radius: 12px;
+            padding: 2rem;
+            margin: 2rem 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+        }
+
+        /* Mac-style Code Window */
+        .code-window {
+            background: #1e1e1e;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            margin: 2rem 0;
+            border: 1px solid #333;
+        }
+
+        .code-header {
+            background: #2d2d2d;
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border-bottom: 1px solid #3d3d3d;
+        }
+
+        .dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+
+        .dot-red {
+            background: #ff5f56;
+        }
+
+        .dot-yellow {
+            background: #ffbd2e;
+        }
+
+        .dot-green {
+            background: #27c93f;
+        }
+
+        .file-name {
+            color: #888;
+            font-size: 0.75rem;
+            font-family: 'JetBrains Mono';
+            margin-left: 8px;
+        }
+
+        pre {
+            padding: 1.5rem;
+            color: #dcdcdc;
+            font-family: 'JetBrains Mono';
+            overflow-x: auto;
+            font-size: 0.85rem;
+            line-height: 1.6;
+            user-select: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+        }
+
+        /* Nearly invisible scrollbar for code */
+        pre::-webkit-scrollbar {
+            height: 2px;
+        }
+
+        pre::-webkit-scrollbar-track {
+            background: #1e1e1e;
+        }
+
+        pre::-webkit-scrollbar-thumb {
+            background: #333;
+            border-radius: 10px;
+        }
+
+        pre::-webkit-scrollbar-thumb:hover {
+            background: #444;
+        }
+
+        .keyword {
+            color: #569cd6;
+        }
+
+        .type {
+            color: #4ec9b0;
+        }
+
+        .string {
+            color: #ce9178;
+        }
+
+        .comment {
+            color: #6a9955;
+        }
+
+        .annotation {
+            color: #dcdcaa;
+        }
+
+        /* Step Logic */
+        .step-content {
+            display: none;
+            animation: slideUp 0.4s ease-out forwards;
+        }
+
+        .step-content.active {
+            display: block;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(15px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .progress-bar {
+            height: 6px;
+            background: #f3f4f6;
+            border-radius: 99px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--accent);
+            transition: width 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .why-box {
+            background: #edfff5;
+            border-left: 4px solid var(--accent);
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .why-title {
+            font-weight: 700;
+            color: #166534;
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            font-size: 0.7rem;
+            letter-spacing: 0.08em;
+            font-family: 'JetBrains Mono';
+        }
+
+        .nav-btn {
+            padding: 0.75rem 2rem;
+            font-family: 'Outfit';
+            font-weight: 600;
+            border-radius: 999px;
+            transition: all 0.2s;
+            font-size: 0.9rem;
+        }
+
+        .nav-btn-prev {
+            color: #666;
+            background: transparent;
+        }
+
+        .nav-btn-prev:hover:not(:disabled) {
+            color: #000;
+            background: #f3f4f6;
+        }
+
+        .nav-btn-next {
+            background: #000;
+            color: #fff;
+        }
+
+        .nav-btn-next:hover:not(:disabled) {
+            background: #333;
+            transform: translateY(-1px);
+        }
+
+        .nav-btn:disabled {
+            opacity: 0.2;
+            cursor: not-allowed;
+        }
+
+        .step-indicator {
+            font-family: 'JetBrains Mono';
+            font-weight: 600;
+            color: #cbd5e1;
+            font-size: 0.7rem;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2rem !important;
+                line-height: 1.1;
+            }
+
+            .mockup-container {
+                padding: 1rem;
+                margin: 1.5rem 0;
+                width: 100%;
+            }
+
+            .mockup-container svg {
+                width: 100%;
+                height: auto;
+            }
+
+            .nav-btn {
+                padding: 0.75rem 1.25rem;
+                font-size: 0.8rem;
+            }
+
+            .code-window {
+                margin: 1.5rem 0;
+                border-radius: 8px;
+            }
+
+            pre {
+                font-size: 0.75rem;
+                padding: 1rem;
+            }
+
+            /* Responsive Download Section */
+            .download-card {
+                flex-direction: column !important;
+                align-items: flex-start !important;
+                padding: 1.5rem !important;
+            }
+
+            .download-link {
+                word-break: break-all;
+                font-size: 1rem !important;
+            }
+        }
+
+        /* Mobile Guidance Modal */
+        /* Minimal Mobile Guidance Modal */
+        #mobile-guidance-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.4);
+            z-index: 2000;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            padding: 1.5rem;
+            backdrop-filter: blur(12px);
+        }
+
+        .modal-content {
+            background: #fff;
+            padding: 3rem 2rem;
+            border-radius: 20px;
+            text-align: center;
+            max-width: 360px;
+            border: 1px solid #eee;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.1);
+            animation: modalPop 0.5s cubic-bezier(0.19, 1, 0.22, 1);
+        }
+
+        @keyframes modalPop {
+            from {
+                transform: scale(0.95) translateY(10px);
+                opacity: 0;
+            }
+
+            to {
+                transform: scale(1) translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .modal-icon-box {
+            width: 56px;
+            height: 56px;
+            background: #fbfbfb;
+            border: 1px solid #eee;
+            color: #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem;
+            border-radius: 12px;
+        }
+
+        .modal-title {
+            font-family: 'JetBrains Mono';
+            font-size: 0.65rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.3em;
+            color: #aaa;
+            margin-bottom: 0.75rem;
+            display: block;
+        }
+
+        .modal-text {
+            font-size: 1.15rem;
+            font-weight: 600;
+            line-height: 1.4;
+            color: #000;
+            margin-bottom: 2.5rem;
+            letter-spacing: -0.02em;
+        }
+
+        .modal-btn {
+            background: #3DDC84;
+            color: #fff;
+            padding: 1rem 2rem;
+            border-radius: 99px;
+            font-weight: 600;
+            font-family: 'Outfit';
+            font-size: 0.9rem;
+            transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+            width: 100%;
+            border: none;
+            cursor: pointer;
+        }
+
+        .modal-btn:hover {
+            background: #2cb46d;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(61, 220, 132, 0.2);
+        }
+
+        @media (max-width: 768px) {
+            #mobile-guidance-modal.active {
+                display: flex;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="lab-container">
+        <!-- Header -->
+        <nav class="flex justify-between items-center mb-12">
+            <a href="../index.html"
+                class="mono text-xs font-bold tracking-widest hover:text-green-600 transition-colors uppercase">&larr;
+                Repository</a>
+            <div class="step-indicator uppercase tracking-widest">PHASE <span id="current-step-num">1</span> / 12</div>
+        </nav>
+
+        <div class="mb-4">
+            <div class="progress-bar mb-12">
+                <div id="progress-fill" class="progress-fill" style="width: 8.33%;"></div>
+            </div>
+        </div>
+
+        <main class="flex-grow">
+            <!-- STEP 1: DOWNLOAD -->
+            <div class="step-content active" id="step-1">
+                <h1 class="text-5xl font-bold tracking-tighter mb-6">Getting the Tools</h1>
+                <p class="text-xl text-gray-600 font-light mb-8 max-w-2xl">
+                    Every app begins with a solid environment. Our tool of choice is <strong>Android Studio</strong>,
+                    the official IDE provided by Google.
+                </p>
+                <div class="space-y-6">
+                    <div class="p-8 border border-gray-100 rounded-2xl bg-white shadow-sm download-card">
+                        <h3 class="font-bold mb-4 uppercase tracking-widest text-xs text-gray-400">Official Source</h3>
+                        <div class="flex items-center gap-4 download-card">
+                            <div
+                                class="w-12 h-12 bg-[#3DDC84]/10 rounded-full flex items-center justify-center text-[#3DDC84] shrink-0">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                                    <polyline points="7 10 12 15 17 10" />
+                                    <line x1="12" y1="15" x2="12" y2="3" />
+                                </svg>
+                            </div>
+                            <div>
+                                <a href="https://developer.android.com/studio" target="_blank"
+                                    class="text-lg font-bold hover:text-[#3DDC84] transition-colors download-link">developer.android.com/studio</a>
+                                <p class="text-sm text-gray-400">Download the <strong>Panda 1</strong> stable build.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-12 space-y-6">
+                    <h3 class="mono text-xs font-black uppercase tracking-[0.3em] text-gray-400">How to do it</h3>
+                    <ul class="space-y-4 text-gray-600 font-light text-lg">
+                        <li class="flex gap-4">
+                            <div class="w-2 h-2 rounded-full bg-[#3DDC84] mt-2.5 shrink-0"></div>
+                            <span>Click the link above to visit the official portal.</span>
+                        </li>
+                        <li class="flex gap-4">
+                            <div class="w-2 h-2 rounded-full bg-[#3DDC84] mt-2.5 shrink-0"></div>
+                            <span>Download the installer for your OS (Windows/Mac/Linux).</span>
+                        </li>
+                        <li class="flex gap-4">
+                            <div class="w-2 h-2 rounded-full bg-[#3DDC84] mt-2.5 shrink-0"></div>
+                            <span>Run the <code>.exe</code> or <code>.dmg</code> and follow the setup wizard.</span>
+                        </li>
+                    </ul>
+                </div>
+                <div class="why-box">
+                    <div class="why-title">Why this tool?</div>
+                    <p class="text-sm">Android Studio isn't just a text editor; it's a <strong>compiler</strong>, an
+                        <strong>emulator</strong>, and a <strong>layout engine</strong>. It translates your Kotlin code
+                        into bytecode that the Android Runtime (ART) can understand.
+                    </p>
+                </div>
+            </div>
+
+            <!-- STEP 2: SETUP -->
+            <div class="step-content" id="step-2">
+                <h1 class="text-5xl font-bold tracking-tighter mb-6">Environment Setup</h1>
+                <p class="text-xl text-gray-600 font-light mb-8 max-w-2xl">
+                    Launching Android Studio for the first time is a one-time configuration process.
+                </p>
+
+                <div class="mockup-container bg-[#1e1e1e]">
+                    <svg width="400" height="220" viewBox="0 0 400 220" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <rect width="400" height="220" rx="8" fill="#2B2D30" />
+                        <rect x="0" y="0" width="400" height="30" rx="8" fill="#3C3F41" />
+                        <circle cx="15" cy="15" r="5" fill="#ED6A5E" />
+                        <circle cx="30" cy="15" r="5" fill="#F5BF4F" />
+                        <circle cx="45" cy="15" r="5" fill="#61C554" />
+                        <text x="160" y="20" fill="#BBBBBB" font-family="Outfit" font-size="10">Welcome to Android
+                            Studio</text>
+
+                        <rect x="40" y="60" width="320" height="40" rx="4" fill="#3DDC84" fill-opacity="0.1"
+                            stroke="#3DDC84" stroke-width="1" />
+                        <text x="60" y="85" fill="#3DDC84" font-family="Outfit" font-size="12" font-weight="bold">+ New
+                            Project</text>
+
+                        <rect x="40" y="110" width="320" height="35" rx="4" fill="#4B4D50" />
+                        <text x="60" y="132" fill="#BBBBBB" font-family="Outfit" font-size="11">Open Existing
+                            Project</text>
+
+                        <rect x="40" y="155" width="320" height="35" rx="4" fill="#4B4D50" />
+                        <text x="60" y="177" fill="#BBBBBB" font-family="Outfit" font-size="11">Get from VCS</text>
+                    </svg>
+                </div>
+
+                <ul class="space-y-6 text-lg">
+                    <li class="flex gap-4">
+                        <div
+                            class="w-8 h-8 rounded-full bg-black text-white flex items-center justify-center text-sm font-bold shrink-0">
+                            1</div>
+                        <span>Select <strong>"Standard"</strong> installation – it includes the SDK and Emulator
+                            optimized for the most common use cases.</span>
+                    </li>
+                    <li class="flex gap-4">
+                        <div
+                            class="w-8 h-8 rounded-full bg-black text-white flex items-center justify-center text-sm font-bold shrink-0">
+                            2</div>
+                        <span>Verify <strong>SDK Components</strong> – ensure "Android SDK Platform" and "Android SDK
+                            Build-Tools" are checked.</span>
+                    </li>
+                </ul>
+                <div class="why-box">
+                    <div class="why-title">What is the SDK?</div>
+                    <p class="text-sm">The <strong>Software Development Kit (SDK)</strong> is a massive library
+                        containing the core Android classes (like <code>Button</code>, <code>Intent</code>, and
+                        <code>Camera</code>). Without it, your code wouldn't know what a "Phone" even is.
+                    </p>
+                </div>
+            </div>
+
+            <!-- STEP 3: CREATION -->
+            <div class="step-content" id="step-3">
+                <h1 class="text-5xl font-bold tracking-tighter mb-6">Create the Foundation</h1>
+                <p class="text-xl text-gray-600 font-light mb-8 max-w-2xl">Let's initialize the project settings.</p>
+
+                <div class="grid grid-cols-1 gap-4 mb-8">
+                    <div class="flex items-center justify-between p-4 bg-white border border-gray-100 rounded-xl">
+                        <span class="mono text-xs font-bold text-gray-400 uppercase">Template</span>
+                        <span class="font-bold">Empty Compose Activity</span>
+                    </div>
+                    <div class="flex items-center justify-between p-4 bg-white border border-gray-100 rounded-xl">
+                        <span class="mono text-xs font-bold text-gray-400 uppercase">Project Name</span>
+                        <span class="font-bold">BudgetTracker</span>
+                    </div>
+                    <div class="flex items-center justify-between p-4 bg-white border border-gray-100 rounded-xl">
+                        <span class="mono text-xs font-bold text-gray-400 uppercase">Package Name</span>
+                        <span class="mono font-bold text-[#3DDC84]">com.undrlib.budget</span>
+                    </div>
+                </div>
+
+                <div class="mt-12 space-y-6">
+                    <h3 class="mono text-xs font-black uppercase tracking-[0.3em] text-gray-400">Action Items</h3>
+                    <ul class="space-y-4 text-gray-600 font-light text-lg">
+                        <li class="flex gap-4">
+                            <div
+                                class="w-8 h-8 rounded-full bg-black text-white flex items-center justify-center text-xs font-bold shrink-0">
+                                1</div>
+                            <span>Open Android Studio and click <strong>"New Project"</strong>.</span>
+                        </li>
+                        <li class="flex gap-4">
+                            <div
+                                class="w-8 h-8 rounded-full bg-black text-white flex items-center justify-center text-xs font-bold shrink-0">
+                                2</div>
+                            <span>Pick <strong>"Empty Compose Activity"</strong> (the red logo one).</span>
+                        </li>
+                        <li class="flex gap-4">
+                            <div
+                                class="w-8 h-8 rounded-full bg-black text-white flex items-center justify-center text-xs font-bold shrink-0">
+                                3</div>
+                            <span>Type <code>BudgetTracker</code> as the name and ensure the package matches.</span>
+                        </li>
+                        <li class="flex gap-4">
+                            <div
+                                class="w-8 h-8 rounded-full bg-black text-white flex items-center justify-center text-xs font-bold shrink-0">
+                                4</div>
+                            <span>Set <strong>Minimum SDK</strong> to API 24 (Nougat).</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="why-box">
+                    <div class="why-title">Why API 24?</div>
+                    <p class="text-sm">Choosing a Minimum SDK is a balance. API 24 gives us access to modern features
+                        like <strong>Multi-window</strong> and <strong>Direct Boot</strong> while still supporting over
+                        95% of active devices globally.</p>
+                </div>
+            </div>
+
+            <!-- STEP 4: ARCHITECTURE -->
+            <div class="step-content" id="step-4">
+                <h1 class="text-5xl font-bold tracking-tighter mb-6">Directory Layout</h1>
+                <p class="text-xl text-gray-600 font-light mb-8 max-w-2xl">Understand where your code actually lives.
+                </p>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="p-6 border border-gray-100 bg-white rounded-2xl">
+                        <h4 class="font-bold mono text-sm mb-4 text-[#3DDC84]">/java/com.undrlib.budget/</h4>
+                        <p class="text-sm text-gray-500">The brain of your app. All <code>.kt</code> files live here,
+                            organized by their function.</p>
+                    </div>
+                    <div class="p-6 border border-gray-100 bg-white rounded-2xl">
+                        <h4 class="font-bold mono text-sm mb-4 text-[#3DDC84]">/res/drawable/</h4>
+                        <p class="text-sm text-gray-500">Visual assets. Vectors (SVG) and PNGs that define the look and
+                            feel.</p>
+                    </div>
+                </div>
+
+                <div class="why-box">
+                    <div class="why-title">Why this hierarchy?</div>
+                    <p class="text-sm">Android uses a <strong>Module-based</strong> system. The <code>app</code> folder
+                        is your main module. This separation allows you to build different versions of the app (e.g.,
+                        Free vs Pro) while reusing the same core code.</p>
+                </div>
+            </div>
+
+            <!-- STEP 5: DATA ENTITY -->
+            <div class="step-content" id="step-5">
+                <h1 class="text-5xl font-bold tracking-tighter mb-6">Modeling the Data</h1>
+                <p class="text-xl text-gray-600 font-light mb-8 max-w-2xl">First, we define what an "Expense" looks like
+                    in our database.</p>
+
+                <div class="code-window">
+                    <div class="code-header">
+                        <div class="dot dot-red"></div>
+                        <div class="dot dot-yellow"></div>
+                        <div class="dot dot-green"></div>
+                        <span class="file-name">Expense.kt</span>
+                    </div>
+                    <pre><code><span class="annotation">@Entity</span>(tableName = <span class="string">"expenses"</span>)
+<span class="keyword">data class</span> <span class="type">Expense</span>(
+    <span class="annotation">@PrimaryKey</span>(autoGenerate = <span class="keyword">true</span>)
+    <span class="keyword">val</span> id: <span class="type">Int</span> = 0,
+    <span class="keyword">val</span> title: <span class="type">String</span>,
+    <span class="keyword">val</span> amount: <span class="type">Double</span>,
+    <span class="keyword">val</span> category: <span class="type">String</span>,
+    <span class="keyword">val</span> date: <span class="type">Long</span> = <span class="type">System</span>.currentTimeMillis()
+)</code></pre>
+                </div>
+
+                <div class="mt-8 space-y-4 text-gray-600 font-light">
+                    <div class="flex gap-4 p-4 bg-white border border-gray-50 rounded-xl">
+                        <div class="w-1.5 h-1.5 rounded-full bg-[#3DDC84] mt-2 shrink-0"></div>
+                        <p class="text-sm">In your Project pane, right-click your package name &rarr;
+                            <strong>New</strong> &rarr; <strong>Kotlin Class/File</strong>.
+                        </p>
+                    </div>
+                    <div class="flex gap-4 p-4 bg-white border border-gray-50 rounded-xl">
+                        <div class="w-1.5 h-1.5 rounded-full bg-[#3DDC84] mt-2 shrink-0"></div>
+                        <p class="text-sm">Name it <code>Expense</code> and select <strong>Class</strong>.</p>
+                    </div>
+                    <div class="flex gap-4 p-4 bg-white border border-gray-50 rounded-xl">
+                        <div class="w-1.5 h-1.5 rounded-full bg-[#3DDC84] mt-2 shrink-0"></div>
+                        <p class="text-sm">Paste the code above, replacing the default class definition.</p>
+                    </div>
+                </div>
+
+                <div class="why-box">
+                    <div class="why-title">Why @Entity?</div>
+                    <p class="text-sm">We use <strong>Room Persistence Library</strong>. The <code>@Entity</code>
+                        annotation tells Room to create a table in the SQLite database specifically for this class. Data
+                        classes are used because they are designed purely to hold data.</p>
+                </div>
+            </div>
+
+            <!-- STEP 6: DAO -->
+            <div class="step-content" id="step-6">
+                <h1 class="text-5xl font-bold tracking-tighter mb-6">Database Access</h1>
+                <p class="text-xl text-gray-600 font-light mb-8 max-w-2xl">We need an interface to talk to our database.
+                </p>
+
+                <div class="code-window">
+                    <div class="code-header">
+                        <div class="dot dot-red"></div>
+                        <div class="dot dot-yellow"></div>
+                        <div class="dot dot-green"></div>
+                        <span class="file-name">ExpenseDao.kt</span>
+                    </div>
+                    <pre><code><span class="annotation">@Dao</span>
+<span class="keyword">interface</span> <span class="type">ExpenseDao</span> {
+    <span class="annotation">@Query</span>(<span class="string">"SELECT * FROM expenses ORDER BY date DESC"</span>)
+    <span class="keyword">fun</span> <span class="keyword">getAllExpenses</span>(): <span class="type">Flow</span>&lt;<span class="type">List</span>&lt;<span class="type">Expense</span>&gt;&gt;
+ 
+    <span class="annotation">@Insert</span>(onConflict = <span class="type">OnConflictStrategy</span>.REPLACE)
+    <span class="keyword">suspend fun</span> <span class="keyword">insertExpense</span>(expense: <span class="type">Expense</span>)
+}</code></pre>
+                </div>
+
+                <div class="mt-8 space-y-4 text-gray-600 font-light italic text-sm">
+                    <p>&bull; Create <code>ExpenseDao.kt</code> in the same folder.</p>
+                    <p>&bull; Note the <strong>suspend</strong> keyword — it's vital for background threading.</p>
+                    <p>&bull; The <strong>Flow</strong> return type ensures real-time updates without polling.</p>
+                </div>
+
+                <div class="why-box">
+                    <div class="why-title">Why Coroutines & Flow?</div>
+                    <p class="text-sm">Database operations are "expensive" (slow). <code>suspend</code> tells Android to
+                        run this on a background thread so the UI doesn't freeze. <code>Flow</code> allows us to
+                        "listen" to changes—every time a new expense is added, the UI will update automatically!</p>
+                </div>
+            </div>
+
+            <!-- STEP 7: STATE LOGIC -->
+            <div class="step-content" id="step-7">
+                <h1 class="text-5xl font-bold tracking-tighter mb-6">Managing the State</h1>
+                <p class="text-xl text-gray-600 font-light mb-8 max-w-2xl">The ViewModel connects the data to the UI.
+                </p>
+
+                <div class="code-window">
+                    <div class="code-header">
+                        <div class="dot dot-red"></div>
+                        <div class="dot dot-yellow"></div>
+                        <div class="dot dot-green"></div>
+                        <span class="file-name">BudgetViewModel.kt</span>
+                    </div>
+                    <pre><code><span class="keyword">class</span> <span class="type">BudgetViewModel</span>(dao: <span class="type">ExpenseDao</span>) : <span class="type">ViewModel</span>() {
+    <span class="keyword">val</span> expenses = dao.getAllExpenses()
+        .stateIn(viewModelScope, <span class="type">SharingStarted</span>.WhileSubscribed(), emptyList())
+    
+    <span class="keyword">fun</span> addExpense(title: <span class="type">String</span>, amt: <span class="type">Double</span>) {
+        viewModelScope.launch {
+            <span class="comment">// Logic to save to DAO...</span>
+        }
+    }
+}</code></pre>
+                </div>
+
+                <div class="mt-8 space-y-4">
+                    <h4 class="mono text-[10px] font-black uppercase tracking-widest text-gray-400">Implementation
+                        Checklist</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="p-4 border border-gray-100 rounded-xl bg-white text-sm">
+                            <span class="font-bold text-[#3DDC84] block mb-1">Step 1</span>
+                            Create <code>BudgetViewModel.kt</code>.
+                        </div>
+                        <div class="p-4 border border-gray-100 rounded-xl bg-white text-sm">
+                            <span class="font-bold text-[#3DDC84] block mb-1">Step 2</span>
+                            Extend <code>ViewModel()</code>.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="why-box">
+                    <div class="why-title">Why ViewModel?</div>
+                    <p class="text-sm">If your phone rotates, Android destroys and recreates your Screen (Activity). A
+                        <strong>ViewModel</strong> survives this process. It keeps your data alive so it doesn't
+                        disappear when the screen flips.
+                    </p>
+                </div>
+            </div>
+
+            <!-- STEP 8: THE UI CONTAINER -->
+            <div class="step-content" id="step-8">
+                <h1 class="text-5xl font-bold tracking-tighter mb-6">Building the UI</h1>
+                <p class="text-xl text-gray-600 font-light mb-8 max-w-2xl">First, we create a list item for each
+                    expense.</p>
+
+                <div class="code-window">
+                    <div class="code-header">
+                        <div class="dot dot-red"></div>
+                        <div class="dot dot-yellow"></div>
+                        <div class="dot dot-green"></div>
+                        <span class="file-name">MainScreen.kt</span>
+                    </div>
+                    <pre><code><span class="annotation">@Composable</span>
+<span class="keyword">fun</span> <span class="type">ExpenseRow</span>(item: <span class="type">Expense</span>) {
+    <span class="type">Card</span>(
+        modifier = <span class="type">Modifier</span>.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
+        elevation = <span class="type">CardDefaults</span>.cardElevation(defaultElevation = 2.dp),
+        colors = <span class="type">CardDefaults</span>.cardColors(containerColor = <span class="type">Color</span>.White)
+    ) {
+        <span class="type">Row</span>(
+            modifier = <span class="type">Modifier</span>.padding(16.dp),
+            verticalAlignment = <span class="type">Alignment</span>.CenterVertically
+        ) {
+            <span class="type">Column</span>(modifier = <span class="type">Modifier</span>.weight(1f)) {
+                <span class="type">Text</span>(text = item.title, style = <span class="type">MaterialTheme</span>.typography.titleMedium)
+                <span class="type">Text</span>(text = item.category.uppercase(), style = <span class="type">MaterialTheme</span>.typography.labelSmall, color = <span class="type">Color</span>.Gray)
+            }
+            <span class="type">Text</span>(
+                text = <span class="string">"-$${item.amount}"</span>, 
+                style = <span class="type">MaterialTheme</span>.typography.titleMedium,
+                color = <span class="type">Color</span>(0xFFEF4444), <span class="comment">// Red-500</span>
+                fontWeight = <span class="type">FontWeight</span>.Bold
+            )
+        }
+    }
+}</code></pre>
+                </div>
+
+                <div class="mt-8 p-6 bg-slate-900 rounded-2xl">
+                    <p class="text-slate-400 text-xs mono uppercase tracking-widest mb-4">Design Instructions</p>
+                    <p class="text-white text-sm font-light leading-relaxed">
+                        Create a new file <code>MainScreen.kt</code>. This will be the home for all our UI components.
+                        Inside, define the <code>ExpenseRow</code> function exactly as shown. Notice how we use
+                        <code>MaterialTheme</code> to keep our typography consistent with Google's design standards.
+                    </p>
+                </div>
+
+                <div class="why-box">
+                    <div class="why-title">Why Modifiers?</div>
+                    <p class="text-sm">In Compose, <strong>Modifiers</strong> are the only way to decorate or augment a
+                        component. <code>Modifier.weight(1f)</code> is magical—it tells the title to suck up all
+                        available space, pushing the amount to the far right.</p>
+                </div>
+            </div>
+
+            <!-- STEP 9: THE SCROLLING LIST -->
+            <div class="step-content" id="step-9">
+                <h1 class="text-5xl font-bold tracking-tighter mb-6">The Smart List</h1>
+                <p class="text-xl text-gray-600 font-light mb-8 max-w-2xl">Efficiently rendering 100s of items.</p>
+
+                <div class="code-window">
+                    <div class="code-header">
+                        <div class="dot dot-red"></div>
+                        <div class="dot dot-yellow"></div>
+                        <div class="dot dot-green"></div>
+                        <span class="file-name">MainScreen.kt</span>
+                    </div>
+                    <pre><code><span class="annotation">@Composable</span>
+<span class="keyword">fun</span> <span class="type">SummaryCard</span>(balance: <span class="type">Double</span>) {
+    <span class="type">Card</span>(
+        modifier = <span class="type">Modifier</span>.fillMaxWidth().padding(16.dp),
+        colors = <span class="type">CardDefaults</span>.cardColors(containerColor = <span class="type">Color</span>.White)
+    ) {
+        <span class="type">Column</span>(modifier = <span class="type">Modifier</span>.padding(24.dp)) {
+            <span class="type">Text</span>(<span class="string">"BALANCE"</span>, style = <span class="type">MaterialTheme</span>.typography.labelMedium, fontWeight = <span class="type">FontWeight</span>.Bold)
+            <span class="type">Text</span>(text = <span class="string">"$${balance}"</span>, style = <span class="type">MaterialTheme</span>.typography.headlineLarge)
+        }
+    }
+}
+
+<span class="annotation">@Composable</span>
+<span class="keyword">fun</span> <span class="type">BudgetApp</span>(viewModel: <span class="type">BudgetViewModel</span>) {
+    <span class="keyword">val</span> expenses <span class="keyword">by</span> viewModel.expenses.collectAsState()
+    
+    <span class="comment">// 1. Use Scaffold for standard layout slots</span>
+    <span class="type">Scaffold</span>(
+        floatingActionButton = {
+            <span class="type">FloatingActionButton</span>(
+                onClick = { <span class="comment">/* Navigate */</span> },
+                containerColor = <span class="type">Color</span>(0xFF3DDC84)
+            ) { <span class="type">Icon</span>(<span class="type">Icons</span>.<span class="type">Default</span>.Add, contentDescription = <span class="keyword">null</span>) }
+        }
+    ) { padding ->
+        <span class="comment">// 2. LazyColumn handles massive lists efficiently</span>
+        <span class="type">LazyColumn</span>(contentPadding = padding) {
+            <span class="type">items</span>(expenses) { expense ->
+                <span class="type">ExpenseRow</span>(expense)
+            }
+        }
+    }
+}
+        <span class="type">LazyColumn</span>(modifier = <span class="type">Modifier</span>.padding(padding)) {
+            item { <span class="type">SummaryCard</span>(balance = <span class="number">1240.50</span>) }
+            items(expenses) { expense ->
+                <span class="type">ExpenseRow</span>(expense)
+            }
+        }
+    }
+}</code></pre>
+                </div>
+
+                <div class="why-box">
+                    <div class="why-title">Why LazyColumn?</div>
+                    <p class="text-sm">A standard <code>Column</code> tries to render every item at once.
+                        <strong>LazyColumn</strong> only renders what's visible on the screen. This is why apps like
+                        Instagram can scroll through infinite photos without crashing.
+                    </p>
+                </div>
+            </div>
+
+            <!-- STEP 10: USER INPUT -->
+            <div class="step-content" id="step-10">
+                <h1 class="text-5xl font-bold tracking-tighter mb-6">Capturing Input</h1>
+                <p class="text-xl text-gray-600 font-light mb-8 max-w-2xl">Use TextFields to let users add their
+                    spending.</p>
+
+                <div class="code-window">
+                    <div class="code-header">
+                        <div class="dot dot-red"></div>
+                        <div class="dot dot-yellow"></div>
+                        <div class="dot dot-green"></div>
+                        <span class="file-name">AddExpenseScreen.kt</span>
+                    </div>
+                    <pre><code><span class="keyword">var</span> title <span class="keyword">by</span> remember { mutableStateOf(<span class="string">""</span>) }
+<span class="type">OutlinedTextField</span>(
+    value = title,
+    onValueChange = { title = it },
+    label = { <span class="type">Text</span>(<span class="string">"Title"</span>) }
+)</code></pre>
+                </div>
+
+                <div class="mt-8 space-y-4">
+                    <h3 class="mono text-xs font-black uppercase tracking-[0.3em] text-gray-400">Interaction Details
+                    </h3>
+                    <ul class="space-y-4 text-gray-600 font-light text-lg">
+                        <li class="flex gap-4">
+                            <div class="w-2 h-2 rounded-full bg-[#3DDC84] mt-2.5 shrink-0"></div>
+                            <span>Implement a <code>TextField</code> for the Title and a <code>Decimal</code> keyboard
+                                for the Amount.</span>
+                        </li>
+                        <li class="flex gap-4">
+                            <div class="w-2 h-2 rounded-full bg-[#3DDC84] mt-2.5 shrink-0"></div>
+                            <span>When the <strong>Save</strong> button is clicked, call
+                                <code>viewModel.addExpense()</code> and navigate back.</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="why-box">
+                    <div class="why-title">Why "Remember"?</div>
+                    <p class="text-sm">Compose re-runs your functions constantly (Recomposition). <code>remember</code>
+                        tells the system: "Don't forget this value when you re-run the code!". Without it, the text you
+                        type would be erased every time a letter is added.</p>
+                </div>
+            </div>
+
+            <!-- STEP 11: PERMISSIONS -->
+            <div class="step-content" id="step-11">
+                <h1 class="text-5xl font-bold tracking-tighter mb-6">The Manifest</h1>
+                <p class="text-xl text-gray-600 font-light mb-8 max-w-2xl">Registering your app with the system.</p>
+
+                <div class="code-window">
+                    <div class="code-header">
+                        <div class="dot dot-red"></div>
+                        <div class="dot dot-yellow"></div>
+                        <div class="dot dot-green"></div>
+                        <span class="file-name">AndroidManifest.xml</span>
+                    </div>
+                    <pre><code><span class="comment">&lt;!-- No special permissions needed for local DB! --&gt;</span>
+&lt;<span class="keyword">application</span>
+    android:icon=<span class="string">"@mipmap/ic_launcher"</span>
+    android:label=<span class="string">"Budget Tracker"</span>&gt;
+    &lt;<span class="keyword">activity</span> android:name=<span class="string">".MainActivity"</span> /&gt;
+&lt;/<span class="keyword">application</span>&gt;</code></pre>
+                </div>
+
+                <div class="why-box">
+                    <div class="why-title">Why Local Storage?</div>
+                    <p class="text-sm">Because our Budget Tracker uses SQLite (via Room), we don't need the
+                        <code>INTERNET</code> permission. This makes the app faster, offline-capable, and more private
+                        for the user's sensitive financial data.
+                    </p>
+                </div>
+            </div>
+
+            <!-- STEP 12: DEPLOY -->
+            <div class="step-content" id="step-12">
+                <h1 class="text-5xl font-bold tracking-tighter mb-6">Final Preview</h1>
+                <p class="text-xl text-gray-600 font-light mb-8 max-w-2xl">Testing on your physical device.</p>
+
+                <div class="mockup-container">
+                    <svg width="220" height="400" viewBox="0 0 220 400" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <rect width="220" height="400" rx="20" fill="#f8fafc" stroke="#e2e8f0" stroke-width="4" />
+                        <rect x="20" y="20" width="180" height="60" rx="10" fill="white" stroke="#e2e8f0" />
+                        <text x="35" y="45" fill="#64748b" font-family="Outfit" font-size="10"
+                            font-weight="bold">BALANCE</text>
+                        <text x="35" y="68" fill="#1e293b" font-family="Outfit" font-size="20"
+                            font-weight="bold">$1,240.50</text>
+
+                        <rect x="20" y="95" width="180" height="40" rx="8" fill="white" stroke="#e2e8f0" />
+                        <text x="35" y="115" fill="#1e293b" font-family="Outfit" font-size="10"
+                            font-weight="bold">Starbucks Coffee</text>
+                        <text x="160" y="115" fill="#ef4444" font-family="Outfit" font-size="10"
+                            font-weight="bold">-$5.50</text>
+                        <text x="35" y="128" fill="#94a3b8" font-family="Outfit" font-size="8">FOOD & DRINK</text>
+
+                        <rect x="20" y="145" width="180" height="40" rx="8" fill="white" stroke="#e2e8f0" />
+                        <text x="35" y="165" fill="#1e293b" font-family="Outfit" font-size="10"
+                            font-weight="bold">Google Cloud Subscription</text>
+                        <text x="155" y="165" fill="#ef4444" font-family="Outfit" font-size="10"
+                            font-weight="bold">-$12.00</text>
+                        <text x="35" y="178" fill="#94a3b8" font-family="Outfit" font-size="8">UTILITIES</text>
+
+                        <circle cx="110" cy="360" r="25" fill="#3DDC84" />
+                        <path d="M110 350V370M100 360H120" stroke="white" stroke-width="3" stroke-linecap="round" />
+                    </svg>
+                </div>
+
+                <ol class="space-y-4 text-lg mb-12">
+                    <li class="flex gap-4">
+                        <div
+                            class="w-8 h-8 rounded-full border border-gray-200 flex items-center justify-center text-sm font-bold shrink-0">
+                            1</div>
+                        <span>Connect your phone via USB and enable <strong>USB Debugging</strong> in Developer
+                            Options.</span>
+                    </li>
+                    <li class="flex gap-4">
+                        <div
+                            class="w-8 h-8 rounded-full border border-gray-200 flex items-center justify-center text-sm font-bold shrink-0">
+                            2</div>
+                        <span>Select your device from the dropdown menu in the top toolbar.</span>
+                    </li>
+                    <li class="flex gap-4">
+                        <div
+                            class="w-8 h-8 rounded-full border border-gray-200 flex items-center justify-center text-sm font-bold shrink-0">
+                            3</div>
+                        <span>Click the green <strong class="text-[#3DDC84]">Run</strong> button (Shift + F10) in
+                            Android
+                            Studio.</span>
+                    </li>
+                </ol>
+            </div>
+        </main>
+
+        <!-- Navigation -->
+        <footer class="flex justify-between items-center py-12 border-t border-gray-100">
+            <button id="prevBtn" class="nav-btn nav-btn-prev" disabled onclick="changeStep(-1)">Previous</button>
+            <button id="nextBtn" class="nav-btn nav-btn-next" onclick="changeStep(1)">Next Phase</button>
+        </footer>
+    </div>
+
+    <!-- Scripts -->
+    <script src="../content/js/script.js"></script>
+    <script>
+        let currentStep = 1;
+        const totalSteps = 12;
+
+        function changeStep(delta) {
+            const nextStep = currentStep + delta;
+            if (nextStep < 1 || nextStep > totalSteps) return;
+
+            // Smoothly scroll to top
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+
+            // Switch content after a small delay to let the scroll start
+            setTimeout(() => {
+                // Hide current
+                document.getElementById(`step-${currentStep}`).classList.remove('active');
+
+                // Update step
+                currentStep = nextStep;
+
+                // Show next
+                document.getElementById(`step-${currentStep}`).classList.add('active');
+
+                // Update UI
+                updateUI();
+            }, 50);
+        }
+
+        function updateUI() {
+            document.getElementById('current-step-num').innerText = currentStep;
+            document.getElementById('progress-fill').style.width = `${(currentStep / totalSteps) * 100}%`;
+
+            document.getElementById('prevBtn').disabled = currentStep === 1;
+
+            const nextBtn = document.getElementById('nextBtn');
+            if (currentStep === totalSteps) {
+                nextBtn.innerText = "Complete Lab";
+                nextBtn.onclick = () => showCompletionModal();
+            } else {
+                nextBtn.innerText = "Next Phase";
+                nextBtn.onclick = () => changeStep(1);
+            }
+        }
+
+        let badgeGen = null;
+        function showCompletionModal() {
+            const modal = document.getElementById('completion-modal');
+            const content = document.getElementById('completion-content');
+            modal.classList.remove('hidden');
+
+            // Initialize Badge
+            if (!badgeGen) {
+                badgeGen = new BadgeGenerator('badge-canvas', 'Android Development', 'Budget Tracker');
+            }
+
+            setTimeout(() => {
+                content.classList.remove('scale-95', 'opacity-0');
+                content.classList.add('scale-100', 'opacity-100');
+            }, 10);
+        }
+
+        function downloadBadge() {
+            if (badgeGen) {
+                badgeGen.download('budget-tracker-badge.png');
+            }
+        }
+
+        // Anti-Copy Logic
+        function showToast() {
+            const toast = document.getElementById('copy-toast');
+            toast.classList.add('active');
+            setTimeout(() => {
+                toast.classList.remove('active');
+            }, 3000);
+        }
+
+        window.addEventListener('copy', (e) => {
+            e.preventDefault();
+            const selectedText = window.getSelection().toString();
+            // Since we use user-select: none, selection might be empty, 
+            // but the event can still fire. We check the target or active element.
+            if (document.activeElement.closest('.code-window') ||
+                window.getSelection().anchorNode?.parentElement?.closest('.code-window')) {
+                showToast();
+            }
+        });
+
+        // Mobile Guidance Logic
+        window.addEventListener('DOMContentLoaded', () => {
+            if (window.innerWidth <= 768) {
+                document.getElementById('mobile-guidance-modal').classList.add('active');
+            }
+        });
+
+        function closeMobileModal() {
+            document.getElementById('mobile-guidance-modal').classList.remove('active');
+        }
+    </script>
+
+    <!-- Modal UI -->
+    <div id="mobile-guidance-modal">
+        <div class="modal-content">
+            <div class="modal-icon-box">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+                    <line x1="8" y1="21" x2="16" y2="21"></line>
+                    <line x1="12" y1="17" x2="12" y2="21"></line>
+                </svg>
+            </div>
+            <span class="modal-title">Desktop Recommended</span>
+            <p class="modal-text">Interactive labs are designed to be performed on desktop. You can still keep this open
+                on your
+                mobile to follow
+                along while you build on your workstation.</p>
+            <button class="modal-btn" onclick="closeMobileModal()">Understood</button>
+        </div>
+    </div>
+
+    <!-- Completion Modal -->
+    <div id="completion-modal"
+        class="fixed inset-0 z-[3000] hidden flex items-center justify-center p-4 backdrop-blur-xl bg-black/40">
+        <div class="bg-white rounded-[2rem] p-5 sm:p-8 max-w-[min(400px,90vw)] w-full text-center shadow-3xl scale-95 opacity-0 transition-all duration-500"
+            id="completion-content">
+            <div class="mb-4 flex justify-center">
+                <canvas id="badge-canvas" class="rounded-3xl border border-gray-100 max-w-full h-auto"></canvas>
+            </div>
+            <h2 class="text-2xl font-bold mb-1">Congratulations!</h2>
+            <p class="text-gray-600 text-sm mb-6">You've successfully mastered the <strong>Budget Tracker</strong> lab.
+            </p>
+
+            <div class="flex flex-col gap-2">
+                <button onclick="downloadBadge()"
+                    class="w-full py-3 bg-black text-white rounded-xl font-bold hover:bg-gray-800 transition-all flex items-center justify-center gap-2 text-sm">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                        <polyline points="7 10 12 15 17 10" />
+                        <line x1="12" y1="15" x2="12" y2="3" />
+                    </svg>
+                    Download Badge
+                </button>
+                <button onclick="window.location.href='../index.html'"
+                    class="w-full py-2 text-gray-400 font-semibold hover:text-black transition-all text-xs">
+                    Return to Repository
+                </button>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

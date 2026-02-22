@@ -1,0 +1,2872 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Artificial Intelligence</title>
+    <link rel="icon" type="image/svg+xml" href="../assests/undrlogo.svg">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Roboto+Mono:wght@400;500&display=swap');
+
+        /* Global Scrollbar */
+        ::-webkit-scrollbar {
+            width: 1px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #000;
+        }
+
+        :root {
+            /* Rams Palette - AI Variation */
+            --bg-color: #f4f4f4;
+            /* Light Grey housing */
+            --card-bg: #ffffff;
+            /* Pure White surface */
+            --text-main: #111111;
+            /* Stark Black */
+            --text-muted: #737373;
+            /* Neutral Grey */
+            --accent: #4f46e5;
+            /* Signal Violet (Indigo-600) */
+            --border: #e5e5e5;
+            /* Subtle division */
+            --line: #d4d4d4;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            -webkit-font-smoothing: antialiased;
+            line-height: 1.5;
+        }
+
+        h1,
+        h2,
+        h3,
+        h4,
+        h5 {
+            font-weight: 600;
+            letter-spacing: -0.03em;
+            color: var(--text-main);
+        }
+
+        .mono {
+            font-family: 'Roboto Mono', monospace;
+        }
+
+        /* Industrial Grid Layout */
+        .rams-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        @media (min-width: 768px) {
+            .rams-card {
+                padding: 2rem;
+            }
+        }
+
+        .rams-label {
+            font-family: 'Inter', sans-serif;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+            margin-bottom: 1rem;
+            display: block;
+        }
+
+        /* Controls - Tactile & Honest */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.5rem 1.25rem;
+            font-size: 0.85rem;
+            font-weight: 500;
+            border-radius: 2px;
+            transition: all 0.1s ease;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            white-space: nowrap;
+        }
+
+        .btn-primary {
+            background-color: var(--accent);
+            color: white;
+            border: 1px solid var(--accent);
+        }
+
+        .btn-primary:hover {
+            background-color: #4338ca;
+        }
+
+        .btn-secondary {
+            background-color: transparent;
+            color: var(--text-main);
+            border: 1px solid #a3a3a3;
+        }
+
+        .btn-secondary:hover {
+            background-color: #e5e5e5;
+            border-color: #737373;
+        }
+
+        .btn-ghost {
+            color: var(--text-muted);
+        }
+
+        .btn-ghost:hover {
+            color: var(--text-main);
+            text-decoration: underline;
+        }
+
+        /* Matrix/Tensor Buttons */
+        .btn-node {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            aspect-ratio: 1;
+            background-color: #f9fafb;
+            border: 1px solid #e5e5e5;
+            border-radius: 50%;
+            /* Nodes are circular */
+            transition: all 0.2s ease;
+        }
+
+        .btn-node.active {
+            border-color: var(--accent);
+            background-color: #e0e7ff;
+            color: var(--accent);
+            box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.1);
+        }
+
+        .btn-node span {
+            font-family: 'Roboto Mono', monospace;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        /* Sliders */
+        input[type=range] {
+            -webkit-appearance: none;
+            appearance: none;
+            background: transparent;
+            margin: 1.5rem 0;
+        }
+
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            height: 20px;
+            width: 20px;
+            background: var(--text-main);
+            border-radius: 50%;
+            cursor: pointer;
+            margin-top: -9px;
+            border: 2px solid white;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+        }
+
+        input[type=range]::-webkit-slider-runnable-track {
+            width: 100%;
+            height: 2px;
+            cursor: pointer;
+            background: #a3a3a3;
+        }
+
+        /* Timeline */
+        .timeline-item {
+            padding-left: 1.5rem;
+            border-left: 1px solid var(--line);
+            padding-bottom: 2rem;
+            position: relative;
+        }
+
+        .timeline-item:last-child {
+            border-left: 1px solid transparent;
+        }
+
+        .timeline-marker {
+            position: absolute;
+            left: -5px;
+            top: 0;
+            width: 9px;
+            height: 9px;
+            background-color: var(--text-main);
+            border-radius: 50%;
+        }
+
+        /* Navigation */
+        .nav-link {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            padding: 0.5rem 0;
+            display: block;
+            transition: color 0.2s;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            color: var(--text-main);
+            font-weight: 500;
+        }
+
+        .nav-link.active::before {
+            content: "• ";
+            color: var(--accent);
+        }
+
+        /* Mobile Menu Styles */
+        .mobile-nav-link {
+            font-size: 1.25rem;
+            font-weight: 500;
+            color: var(--text-main);
+            padding: 1rem 0;
+            border-bottom: 1px solid #e5e5e5;
+            display: block;
+        }
+
+        .divider {
+            height: 1px;
+            background-color: var(--border);
+            width: 100%;
+            margin: 3rem 0;
+        }
+
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        .thin-scrollbar::-webkit-scrollbar {
+            width: 1px;
+        }
+
+        .thin-scrollbar::-webkit-scrollbar-thumb {
+            background: #d4d4d4;
+        }
+
+        /* Animation Classes */
+        .section-reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 1s cubic-bezier(0.25, 1, 0.25, 1), transform 1s cubic-bezier(0.25, 1, 0.25, 1);
+        }
+
+        .section-reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* AGI Visual Refinements */
+        @keyframes agi-flow {
+            from {
+                stroke-dashoffset: 20;
+            }
+
+            to {
+                stroke-dashoffset: 0;
+            }
+        }
+
+        .agi-flow-line {
+            stroke-dasharray: 5, 3;
+            animation: agi-flow 1s linear infinite;
+        }
+
+        @keyframes ani-pulse {
+            0% {
+                r: 18;
+                opacity: 1;
+                stroke-width: 1.5;
+            }
+
+            100% {
+                r: 25;
+                opacity: 0;
+                stroke-width: 0.5;
+            }
+        }
+
+        .ani-pulse-ring {
+            animation: ani-pulse 1.5s ease-out infinite;
+        }
+
+        .skill-label {
+            font-size: 7px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            fill: #9ca3af;
+        }
+
+        .pulse-node {
+            animation: pulse-ring 2s infinite;
+        }
+
+        @keyframes pulse-ring {
+            0% {
+                box-shadow: 0 0 0 0 rgba(79, 70, 229, 0.4);
+            }
+
+            70% {
+                box-shadow: 0 0 0 10px rgba(79, 70, 229, 0);
+            }
+
+            100% {
+                box-shadow: 0 0 0 0 rgba(79, 70, 229, 0);
+            }
+        }
+
+        /* Taxonomy Nested Boxes */
+        .taxonomy-box {
+            border: 1px solid #e5e5e5;
+            padding: 1rem;
+            transition: all 0.2s ease;
+        }
+
+        .taxonomy-box:hover {
+            border-color: #9ca3af;
+            background-color: #fafafa;
+        }
+
+        .taxonomy-box.highlight {
+            border-color: var(--accent);
+            background-color: #eff6ff;
+        }
+
+        /* CNN Grid */
+        .cnn-cell {
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            border: 1px solid #f0f0f0;
+            color: #ccc;
+            transition: background-color 0.1s;
+        }
+
+        .cnn-cell.active {
+            background-color: #111;
+            color: white;
+        }
+
+        .cnn-filter-box {
+            position: absolute;
+            width: 104px;
+            /* 3 * 32 + 2 gaps(4) = 100? No, let's use calc */
+            height: 104px;
+            border: 2px solid var(--accent);
+            pointer-events: none;
+            transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+            background-color: rgba(79, 70, 229, 0.1);
+            z-index: 20;
+        }
+
+        /* Wumpus World Grid */
+        .wumpus-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 2px;
+            background-color: #e5e5e5;
+            border: 2px solid #e5e5e5;
+        }
+
+        .w-cell {
+            aspect-ratio: 1;
+            background-color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            font-size: 1.5rem;
+        }
+
+        .w-agent {
+            position: absolute;
+            width: 60%;
+            height: 60%;
+            background-color: var(--accent);
+            border-radius: 50%;
+            border: 2px solid white;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            z-index: 10;
+            transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .w-percept {
+            position: absolute;
+            top: 2px;
+            right: 2px;
+            font-size: 0.6rem;
+            color: #737373;
+            font-family: monospace;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            line-height: 1;
+        }
+
+        .w-fog {
+            position: absolute;
+            inset: 0;
+            background-color: #f4f4f4;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #d4d4d4;
+            font-size: 2rem;
+            z-index: 20;
+        }
+
+        .w-fog.revealed {
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="flex min-h-screen flex-col lg:flex-row">
+
+        <!-- Mobile Header (Fixed) -->
+        <header
+            class="lg:hidden fixed top-0 w-full bg-[#f4f4f4] border-b border-[#e5e5e5] z-[100] px-6 py-4 flex justify-between items-center h-16">
+            <div>
+                <h1 class="text-sm font-semibold tracking-wide uppercase text-black leading-tight">
+                    Artificial<br>Intelligence</h1>
+            </div>
+            <button onclick="toggleMobileMenu()"
+                class="text-black focus:outline-none p-2 border border-transparent active:bg-gray-200 rounded">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+            </button>
+        </header>
+
+        <!-- Mobile Menu Overlay -->
+        <div id="mobile-menu" class="fixed inset-0 bg-[#f4f4f4] z-[90] hidden flex-col pt-20 px-6 overflow-y-auto">
+            <nav class="flex flex-col">
+                <span class="text-[10px] text-gray-400 font-bold uppercase tracking-wider px-0 py-2">01. Artificial
+                    Intelligence</span>
+                <a href="#intro" class="mobile-nav-link" onclick="toggleMobileMenu()">Introduction</a>
+                <a href="#taxonomy" class="mobile-nav-link" onclick="toggleMobileMenu()">Hierarchy</a>
+                <a href="#history" class="mobile-nav-link" onclick="toggleMobileMenu()">Timeline</a>
+                <a href="#foundations" class="mobile-nav-link" onclick="toggleMobileMenu()">Foundations</a>
+                <a href="#chaining" class="mobile-nav-link" onclick="toggleMobileMenu()">Inference Engines</a>
+
+                <span class="text-[10px] text-gray-400 font-bold uppercase tracking-wider px-0 py-2 mt-4">02. Machine
+                    Learning</span>
+                <a href="#ml-intro" class="mobile-nav-link" onclick="toggleMobileMenu()">What is ML?</a>
+                <a href="#neuron" class="mobile-nav-link" onclick="toggleMobileMenu()">The Perceptron</a>
+                <a href="#gradient" class="mobile-nav-link" onclick="toggleMobileMenu()">Gradient Descent</a>
+
+                <span class="text-[10px] text-gray-400 font-bold uppercase tracking-wider px-0 py-2 mt-4">03. Deep
+                    Learning</span>
+                <a href="#networks" class="mobile-nav-link" onclick="toggleMobileMenu()">Neural Networks</a>
+                <a href="#cnn" class="mobile-nav-link" onclick="toggleMobileMenu()">Computer Vision (CNN)</a>
+
+                <span class="text-[10px] text-gray-400 font-bold uppercase tracking-wider px-0 py-2 mt-4">04. NLP</span>
+                <a href="#embeddings" class="mobile-nav-link" onclick="toggleMobileMenu()">Embeddings</a>
+                <a href="#attention" class="mobile-nav-link" onclick="toggleMobileMenu()">Transformers</a>
+                <a href="#gen-text" class="mobile-nav-link" onclick="toggleMobileMenu()">Generative Text</a>
+
+                <span class="text-[10px] text-gray-400 font-bold uppercase tracking-wider px-0 py-2 mt-4">05.
+                    Advanced</span>
+                <a href="#diffusion" class="mobile-nav-link" onclick="toggleMobileMenu()">Generative Diffusion</a>
+                <a href="#rl" class="mobile-nav-link" onclick="toggleMobileMenu()">Reinforcement Learning</a>
+                <a href="#agi" class="mobile-nav-link" onclick="toggleMobileMenu()">What is AGI?</a>
+                <a href="#alignment" class="mobile-nav-link" onclick="toggleMobileMenu()">Alignment</a>
+                <a href="#glossary" class="mobile-nav-link" onclick="toggleMobileMenu()">Glossary</a>
+
+                <span class="text-[10px] text-gray-400 font-bold uppercase tracking-wider px-0 py-2 mt-4">06.
+                    Assessment</span>
+                <a href="#quiz" class="mobile-nav-link border-b-0" onclick="toggleMobileMenu()">Knowledge Check</a>
+            </nav>
+        </div>
+
+        <!-- Sidebar (Desktop) -->
+        <aside
+            class="hidden lg:block w-64 fixed h-screen bg-[#f4f4f4] border-r border-[#e5e5e5] z-50 overflow-y-auto thin-scrollbar">
+            <div class="p-8 h-full flex flex-col justify-between">
+                <div>
+                    <a href="../index.html"
+                        class="inline-flex items-center gap-2 px-4 py-2 mb-8 text-[10px] font-mono uppercase tracking-wider text-gray-600 border border-gray-300 hover:bg-black hover:text-white hover:border-black transition-all duration-200">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                        </svg>
+                        Back to Home
+                    </a>
+                    <div class="mb-12">
+                        <h1 class="text-sm font-semibold tracking-wide uppercase text-black">Artificial<br>Intelligence
+                        </h1>
+                        <p class="text-[10px] text-gray-500 mt-1 uppercase tracking-wider">Artificial
+                            Intelligence</p>
+                    </div>
+
+                    <nav class="space-y-1">
+                        <a href="#intro" class="nav-link font-medium text-black">Introduction</a>
+                        <div class="pt-4 pb-1 text-[10px] text-gray-400 font-bold uppercase tracking-wider">01.
+                            Artificial Intelligence</div>
+                        <a href="#taxonomy" class="nav-link">The Hierarchy</a>
+                        <a href="#history" class="nav-link">Timeline</a>
+                        <a href="#foundations" class="nav-link">Foundations</a>
+                        <a href="#chaining" class="nav-link">Inference Engines</a>
+
+                        <div class="pt-4 pb-1 text-[10px] text-gray-400 font-bold uppercase tracking-wider">02. Machine
+                            Learning</div>
+                        <a href="#ml-intro" class="nav-link">What is ML?</a>
+                        <a href="#neuron" class="nav-link">The Perceptron</a>
+                        <a href="#gradient" class="nav-link">Gradient Descent</a>
+
+                        <div class="pt-4 pb-1 text-[10px] text-gray-400 font-bold uppercase tracking-wider">03. Deep
+                            Learning</div>
+                        <a href="#networks" class="nav-link">Neural Networks</a>
+                        <a href="#cnn" class="nav-link">Computer Vision (CNN)</a>
+
+                        <div class="pt-4 pb-1 text-[10px] text-gray-400 font-bold uppercase tracking-wider">04. NLP
+                        </div>
+                        <a href="#embeddings" class="nav-link">Embeddings</a>
+                        <a href="#attention" class="nav-link">Transformers</a>
+                        <a href="#gen-text" class="nav-link">Generative Text</a>
+
+                        <div class="pt-4 pb-1 text-[10px] text-gray-400 font-bold uppercase tracking-wider">05. Advanced
+                        </div>
+                        <a href="#diffusion" class="nav-link">Diffusion</a>
+                        <a href="#rl" class="nav-link">Reinforcement Learning</a>
+                        <a href="#agi" class="nav-link">What is AGI?</a>
+                        <a href="#alignment" class="nav-link">Alignment</a>
+                        <a href="#glossary" class="nav-link">Glossary</a>
+
+                        <div class="pt-4 pb-1 text-[10px] text-gray-400 font-bold uppercase tracking-wider">06.
+                            Assessment
+                        </div>
+                        <a href="#quiz" class="nav-link">Knowledge Check</a>
+                    </nav>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 lg:ml-64 bg-white w-full">
+            <div class="max-w-3xl mx-auto px-4 sm:px-8 py-24 lg:py-20">
+
+                <!-- Hero Section -->
+                <section id="intro" class="mb-16 md:mb-24">
+                    <h2 class="text-3xl md:text-5xl font-semibold mb-6 text-black tracking-tight leading-tight">
+                        Architecture of <br>Synthetic Cognition
+                    </h2>
+                    <p class="text-base md:text-lg text-[#555] max-w-xl font-light leading-relaxed mb-4">
+                        A functional deconstruction of machine intelligence. Unlike classical programming, which
+                        requires explicit rules for every scenario, AI systems build their own rules by finding patterns
+                        in data.
+                    </p>
+                    <p class="text-sm text-gray-500 max-w-lg leading-relaxed">
+                        This guide traces the lineage of intelligence from its broadest definition down to the specific
+                        mechanics of language models. It is a journey from <strong>logic</strong> (AI) to
+                        <strong>statistics</strong> (ML), to <strong>representation</strong> (DL), and finally to
+                        <strong>communication</strong> (NLP).
+                    </p>
+                </section>
+
+                <!-- 01. Taxonomy -->
+                <section id="taxonomy" class="mb-20 md:mb-24">
+                    <span class="rams-label">01 / Artificial Intelligence</span>
+                    <h3 class="text-xl font-medium mb-8">The Hierarchy of Intelligence</h3>
+                    <p class="text-sm text-gray-600 mb-8 max-w-lg">
+                        The field is a series of nested subsets. Generative AI (like LLMs) is a specific application of
+                        Deep Learning, which is a technique of Machine Learning, which is a branch of AI.
+                    </p>
+
+                    <div class="rams-card">
+                        <div class="flex flex-col md:flex-row items-center gap-8 md:gap-16">
+
+                            <!-- Concentric Circles Visualization -->
+                            <div class="relative flex-shrink-0 w-64 h-64">
+                                <!-- AI (Outer) -->
+                                <div
+                                    class="absolute inset-0 rounded-full border-2 border-gray-200 bg-white flex items-start justify-center pt-2 shadow-sm z-0 transition-transform hover:scale-105 duration-500">
+                                    <span
+                                        class="text-[10px] font-bold text-gray-400 tracking-wider bg-white px-2 mt-1">ARTIFICIAL
+                                        INTELLIGENCE</span>
+                                </div>
+
+                                <!-- ML -->
+                                <div
+                                    class="absolute inset-8 rounded-full border-2 border-gray-300 bg-gray-50 flex items-start justify-center pt-2 z-10 transition-transform hover:scale-105 duration-500">
+                                    <span class="text-[10px] font-bold text-gray-500 tracking-wider mt-1">MACHINE
+                                        LEARNING</span>
+                                </div>
+
+                                <!-- DL -->
+                                <div
+                                    class="absolute inset-16 rounded-full border-2 border-gray-400 bg-gray-100 flex items-start justify-center pt-2 z-20 transition-transform hover:scale-105 duration-500">
+                                    <span class="text-[10px] font-bold text-gray-600 tracking-wider mt-1">DEEP
+                                        LEARNING</span>
+                                </div>
+
+                                <!-- NLP (Core) -->
+                                <div
+                                    class="absolute inset-24 rounded-full bg-indigo-600 flex items-center justify-center shadow-lg z-30 transition-transform hover:scale-110 duration-300">
+                                    <span class="text-xs font-bold text-white tracking-wider">NLP</span>
+                                </div>
+                            </div>
+
+                            <!-- Explanations (Clean List) -->
+                            <div class="flex-1 space-y-6">
+
+                                <div class="flex items-start gap-4">
+                                    <div
+                                        class="w-3 h-3 rounded-full bg-white border-2 border-gray-200 mt-1.5 flex-shrink-0">
+                                    </div>
+                                    <div>
+                                        <h4 class="text-sm font-bold text-gray-900">Artificial Intelligence</h4>
+                                        <p class="text-xs text-gray-500 leading-relaxed mt-1">The broad umbrella.
+                                            Machines mimicking cognitive functions (logic, rules, search).</p>
+                                    </div>
+                                </div>
+
+                                <div class="flex items-start gap-4">
+                                    <div
+                                        class="w-3 h-3 rounded-full bg-gray-50 border-2 border-gray-300 mt-1.5 flex-shrink-0">
+                                    </div>
+                                    <div>
+                                        <h4 class="text-sm font-bold text-gray-900">Machine Learning</h4>
+                                        <p class="text-xs text-gray-500 leading-relaxed mt-1">Systems that improve from
+                                            data/experience rather than explicit programming.</p>
+                                    </div>
+                                </div>
+
+                                <div class="flex items-start gap-4">
+                                    <div
+                                        class="w-3 h-3 rounded-full bg-gray-100 border-2 border-gray-400 mt-1.5 flex-shrink-0">
+                                    </div>
+                                    <div>
+                                        <h4 class="text-sm font-bold text-gray-900">Deep Learning</h4>
+                                        <p class="text-xs text-gray-500 leading-relaxed mt-1">ML using multi-layered
+                                            neural networks to model complex, hierarchical patterns.</p>
+                                    </div>
+                                </div>
+
+                                <div class="flex items-start gap-4">
+                                    <div class="w-3 h-3 rounded-full bg-indigo-600 mt-1.5 flex-shrink-0 shadow-sm">
+                                    </div>
+                                    <div>
+                                        <h4 class="text-sm font-bold text-gray-900">NLP & GenAI</h4>
+                                        <p class="text-xs text-gray-500 leading-relaxed mt-1">Specialized architectures
+                                            (Transformers) for language understanding and generation.</p>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Inline Quiz: Taxonomy -->
+                <div id="quiz-ai-taxonomy" class="mb-20 md:mb-24"></div>
+
+                <div class="divider hidden md:block"></div>
+
+                <!-- 02. History -->
+                <section id="history" class="mb-20 md:mb-24">
+                    <span class="rams-label">01 / Artificial Intelligence</span>
+                    <h3 class="text-xl font-medium mb-8">Evolution of Thought</h3>
+
+                    <div class="mt-8">
+                        <div class="timeline-item">
+                            <div class="timeline-marker"></div>
+                            <div class="flex flex-col sm:flex-row sm:items-baseline gap-1 sm:gap-2 mb-1">
+                                <span class="text-sm font-bold text-black">1950 — 1958</span>
+                                <span class="text-xs sm:text-sm text-gray-500 uppercase tracking-wide">Symbolic
+                                    AI</span>
+                            </div>
+                            <p class="text-sm text-gray-600 max-w-lg mb-2">Logic and Rules.</p>
+                            <p class="text-xs text-gray-500 max-w-lg leading-relaxed">
+                                Early AI was symbolic; it relied on human-readable symbols and hard-coded rules logic.
+                                The "Perceptron" introduced the idea that a machine could learn weights, but it was
+                                limited to linear problems (it couldn't solve XOR).
+                            </p>
+                        </div>
+
+                        <div class="timeline-item">
+                            <div class="timeline-marker"></div>
+                            <div class="flex flex-col sm:flex-row sm:items-baseline gap-1 sm:gap-2 mb-1">
+                                <span class="text-sm font-bold text-black">1986 — 2012</span>
+                                <span class="text-xs sm:text-sm text-gray-500 uppercase tracking-wide">The Connectionist
+                                    Shift</span>
+                            </div>
+                            <p class="text-sm text-gray-600 max-w-lg mb-2">Backpropagation & The ImageNet Moment.</p>
+                            <p class="text-xs text-gray-500 max-w-lg leading-relaxed">
+                                The rediscovery of Backpropagation allowed us to train multi-layer networks effectively.
+                                In 2012, AlexNet utilized GPUs to crush benchmarks in image recognition, proving that
+                                "Deep" networks were superior for perceptual tasks.
+                            </p>
+                        </div>
+
+                        <div class="timeline-item">
+                            <div class="timeline-marker"></div>
+                            <div class="flex flex-col sm:flex-row sm:items-baseline gap-1 sm:gap-2 mb-1">
+                                <span class="text-sm font-bold text-black">2017 — Present</span>
+                                <span class="text-xs sm:text-sm text-gray-500 uppercase tracking-wide">The Transformer
+                                    Era</span>
+                            </div>
+                            <p class="text-sm text-gray-600 max-w-lg mb-2">Attention Is All You Need.</p>
+                            <p class="text-xs text-gray-500 max-w-lg leading-relaxed">
+                                Google researchers introduced the Transformer, replacing sequential processing (RNNs)
+                                with parallel attention mechanisms. This allowed models to ingest massive datasets,
+                                leading to the emergence of GPT and modern Generative AI.
+                            </p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Inline Quiz: History -->
+                <div id="quiz-ai-history" class="mb-20 md:mb-24"></div>
+
+                <div class="divider hidden md:block"></div>
+
+                <!-- 03. Foundations of Thought -->
+                <section id="foundations" class="mb-20 md:mb-24">
+                    <span class="rams-label">01 / Artificial Intelligence</span>
+                    <h3 class="text-xl font-medium mb-8">Four Approaches to AI</h3>
+                    <p class="text-sm text-gray-600 mb-8 max-w-lg">
+                        Artificial Intelligence isn't just one goal; it's defined by how we measure success.
+                        Traditionally, the field is split along two axes: <strong>Human-like vs Rational</strong> and
+                        <strong>Thinking vs Acting</strong>.
+                    </p>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-12">
+                        <!-- Matrix Grid -->
+                        <div class="rams-card flex flex-col justify-center border-indigo-100 bg-indigo-50/20">
+                            <h4 class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">Acting Humanly
+                            </h4>
+                            <p class="text-sm font-bold text-gray-900 mb-1">The Turing Test Approach</p>
+                            <p class="text-[10px] text-gray-500 leading-relaxed italic">"Can a machine fool a person
+                                into thinking it's human?"</p>
+                        </div>
+                        <div class="rams-card flex flex-col justify-center border-gray-200">
+                            <h4 class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">Acting Rationally
+                            </h4>
+                            <p class="text-sm font-bold text-gray-900 mb-1">The Rational Agent Approach</p>
+                            <p class="text-[10px] text-gray-500 leading-relaxed italic">"Achieving the best outcome, or
+                                the best expected outcome."</p>
+                        </div>
+                        <div class="rams-card flex flex-col justify-center border-gray-200">
+                            <h4 class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">Thinking Humanly
+                            </h4>
+                            <p class="text-sm font-bold text-gray-900 mb-1">The Cognitive Modeling Approach</p>
+                            <p class="text-[10px] text-gray-500 leading-relaxed italic">"Mirroring the internal
+                                reasoning processes of the human brain."</p>
+                        </div>
+                        <div class="rams-card flex flex-col justify-center border-indigo-100 bg-indigo-50/20">
+                            <h4 class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">Thinking
+                                Rationally</h4>
+                            <p class="text-sm font-bold text-gray-900 mb-1">The Laws of Thought Approach</p>
+                            <p class="text-[10px] text-gray-500 leading-relaxed italic">"Rigorous, logical syllogisms
+                                where conclusions are undeniable."</p>
+                        </div>
+                    </div>
+
+                    <h3 class="text-lg font-medium mb-6">The Turing Test (1950)</h3>
+                    <div class="p-6 border border-gray-200 bg-white rounded-sm mb-6">
+                        <div class="flex flex-col md:flex-row gap-8 items-center mb-10">
+                            <div
+                                class="flex-shrink-0 w-32 h-32 bg-gray-50 border border-dashed border-gray-300 rounded flex items-center justify-center relative">
+                                <span
+                                    class="text-[10px] text-gray-400 font-mono absolute top-2 left-2">Interrogator</span>
+                                <span class="text-2xl">👤</span>
+                            </div>
+                            <div class="flex-1 space-y-3">
+                                <p class="text-xs text-gray-600 leading-relaxed">
+                                    Proposed by Alan Turing in his paper <em>"Computing Machinery and
+                                        Intelligence"</em>, it bypasses the philosophical question of "Can machines
+                                    think?" and replaces it with the <strong>Imitation Game</strong>.
+                                </p>
+                                <p class="text-xs text-gray-500 italic">
+                                    If a human interrogator cannot distinguish between the responses of a human and a
+                                    computer during a text-based conversation, the computer passed the test.
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- Interactive Visualization -->
+                        <div class="rams-card bg-gray-50 border-gray-200 p-8">
+                            <div class="flex flex-col items-center gap-12">
+                                <div class="text-center">
+                                    <span
+                                        class="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-4">Interrogator's
+                                        Screen</span>
+                                    <div
+                                        class="bg-black text-[10px] mono text-green-500 p-4 w-64 h-32 rounded shadow-2xl border border-gray-800 overflow-hidden flex flex-col justify-end gap-2">
+                                        <div class="opacity-40 animate-pulse">> Query: "Write a poem about rain"</div>
+                                        <div class="text-white border-l-2 border-green-500 pl-2">A: "Liquid drops
+                                            descend, rhythmic beats on glass..."</div>
+                                        <div class="text-white border-l-2 border-indigo-500 pl-2">B: "Falling sky-water
+                                            makes the garden green and wet."</div>
+                                    </div>
+                                </div>
+
+                                <div class="flex items-center gap-8 md:gap-16 justify-center w-full">
+                                    <div class="flex flex-col items-center gap-4 group">
+                                        <div class="w-20 h-20 bg-white border-2 border-dashed border-gray-300 rounded-full flex items-center justify-center text-2xl transition-all duration-700 blur-[15px] grayscale"
+                                            id="turing-subject-a">🤖</div>
+                                        <span
+                                            class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Subject
+                                            A</span>
+                                    </div>
+
+                                    <div class="h-0.5 w-12 bg-gray-200"></div>
+
+                                    <div class="flex flex-col items-center gap-4 group">
+                                        <div class="w-20 h-20 bg-white border-2 border-dashed border-gray-300 rounded-full flex items-center justify-center text-2xl transition-all duration-700 blur-[15px] grayscale"
+                                            id="turing-subject-b">👤</div>
+                                        <span
+                                            class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Subject
+                                            B</span>
+                                    </div>
+                                </div>
+
+                                <div class="flex gap-4">
+                                    <button onclick="revealTuring()" class="btn btn-primary text-xs"
+                                        id="turing-btn">Reveal Subjects</button>
+                                    <button onclick="resetTuring()" class="btn btn-secondary text-xs hidden"
+                                        id="turing-reset">Reset Test</button>
+                                </div>
+                                <p class="text-[10px] text-gray-400 italic text-center" id="turing-hint">Can you tell
+                                    which one is the machine?</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Inline Quiz: Foundations -->
+                <div id="quiz-ai-foundations" class="mb-20 md:mb-24"></div>
+
+                <div class="divider hidden md:block"></div>
+
+                <!-- 04. Inference Engines -->
+                <section id="chaining" class="mb-20 md:mb-24">
+                    <span class="rams-label">01 / Artificial Intelligence</span>
+                    <h3 class="text-xl font-medium mb-8">Inference Engines: Forward vs Backward Chaining</h3>
+                    <p class="text-sm text-gray-600 mb-8 max-w-lg">
+                        Before neural networks, AI relied on <strong>Inference Engines</strong>—the logical "thinking"
+                        component of an Expert System. This is how machines reason using IF-THEN rules to derive
+                        conclusions from data.
+                    </p>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <!-- Forward Chaining Card -->
+                        <div class="rams-card">
+                            <h4 class="text-sm font-bold text-gray-900 mb-2">Forward Chaining</h4>
+                            <p class="text-[10px] text-gray-400 uppercase tracking-wider mb-4">Data-Driven Reasoning</p>
+                            <p class="text-xs text-gray-500 leading-relaxed mb-6">
+                                Starts with <strong>Facts</strong> and matches them against the <strong>IF</strong> part
+                                of rules to derive new facts.
+                            </p>
+                            <div class="bg-gray-50 p-4 border border-gray-100 rounded space-y-3 font-mono text-[10px]">
+                                <div class="flex items-center gap-2">
+                                    <span class="bg-indigo-100 text-indigo-700 px-1.5 py-0.5 rounded">Fact</span>
+                                    <span>If it is raining (A)</span>
+                                </div>
+                                <div class="flex items-center gap-2 ml-4">
+                                    <span class="text-gray-400">&darr; Match Rule</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <span class="bg-indigo-100 text-indigo-700 px-1.5 py-0.5 rounded">Rule</span>
+                                    <span>If A, then take Umbrella (B)</span>
+                                </div>
+                                <div class="flex items-center gap-2 ml-4">
+                                    <span class="text-gray-400">&darr; Conclusion</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <span class="bg-green-100 text-green-700 px-1.5 py-0.5 rounded">New Fact</span>
+                                    <span>Taking Umbrella (B)</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Backward Chaining Card -->
+                        <div class="rams-card">
+                            <h4 class="text-sm font-bold text-gray-900 mb-2">Backward Chaining</h4>
+                            <p class="text-[10px] text-gray-400 uppercase tracking-wider mb-4">Goal-Driven Reasoning</p>
+                            <p class="text-xs text-gray-500 leading-relaxed mb-6">
+                                Starts with a <strong>Goal</strong> (Conclusion) and searches for rules that result in
+                                that goal, checking if their conditions are met.
+                            </p>
+                            <div class="bg-gray-50 p-4 border border-gray-100 rounded space-y-3 font-mono text-[10px]">
+                                <div class="flex items-center gap-2">
+                                    <span class="bg-indigo-600 text-white px-1.5 py-0.5 rounded">Goal</span>
+                                    <span>Find Umbrella (B)?</span>
+                                </div>
+                                <div class="flex items-center gap-2 ml-4">
+                                    <span class="text-gray-400">&darr; Check Rule</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <span class="bg-indigo-100 text-indigo-700 px-1.5 py-0.5 rounded">Rule</span>
+                                    <span>Is it raining (A)?</span>
+                                </div>
+                                <div class="flex items-center gap-2 ml-4">
+                                    <span class="text-gray-400">&darr; Verify Fact</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <span class="bg-green-100 text-green-700 px-1.5 py-0.5 rounded">Result</span>
+                                    <span>Fact A is True &rarr; Goal B Met</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Inline Quiz: Inference -->
+                <div id="quiz-ai-inference" class="mb-20 md:mb-24"></div>
+
+                <!-- 05. ML Introduction -->
+                <section id="ml-intro" class="mb-20 md:mb-24">
+                    <span class="rams-label">02 / Machine Learning</span>
+                    <h3 class="text-xl font-medium mb-6">What is Machine Learning?</h3>
+                    <p class="text-sm text-gray-600 mb-8 max-w-lg">
+                        Machine Learning (ML) is the science of getting computers to act without being explicitly
+                        programmed. Instead of hard-coded rules, the machine learns from <strong>patterns</strong> in
+                        data to make decisions or predictions.
+                    </p>
+
+                    <h4 class="text-sm font-bold text-gray-900 mb-6 uppercase tracking-wider">The 4 Types of Learning
+                    </h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <!-- Supervised -->
+                        <div class="rams-card border-indigo-100 bg-indigo-50/10">
+                            <div class="flex items-center gap-3 mb-3">
+                                <span class="text-lg">🏷️</span>
+                                <h5 class="text-sm font-bold text-gray-900">Supervised Learning</h5>
+                            </div>
+                            <p class="text-xs text-gray-500 leading-relaxed mb-4">
+                                Learning with a teacher. The data is <strong>labeled</strong> (input/output pairs). The
+                                goal is to learn a mapping from $x$ to $y$.
+                            </p>
+                            <div class="bg-white/50 p-3 border border-indigo-50 rounded text-[10px] font-mono">
+                                <span class="text-indigo-600">Pattern:</span> If "Email" has "Prize" &rarr; [Spam]
+                            </div>
+                        </div>
+
+                        <!-- Unsupervised -->
+                        <div class="rams-card">
+                            <div class="flex items-center gap-3 mb-3">
+                                <span class="text-lg">🧩</span>
+                                <h5 class="text-sm font-bold text-gray-900">Unsupervised Learning</h5>
+                            </div>
+                            <p class="text-xs text-gray-500 leading-relaxed mb-4">
+                                Learning without a teacher. Find <strong>hidden patterns</strong> or structure in
+                                unlabeled data.
+                            </p>
+                            <div class="bg-gray-50 p-3 border border-gray-100 rounded text-[10px] font-mono">
+                                <span class="text-gray-600">Pattern:</span> "Customer A" is similar to "Customer B"
+                            </div>
+                        </div>
+
+                        <!-- Semi-Supervised -->
+                        <div class="rams-card">
+                            <div class="flex items-center gap-3 mb-3">
+                                <span class="text-lg">🌗</span>
+                                <h5 class="text-sm font-bold text-gray-900">Semi-Supervised</h5>
+                            </div>
+                            <p class="text-xs text-gray-500 leading-relaxed mb-4">
+                                A hybrid approach. Uses a <strong>small amount</strong> of labeled data and a
+                                <strong>large amount</strong> of unlabeled data.
+                            </p>
+                            <div class="bg-gray-50 p-3 border border-gray-100 rounded text-[10px] font-mono">
+                                <span class="text-gray-600">Use case:</span> Photo tagging (some named, many not)
+                            </div>
+                        </div>
+
+                        <!-- Reinforcement -->
+                        <div class="rams-card">
+                            <div class="flex items-center gap-3 mb-3">
+                                <span class="text-lg">🏆</span>
+                                <h5 class="text-sm font-bold text-gray-900">Reinforcement Learning</h5>
+                            </div>
+                            <p class="text-xs text-gray-500 leading-relaxed mb-4">
+                                Learning by trial and error. An agent interacts with an environment to maximize a
+                                <strong>reward</strong>.
+                            </p>
+                            <div class="bg-gray-50 p-3 border border-gray-100 rounded text-[10px] font-mono">
+                                <span class="text-gray-600">Rule:</span> If you win &rarr; [+1], if you lose &rarr; [-1]
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Inline Quiz: ML Intro -->
+                <div id="quiz-ai-ml-intro" class="mb-20 md:mb-24"></div>
+
+                <div class="divider hidden md:block"></div>
+
+                <!-- 06. The Neuron (Perceptron) -->
+                <section id="neuron" class="mb-20 md:mb-24">
+                    <span class="rams-label">02 / Machine Learning</span>
+                    <h3 class="text-xl font-medium mb-2">The Artificial Neuron</h3>
+                    <p class="text-sm text-gray-600 mb-4 max-w-lg">The fundamental atomic unit of learning. It is
+                        essentially a linear classifier.</p>
+                    <p class="text-xs text-gray-500 mb-8 max-w-xl leading-relaxed">
+                        A biological neuron fires when it receives enough stimulation. An artificial neuron mimics this
+                        mathematically. It takes inputs ($x$), multiplies them by learnable weights ($w$), adds a bias
+                        ($b$), and pushes the result through an activation function (like Sigmoid or ReLU) to introduce
+                        <strong>non-linearity</strong>. <br><br>
+                        If the weighted sum exceeds a threshold, the neuron "activates." By adjusting the weights, we
+                        change <em>what</em> stimulates the neuron—training it to recognize specific patterns.
+                    </p>
+
+                    <div class="rams-card">
+                        <div class="flex flex-col gap-8">
+                            <!-- Visualization -->
+                            <div
+                                class="relative h-48 bg-[#f4f4f4] border border-gray-200 overflow-hidden flex items-center justify-center p-4">
+                                <!-- Drawing of neuron -->
+                                <svg width="100%" height="100%" viewBox="0 0 400 200">
+                                    <!-- Inputs -->
+                                    <line x1="50" y1="60" x2="150" y2="100" stroke="#d4d4d4" stroke-width="2"
+                                        id="conn-1" />
+                                    <line x1="50" y1="140" x2="150" y2="100" stroke="#d4d4d4" stroke-width="2"
+                                        id="conn-2" />
+
+                                    <circle cx="50" cy="60" r="15" fill="white" stroke="#111" stroke-width="2" />
+                                    <text x="50" y="65" text-anchor="middle" font-family="monospace"
+                                        font-size="10">x₁</text>
+
+                                    <circle cx="50" cy="140" r="15" fill="white" stroke="#111" stroke-width="2" />
+                                    <text x="50" y="145" text-anchor="middle" font-family="monospace"
+                                        font-size="10">x₂</text>
+
+                                    <!-- Main Neuron Body -->
+                                    <circle cx="200" cy="100" r="40" fill="white" stroke="#111" stroke-width="2"
+                                        id="neuron-body" />
+                                    <text x="200" y="95" text-anchor="middle" font-family="monospace" font-size="10"
+                                        fill="#737373">Σ(wx)+b</text>
+                                    <text x="200" y="115" text-anchor="middle" font-family="monospace" font-size="12"
+                                        font-weight="bold" id="neuron-sum">0.0</text>
+
+                                    <!-- Output -->
+                                    <line x1="240" y1="100" x2="350" y2="100" stroke="#d4d4d4" stroke-width="2"
+                                        id="output-line" />
+                                    <circle cx="350" cy="100" r="10" fill="#e5e5e5" id="output-node" />
+                                </svg>
+                            </div>
+
+                            <!-- Controls -->
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                <div>
+                                    <div
+                                        class="flex justify-between text-[10px] uppercase text-gray-400 mb-1 font-medium">
+                                        <span>Weight 1 (Signal Strength)</span>
+                                        <span id="w1-val" class="text-black mono">0.5</span>
+                                    </div>
+                                    <input type="range" id="w1-slider" min="-2" max="2" step="0.1" value="0.5"
+                                        class="w-full">
+
+                                    <div
+                                        class="flex justify-between text-[10px] uppercase text-gray-400 mb-1 font-medium">
+                                        <span>Weight 2 (Signal Strength)</span>
+                                        <span id="w2-val" class="text-black mono">0.5</span>
+                                    </div>
+                                    <input type="range" id="w2-slider" min="-2" max="2" step="0.1" value="0.5"
+                                        class="w-full">
+                                </div>
+                                <div>
+                                    <div
+                                        class="flex justify-between text-[10px] uppercase text-gray-400 mb-1 font-medium">
+                                        <span>Bias (Activation Threshold)</span>
+                                        <span id="bias-val" class="text-black mono">0.0</span>
+                                    </div>
+                                    <input type="range" id="bias-slider" min="-2" max="2" step="0.1" value="0"
+                                        class="w-full">
+
+                                    <div class="mt-6 p-3 bg-gray-50 border border-gray-100 rounded text-xs font-mono">
+                                        <span class="text-gray-400">Neuron Output:</span> <span id="activation-result"
+                                            class="font-bold">0.00</span>
+                                        <div class="w-full bg-gray-200 h-1 mt-2 rounded overflow-hidden">
+                                            <div id="activation-bar"
+                                                class="h-full bg-indigo-600 transition-all duration-100"
+                                                style="width: 50%"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Inline Quiz: Neuron -->
+                <div id="quiz-ai-neuron" class="mb-20 md:mb-24"></div>
+
+                <!-- 07. Gradient Descent -->
+                <section id="gradient" class="mb-20 md:mb-24">
+                    <span class="rams-label">02 / Machine Learning</span>
+                    <h3 class="text-xl font-medium mb-2">Gradient Descent</h3>
+                    <p class="text-sm text-gray-600 mb-4 max-w-lg">The engine of learning. An iterative algorithm for
+                        finding the lowest error.</p>
+                    <p class="text-xs text-gray-500 mb-8 max-w-xl leading-relaxed">
+                        Imagine being blindfolded on a mountain and trying to find the bottom of the valley. You feel
+                        the ground to see which way is "down" (the gradient) and take a small step in that direction. In
+                        ML, the "mountain" is the Loss Function (total error), and your position is defined by the
+                        model's weights. Gradient Descent updates the weights to move iteratively towards the point of
+                        minimal error.
+                    </p>
+
+                    <div class="rams-card">
+                        <div class="relative h-64 bg-[#f4f4f4] border border-gray-200 overflow-hidden mb-6">
+                            <canvas id="gradient-canvas" class="w-full h-full"></canvas>
+                            <div
+                                class="absolute top-3 left-3 bg-white/80 p-2 backdrop-blur-sm border border-gray-100 rounded-sm">
+                                <span class="text-[10px] uppercase font-bold text-gray-500 block">Error Landscape
+                                    (Loss)</span>
+                            </div>
+                        </div>
+
+                        <div class="flex flex-wrap items-center gap-4">
+                            <button id="start-learning" class="btn btn-primary text-xs">Step Descent</button>
+                            <button id="reset-learning" class="btn btn-secondary text-xs">Randomize</button>
+                            <div class="flex-1 ml-4">
+                                <span class="text-[10px] uppercase text-gray-400 block mb-1">Learning Rate (Step
+                                    Size)</span>
+                                <input type="range" id="lr-slider" min="0.01" max="0.2" step="0.01" value="0.05"
+                                    class="w-full !m-0">
+                            </div>
+                        </div>
+                        <div id="gradient-status" class="mt-4 text-xs font-mono text-gray-500">Loss: Calculating...
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Inline Quiz: Gradient -->
+                <div id="quiz-ai-gradient" class="mb-20 md:mb-24"></div>
+
+                <!-- 08. Neural Networks (Architecture) -->
+                <section id="networks" class="mb-20 md:mb-24">
+                    <span class="rams-label">03 / Deep Learning</span>
+                    <h3 class="text-xl font-medium mb-2">Deep Neural Networks</h3>
+                    <p class="text-sm text-gray-600 mb-8 max-w-lg">
+                        Feature Abstraction. Why do we stack layers? To create a hierarchy of understanding.
+                    </p>
+                    <p class="text-xs text-gray-500 mb-8 max-w-xl leading-relaxed">
+                        A single layer can only solve simple, linear problems. By stacking layers (Deep Learning), the
+                        network learns progressively complex features. In image recognition, the first layer might
+                        detect edges. The second layer combines edges to detect shapes (circles, squares). The third
+                        layer combines shapes to detect objects (eyes, ears). This hierarchical representation is what
+                        layer combines shapes to detect objects (eyes, ears). This hierarchical representation is what
+                        makes Deep Learning so powerful.
+                    </p>
+                    <div class="mb-6 p-4 bg-yellow-50 border border-yellow-100 rounded text-xs text-gray-600">
+                        <strong>Review: Overfitting</strong><br>
+                        When a model learns the training data <em>too well</em> (including its noise) but fails to
+                        generalize to new, unseen data. It's like memorizing the answers to a test instead of
+                        understanding the subject.
+                    </div>
+
+                    <div class="rams-card">
+                        <div class="flex justify-between items-center mb-6">
+                            <span class="text-xs uppercase tracking-wider text-gray-400">Input Layer</span>
+                            <span class="text-xs uppercase tracking-wider text-gray-400">Hidden Layers</span>
+                            <span class="text-xs uppercase tracking-wider text-gray-400">Output</span>
+                        </div>
+
+                        <div class="flex justify-between items-center relative h-64">
+                            <!-- Input Column -->
+                            <div class="flex flex-col justify-center gap-4 w-12 z-10 h-full" id="input-layer">
+                                <button class="btn-node" onclick="pulseNetwork(this)"><span>1</span></button>
+                                <button class="btn-node" onclick="pulseNetwork(this)"><span>0</span></button>
+                                <button class="btn-node" onclick="pulseNetwork(this)"><span>1</span></button>
+                            </div>
+
+                            <!-- Connections SVG Layer (Absolute) -->
+                            <div class="absolute inset-0 z-0 opacity-20 pointer-events-none">
+                                <svg width="100%" height="100%" preserveAspectRatio="none">
+                                    <!-- Input to Hidden 1 -->
+                                    <line x1="5%" y1="20%" x2="35%" y2="15%" stroke="black" stroke-width="1" />
+                                    <line x1="5%" y1="20%" x2="35%" y2="38%" stroke="black" stroke-width="1" />
+                                    <line x1="5%" y1="50%" x2="35%" y2="38%" stroke="black" stroke-width="1" />
+                                    <line x1="5%" y1="50%" x2="35%" y2="62%" stroke="black" stroke-width="1" />
+                                    <line x1="5%" y1="80%" x2="35%" y2="62%" stroke="black" stroke-width="1" />
+                                    <line x1="5%" y1="80%" x2="35%" y2="85%" stroke="black" stroke-width="1" />
+
+                                    <!-- Hidden 1 to Hidden 2 -->
+                                    <line x1="35%" y1="15%" x2="65%" y2="20%" stroke="black" stroke-width="1" />
+                                    <line x1="35%" y1="38%" x2="65%" y2="20%" stroke="black" stroke-width="1" />
+                                    <line x1="35%" y1="38%" x2="65%" y2="50%" stroke="black" stroke-width="1" />
+                                    <line x1="35%" y1="62%" x2="65%" y2="50%" stroke="black" stroke-width="1" />
+                                    <line x1="35%" y1="62%" x2="65%" y2="80%" stroke="black" stroke-width="1" />
+                                    <line x1="35%" y1="85%" x2="65%" y2="80%" stroke="black" stroke-width="1" />
+
+                                    <!-- Hidden 2 to Output -->
+                                    <line x1="65%" y1="20%" x2="95%" y2="50%" stroke="black" stroke-width="1" />
+                                    <line x1="65%" y1="50%" x2="95%" y2="50%" stroke="black" stroke-width="1" />
+                                    <line x1="65%" y1="80%" x2="95%" y2="50%" stroke="black" stroke-width="1" />
+                                </svg>
+                            </div>
+
+                            <!-- Hidden Column 1 -->
+                            <div class="flex flex-col justify-center gap-4 w-12 z-10 h-full" id="layer-1">
+                                <div class="btn-node bg-white border-dashed hidden-layer"></div>
+                                <div class="btn-node bg-white border-dashed hidden-layer"></div>
+                                <div class="btn-node bg-white border-dashed hidden-layer"></div>
+                                <div class="btn-node bg-white border-dashed hidden-layer"></div>
+                            </div>
+
+                            <!-- Hidden Column 2 -->
+                            <div class="flex flex-col justify-center gap-4 w-12 z-10 h-full" id="layer-2">
+                                <div class="btn-node bg-white border-dashed hidden-layer"></div>
+                                <div class="btn-node bg-white border-dashed hidden-layer"></div>
+                                <div class="btn-node bg-white border-dashed hidden-layer"></div>
+                            </div>
+
+                            <!-- Output Column -->
+                            <div class="flex flex-col justify-center gap-4 w-12 z-10 h-full">
+                                <div id="final-output" class="btn-node bg-gray-100 font-bold">?</div>
+                            </div>
+                        </div>
+                        <div class="mt-6 text-center text-xs text-gray-400 italic">
+                            Click input nodes to propagate signal through the hierarchy.
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Inline Quiz: Networks -->
+                <div id="quiz-ai-networks" class="mb-20 md:mb-24"></div>
+
+                <!-- 09. Computer Vision (CNN) -->
+                <section id="cnn" class="mb-20 md:mb-24">
+                    <span class="rams-label">03 / Deep Learning</span>
+                    <h3 class="text-xl font-medium mb-2">Convolutional Neural Networks (CNNs)</h3>
+                    <p class="text-sm text-gray-600 mb-8 max-w-lg">How computers "see". Using filters to detect spatial
+                        patterns.</p>
+                    <p class="text-xs text-gray-500 mb-8 max-w-xl leading-relaxed">
+                        Images are grids of pixels. A CNN slides "filters" (or kernels) over the image to detect
+                        features like edges or curves. The multiplication of the filter values with the pixel values
+                        creates a "Feature Map".
+                    </p>
+
+                    <div class="rams-card">
+                        <div class="flex flex-col md:flex-row items-center gap-12 justify-center">
+
+                            <!-- Visualization Container -->
+                            <div class="relative flex flex-col gap-2">
+                                <span class="text-[10px] uppercase font-bold text-gray-400 text-center">Input Image
+                                    (5x5)</span>
+                                <div class="relative">
+                                    <div class="grid grid-cols-5 gap-[2px] bg-white border border-gray-200 p-[2px]"
+                                        id="cnn-grid">
+                                        <!-- Cells generated by JS -->
+                                    </div>
+                                    <!-- Sliding Filter (Visual) -->
+                                    <div id="cnn-filter"
+                                        class="cnn-filter-box flex flex-wrap content-start p-[1px] gap-[1px] absolute top-0 left-0 transition-transform duration-300">
+                                        <!-- Filter Weights Visualization -->
+                                        <div
+                                            class="w-[32px] h-[32px] flex items-center justify-center text-[8px] font-mono bg-white/80 text-indigo-600 font-bold">
+                                            -1</div>
+                                        <div
+                                            class="w-[32px] h-[32px] flex items-center justify-center text-[8px] font-mono bg-white/80 text-indigo-600 font-bold">
+                                            1</div>
+                                        <div
+                                            class="w-[32px] h-[32px] flex items-center justify-center text-[8px] font-mono bg-white/80 text-indigo-600 font-bold">
+                                            -1</div>
+                                        <div
+                                            class="w-[32px] h-[32px] flex items-center justify-center text-[8px] font-mono bg-white/80 text-indigo-600 font-bold">
+                                            -1</div>
+                                        <div
+                                            class="w-[32px] h-[32px] flex items-center justify-center text-[8px] font-mono bg-white/80 text-indigo-600 font-bold">
+                                            1</div>
+                                        <div
+                                            class="w-[32px] h-[32px] flex items-center justify-center text-[8px] font-mono bg-white/80 text-indigo-600 font-bold">
+                                            -1</div>
+                                        <div
+                                            class="w-[32px] h-[32px] flex items-center justify-center text-[8px] font-mono bg-white/80 text-indigo-600 font-bold">
+                                            -1</div>
+                                        <div
+                                            class="w-[32px] h-[32px] flex items-center justify-center text-[8px] font-mono bg-white/80 text-indigo-600 font-bold">
+                                            1</div>
+                                        <div
+                                            class="w-[32px] h-[32px] flex items-center justify-center text-[8px] font-mono bg-white/80 text-indigo-600 font-bold">
+                                            -1</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="text-2xl text-gray-300 font-light">→</div>
+
+                            <!-- Operation & Output -->
+                            <div class="flex flex-col gap-4 min-w-[140px]">
+                                <div class="bg-gray-50 p-4 border border-gray-100 rounded text-center">
+                                    <span
+                                        class="text-[10px] uppercase font-bold text-gray-400 block mb-1">Calculation</span>
+                                    <div class="text-xs font-mono text-gray-600 mb-2">Sum(Pixels × Weights)</div>
+                                    <div class="text-2xl font-mono text-indigo-600 font-bold" id="cnn-output">0</div>
+                                    <span class="text-[10px] text-gray-400 block mt-1">Feature Match</span>
+                                </div>
+                                <button onclick="scanCNN()" class="btn btn-primary text-xs w-full">Slide Filter</button>
+                            </div>
+
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Inline Quiz: CNN -->
+                <div id="quiz-ai-cnn" class="mb-20 md:mb-24"></div>
+
+                <!-- 10. Embeddings -->
+                <section id="embeddings" class="mb-20 md:mb-24">
+                    <span class="rams-label">04 / Natural Language Processing</span>
+                    <h3 class="text-xl font-medium mb-2">Vector Embeddings</h3>
+                    <p class="text-sm text-gray-600 mb-4 max-w-lg">Mapping meaning to geometry. Transforming words into
+                        coordinates.</p>
+                    <p class="text-xs text-gray-500 mb-8 max-w-xl leading-relaxed">
+                        To a computer, "Apple" and "Orange" are just different strings. To make them useful, we convert
+                        them into lists of numbers (vectors) such that semantically similar words are close together in
+                        mathematical space. <br><br>
+                        This allows for <strong>Semantic Arithmetic</strong>. We can subtract the "Maleness" vector from
+                        "King", add "Femaleness", and the resulting vector points to "Queen".
+                    </p>
+
+                    <div class="rams-card">
+                        <div
+                            class="relative h-64 bg-white border border-gray-200 overflow-hidden flex items-center justify-center">
+                            <div class="absolute inset-0 grid grid-cols-6 grid-rows-6 pointer-events-none">
+                                <!-- Grid lines -->
+                                <div class="border-r border-gray-100 h-full w-full"></div>
+                                <div class="border-r border-gray-100 h-full w-full"></div>
+                                <div class="border-r border-gray-100 h-full w-full"></div>
+                                <div class="border-r border-gray-100 h-full w-full"></div>
+                                <div class="border-r border-gray-100 h-full w-full"></div>
+                            </div>
+
+                            <!-- Data Points -->
+                            <div
+                                class="absolute top-[30%] left-[20%] w-2 h-2 bg-indigo-600 rounded-full group cursor-pointer hover:scale-150 transition-transform">
+                                <span
+                                    class="absolute -top-6 -left-2 text-xs bg-black text-white px-1 py-0.5 opacity-0 group-hover:opacity-100 transition-opacity">King</span>
+                            </div>
+                            <div
+                                class="absolute top-[30%] left-[70%] w-2 h-2 bg-indigo-600 rounded-full group cursor-pointer hover:scale-150 transition-transform">
+                                <span
+                                    class="absolute -top-6 -left-2 text-xs bg-black text-white px-1 py-0.5 opacity-0 group-hover:opacity-100 transition-opacity">Queen</span>
+                            </div>
+                            <div
+                                class="absolute top-[70%] left-[20%] w-2 h-2 bg-gray-400 rounded-full group cursor-pointer hover:scale-150 transition-transform">
+                                <span
+                                    class="absolute -top-6 -left-2 text-xs bg-black text-white px-1 py-0.5 opacity-0 group-hover:opacity-100 transition-opacity">Man</span>
+                            </div>
+                            <div
+                                class="absolute top-[70%] left-[70%] w-2 h-2 bg-gray-400 rounded-full group cursor-pointer hover:scale-150 transition-transform">
+                                <span
+                                    class="absolute -top-6 -left-2 text-xs bg-black text-white px-1 py-0.5 opacity-0 group-hover:opacity-100 transition-opacity">Woman</span>
+                            </div>
+
+                            <!-- Vector Lines -->
+                            <svg class="absolute inset-0 w-full h-full pointer-events-none">
+                                <line x1="20.5%" y1="31%" x2="20.5%" y2="69%" stroke="#e5e5e5" stroke-dasharray="4" />
+                                <line x1="70.5%" y1="31%" x2="70.5%" y2="69%" stroke="#e5e5e5" stroke-dasharray="4" />
+                                <line x1="21%" y1="30.5%" x2="69%" y2="30.5%" stroke="#4f46e5" stroke-width="1.5" />
+                                <line x1="21%" y1="70.5%" x2="69%" y2="70.5%" stroke="#9ca3af" stroke-width="1" />
+                            </svg>
+                        </div>
+                        <div class="mt-4 text-xs text-center text-gray-500">Semantic Space (2D Projection)</div>
+                    </div>
+                </section>
+
+                <!-- Inline Quiz: Embeddings -->
+                <div id="quiz-ai-embeddings" class="mb-20 md:mb-24"></div>
+
+                <!-- 11. Attention / Transformers -->
+                <section id="attention" class="mb-20 md:mb-24">
+                    <span class="rams-label">04 / Natural Language Processing</span>
+                    <h3 class="text-xl font-medium mb-2">Self-Attention</h3>
+                    <p class="text-sm text-gray-600 mb-8 max-w-lg">Contextual weighting. How models understand the
+                        relevance of words.</p>
+                    <p class="text-xs text-gray-500 mb-8 max-w-xl leading-relaxed">
+                        Before Transformers, models read sentences left-to-right, often forgetting the start of a
+                        sentence by the time they reached the end. <strong>Self-Attention</strong> allows the model to
+                        look at <em>every</em> word in a sentence simultaneously and calculate how much each word
+                        relates to every other word. In the example below, "it" is ambiguous to a computer. Attention
+                        resolves this by linking "it" strongly to "animal" because the animal is tired.
+                    </p>
+
+                    <div class="rams-card">
+                        <div class="mb-6">
+                            <p class="text-lg font-serif leading-relaxed text-gray-400" id="sentence-container">
+                                <span
+                                    class="token hover:text-black hover:bg-indigo-50 cursor-pointer transition-colors p-1 rounded"
+                                    data-related="it,street,animal">The</span>
+                                <span
+                                    class="token hover:text-black hover:bg-indigo-50 cursor-pointer transition-colors p-1 rounded"
+                                    data-related="animal">animal</span>
+                                <span
+                                    class="token hover:text-black hover:bg-indigo-50 cursor-pointer transition-colors p-1 rounded"
+                                    data-related="street">didn't</span>
+                                <span
+                                    class="token hover:text-black hover:bg-indigo-50 cursor-pointer transition-colors p-1 rounded"
+                                    data-related="street">cross</span>
+                                <span
+                                    class="token hover:text-black hover:bg-indigo-50 cursor-pointer transition-colors p-1 rounded"
+                                    data-related="street,animal">the</span>
+                                <span
+                                    class="token hover:text-black hover:bg-indigo-50 cursor-pointer transition-colors p-1 rounded"
+                                    data-related="cross">street</span>
+                                <span
+                                    class="token hover:text-black hover:bg-indigo-50 cursor-pointer transition-colors p-1 rounded"
+                                    data-related="because">because</span>
+                                <span
+                                    class="token hover:text-indigo-600 font-bold hover:bg-indigo-50 cursor-pointer transition-colors p-1 rounded"
+                                    id="main-token" data-related="animal,tired">it</span>
+                                <span
+                                    class="token hover:text-black hover:bg-indigo-50 cursor-pointer transition-colors p-1 rounded"
+                                    data-related="tired">was</span>
+                                <span
+                                    class="token hover:text-black hover:bg-indigo-50 cursor-pointer transition-colors p-1 rounded"
+                                    data-related="animal">too</span>
+                                <span
+                                    class="token hover:text-black hover:bg-indigo-50 cursor-pointer transition-colors p-1 rounded"
+                                    data-related="animal">tired.</span>
+                            </p>
+                        </div>
+                        <div class="border-t border-gray-100 pt-4">
+                            <span class="text-[10px] uppercase font-bold text-gray-400 block mb-2">Attention Weights for
+                                "it"</span>
+                            <div class="w-full flex items-center gap-2 mb-1">
+                                <span class="text-xs w-16 text-right">animal</span>
+                                <div class="h-2 bg-indigo-600 rounded-full w-[85%]"></div>
+                                <span class="text-xs font-mono">0.85</span>
+                            </div>
+                            <div class="w-full flex items-center gap-2 mb-1">
+                                <span class="text-xs w-16 text-right">street</span>
+                                <div class="h-2 bg-indigo-200 rounded-full w-[10%]"></div>
+                                <span class="text-xs font-mono">0.10</span>
+                            </div>
+                            <div class="w-full flex items-center gap-2">
+                                <span class="text-xs w-16 text-right">tired</span>
+                                <div class="h-2 bg-indigo-400 rounded-full w-[60%]"></div>
+                                <span class="text-xs font-mono">0.60</span>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Inline Quiz: Attention -->
+                <div id="quiz-ai-attention" class="mb-20 md:mb-24"></div>
+
+                <!-- 12. Generative Text -->
+                <section id="gen-text" class="mb-20 md:mb-24">
+                    <span class="rams-label">04 / Natural Language Processing</span>
+                    <h3 class="text-xl font-medium mb-2">Large Language Models (GenAI)</h3>
+                    <p class="text-sm text-gray-600 mb-4 max-w-lg">From "Mining" patterns to generating answers.</p>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8 text-xs text-gray-500 leading-relaxed">
+                        <div>
+                            <strong class="text-black block mb-1 uppercase tracking-wide">Phase 1: Text Mining
+                                (Training)</strong>
+                            <p>The model doesn't store the internet. Instead, it "mines" billions of sentences to learn
+                                the statistical structure of language. It compresses this information into numerical
+                                weights. It creates a high-dimensional map of how words relate to one another (e.g.,
+                                "doctor" appears near "nurse" more often than "table").</p>
+                        </div>
+                        <div>
+                            <strong class="text-black block mb-1 uppercase tracking-wide">Phase 2: The Answer
+                                (Inference)</strong>
+                            <p>When you ask a question, the model doesn't retrieve a pre-written answer. It uses its map
+                                to calculate the probability of the next word. It is a <strong>prediction
+                                    engine</strong>, constructing a novel response token-by-token based on the context
+                                you provided.</p>
+                        </div>
+                    </div>
+
+                    <div class="rams-card">
+                        <div class="flex flex-col gap-6">
+                            <div class="p-4 bg-gray-50 border border-gray-200 font-serif text-lg text-black min-h-[60px] flex flex-wrap items-baseline gap-1"
+                                id="gen-display">
+                                <span>The</span> <span>future</span> <span>of</span> <span>AI</span> <span>is</span>
+                                <span class="animate-pulse text-indigo-600 font-bold ml-1">|</span>
+                            </div>
+
+                            <!-- Probabilities Visualization -->
+                            <div class="space-y-3" id="prob-bars">
+                                <div class="flex items-center gap-3">
+                                    <span class="text-xs font-mono w-16 text-right" id="tok-1-txt">uncertain</span>
+                                    <div class="flex-1 bg-gray-100 h-2 rounded-full overflow-hidden">
+                                        <div class="bg-indigo-600 h-full transition-all duration-300" style="width: 45%"
+                                            id="tok-1-bar"></div>
+                                    </div>
+                                    <span class="text-xs font-mono text-gray-400" id="tok-1-val">45%</span>
+                                </div>
+                                <div class="flex items-center gap-3">
+                                    <span class="text-xs font-mono w-16 text-right" id="tok-2-txt">bright</span>
+                                    <div class="flex-1 bg-gray-100 h-2 rounded-full overflow-hidden">
+                                        <div class="bg-indigo-400 h-full transition-all duration-300" style="width: 30%"
+                                            id="tok-2-bar"></div>
+                                    </div>
+                                    <span class="text-xs font-mono text-gray-400" id="tok-2-val">30%</span>
+                                </div>
+                                <div class="flex items-center gap-3">
+                                    <span class="text-xs font-mono w-16 text-right" id="tok-3-txt">here</span>
+                                    <div class="flex-1 bg-gray-100 h-2 rounded-full overflow-hidden">
+                                        <div class="bg-indigo-300 h-full transition-all duration-300" style="width: 15%"
+                                            id="tok-3-bar"></div>
+                                    </div>
+                                    <span class="text-xs font-mono text-gray-400" id="tok-3-val">15%</span>
+                                </div>
+                            </div>
+
+                            <div
+                                class="pt-4 border-t border-gray-100 flex flex-col sm:flex-row justify-between items-center gap-4">
+                                <span class="text-[10px] uppercase text-gray-400">Token Sampling (The "Choice")</span>
+                                <button class="btn btn-primary text-xs" onclick="generateToken()">Generate Next
+                                    Token</button>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Inline Quiz: GenAI -->
+                <div id="quiz-ai-genai" class="mb-20 md:mb-24"></div>
+
+                <!-- 13. Diffusion -->
+                <section id="diffusion" class="mb-20 md:mb-24">
+                    <span class="rams-label">05 / Advanced</span>
+                    <h3 class="text-xl font-medium mb-2">Diffusion Models</h3>
+                    <p class="text-sm text-gray-600 mb-8 max-w-lg">Generating content via iterative denoising.</p>
+                    <p class="text-xs text-gray-500 mb-8 max-w-xl leading-relaxed">
+                        How does AI generate images? It doesn't paint like an artist. Instead, it acts like a sculptor
+                        revealing a statue from a block of marble, but the "marble" is static noise. <br><br>
+                        The model is trained to reverse the process of adding noise to an image. To generate a new
+                        image, we give it pure random noise and ask it: "What part of this looks like a cat?" It
+                        slightly adjusts the pixels. We repeat this thousands of times until the noise becomes a clear
+                        image.
+                    </p>
+
+                    <div class="rams-card">
+                        <div class="flex flex-col items-center gap-6">
+                            <div class="relative w-48 h-48 bg-black border border-gray-200 overflow-hidden">
+                                <canvas id="diffusion-canvas" width="192" height="192" class="w-full h-full"></canvas>
+                            </div>
+
+                            <div class="w-full max-w-md">
+                                <div class="flex justify-between text-[10px] uppercase text-gray-400 mb-2 font-medium">
+                                    <span>Pure Noise (t=T)</span>
+                                    <span>Refined Image (t=0)</span>
+                                </div>
+                                <input type="range" id="diffusion-slider" min="0" max="100" value="0" class="w-full">
+                                <p class="text-xs text-center text-gray-500 mt-2 font-mono" id="diffusion-step">Step:
+                                    100 (Noise)</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Inline Quiz: Diffusion -->
+                <div id="quiz-ai-diffusion" class="mb-20 md:mb-24"></div>
+
+                <!-- 14. Reinforcement Learning (Wumpus World) -->
+                <section id="rl" class="mb-20 md:mb-24">
+                    <span class="rams-label">05 / Advanced</span>
+                    <h3 class="text-xl font-medium mb-2">Reinforcement Learning: Wumpus World</h3>
+                    <p class="text-sm text-gray-600 mb-8 max-w-lg">Navigating an unknown environment via sensors and
+                        rewards.</p>
+                    <p class="text-xs text-gray-500 mb-8 max-w-xl leading-relaxed">
+                        In this classic AI problem, the agent must find the Gold without falling into a Pit or being
+                        eaten by the Wumpus. The agent doesn't know the map; it only perceives the local environment: a
+                        <strong>Breeze</strong> indicates a nearby Pit, and a <strong>Stench</strong> indicates the
+                        nearby Wumpus. The agent learns to navigate based on these sensory inputs (Percepts) to maximize
+                        reward.
+                    </p>
+
+                    <div class="rams-card">
+                        <div class="flex flex-col items-center gap-6">
+
+                            <div class="wumpus-grid w-full max-w-[300px]" id="wumpus-grid">
+                                <!-- Generated via JS -->
+                            </div>
+
+                            <div
+                                class="w-full border-t border-gray-100 pt-4 flex flex-col sm:flex-row items-start justify-between gap-4">
+                                <div>
+                                    <span class="text-[10px] uppercase font-bold text-gray-400 block mb-1">Percepts
+                                        (Sensors)</span>
+                                    <div id="w-percepts" class="text-xs font-mono text-indigo-600 h-4">None</div>
+                                </div>
+
+                                <div class="flex flex-col items-center gap-2">
+                                    <button onclick="moveWumpus(0, -1)" class="btn btn-secondary w-8 h-8 p-0">↑</button>
+                                    <div class="flex gap-2">
+                                        <button onclick="moveWumpus(-1, 0)"
+                                            class="btn btn-secondary w-8 h-8 p-0">←</button>
+                                        <button onclick="moveWumpus(0, 1)"
+                                            class="btn btn-secondary w-8 h-8 p-0">↓</button>
+                                        <button onclick="moveWumpus(1, 0)"
+                                            class="btn btn-secondary w-8 h-8 p-0">→</button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <p id="w-status" class="text-xs text-gray-400 italic">Find the Gold (💰). Avoid Pits (🕳️)
+                                and Wumpus (👹).</p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Inline Quiz: RL -->
+                <div id="quiz-ai-rl" class="mb-20 md:mb-24"></div>
+
+                <!-- 15. Artificial General Intelligence -->
+                <section id="agi" class="mb-20 md:mb-24">
+                    <span class="rams-label">05 / Advanced</span>
+                    <h3 class="text-xl font-medium mb-2">Artificial General Intelligence (AGI)</h3>
+                    <p class="text-sm text-gray-600 mb-8 max-w-lg">Beyond specialization. The theoretical leap to
+                        human-level versatility.</p>
+
+                    <p class="text-xs text-gray-500 mb-8 max-w-xl leading-relaxed">
+                        Artificial Intelligence today is powerful but narrow. AGI represents the point where a machine
+                        matches human cognitive abilities across <em>any</em> domain. It is not just about doing one
+                        thing better; it is about the ability to learn <em>everything</em>.
+                    </p>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-12">
+                        <div class="rams-card">
+                            <h4 class="text-[10px] uppercase font-bold text-gray-400 mb-4">Narrow AI (ANI)</h4>
+                            <p class="text-xs text-gray-500 leading-relaxed">
+                                Superhuman at <strong>specific tasks</strong> (e.g., Playing Chess, Diagnosing Cancer,
+                                Generating Text). Cannot apply Chess logic to driving a car.
+                            </p>
+                        </div>
+                        <div class="rams-card border-indigo-100 bg-indigo-50/10">
+                            <h4 class="text-[10px] uppercase font-bold text-indigo-400 mb-4">General AI (AGI)</h4>
+                            <p class="text-xs text-gray-500 leading-relaxed">
+                                Versatile intelligence. Can learn any task a human can, from folding laundry to
+                                discovering new physics. It possesses **Cross-Domain Reasoning**.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Domain Versatility Visualization -->
+                    <div class="rams-card mb-12">
+                        <div class="flex flex-col items-center gap-6">
+                            <div class="text-center">
+                                <span class="text-[10px] uppercase font-bold text-gray-400 block mb-1">Architecture
+                                    Comparison</span>
+                                <div class="flex gap-4 mt-2">
+                                    <button class="btn btn-secondary text-[10px] py-1 px-3" id="ani-toggle"
+                                        onclick="toggleAGIVisual('ANI')">Narrow (ANI)</button>
+                                    <button class="btn btn-primary text-[10px] py-1 px-3" id="agi-toggle"
+                                        onclick="toggleAGIVisual('AGI')">General (AGI)</button>
+                                </div>
+                            </div>
+
+                            <div
+                                class="relative w-full max-w-md h-64 bg-gray-50 rounded-sm border border-gray-100 overflow-hidden">
+                                <svg id="agi-visual" viewBox="0 0 400 250" class="w-full h-full">
+                                    <!-- Connections -->
+                                    <g id="agi-lines" class="opacity-0 transition-opacity duration-500">
+                                        <path d="M 200,150 L 200,50" stroke="#6366f1" stroke-width="1.5"
+                                            class="agi-flow-line" />
+                                        <path d="M 200,150 L 100,100" stroke="#6366f1" stroke-width="1.5"
+                                            class="agi-flow-line" />
+                                        <path d="M 200,150 L 300,100" stroke="#6366f1" stroke-width="1.5"
+                                            class="agi-flow-line" />
+                                        <path d="M 200,150 L 100,200" stroke="#6366f1" stroke-width="1.5"
+                                            class="agi-flow-line" />
+                                        <path d="M 200,150 L 300,200" stroke="#6366f1" stroke-width="1.5"
+                                            class="agi-flow-line" />
+                                    </g>
+
+                                    <!-- Skill Nodes -->
+                                    <g id="skill-nodes">
+                                        <g transform="translate(200, 50)">
+                                            <circle r="15" fill="white" stroke="#e5e7eb" stroke-width="2" />
+                                            <text y="25" text-anchor="middle" class="skill-label">Logic</text>
+                                        </g>
+                                        <g transform="translate(100, 100)">
+                                            <circle r="15" fill="white" stroke="#e5e7eb" stroke-width="2" />
+                                            <text y="25" text-anchor="middle" class="skill-label">Creativity</text>
+                                        </g>
+                                        <g transform="translate(300, 100)">
+                                            <circle r="15" fill="white" stroke="#e5e7eb" stroke-width="2" />
+                                            <text y="25" text-anchor="middle" class="skill-label">Math</text>
+                                        </g>
+                                        <g transform="translate(100, 200)">
+                                            <circle r="15" fill="white" stroke="#e5e7eb" stroke-width="2" />
+                                            <text y="25" text-anchor="middle" class="skill-label">Social</text>
+                                        </g>
+                                        <g transform="translate(300, 200)">
+                                            <circle r="15" fill="white" stroke="#e5e7eb" stroke-width="2" />
+                                            <text y="25" text-anchor="middle" class="skill-label">Spatial</text>
+                                        </g>
+                                    </g>
+
+                                    <!-- Central Core -->
+                                    <circle cx="200" cy="150" r="25" fill="#f8fafc" stroke="#e5e7eb" stroke-width="2"
+                                        id="agi-core" />
+                                    <text x="200" y="153" text-anchor="middle"
+                                        class="text-[8px] font-bold fill-gray-400 uppercase tracking-tighter"
+                                        id="core-text">Core</text>
+
+                                    <g id="ani-indicator" class="transition-all duration-500">
+                                        <circle cx="200" cy="50" r="18" fill="none" stroke="#6366f1" stroke-width="1.5"
+                                            id="ani-active-ring" />
+                                        <circle cx="200" cy="50" r="18" fill="none" stroke="#6366f1" stroke-width="1.5"
+                                            id="ani-pulse-ring" class="ani-pulse-ring" />
+                                    </g>
+                                </svg>
+
+                                <div class="absolute bottom-2 left-0 w-full text-center">
+                                    <span id="agi-vis-desc" class="text-[9px] font-mono text-gray-400 uppercase">ANI:
+                                        Isolated Skills</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="space-y-8">
+                        <div>
+                            <h4 class="text-sm font-bold text-black uppercase mb-3">Intelligence Stages</h4>
+                            <div class="space-y-4">
+                                <div class="flex gap-4 p-4 bg-gray-50 rounded-sm">
+                                    <span class="text-xs font-bold text-indigo-600 mono">01 / ANI</span>
+                                    <div>
+                                        <p class="text-[10px] font-bold uppercase mb-1">Narrow Intelligence</p>
+                                        <p class="text-xs text-gray-500">Where we are now. Models excel at specific
+                                            domains but lack a "world model."</p>
+                                    </div>
+                                </div>
+                                <div class="flex gap-4 p-4 bg-gray-50 rounded-sm">
+                                    <span class="text-xs font-bold text-indigo-600 mono">02 / AGI</span>
+                                    <div>
+                                        <p class="text-[10px] font-bold uppercase mb-1">General Intelligence</p>
+                                        <p class="text-xs text-gray-500">Human-level across all domains. Can
+                                            self-correct, generalize, and learn autonomously.</p>
+                                    </div>
+                                </div>
+                                <div class="flex gap-4 p-4 bg-red-50 rounded-sm">
+                                    <span class="text-xs font-bold text-red-600 mono">03 / ASI</span>
+                                    <div>
+                                        <p class="text-[10px] font-bold uppercase mb-1">Super Intelligence</p>
+                                        <p class="text-xs text-gray-500">Intelligence that vastly exceeds human capacity
+                                            in every possible metric.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div>
+                            <h4 class="text-sm font-bold text-black uppercase mb-3">How will we know? (The Tests)</h4>
+                            <p class="text-xs text-gray-500 leading-relaxed mb-4">
+                                AGI isn't just about high scores; it's about navigating the messy, physical, and social
+                                world.
+                            </p>
+                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                                <div class="p-3 border border-gray-100 rounded-sm">
+                                    <span class="text-[10px] font-bold text-gray-400 block mb-1">The Coffee Test</span>
+                                    <p class="text-[10px] text-gray-500">Robot enters a random home and makes coffee
+                                        without any prior map.</p>
+                                </div>
+                                <div class="p-3 border border-gray-100 rounded-sm">
+                                    <span class="text-[10px] font-bold text-gray-400 block mb-1">The Student Test</span>
+                                    <p class="text-[10px] text-gray-500">AI enrolls in university and earns a degree
+                                        alongside humans.</p>
+                                </div>
+                                <div class="p-3 border border-gray-100 rounded-sm">
+                                    <span class="text-[10px] font-bold text-gray-400 block mb-1">The Employment
+                                        Test</span>
+                                    <p class="text-[10px] text-gray-500">AI can perform any job a human currently does
+                                        for money.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Inline Quiz: AGI -->
+                <div id="quiz-ai-agi" class="mb-20 md:mb-24"></div>
+
+                <div class="divider hidden md:block"></div>
+
+                <!-- 16. Alignment (Renumbered) -->
+                <section id="alignment" class="mb-12">
+                    <span class="rams-label">06 / Safety</span>
+                    <h3 class="text-xl font-medium mb-2">The Alignment Problem</h3>
+                    <p class="text-sm text-gray-600 mb-4 max-w-lg">Ensuring AI goals match human values.</p>
+                    <p class="text-xs text-gray-500 mb-8 max-w-xl leading-relaxed">
+                        If you tell a super-intelligent AI to "eliminate cancer," it might decide the most efficient
+                        solution is to eliminate all humans. Specifying objectives without unintended side effects
+                        (reward hacking) is the central challenge of AI safety.
+                    </p>
+
+                    <div class="p-6 bg-red-50 border border-red-100 rounded-sm">
+                        <h4 class="text-sm font-bold text-red-800 uppercase mb-2">Example: The Paperclip Maximizer</h4>
+                        <p class="text-xs text-red-700 leading-relaxed">
+                            A thought experiment by Nick Bostrom. An AI designed solely to maximize paperclip production
+                            might eventually convert the entire solar system into paperclips, destroying humanity in the
+                            process, simply because we didn't explicitly tell it <strong>not</strong> to.
+                        </p>
+                    </div>
+                </section>
+
+                <!-- Inline Quiz: Alignment -->
+                <div id="quiz-ai-alignment" class="mb-20 md:mb-24"></div>
+
+                <!-- Glossary Section -->
+                <section id="glossary" class="mb-20">
+                    <span class="rams-label">Glossary</span>
+                    <h3 class="text-xl font-medium mb-8">Key Definitions</h3>
+                    <div class="rams-card">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <h4 class="font-bold text-sm mb-2">Artificial Intelligence (AI)</h4>
+                                <p class="text-xs text-gray-600">Machines mimicking cognitive functions like logic,
+                                    rules, and search.</p>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-sm mb-2">Machine Learning (ML)</h4>
+                                <p class="text-xs text-gray-600">Systems that improve from data/experience rather than
+                                    explicit programming.</p>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-sm mb-2">Deep Learning (DL)</h4>
+                                <p class="text-xs text-gray-600">ML using multi-layered neural networks to model complex
+                                    patterns.</p>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-sm mb-2">Neural Networks</h4>
+                                <p class="text-xs text-gray-600">Computing systems inspired by biological neural
+                                    networks.</p>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-sm mb-2">Perceptron</h4>
+                                <p class="text-xs text-gray-600">A simple linear binary classifier, the fundamental unit
+                                    of neural networks.</p>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-sm mb-2">Backpropagation</h4>
+                                <p class="text-xs text-gray-600">An algorithm for training neural networks by
+                                    propagating error backwards.</p>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-sm mb-2">Transformers</h4>
+                                <p class="text-xs text-gray-600">A deep learning model that adopts the mechanism of
+                                    attention, replacing RNNs.</p>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-sm mb-2">Generative AI</h4>
+                                <p class="text-xs text-gray-600">AI capable of generating new content (text, images,
+                                    code) in response to prompts.</p>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-sm mb-2">Turing Test</h4>
+                                <p class="text-xs text-gray-600">A test of a machine's ability to exhibit intelligent
+                                    behavior equivalent to a human.</p>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-sm mb-2">Reinforcement Learning</h4>
+                                <p class="text-xs text-gray-600">Learning by trial and error through rewards and
+                                    punishments.</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 08. Quiz -->
+                <section id="quiz" class="mb-20 md:mb-24">
+                    <span class="rams-label">08 / Knowledge Check</span>
+                    <div id="quiz-container" class="rams-card">
+                        <!-- Quiz loads here -->
+                    </div>
+                </section>
+
+                <!-- 09. Certificate (Initially Hidden) -->
+                <section id="certificate" class="mb-20 md:mb-24 hidden">
+                    <span class="rams-label">09 / Certification</span>
+                    <h3 class="text-xl font-medium mb-6">Completion Certificate</h3>
+
+                    <div class="rams-card !p-0 overflow-hidden">
+                        <div class="p-6 md:p-8">
+                            <div class="flex flex-col md:flex-row gap-8 items-start">
+                                <div class="w-full md:w-1/3 space-y-4">
+                                    <p class="text-sm text-gray-600">
+                                        Enter your name below to generate your personalized certificate of completion
+                                        for
+                                        the Artificial Intelligence series.
+                                    </p>
+                                    <div>
+                                        <label for="cert-name"
+                                            class="block text-xs font-bold text-gray-500 uppercase mb-1">Full
+                                            Name</label>
+                                        <input type="text" id="cert-name"
+                                            class="w-full border border-gray-300 p-2 font-mono text-sm focus:border-black outline-none"
+                                            placeholder="Geoffrey Hinton">
+                                        <p id="cert-error" class="text-red-500 text-xs mt-2 hidden">Please enter your
+                                            name.
+                                        </p>
+                                    </div>
+                                    <button onclick="generateCert()"
+                                        class="btn btn-primary bg-black border-black text-white w-full hover:bg-gray-800">Generate
+                                        Certificate</button>
+                                    <button onclick="downloadCert()" id="btn-download"
+                                        class="btn btn-secondary w-full hidden">Download PNG</button>
+
+                                </div>
+
+                                <div
+                                    class="w-full md:w-2/3 bg-gray-50 border border-gray-200 p-4 flex items-center justify-center">
+                                    <canvas id="cert-canvas" class="w-full shadow-lg bg-white"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="bg-gray-50 px-6 py-3 border-t border-gray-100 text-center">
+                            <p class="text-[10px] text-gray-400 italic">
+                                This certificate confirms successful completion of learning and assessment on this
+                                platform
+                                and is not an accredited or government-recognized qualification.
+                            </p>
+                        </div>
+                    </div>
+                </section>
+
+                <script src="js/script.js"></script>
+                <script>
+                    document.addEventListener('DOMContentLoaded', () => {
+                        new InlineQuiz('quiz-ai-taxonomy', {
+                            question: "Which of the following best describes Deep Learning?",
+                            options: ["A subset of Machine Learning using multi-layered neural networks", "A separate field unrelated to AI", "The same as symbolic AI", "A technique only for text"],
+                            answer: 0,
+                            explanation: "Deep Learning is a specific subset of Machine Learning that uses neural networks with many layers to model complex patterns."
+                        });
+
+                        new InlineQuiz('quiz-ai-history', {
+                            question: "What was the main limitation of early 'Symbolic AI'?",
+                            options: ["It was too fast", "It relied on hard-coded rules and couldn't handle ambiguity", "It used too much electricity", "It only worked on weekends"],
+                            answer: 1,
+                            explanation: "Symbolic AI required explicit rules for every scenario, making it brittle in the face of the messy, unpredictable real world."
+                        });
+
+                        new InlineQuiz('quiz-ai-foundations', {
+                            question: "The Turing Test primarily evaluates a machine's ability to:",
+                            options: ["Calculate pi efficiently", "Act indistinguishably from a human", "Win at Chess", "Feel emotions"],
+                            answer: 1,
+                            explanation: "The Turing Test (Imitation Game) checks if a machine can exhibit intelligent behavior equivalent to, or indistinguishable from, that of a human."
+                        });
+
+                        new InlineQuiz('quiz-ai-inference', {
+                            question: "In an Expert System, what does Backward Chaining start with?",
+                            options: ["The raw data", "A goal or conclusion", "A random guess", "The user's name"],
+                            answer: 1,
+                            explanation: "Backward chaining starts with a hypothesis (goal) and works backwards to see if the available data supports it."
+                        });
+
+                        new InlineQuiz('quiz-ai-ml-intro', {
+                            question: "Supervised Learning requires what kind of data?",
+                            options: ["Unlabeled raw data", "Labeled data (Input/Output pairs)", "No data", "Random noise"],
+                            answer: 1,
+                            explanation: "Supervised learning involves training a model on a dataset where the correct answers (labels) are already provided."
+                        });
+
+                        new InlineQuiz('quiz-ai-neuron', {
+                            question: "What is the purpose of the 'weights' in an artificial neuron?",
+                            options: ["To weigh the computer down", "To adjust the importance of input signals", "To store the output", "To disconnect the network"],
+                            answer: 1,
+                            explanation: "Weights determine the strength of the connection between neurons, effectively deciding which inputs contribute most to the output."
+                        });
+
+                        new InlineQuiz('quiz-ai-gradient', {
+                            question: "What does Gradient Descent minimize?",
+                            options: ["The learning rate", "The accuracy", "The Loss Function (Error)", "The amount of data needed"],
+                            answer: 2,
+                            explanation: "Gradient Descent is an optimization algorithm used to minimize the cost function (loss/error) by adjusting model parameters."
+                        });
+
+                        new InlineQuiz('quiz-ai-networks', {
+                            question: "Why do we stack layers in a Deep Neural Network?",
+                            options: ["To make it look cool", "To learn hierarchical comparisons (Simple features -> Complex objects)", "To slow down the process", "To use more memory"],
+                            answer: 1,
+                            explanation: "Deep layers allow the network to build up understanding: edges become shapes, shapes become objects, and so on."
+                        });
+
+                        new InlineQuiz('quiz-ai-cnn', {
+                            question: "What are Convolutional Neural Networks (CNNs) specialize in?",
+                            options: ["Processing spreadsheet data", "Recognizing spatial patterns in images", "Understanding grammar", " predicting stock prices only"],
+                            answer: 1,
+                            explanation: "CNNs use filters to scan for spatial features like edges and textures, making them ideal for image processing."
+                        });
+
+                        new InlineQuiz('quiz-ai-embeddings', {
+                            question: "In a Vector Embedding, words with similar meanings have:",
+                            options: ["Similar spelling", "Vectors that point in similar directions (close distance)", "Different colors", "Zero value"],
+                            answer: 1,
+                            explanation: "Embeddings map semantic meaning to geometric space; 'King' and 'Queen' will range close to each other mathematically."
+                        });
+
+                        new InlineQuiz('quiz-ai-attention', {
+                            question: "What does the 'Self-Attention' mechanism allow a model to do?",
+                            options: ["Pay attention to the user", "Focus on relevant parts of the input sentence regardless of distance", "Sleep when tired", "Only read the first word"],
+                            answer: 1,
+                            explanation: "Self-Attention calculates the relationship between every word in a sequence, allowing the model to understand context and long-range dependencies."
+                        });
+
+                        new InlineQuiz('quiz-ai-genai', {
+                            question: "A Large Language Model (LLM) primarily acts as a:",
+                            options: ["Search engine", "Next-token prediction engine", "Calculator", "Database"],
+                            answer: 1,
+                            explanation: "At its core, an LLM predicts the most probable next word (token) in a sequence based on the context provided."
+                        });
+
+                        new InlineQuiz('quiz-ai-diffusion', {
+                            question: "How do Diffusion Models generate images?",
+                            options: ["By copying existing images", "By iteratively denoising random noise", "By drawing lines one by one", "By guessing pixel values randomly"],
+                            answer: 1,
+                            explanation: "Diffusion models start with pure static noise and progressively remove it to reveal a coherent image guided by a text prompt."
+                        });
+
+                        new InlineQuiz('quiz-ai-rl', {
+                            question: "In Reinforcement Learning, the agent learns by:",
+                            options: ["Reading a book", "Receiving explicit instructions", "Trial and error to maximize a reward", "Copying another agent"],
+                            answer: 2,
+                            explanation: "RL involves an agent taking actions in an environment and receiving feedback (rewards or penalties) to learn the optimal strategy."
+                        });
+
+                        new InlineQuiz('quiz-ai-agi', {
+                            question: "What defines Artificial General Intelligence (AGI)?",
+                            options: ["Being really good at Chess", "The ability to learn and perform any intellectual task that a human can", "Having a robotic body", "Processing speed"],
+                            answer: 1,
+                            explanation: "AGI refers to a machine with broad capabilities that can apply intelligence to any problem domain, much like a human."
+                        });
+
+                        new InlineQuiz('quiz-ai-alignment', {
+                            question: "The 'Alignment Problem' refers to:",
+                            options: ["Aligning images on a screen", "Ensuring AI systems' goals and behaviors match human values", "Making sure robots walk straight", "Aligning data columns"],
+                            answer: 1,
+                            explanation: "Alignment is the challenge of ensuring that powerful AI systems act in accordance with human intent and ethical standards."
+                        });
+                    });
+                </script>
+
+
+                <script>
+
+                    // Quiz Data
+                    const questions = [
+                        {
+                            question: "Which type of learning involves training on data without labels?",
+                            options: ["Supervised Learning", "Unsupervised Learning", "Reinforcement Learning", "Deep Learning"],
+                            answer: 1
+                        },
+                        {
+                            question: "What is the basic building block of a Neural Network?",
+                            options: ["Pixel", "Perceptron/Neuron", "Kernel", "Vector"],
+                            answer: 1
+                        },
+                        {
+                            question: "What is the purpose of an Activation Function?",
+                            options: ["To linearize the data", "To introduce non-linearity into the network", "To speed up training", "To delete data"],
+                            answer: 1
+                        },
+                        {
+                            question: "What is the Turing Test designed to evaluate?",
+                            options: ["Computer Speed", "Network latency", "A machine's ability to exhibit intelligent behavior equivalent to a human", "The cost of AI"],
+                            answer: 2
+                        },
+                        {
+                            question: "Which algorithm is commonly used to train Neural Networks?",
+                            options: ["Backpropagation", "Merge Sort", "Dijkstra's Algorithm", "Binary Search"],
+                            answer: 0
+                        },
+                        {
+                            question: "What distinguishes Deep Learning from traditional Machine Learning?",
+                            options: ["It requires human intervention", "It uses Neural Networks with many layers", "It is slower", "It only works with text"],
+                            answer: 1
+                        },
+                        {
+                            question: "What consists of Convolutional Neural Networks (CNNs) mainly used for?",
+                            options: ["Text generation", "Image recognition/processing", "Stock prediction", "Audio synthesis"],
+                            answer: 1
+                        },
+                        {
+                            question: "What is 'Overfitting'?",
+                            options: ["When a model performs well on training data but poor on new data", "When a model is too small", "When training takes too long", "When the learning rate is too high"],
+                            answer: 0
+                        },
+                        {
+                            question: "What does NLP stand for in AI?",
+                            options: ["Neural Linear Programming", "Natural Language Processing", "New Learning Protocol", "Network Layer Perception"],
+                            answer: 1
+                        },
+                        {
+                            question: "Which field focuses on agents taking actions to maximize rewards?",
+                            options: ["Unsupervised Learning", "Supervised Learning", "Reinforcement Learning", "Regression"],
+                            answer: 2
+                        }
+                    ];
+
+                    // Init Quiz
+                    new QuizManager('quiz-container', questions, () => {
+                        document.getElementById('certificate').classList.remove('hidden');
+                        setTimeout(() => {
+                            document.getElementById('certificate').scrollIntoView({ behavior: 'smooth' });
+                        }, 100);
+                    });
+
+                    // Certificate Logic
+                    const certGen = new CertificateGenerator('cert-canvas', 'Artificial Intelligence');
+
+                    function generateCert() {
+                        const nameInput = document.getElementById('cert-name');
+                        const errorMsg = document.getElementById('cert-error');
+                        const name = nameInput.value.trim();
+                        const nameRegex = /^[a-zA-Z\s\-\.'’]+$/;
+
+                        // Reset error state
+                        errorMsg.classList.add('hidden');
+                        nameInput.classList.remove('border-red-500');
+
+                        if (!name) {
+                            errorMsg.textContent = "Please enter your name.";
+                            errorMsg.classList.remove('hidden');
+                            nameInput.classList.add('border-red-500');
+                            return;
+                        }
+
+                        if (name.length < 3 || name.length > 35) {
+                            errorMsg.textContent = "Name must be between 3 and 35 characters.";
+                            errorMsg.classList.remove('hidden');
+                            nameInput.classList.add('border-red-500');
+                            return;
+                        }
+
+                        if (!nameRegex.test(name)) {
+                            errorMsg.textContent = "Name cannot contain numbers or special characters.";
+                            errorMsg.classList.remove('hidden');
+                            nameInput.classList.add('border-red-500');
+                            return;
+                        }
+
+                        certGen.generate(name);
+                        document.getElementById('btn-download').classList.remove('hidden');
+                    }
+
+                    function downloadCert() {
+                        const name = document.getElementById('cert-name').value.trim();
+                        certGen.download(`Undrstanding_AI_Certificate_${name.replace(/\s+/g, '_')}.png`);
+                    }
+                </script>
+
+                <footer class="w-full mt-12 mb-12">
+                    <div class="border-t border-gray-200 pt-8 flex justify-between items-center">
+                        <span class="text-[10px] mono uppercase text-gray-400">Undrstanding</span>
+                        <span class="text-[10px] mono uppercase text-gray-400">For Humans, From Humans</span>
+                    </div>
+                </footer>
+            </div>
+        </main>
+    </div>
+
+    <!-- Logic Script -->
+    <script>
+        // --- Turing Test Visualization Logic ---
+        function revealTuring() {
+            const a = document.getElementById('turing-subject-a');
+            const b = document.getElementById('turing-subject-b');
+            const btn = document.getElementById('turing-btn');
+            const reset = document.getElementById('turing-reset');
+            const hint = document.getElementById('turing-hint');
+
+            a.classList.remove('blur-[15px]', 'grayscale', 'border-dashed');
+            a.classList.add('border-indigo-600', 'bg-indigo-50', 'scale-110');
+
+            b.classList.remove('blur-[15px]', 'grayscale', 'border-dashed');
+            b.classList.add('border-gray-900', 'scale-110');
+
+            btn.classList.add('hidden');
+            reset.classList.remove('hidden');
+            hint.innerHTML = "<strong>Subject A</strong> was the Machine. <strong>Subject B</strong> was the Human.";
+            hint.classList.remove('text-gray-400');
+            hint.classList.add('text-indigo-600');
+        }
+
+        function resetTuring() {
+            const a = document.getElementById('turing-subject-a');
+            const b = document.getElementById('turing-subject-b');
+            const btn = document.getElementById('turing-btn');
+            const reset = document.getElementById('turing-reset');
+            const hint = document.getElementById('turing-hint');
+
+            a.classList.add('blur-[15px]', 'grayscale', 'border-dashed');
+            a.classList.remove('border-indigo-600', 'bg-indigo-50', 'scale-110');
+
+            b.classList.add('blur-[15px]', 'grayscale', 'border-dashed');
+            b.classList.remove('border-gray-900', 'scale-110');
+
+            btn.classList.remove('hidden');
+            reset.classList.add('hidden');
+            hint.textContent = "Can you tell which one is the machine?";
+            hint.classList.add('text-gray-400');
+            hint.classList.remove('text-indigo-600');
+        }
+        // --- 1. Mobile Menu ---
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobile-menu');
+            if (menu.classList.contains('hidden')) {
+                menu.classList.remove('hidden');
+                menu.classList.add('flex');
+                document.body.style.overflow = 'hidden';
+            } else {
+                menu.classList.add('hidden');
+                menu.classList.remove('flex');
+                document.body.style.overflow = 'auto';
+            }
+        }
+
+        // --- 2. Perceptron Logic ---
+        const w1Slider = document.getElementById('w1-slider');
+        const w2Slider = document.getElementById('w2-slider');
+        const biasSlider = document.getElementById('bias-slider');
+        const actBar = document.getElementById('activation-bar');
+        const actRes = document.getElementById('activation-result');
+        const neuronSum = document.getElementById('neuron-sum');
+
+        // SVG Elements
+        const conn1 = document.getElementById('conn-1');
+        const conn2 = document.getElementById('conn-2');
+        const nBody = document.getElementById('neuron-body');
+        const outLine = document.getElementById('output-line');
+        const outNode = document.getElementById('output-node');
+
+        function updatePerceptron() {
+            const w1 = parseFloat(w1Slider.value);
+            const w2 = parseFloat(w2Slider.value);
+            const b = parseFloat(biasSlider.value);
+
+            // Update Text
+            document.getElementById('w1-val').textContent = w1.toFixed(1);
+            document.getElementById('w2-val').textContent = w2.toFixed(1);
+            document.getElementById('bias-val').textContent = b.toFixed(1);
+
+            // Inputs (Fixed at 1 for sim)
+            const x1 = 1;
+            const x2 = 1;
+
+            // Calculation
+            const z = (w1 * x1) + (w2 * x2) + b;
+
+            // Activation (Sigmoid)
+            const activation = 1 / (1 + Math.exp(-z));
+
+            // UI Updates
+            neuronSum.textContent = z.toFixed(2);
+            actRes.textContent = activation.toFixed(2);
+            actBar.style.width = `${activation * 100}%`;
+
+            // Visual Styling based on weights
+            conn1.style.strokeWidth = Math.abs(w1) * 3 + 1;
+            conn1.style.stroke = w1 > 0 ? '#4f46e5' : '#ef4444'; // Indigo or Red
+
+            conn2.style.strokeWidth = Math.abs(w2) * 3 + 1;
+            conn2.style.stroke = w2 > 0 ? '#4f46e5' : '#ef4444';
+
+            // Output Brightness
+            const brightness = Math.floor(activation * 255);
+            // Color interpolation from Grey to Indigo
+            if (activation > 0.5) {
+                outNode.setAttribute('fill', '#4f46e5');
+                outNode.style.opacity = activation;
+                outLine.style.stroke = '#4f46e5';
+            } else {
+                outNode.setAttribute('fill', '#e5e5e5');
+                outNode.style.opacity = 1;
+                outLine.style.stroke = '#d4d4d4';
+            }
+        }
+
+        w1Slider.addEventListener('input', updatePerceptron);
+        w2Slider.addEventListener('input', updatePerceptron);
+        biasSlider.addEventListener('input', updatePerceptron);
+        updatePerceptron();
+
+        // --- 3. Gradient Descent Canvas ---
+        const gCanvas = document.getElementById('gradient-canvas');
+        const gCtx = gCanvas.getContext('2d');
+        const startBtn = document.getElementById('start-learning');
+        const resetBtn = document.getElementById('reset-learning');
+        const lrSlider = document.getElementById('lr-slider');
+        const gStatus = document.getElementById('gradient-status');
+
+        let ballX = -2; // Start position (x-axis)
+        let isLearning = false;
+
+        function resizeGCanvas() {
+            gCanvas.width = gCanvas.parentElement.offsetWidth;
+            gCanvas.height = gCanvas.parentElement.offsetHeight;
+            drawGradient();
+        }
+        window.addEventListener('resize', resizeGCanvas);
+        setTimeout(resizeGCanvas, 100);
+
+        function f(x) {
+            return 0.5 * x * x; // y = 0.5x^2 (Simple parabola)
+        }
+
+        function gradient(x) {
+            return x; // Derivative of 0.5x^2 is x
+        }
+
+        function drawGradient() {
+            const w = gCanvas.width;
+            const h = gCanvas.height;
+            const scaleX = 40; // Zoom level
+            const scaleY = 40;
+            const centerX = w / 2;
+            const centerY = h - 20; // Bottom alignment
+
+            gCtx.clearRect(0, 0, w, h);
+
+            // Draw Curve
+            gCtx.beginPath();
+            gCtx.strokeStyle = '#111';
+            gCtx.lineWidth = 2;
+            for (let pixelX = 0; pixelX <= w; pixelX++) {
+                const mathX = (pixelX - centerX) / scaleX;
+                const mathY = f(mathX);
+                const pixelY = centerY - (mathY * scaleY);
+                if (pixelX === 0) gCtx.moveTo(pixelX, pixelY);
+                else gCtx.lineTo(pixelX, pixelY);
+            }
+            gCtx.stroke();
+
+            // Draw Ball
+            const ballPixelX = centerX + (ballX * scaleX);
+            const ballPixelY = centerY - (f(ballX) * scaleY);
+
+            gCtx.beginPath();
+            gCtx.fillStyle = '#4f46e5'; // Accent
+            gCtx.arc(ballPixelX, ballPixelY, 8, 0, Math.PI * 2);
+            gCtx.fill();
+            gCtx.strokeStyle = 'white';
+            gCtx.lineWidth = 2;
+            gCtx.stroke();
+
+            // Draw Tangent (Gradient visual)
+            const slope = gradient(ballX);
+            const tangentLength = 30;
+            // Simplified visualization of slope
+            gCtx.beginPath();
+            gCtx.strokeStyle = '#ef4444'; // Red for gradient vector
+            gCtx.lineWidth = 1;
+            gCtx.moveTo(ballPixelX, ballPixelY);
+            gCtx.lineTo(ballPixelX + 20, ballPixelY - (slope * 20)); // Approximate direction
+            gCtx.stroke();
+
+            gStatus.textContent = `Param: ${ballX.toFixed(2)} | Loss: ${f(ballX).toFixed(3)}`;
+        }
+
+        startBtn.addEventListener('click', () => {
+            const lr = parseFloat(lrSlider.value);
+            const slope = gradient(ballX);
+            ballX = ballX - (lr * slope); // Gradient Descent Step
+            drawGradient();
+        });
+
+        resetBtn.addEventListener('click', () => {
+            ballX = (Math.random() * 6) - 3; // Random start between -3 and 3
+            drawGradient();
+        });
+
+        // --- 4. Neural Network Pulse ---
+        window.pulseNetwork = function (btn) {
+            // Reset layers
+            const layer1Nodes = document.querySelectorAll('#layer-1 .btn-node');
+            const layer2Nodes = document.querySelectorAll('#layer-2 .btn-node');
+            const output = document.getElementById('final-output');
+
+            // Cleanup previous state
+            [...layer1Nodes, ...layer2Nodes].forEach(l => {
+                l.classList.remove('active', 'pulse-node');
+                l.style.backgroundColor = 'white';
+            });
+            output.classList.remove('active');
+            output.textContent = "?";
+            output.style.backgroundColor = '#f3f4f6'; // Reset to gray-100
+            output.style.color = 'black';
+
+            // Visual Propagation Logic
+            btn.classList.add('active');
+
+            // Step 1: Input -> Layer 1
+            setTimeout(() => {
+                layer1Nodes.forEach(l => {
+                    l.classList.add('active', 'pulse-node');
+                });
+            }, 300);
+
+            // Step 2: Layer 1 -> Layer 2
+            setTimeout(() => {
+                layer2Nodes.forEach(l => {
+                    l.classList.add('active', 'pulse-node');
+                });
+            }, 800);
+
+            // Step 3: Layer 2 -> Output
+            setTimeout(() => {
+                output.classList.add('active');
+                output.style.backgroundColor = '#4f46e5';
+                output.style.color = 'white';
+                output.textContent = Math.random() > 0.5 ? "1" : "0";
+
+                // Remove Input highlight
+                btn.classList.remove('active');
+            }, 1300);
+        }
+
+        // --- 5. CNN Logic ---
+        const cnnGrid = document.getElementById('cnn-grid');
+        const cnnFilter = document.getElementById('cnn-filter');
+        const cnnOutput = document.getElementById('cnn-output');
+
+        // 5x5 image (1 = feature, 0 = empty)
+        const cnnImage = [
+            0, 0, 1, 1, 0,
+            0, 0, 1, 1, 0,
+            0, 0, 1, 1, 0,
+            0, 0, 1, 1, 0,
+            0, 0, 1, 1, 0
+        ];
+
+        // Render Grid
+        cnnImage.forEach((val, i) => {
+            const cell = document.createElement('div');
+            cell.className = `cnn-cell ${val === 1 ? 'active' : ''}`;
+            cell.textContent = val;
+            cnnGrid.appendChild(cell);
+        });
+
+        // 3x3 Filter (Vertical Line Detector)
+        const filter = [
+            -1, 1, -1,
+            -1, 1, -1,
+            -1, 1, -1
+        ];
+
+        let scanPos = 0;
+        // Top-left indices for valid 3x3 positions in 5x5 grid
+        const validPositions = [0, 1, 2, 5, 6, 7, 10, 11, 12];
+
+        window.scanCNN = function () {
+            // Get current top-left index
+            const idx = validPositions[scanPos];
+
+            // Calculate grid coordinates (row, col)
+            const row = Math.floor(idx / 5);
+            const col = idx % 5;
+
+            // Move Filter: 32px cell + 2px gap = 34px step
+            // Initial offset 0,0
+            const stepSize = 34;
+            cnnFilter.style.transform = `translate(${col * stepSize}px, ${row * stepSize}px)`;
+
+            // Perform Convolution Logic
+            let sum = 0;
+            for (let r = 0; r < 3; r++) {
+                for (let c = 0; c < 3; c++) {
+                    const imgIdx = idx + (r * 5) + c;
+                    const filterIdx = (r * 3) + c;
+                    sum += cnnImage[imgIdx] * filter[filterIdx];
+                }
+            }
+
+            cnnOutput.textContent = sum;
+
+            // Advance
+            scanPos = (scanPos + 1) % validPositions.length;
+        }
+
+        // --- 6. Diffusion Canvas ---
+        const dCanvas = document.getElementById('diffusion-canvas');
+        const dCtx = dCanvas.getContext('2d');
+        const dSlider = document.getElementById('diffusion-slider');
+        const dStep = document.getElementById('diffusion-step');
+
+        function drawDiffusion() {
+            const val = parseInt(dSlider.value);
+            const noiseLevel = 1 - (val / 100);
+            const w = dCanvas.width;
+            const h = dCanvas.height;
+
+            dStep.textContent = val === 100 ? "Step: 0 (Pure Image)" : val === 0 ? "Step: 100 (Pure Noise)" : `Step: ${100 - val} (Denoising)`;
+
+            const imageData = dCtx.createImageData(w, h);
+            const data = imageData.data;
+
+            for (let i = 0; i < data.length; i += 4) {
+                // Target Image: A simple Indigo Circle/Shape
+                const x = (i / 4) % w;
+                const y = Math.floor((i / 4) / w);
+
+                const centerX = w / 2;
+                const centerY = h / 2;
+                const dist = Math.sqrt((x - centerX) ** 2 + (y - centerY) ** 2);
+
+                let r = 255, g = 255, b = 255;
+
+                if (dist < 50) {
+                    // Indigo shape
+                    r = 79; g = 70; b = 229;
+                }
+
+                // Add Noise
+                const randomNoise = Math.random() * 255;
+
+                // Interpolate
+                data[i] = (r * (1 - noiseLevel)) + (randomNoise * noiseLevel);     // R
+                data[i + 1] = (g * (1 - noiseLevel)) + (randomNoise * noiseLevel);   // G
+                data[i + 2] = (b * (1 - noiseLevel)) + (randomNoise * noiseLevel);   // B
+                data[i + 3] = 255; // Alpha
+            }
+
+            dCtx.putImageData(imageData, 0, 0);
+        }
+
+        dSlider.addEventListener('input', drawDiffusion);
+        setTimeout(drawDiffusion, 100); // Init
+
+        // --- 7. Generative Text Logic ---
+        const genDisplay = document.getElementById('gen-display');
+        const genSteps = [
+            {
+                next: "uncertain",
+                probs: [
+                    { word: "uncertain", p: 45 },
+                    { word: "bright", p: 30 },
+                    { word: "here", p: 15 }
+                ]
+            },
+            {
+                next: "but",
+                probs: [
+                    { word: "but", p: 60 },
+                    { word: ".", p: 20 },
+                    { word: "and", p: 10 }
+                ]
+            },
+            {
+                next: "full",
+                probs: [
+                    { word: "full", p: 50 },
+                    { word: "exciting", p: 30 },
+                    { word: "we", p: 10 }
+                ]
+            },
+            {
+                next: "of",
+                probs: [
+                    { word: "of", p: 90 },
+                    { word: "stop", p: 5 },
+                    { word: "in", p: 2 }
+                ]
+            },
+            {
+                next: "potential.",
+                probs: [
+                    { word: "potential.", p: 70 },
+                    { word: "risk.", p: 20 },
+                    { word: "bugs.", p: 5 }
+                ]
+            }
+        ];
+
+        let genIndex = 0;
+
+        window.generateToken = function () {
+            const container = document.getElementById('gen-display');
+            const cursor = container.querySelector('.animate-pulse');
+
+            if (genIndex >= genSteps.length) {
+                // Reset
+                container.innerHTML = `<span>The</span> <span>future</span> <span>of</span> <span>AI</span> <span>is</span> <span class="animate-pulse text-indigo-600 font-bold ml-1">|</span>`;
+                genIndex = 0;
+                updateProbBars(genSteps[0].probs);
+                return;
+            }
+
+            const step = genSteps[genIndex];
+
+            // Create new word span
+            const newSpan = document.createElement('span');
+            newSpan.className = "text-indigo-600 opacity-0 transition-opacity duration-500";
+            newSpan.id = `new-tok-${genIndex}`;
+            newSpan.textContent = step.next;
+
+            // Insert before cursor (DOM manipulation is safer than string replacement)
+            if (cursor) {
+                container.insertBefore(newSpan, cursor);
+            } else {
+                container.appendChild(newSpan);
+            }
+
+            // Fade in
+            requestAnimationFrame(() => {
+                newSpan.classList.remove('opacity-0');
+            });
+
+            genIndex++;
+
+            // Update bars for NEXT prediction (if available)
+            if (genIndex < genSteps.length) {
+                updateProbBars(genSteps[genIndex].probs);
+            } else {
+                // End state
+                updateProbBars([{ word: "[END]", p: 99 }, { word: "...", p: 1 }, { word: "", p: 0 }]);
+            }
+        }
+
+        function updateProbBars(probs) {
+            for (let i = 0; i < 3; i++) {
+                const txt = document.getElementById(`tok-${i + 1}-txt`);
+                const bar = document.getElementById(`tok-${i + 1}-bar`);
+                const val = document.getElementById(`tok-${i + 1}-val`);
+
+                if (probs[i]) {
+                    txt.textContent = probs[i].word;
+                    bar.style.width = `${probs[i].p}%`;
+                    val.textContent = `${probs[i].p}%`;
+                } else {
+                    txt.textContent = "";
+                    bar.style.width = "0%";
+                    val.textContent = "";
+                }
+            }
+        }
+
+        // --- 8. Wumpus World (RL) Logic ---
+        // 4x4 Grid. Indices 0-15.
+        // Layout:
+        // [0] [1] [2] [3]
+        // [4] [5] [6] [7]
+        // [8] [9] [10][11]
+        // [12][13][14][15]
+
+        const wGrid = document.getElementById('wumpus-grid');
+        const wStatus = document.getElementById('w-status');
+        const wPercepts = document.getElementById('w-percepts');
+
+        // Game State
+        let agentIdx = 12; // Start at bottom-left
+        let goldIdx = 2;   // Top right-ish
+        let wumpusIdx = 9; // Middle
+        let pitIndices = [5, 14]; // Some pits
+        let revealed = [12]; // Start cell revealed
+        let gameOver = false;
+
+        // Render Initial Grid
+        function renderWumpus() {
+            wGrid.innerHTML = '';
+            for (let i = 0; i < 16; i++) {
+                const cell = document.createElement('div');
+                cell.className = 'w-cell';
+
+                // Static Elements (Hidden by Fog initially)
+                if (i === goldIdx) cell.innerHTML = '💰';
+                else if (i === wumpusIdx) cell.innerHTML = '👹';
+                else if (pitIndices.includes(i)) cell.innerHTML = '🕳️';
+
+                // Percepts (Breeze/Stench)
+                // Calculated based on neighbors
+                const perceptDiv = document.createElement('div');
+                perceptDiv.className = 'w-percept';
+                if (isAdjacent(i, wumpusIdx)) perceptDiv.innerHTML += '<span>🤢</span>';
+                if (isAdjacentToAny(i, pitIndices)) perceptDiv.innerHTML += '<span>🌬️</span>';
+                cell.appendChild(perceptDiv);
+
+                // Agent
+                if (i === agentIdx) {
+                    const agentDiv = document.createElement('div');
+                    agentDiv.className = 'w-agent';
+                    cell.appendChild(agentDiv);
+                }
+
+                // Fog of War
+                const fog = document.createElement('div');
+                fog.className = `w-fog ${revealed.includes(i) ? 'revealed' : ''}`;
+                fog.textContent = '?';
+                cell.appendChild(fog);
+
+                wGrid.appendChild(cell);
+            }
+        }
+
+        function isAdjacent(idx1, idx2) {
+            const row1 = Math.floor(idx1 / 4), col1 = idx1 % 4;
+            const row2 = Math.floor(idx2 / 4), col2 = idx2 % 4;
+            return Math.abs(row1 - row2) + Math.abs(col1 - col2) === 1;
+        }
+
+        function isAdjacentToAny(idx, targets) {
+            return targets.some(t => isAdjacent(idx, t));
+        }
+
+        window.moveWumpus = function (dx, dy) {
+            if (gameOver) {
+                // Reset
+                agentIdx = 12;
+                revealed = [12];
+                gameOver = false;
+                wStatus.textContent = "Find the Gold (💰). Avoid Pits (🕳️) and Wumpus (👹).";
+                wStatus.className = "text-xs text-gray-400 italic";
+                wPercepts.textContent = "None";
+                renderWumpus();
+                return;
+            }
+
+            const currentRow = Math.floor(agentIdx / 4);
+            const currentCol = agentIdx % 4;
+
+            const newRow = currentRow + dy;
+            const newCol = currentCol + dx;
+
+            if (newRow < 0 || newRow > 3 || newCol < 0 || newCol > 3) return; // Boundary check
+
+            const newIdx = newRow * 4 + newCol;
+            agentIdx = newIdx;
+            if (!revealed.includes(newIdx)) revealed.push(newIdx);
+
+            // Check Hazards
+            if (newIdx === wumpusIdx) {
+                wStatus.textContent = "GAME OVER: Eaten by Wumpus!";
+                wStatus.className = "text-xs text-red-600 font-bold";
+                gameOver = true;
+            } else if (pitIndices.includes(newIdx)) {
+                wStatus.textContent = "GAME OVER: Fell in a Pit!";
+                wStatus.className = "text-xs text-red-600 font-bold";
+                gameOver = true;
+            } else if (newIdx === goldIdx) {
+                wStatus.textContent = "VICTORY: Found the Gold!";
+                wStatus.className = "text-xs text-green-600 font-bold";
+                gameOver = true;
+            }
+
+            // Update Percepts Text
+            let pText = [];
+            if (isAdjacent(newIdx, wumpusIdx)) pText.push("Stench (Wumpus nearby)");
+            if (isAdjacentToAny(newIdx, pitIndices)) pText.push("Breeze (Pit nearby)");
+            if (newIdx === goldIdx) pText.push("Glitter (Gold!)");
+
+            wPercepts.textContent = pText.length > 0 ? pText.join(", ") : "None";
+
+            renderWumpus();
+        }
+
+        renderWumpus(); // Init
+
+        // --- 9. AGI Visualization Logic ---
+        let aniActiveIndex = 0;
+        let aniInterval = null;
+        const skillNodesCoords = [
+            { x: 200, y: 50 },
+            { x: 100, y: 100 },
+            { x: 300, y: 100 },
+            { x: 100, y: 200 },
+            { x: 300, y: 200 }
+        ];
+
+        function startANIAnimation() {
+            if (aniInterval) return;
+            aniInterval = setInterval(() => {
+                aniActiveIndex = (aniActiveIndex + 1) % skillNodesCoords.length;
+                const ring = document.getElementById('ani-active-ring');
+                const pulse = document.getElementById('ani-pulse-ring');
+                if (ring) {
+                    const node = skillNodesCoords[aniActiveIndex];
+                    ring.setAttribute('cx', node.x);
+                    ring.setAttribute('cy', node.y);
+                    if (pulse) {
+                        pulse.setAttribute('cx', node.x);
+                        pulse.setAttribute('cy', node.y);
+                    }
+                }
+            }, 1000);
+        }
+
+        window.toggleAGIVisual = function (mode) {
+            const lines = document.getElementById('agi-lines');
+            const indicator = document.getElementById('ani-indicator');
+            const desc = document.getElementById('agi-vis-desc');
+            const core = document.getElementById('agi-core');
+            const coreText = document.getElementById('core-text');
+            const aniBtn = document.getElementById('ani-toggle');
+            const agiBtn = document.getElementById('agi-toggle');
+
+            if (mode === 'AGI') {
+                clearInterval(aniInterval);
+                aniInterval = null;
+                lines.classList.remove('opacity-0');
+                indicator.classList.add('opacity-0');
+                core.setAttribute('fill', '#e0e7ff');
+                core.setAttribute('stroke', '#6366f1');
+                coreText.textContent = "AGI";
+                coreText.classList.replace('fill-gray-400', 'fill-indigo-600');
+                desc.textContent = "AGI: Integrated Intelligence";
+                agiBtn.classList.replace('btn-secondary', 'btn-primary');
+                aniBtn.classList.replace('btn-primary', 'btn-secondary');
+            } else {
+                lines.classList.add('opacity-0');
+                indicator.classList.remove('opacity-0');
+                core.setAttribute('fill', '#f8fafc');
+                core.setAttribute('stroke', '#e5e7eb');
+                coreText.textContent = "Core";
+                coreText.classList.replace('fill-indigo-600', 'fill-gray-400');
+                desc.textContent = "ANI: Isolated Skills";
+                aniBtn.classList.replace('btn-secondary', 'btn-primary');
+                agiBtn.classList.replace('btn-primary', 'btn-secondary');
+                startANIAnimation();
+            }
+        };
+
+        startANIAnimation(); // Initialize in ANI mode
+
+        // --- Scroll Reveal ---
+        const revealObserver = new IntersectionObserver((entries, observer) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('active');
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, {
+            root: null,
+            threshold: 0.1,
+            rootMargin: "0px 0px -50px 0px"
+        });
+
+        document.querySelectorAll('section').forEach(section => {
+            section.classList.add('section-reveal');
+            revealObserver.observe(section);
+        });
+
+    </script>
+
+
+</body>
+
+</html>

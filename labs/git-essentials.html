@@ -1,0 +1,752 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Git Essentials Lab</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&family=Outfit:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="icon" type="image/svg+xml" href="../assests/undrlogo.svg">
+    <style>
+        :root {
+            --surface: #ffffff;
+            --border: #e5e7eb;
+            --text-main: #000000;
+            --text-muted: #666666;
+            --accent: #f05032;
+            /* Git Orange */
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        ::-webkit-scrollbar {
+            width: 2px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #fafafa;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #e5e7eb;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: #fafafa;
+            color: var(--text-main);
+            overflow-x: hidden;
+            user-select: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+        }
+
+        .mono {
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .lab-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 2rem;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .code-window {
+            background: #1e1e1e;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            margin: 2rem 0;
+            border: 1px solid #333;
+        }
+
+        .code-header {
+            background: #2d2d2d;
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border-bottom: 1px solid #3d3d3d;
+        }
+
+        .dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+
+        .dot-red {
+            background: #ff5f56;
+        }
+
+        .dot-yellow {
+            background: #ffbd2e;
+        }
+
+        .dot-green {
+            background: #27c93f;
+        }
+
+        .file-name {
+            color: #999;
+            font-size: 11px;
+            font-family: 'JetBrains Mono', monospace;
+            margin-left: 8px;
+        }
+
+        pre {
+            padding: 24px;
+            color: #d4d4d4;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 14px;
+            line-height: 1.6;
+            overflow-x: auto;
+        }
+
+        .comment {
+            color: #6a9955;
+        }
+
+        .command {
+            color: #569cd6;
+        }
+
+        .string {
+            color: #ce9178;
+        }
+
+        .step-content {
+            display: none;
+            animation: fadeIn 0.5s ease-out forwards;
+        }
+
+        .step-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .nav-btn {
+            padding: 0.75rem 2rem;
+            border-radius: 99px;
+            font-weight: 700;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            font-size: 0.875rem;
+            letter-spacing: 0.025em;
+        }
+
+        .nav-btn-next {
+            background: #000;
+            color: #fff;
+        }
+
+        .nav-btn-next:hover {
+            transform: translateX(4px);
+            background: #222;
+        }
+
+        .nav-btn-prev {
+            color: #666;
+        }
+
+        .nav-btn-prev:hover:not(:disabled) {
+            color: #000;
+            transform: translateX(-4px);
+        }
+
+        .nav-btn:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+
+        .progress-bar {
+            height: 4px;
+            background: #eee;
+            border-radius: 2px;
+            margin-bottom: 2rem;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--accent);
+            width: 0%;
+            transition: width 0.4s ease;
+        }
+
+        .why-box {
+            background: #fff;
+            border-left: 4px solid var(--accent);
+            padding: 1.5rem;
+            margin: 2rem 0;
+            border-radius: 0 12px 12px 0;
+        }
+
+        .why-title {
+            font-weight: 800;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--accent);
+            margin-bottom: 0.5rem;
+        }
+
+        .mockup-container {
+            border-radius: 24px;
+            border: 1px solid var(--border);
+            margin: 2rem 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        /* Mobile Guidance Modal */
+        #mobile-guidance-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.4);
+            z-index: 2000;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            padding: 1.5rem;
+            backdrop-filter: blur(12px);
+        }
+
+        .modal-content {
+            background: #fff;
+            padding: 3rem 2rem;
+            border-radius: 20px;
+            text-align: center;
+            max-width: 360px;
+            border: 1px solid #eee;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.1);
+            animation: modalPop 0.5s cubic-bezier(0.19, 1, 0.22, 1);
+        }
+
+        @keyframes modalPop {
+            from {
+                transform: scale(0.95) translateY(10px);
+                opacity: 0;
+            }
+
+            to {
+                transform: scale(1) translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .modal-icon-box {
+            width: 56px;
+            height: 56px;
+            background: #fbfbfb;
+            border: 1px solid #eee;
+            color: #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem;
+            border-radius: 12px;
+        }
+
+        .modal-title {
+            font-family: 'JetBrains Mono';
+            font-size: 0.65rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.3em;
+            color: #aaa;
+            margin-bottom: 0.75rem;
+            display: block;
+        }
+
+        .modal-text {
+            font-size: 1.15rem;
+            font-weight: 600;
+            line-height: 1.4;
+            color: #000;
+            margin-bottom: 2.5rem;
+            letter-spacing: -0.02em;
+        }
+
+        .modal-btn {
+            background: var(--accent);
+            color: #fff;
+            padding: 1rem 2rem;
+            border-radius: 99px;
+            font-weight: 600;
+            font-family: 'Outfit';
+            font-size: 0.9rem;
+            transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+            width: 100%;
+            border: none;
+            cursor: pointer;
+        }
+
+        .modal-btn:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(97, 218, 251, 0.2);
+        }
+
+        @media (max-width: 768px) {
+            #mobile-guidance-modal.active {
+                display: flex;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="lab-container">
+        <!-- Header -->
+        <nav class="flex justify-between items-center mb-12">
+            <a href="../index.html"
+                class="mono text-xs font-bold tracking-widest hover:text-[#f05032] transition-colors uppercase">&larr;
+                Repository</a>
+            <div class="mono text-[10px] font-bold uppercase tracking-widest text-gray-300">Phase <span
+                    id="current-step-num">1</span> / 10</div>
+        </nav>
+
+        <div class="progress-bar mb-12">
+            <div id="progress-fill" class="progress-fill" style="width: 10%;"></div>
+        </div>
+
+        <main class="flex-1">
+            <!-- STEP 1: WELCOME -->
+            <div class="step-content active" id="step-1">
+                <h1 class="text-6xl font-black tracking-tighter mb-6 leading-none">Establishing<br>Trust.</h1>
+                <p class="text-xl text-gray-600 font-light mb-8 max-w-2xl">
+                    Git is the time machine for code. It records precisely who changed what and when, allowing you to
+                    travel back to any point in the history of your project. Let's start by getting it onto your
+                    machine.
+                </p>
+
+                <div class="why-box">
+                    <div class="why-title">Why Git?</div>
+                    <p class="text-sm">In professional software development, you never work alone—even if you're the
+                        only coder. Git manages the complexity of changes, and sites like GitHub provide the storage and
+                        collaboration tools.</p>
+                </div>
+
+                <div class="mt-12 space-y-6">
+                    <h3 class="mono text-xs font-black uppercase tracking-[0.3em] text-gray-400">Requirements</h3>
+                    <ul class="space-y-4 text-gray-600 font-light text-lg">
+                        <li class="flex gap-4">
+                            <div
+                                class="w-8 h-8 rounded-full bg-[#f05032]/10 text-[#f05032] flex items-center justify-center text-xs font-bold shrink-0">
+                                1</div>
+                            <span>A terminal/command prompt.</span>
+                        </li>
+                        <li class="flex gap-4">
+                            <div
+                                class="w-8 h-8 rounded-full bg-[#f05032]/10 text-[#f05032] flex items-center justify-center text-xs font-bold shrink-0">
+                                2</div>
+                            <span>Git installed on your system.</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- STEP 2: INSTALLATION -->
+            <div class="step-content" id="step-2">
+                <h1
+                    class="text-5xl font-bold tracking-tighter mb-6 underline decoration-[#f05032] decoration-4 underline-offset-8">
+                    Installation</h1>
+                <p class="text-xl text-gray-600 font-light mb-8 max-w-2xl">
+                    First, check if you already have it. If not, download the installer for your OS.
+                </p>
+
+                <div class="code-window">
+                    <div class="code-header">
+                        <div class="dot dot-red"></div>
+                        <div class="dot dot-yellow"></div>
+                        <div class="dot dot-green"></div>
+                        <span class="file-name">Terminal</span>
+                    </div>
+                    <pre><code><span class="comment"># Check version</span>
+git --version
+
+<span class="comment"># On MacOS (if missing)</span>
+brew install git
+
+<span class="comment"># On Windows</span>
+winget install --id Git.Git -e --source winget</code></pre>
+                </div>
+
+                <div class="why-box">
+                    <div class="why-title">Pro Tip</div>
+                    <p class="text-sm">If you're on Windows, use <strong>Git Bash</strong>. It gives you a Linux-like
+                        terminal experience which is the industry standard for development.</p>
+                </div>
+            </div>
+
+            <!-- STEP 3: CONFIGURATION -->
+            <div class="step-content" id="step-3">
+                <h1 class="text-5xl font-bold tracking-tighter mb-6">Identity Signal</h1>
+                <p class="text-xl text-gray-600 font-light mb-8 max-w-2xl">
+                    Git needs to know who you are so it can label your commits correctly. This is a global
+                    configuration.
+                </p>
+
+                <div class="code-window">
+                    <div class="code-header">
+                        <div class="dot dot-red"></div>
+                        <div class="dot dot-yellow"></div>
+                        <div class="dot dot-green"></div>
+                        <span class="file-name">Terminal</span>
+                    </div>
+                    <pre><code><span class="comment"># Set your display name</span>
+git config --global user.name <span class="string">"Your Name"</span>
+
+<span class="comment"># Set your email</span>
+git config --global user.email <span class="string">"you@example.com"</span>
+
+<span class="comment"># Verify configuration</span>
+git config --list</code></pre>
+                </div>
+            </div>
+
+            <!-- STEP 4: INITIALIZATION -->
+            <div class="step-content" id="step-4">
+                <h1 class="text-5xl font-bold tracking-tighter mb-6 leading-tight">Project<br>Initialization.</h1>
+                <p class="text-xl text-gray-600 font-light mb-8 max-w-2xl">
+                    Turning a normal folder into a Git repository. This creates the hidden <code>.git</code> folder.
+                </p>
+
+                <div class="code-window">
+                    <div class="code-header">
+                        <div class="dot dot-red"></div>
+                        <div class="dot dot-yellow"></div>
+                        <div class="dot dot-green"></div>
+                        <span class="file-name">Terminal</span>
+                    </div>
+                    <pre><code><span class="comment"># Create a new directory</span>
+mkdir my-first-repo
+cd my-first-repo
+
+<span class="comment"># Initialize Git</span>
+git init</code></pre>
+                </div>
+
+                <div class="why-box">
+                    <div class="why-title">The .git Folder</div>
+                    <p class="text-sm">The <code>.git</code> folder contains the entire history of your project. Delete
+                        this folder, and you lose all your commits, but your current files remain.</p>
+                </div>
+            </div>
+
+            <!-- STEP 5: CREATING CONTENT -->
+            <div class="step-content" id="step-5">
+                <h1 class="text-5xl font-bold tracking-tighter mb-6">Writing History</h1>
+                <p class="text-xl text-gray-600 font-light mb-8 max-w-2xl">
+                    Let's create something to track. In Git, files start as "untracked".
+                </p>
+
+                <div class="code-window">
+                    <div class="code-header">
+                        <div class="dot dot-red"></div>
+                        <div class="dot dot-yellow"></div>
+                        <div class="dot dot-green"></div>
+                        <span class="file-name">Terminal</span>
+                    </div>
+                    <pre><code><span class="comment"># Create a README file</span>
+echo "# My First Project" > README.md
+
+<span class="comment"># Check status</span>
+git status</code></pre>
+                </div>
+
+                <div class="why-box">
+                    <div class="why-title">git status</div>
+                    <p class="text-sm">This is the most important command in Git. Run it constantly to see which files
+                        are tracked, modified, or staged.</p>
+                </div>
+            </div>
+
+            <!-- STEP 6: STAGING AREA -->
+            <div class="step-content" id="step-6">
+                <h1 class="text-5xl font-bold tracking-tighter mb-6 leading-tight">The Staging<br>Area.</h1>
+                <p class="text-xl text-gray-600 font-light mb-8 max-w-2xl">
+                    Before committing, you must tell Git which changes to include. This is called "Staging".
+                </p>
+
+                <div class="code-window">
+                    <div class="code-header">
+                        <div class="dot dot-red"></div>
+                        <div class="dot dot-yellow"></div>
+                        <div class="dot dot-green"></div>
+                        <span class="file-name">Terminal</span>
+                    </div>
+                    <pre><code><span class="comment"># Stage a specific file</span>
+git add README.md
+
+<span class="comment"># Stage all changes</span>
+git add .</code></pre>
+                </div>
+            </div>
+
+            <!-- STEP 7: COMMIT -->
+            <div class="step-content" id="step-7">
+                <h1 class="text-5xl font-bold tracking-tighter mb-6">Creating Snapshots</h1>
+                <p class="text-xl text-gray-600 font-light mb-8 max-w-2xl">
+                    A commit is a permanent snapshot of your staged changes. Always include a clear message.
+                </p>
+
+                <div class="code-window">
+                    <div class="code-header">
+                        <div class="dot dot-red"></div>
+                        <div class="dot dot-yellow"></div>
+                        <div class="dot dot-green"></div>
+                        <span class="file-name">Terminal</span>
+                    </div>
+                    <pre><code><span class="comment"># Commit with a message</span>
+git commit -m <span class="string">"initial commit: add readme"</span>
+
+<span class="comment"># Verify commit history</span>
+git log --oneline</code></pre>
+                </div>
+            </div>
+
+            <!-- STEP 8: BRANCHING -->
+            <div class="step-content" id="step-8">
+                <h1 class="text-5xl font-bold tracking-tighter mb-6">Timeline Split</h1>
+                <p class="text-xl text-gray-600 font-light mb-8 max-w-2xl">
+                    Branches allow you to work on new features without breaking the "Main" code.
+                </p>
+
+                <div class="code-window">
+                    <div class="code-header">
+                        <div class="dot dot-red"></div>
+                        <div class="dot dot-yellow"></div>
+                        <div class="dot dot-green"></div>
+                        <span class="file-name">Terminal</span>
+                    </div>
+                    <pre><code><span class="comment"># Create and switch to new branch</span>
+git checkout -b feature/new-design
+
+<span class="comment"># List all branches</span>
+git branch</code></pre>
+                </div>
+            </div>
+
+            <!-- STEP 9: FORK & CLONE -->
+            <div class="step-content" id="step-9">
+                <h1 class="text-5xl font-bold tracking-tighter mb-6">The Grid.</h1>
+                <p class="text-xl text-gray-600 font-light mb-8 max-w-2xl">
+                    To work on others' code, you "Fork" their repo on GitHub, then "Clone" it to your machine.
+                </p>
+
+                <div class="code-window">
+                    <div class="code-header">
+                        <div class="dot dot-red"></div>
+                        <div class="dot dot-yellow"></div>
+                        <div class="dot dot-green"></div>
+                        <span class="file-name">Terminal</span>
+                    </div>
+                    <pre><code><span class="comment"># Clone a repository</span>
+git clone https://github.com/username/project.git
+
+<span class="comment"># Set up upstream tracking</span>
+git remote add upstream https://github.com/original/project.git</code></pre>
+                </div>
+
+                <div class="why-box">
+                    <div class="why-title">Fork vs Clone</div>
+                    <p class="text-sm"><strong>Forking</strong> happens on the server (GitHub). <strong>Cloning</strong>
+                        brings a copy to your local workstation.</p>
+                </div>
+            </div>
+
+            <!-- STEP 10: PUSH & PULL -->
+            <div class="step-content" id="step-10">
+                <h1 class="text-5xl font-bold tracking-tighter mb-6 leading-none">Global Sync.</h1>
+                <p class="text-xl text-gray-600 font-light mb-8 max-w-2xl">
+                    Synchronize your local commits with the remote server. Push to share, Pull to update.
+                </p>
+
+                <div class="code-window">
+                    <div class="code-header">
+                        <div class="dot dot-red"></div>
+                        <div class="dot dot-yellow"></div>
+                        <div class="dot dot-green"></div>
+                        <span class="file-name">Terminal</span>
+                    </div>
+                    <pre><code><span class="comment"># Send local commits to GitHub</span>
+git push origin main
+
+<span class="comment"># Get changes from GitHub</span>
+git pull origin main</code></pre>
+                </div>
+
+                <div class="mt-12 space-y-6">
+                    <h3 class="mono text-xs font-black uppercase tracking-[0.3em] text-gray-400">Final Checklist</h3>
+                    <ul class="space-y-4 text-gray-600 font-light text-lg">
+                        <li class="flex gap-4">
+                            <div
+                                class="w-8 h-8 rounded-full bg-black text-white flex items-center justify-center text-xs font-bold shrink-0">
+                                1</div>
+                            <span>Did you stage your changes?</span>
+                        </li>
+                        <li class="flex gap-4">
+                            <div
+                                class="w-8 h-8 rounded-full bg-black text-white flex items-center justify-center text-xs font-bold shrink-0">
+                                2</div>
+                            <span>Did you write a meaningful commit message?</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </main>
+
+        <!-- Navigation -->
+        <footer class="flex justify-between items-center py-12 border-t border-gray-100">
+            <button id="prevBtn" class="nav-btn nav-btn-prev" disabled onclick="changeStep(-1)">Previous</button>
+            <button id="nextBtn" class="nav-btn nav-btn-next" onclick="changeStep(1)">Next Phase</button>
+        </footer>
+    </div>
+
+    <script>
+        let currentStep = 1;
+        const totalSteps = 10;
+
+        function changeStep(delta) {
+            const nextStep = currentStep + delta;
+            if (nextStep < 1 || nextStep > totalSteps) return;
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+
+            setTimeout(() => {
+                document.getElementById(`step-${currentStep}`).classList.remove('active');
+                currentStep = nextStep;
+                document.getElementById(`step-${currentStep}`).classList.add('active');
+                updateUI();
+            }, 50);
+        }
+
+        function updateUI() {
+            document.getElementById('current-step-num').innerText = currentStep;
+            document.getElementById('progress-fill').style.width = `${(currentStep / totalSteps) * 100}%`;
+            document.getElementById('prevBtn').disabled = currentStep === 1;
+
+            const nextBtn = document.getElementById('nextBtn');
+            if (currentStep === totalSteps) {
+                nextBtn.innerText = "Complete Lab";
+                nextBtn.onclick = () => showCompletionModal();
+            } else {
+                nextBtn.innerText = "Next Phase";
+                nextBtn.onclick = () => changeStep(1);
+            }
+        }
+
+        let badgeGen = null;
+        function showCompletionModal() {
+            const modal = document.getElementById('completion-modal');
+            const content = document.getElementById('completion-content');
+            modal.classList.remove('hidden');
+
+            // Initialize Badge
+            if (!badgeGen) {
+                badgeGen = new BadgeGenerator('badge-canvas', 'Version Control Series', 'Git Essentials');
+            }
+
+            setTimeout(() => {
+                content.classList.remove('scale-95', 'opacity-0');
+                content.classList.add('scale-100', 'opacity-100');
+            }, 10);
+        }
+
+        function downloadBadge() {
+            if (badgeGen) {
+                badgeGen.download('git-essentials-badge.png');
+            }
+        }
+
+        // Mobile Guidance Logic
+        window.addEventListener('DOMContentLoaded', () => {
+            if (window.innerWidth <= 768) {
+                document.getElementById('mobile-guidance-modal').classList.add('active');
+            }
+            updateUI();
+        });
+
+        function closeMobileModal() {
+            document.getElementById('mobile-guidance-modal').classList.remove('active');
+        }
+    </script>
+
+    <!-- Modal UI -->
+    <div id="mobile-guidance-modal">
+        <div class="modal-content">
+            <div class="modal-icon-box">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+                    <line x1="8" y1="21" x2="16" y2="21"></line>
+                    <line x1="12" y1="17" x2="12" y2="21"></line>
+                </svg>
+            </div>
+            <span class="modal-title">Desktop Recommended</span>
+            <p class="modal-text">Interactive labs are designed for desktop. You can still keep this open on your mobile
+                to follow
+                along while you build on your workstation.</p>
+            <button class="modal-btn" onclick="closeMobileModal()">Understood</button>
+        </div>
+    </div>
+
+    <!-- Completion Modal -->
+    <div id="completion-modal"
+        class="fixed inset-0 z-[3000] hidden flex items-center justify-center p-4 backdrop-blur-xl bg-black/40">
+        <div class="bg-white rounded-[2rem] p-5 sm:p-8 max-w-[min(400px,90vw)] w-full text-center shadow-3xl scale-95 opacity-0 transition-all duration-500"
+            id="completion-content">
+            <div class="mb-4 flex justify-center">
+                <canvas id="badge-canvas" class="rounded-3xl border border-gray-100 max-w-full h-auto"></canvas>
+            </div>
+            <h2 class="text-2xl font-bold mb-1">Congratulations!</h2>
+            <p class="text-gray-600 text-sm mb-6">You've successfully mastered the <strong>Git Essentials</strong> lab.
+            </p>
+
+            <div class="flex flex-col gap-2">
+                <button onclick="downloadBadge()"
+                    class="w-full py-3 bg-black text-white rounded-xl font-bold hover:bg-gray-800 transition-all flex items-center justify-center gap-2 text-sm">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                        <polyline points="7 10 12 15 17 10" />
+                        <line x1="12" y1="15" x2="12" y2="3" />
+                    </svg>
+                    Download Badge
+                </button>
+                <button onclick="window.location.href='../index.html'"
+                    class="w-full py-2 text-gray-400 font-semibold hover:text-black transition-all text-xs">
+                    Return to Repository
+                </button>
+            </div>
+        </div>
+    </div>
+    <script src="../content/js/script.js"></script>
+</body>
+
+</html>
+

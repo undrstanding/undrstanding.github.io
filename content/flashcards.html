@@ -1,0 +1,1839 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Undrstanding | Flash Cards</title>
+    <link rel="icon" type="image/svg+xml" href="../assests/undrlogo.svg">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f7f7f7;
+            /* Technical Grid Background */
+            background-image:
+                linear-gradient(to right, #e5e5e5 1px, transparent 1px),
+                linear-gradient(to bottom, #e5e5e5 1px, transparent 1px);
+            background-size: 60px 60px;
+            overflow: hidden;
+            /* Prevent scrolling during swipes */
+            touch-action: none;
+            /* Disable default touch actions */
+        }
+
+        .mono {
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        #stack-container {
+            perspective: 1000px;
+            position: relative;
+            width: 100%;
+            height: 60vh;
+            max-width: 380px;
+            /* Slightly narrower for better vertical proportions */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .flash-card {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: white;
+            /* Boxier feel - less rounded */
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            border: 1px solid #000;
+            /* Crisp black border for "technical" feel */
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            transition: transform 0.1s linear, box-shadow 0.2s;
+            cursor: grab;
+            user-select: none;
+            touch-action: none;
+        }
+
+        .flash-card:active {
+            cursor: grabbing;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+
+        .flash-card-header {
+            padding: 1.25rem 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #000;
+            background: #fafafa;
+        }
+
+        .flash-card-body {
+            flex-grow: 1;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            /* Removed align-items: center to allow left align check if needed, but centering usually looks better for flashcards */
+            align-items: center;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            /* Hide overflow if it happens, though we aim to fit */
+        }
+
+        /* Subtle texture for card body */
+        .flash-card-body::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background-image: radial-gradient(#000000 0.5px, transparent 0.5px);
+            background-size: 10px 10px;
+            opacity: 0.03;
+            pointer-events: none;
+        }
+
+        .flash-card-footer {
+            padding: 1rem;
+            background: #000;
+            color: white;
+            text-align: center;
+            font-size: 0.75rem;
+            font-family: 'JetBrains Mono', monospace;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            pointer-events: none;
+        }
+
+        /* Status indicators for swipe */
+        .status-badge {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(-15deg);
+            padding: 0.5rem 1rem;
+            border: 4px solid;
+            border-radius: 0.5rem;
+            font-size: 1.5rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            opacity: 0;
+            z-index: 20;
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(2px);
+        }
+
+        /* Modified badge positions or just centered overlay? 
+           Centered is bold. Let's try side stamps like Tinder.
+        */
+        .status-badge {
+            top: 4rem;
+            transform: rotate(0deg);
+            /* Reset for override */
+            left: auto;
+            background: transparent;
+            backdrop-filter: none;
+        }
+
+        .status-nop {
+            right: 2rem;
+            color: #22c55e;
+            border-color: #22c55e;
+            transform: rotate(15deg);
+        }
+
+        .status-yep {
+            left: 2rem;
+            color: #22c55e;
+            border-color: #22c55e;
+            transform: rotate(-15deg);
+        }
+
+        /* Card Depth Stack - visible borders */
+        .flash-card-shadow {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: white;
+            border: 1px solid #000;
+            border-radius: 0.5rem;
+            z-index: -1;
+        }
+
+        /* Empty State Animation */
+        /* Entry Animations */
+        @keyframes slideUpFade {
+            0% {
+                opacity: 0;
+                transform: translateY(40px) scale(0.95);
+            }
+
+            100% {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .animate-enter {
+            animation: slideUpFade 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            opacity: 0;
+            /* Starte hidden */
+        }
+
+        .delay-100 {
+            animation-delay: 0.1s;
+        }
+
+        .delay-300 {
+            animation-delay: 0.3s;
+        }
+
+        .empty-icon {
+            animation: float 3s ease-in-out infinite;
+        }
+
+        /* Search Bar Expansion Animation */
+        @keyframes expandSearch {
+            0% {
+                opacity: 0;
+                transform: scale(0.9) translateX(10px);
+                transform-origin: right center;
+            }
+
+            100% {
+                opacity: 1;
+                transform: scale(1) translateX(0);
+                transform-origin: right center;
+            }
+        }
+
+        .animate-expand {
+            animation: expandSearch 0.3s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+        }
+    </style>
+</head>
+
+<body class="h-screen w-screen flex flex-col overflow-hidden">
+
+    <!-- Header -->
+    <header
+        class="w-full px-6 py-4 flex justify-between items-center bg-white/80 backdrop-blur-sm border-b border-black z-50">
+        <a href="../index.html" class="flex items-center gap-2 group">
+            <div class="w-3 h-3 bg-black group-hover:scale-75 transition-transform"></div>
+            <span
+                class="mono text-xs font-bold uppercase tracking-widest text-gray-600 group-hover:text-black transition-colors">Undrstanding</span>
+        </a>
+        <div class="mono text-xs text-black font-bold uppercase tracking-widest bg-gray-100 px-2 py-1 rounded">Info
+            Cards</div>
+    </header>
+    <!-- Backdrop for Dropdown -->
+    <div id="menu-backdrop" class="fixed inset-0 z-40 bg-black/50 hidden transition-opacity duration-300 opacity-0"
+        onclick="collapseSearch()" style="touch-action: none;"></div>
+
+    <!-- Main Content -->
+    <main class="flex-grow flex flex-col items-center justify-center p-4 relative">
+
+        <!-- Background decorative blob -->
+        <div
+            class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-gradient-to-tr from-gray-200 to-transparent rounded-full blur-3xl opacity-50 pointer-events-none">
+        </div>
+
+        <div id="stack-container" class="animate-enter delay-100">
+            <!-- Cards will be injected here -->
+            <div id="empty-state"
+                class="hidden flex flex-col items-center justify-center text-center p-8 bg-white border border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] rounded-xl max-w-sm w-full mx-4 relative overflow-hidden">
+                <!-- Decorative background pattern -->
+                <div class="absolute inset-0 opacity-5"
+                    style="background-image: radial-gradient(#000 1px, transparent 1px); background-size: 20px 20px;">
+                </div>
+
+                <div class="empty-icon text-6xl mb-6 relative z-10">🎉</div>
+
+                <h3 class="text-2xl font-bold mb-2 font-mono uppercase tracking-tight text-black relative z-10">
+                    Knowledge Refreshed</h3>
+
+                <p class="text-gray-600 text-sm mb-8 leading-relaxed max-w-[260px] relative z-10">
+                    You've mastered this deck. Every fact has been reviewed. Ready for another round?
+                </p>
+
+                <button onclick="location.reload()"
+                    class="relative z-10 px-8 py-3 bg-black text-white text-xs font-bold uppercase tracking-widest hover:bg-teal-600 transition-colors border border-black shadow-lg mx-auto flex items-center gap-2 group">
+                    <span>Restart Deck</span>
+                    <svg class="w-4 h-4 group-hover:rotate-180 transition-transform duration-500" fill="none"
+                        viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+        <!-- Controls -->
+        <div id="controls-container"
+            class="mt-12 flex gap-8 items-center transition-opacity duration-300 animate-enter delay-300">
+            <button id="btn-reject"
+                class="w-14 h-14 rounded-full bg-white border-2 border-gray-200 text-yellow-500 flex items-center justify-center hover:border-yellow-500 hover:scale-110 active:scale-95 transition-all shadow-sm">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
+                    <path d="M3 3v5h5" />
+                </svg>
+            </button>
+
+            <div class="text-xs font-mono text-gray-400 uppercase tracking-widest">Swipe</div>
+
+            <button id="btn-accept"
+                class="w-14 h-14 rounded-full bg-white border-2 border-gray-200 text-green-500 flex items-center justify-center hover:border-green-500 hover:scale-110 active:scale-95 transition-all shadow-sm">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+            </button>
+        </div>
+
+    </main>
+
+    <script>
+        const cardsData = [
+            {
+                id: 'algo',
+                topic: 'Algorithms',
+                type: 'Complexity',
+                fact: 'Quicksort has an average time complexity of O(n log n), but degrades to O(n²) in the worst case (e.g., sorted input).',
+                color: '#db2777',
+                url: 'algo.html',
+                icon: '<rect x="3" y="3" width="6" height="6" rx="1" /><rect x="15" y="15" width="6" height="6" rx="1" /><path d="M6 9v3a2 2 0 0 0 2 2h8a2 2 0 0 1 2 2v-1" /><path d="M18 9h.01" /><path d="M6 18h.01" />'
+            },
+            {
+                id: 'algo',
+                topic: 'Algorithms',
+                type: 'Search',
+                fact: 'Binary Search requires a sorted array and works by repeatedly dividing the search interval in half. O(log n).',
+                color: '#db2777',
+                url: 'algo.html',
+                icon: '<rect x="3" y="3" width="6" height="6" rx="1" /><rect x="15" y="15" width="6" height="6" rx="1" /><path d="M6 9v3a2 2 0 0 0 2 2h8a2 2 0 0 1 2 2v-1" /><path d="M18 9h.01" /><path d="M6 18h.01" />'
+            },
+            {
+                id: 'android',
+                topic: 'Android',
+                type: 'Framework',
+                fact: 'Jetpack Compose uses a declarative API to build UI, meaning you describe "what" the UI should look like, not "how" to mutate it.',
+                color: '#3DDC84',
+                url: 'android.html',
+                icon: '<rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line>'
+            },
+            {
+                id: 'ai',
+                topic: 'AI',
+                type: 'History',
+                fact: 'The "AI Winter" refers to periods of reduced funding and interest in AI research, famously occurring in the 1970s and late 80s.',
+                color: '#4f46e5',
+                url: 'ai.html',
+                icon: '<path d="M12 4.5a2.5 2.5 0 0 0-4.96-.46 2.5 2.5 0 0 0-1.98 3 2.5 2.5 0 0 0-1.32 4.24 3 3 0 0 0 .34 5.58 2.5 2.5 0 0 0 2.96 3.08 2.5 2.5 0 0 0 4.96.44v-15.88Z" /><path d="M12 4.5a2.5 2.5 0 0 1 4.96-.46 2.5 2.5 0 0 1 1.98 3 2.5 2.5 0 0 1 1.32 4.24 3 3 0 0 1-.34 5.58 2.5 2.5 0 0 1-2.96 3.08 2.5 2.5 0 0 1-4.96.44v-15.88Z" />'
+            },
+            {
+                id: 'ai',
+                topic: 'AI',
+                type: 'Concept',
+                fact: 'The Turing Test assesses a machine\'s ability to exhibit behavior indistinguishable from that of a human.',
+                color: '#4f46e5',
+                url: 'ai.html',
+                icon: '<path d="M12 4.5a2.5 2.5 0 0 0-4.96-.46 2.5 2.5 0 0 0-1.98 3 2.5 2.5 0 0 0-1.32 4.24 3 3 0 0 0 .34 5.58 2.5 2.5 0 0 0 2.96 3.08 2.5 2.5 0 0 0 4.96.44v-15.88Z" /><path d="M12 4.5a2.5 2.5 0 0 1 4.96-.46 2.5 2.5 0 0 1 1.98 3 2.5 2.5 0 0 1 1.32 4.24 3 3 0 0 1-.34 5.58 2.5 2.5 0 0 1-2.96 3.08 2.5 2.5 0 0 1-4.96.44v-15.88Z" />'
+            },
+            {
+                id: 'networks',
+                topic: 'Networks',
+                type: 'Protocol',
+                fact: 'UDP is connectionless and faster than TCP, making it ideal for streaming, but it offers no guarantee of packet delivery.',
+                color: '#0e7490',
+                url: 'networks.html',
+                icon: '<circle cx="12" cy="12" r="10" /><line x1="2" y1="12" x2="22" y2="12" /><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />'
+            },
+            {
+                id: 'networks',
+                topic: 'Networks',
+                type: 'Web',
+                fact: 'HTTPS ensures secure communication by encrypting data using TLS (Transport Layer Security) before it travels over the network.',
+                color: '#0e7490',
+                url: 'networks.html',
+                icon: '<circle cx="12" cy="12" r="10" /><line x1="2" y1="12" x2="22" y2="12" /><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />'
+            },
+            {
+                id: 'ds',
+                topic: 'Data Structures',
+                type: 'Concept',
+                fact: 'A Hash Map provides O(1) average time complexity for lookups, insertions, and deletions by using a hashing function.',
+                color: '#15803d',
+                url: 'ds.html',
+                icon: '<rect x="9" y="3" width="6" height="6" rx="1" /><path d="M12 9v3" /><path d="M12 12H5v3" /><path d="M12 12h7v3" /><rect x="2" y="15" width="6" height="6" rx="1" /><rect x="16" y="15" width="6" height="6" rx="1" />'
+            },
+            {
+                id: 'ds',
+                topic: 'Data Structures',
+                type: 'Ordering',
+                fact: 'A Stack follows LIFO (Last In, First Out), like a stack of plates. A Queue follows FIFO (First In, First Out), like a line at a store.',
+                color: '#15803d',
+                url: 'ds.html',
+                icon: '<rect x="9" y="3" width="6" height="6" rx="1" /><path d="M12 9v3" /><path d="M12 12H5v3" /><path d="M12 12h7v3" /><rect x="2" y="15" width="6" height="6" rx="1" /><rect x="16" y="15" width="6" height="6" rx="1" />'
+            },
+            {
+                id: 'dbms',
+                topic: 'Databases',
+                type: 'Acronym',
+                fact: 'ACID guarantees reliable transactions: Atomicity, Consistency, Isolation, and Durability.',
+                color: '#525252',
+                url: 'dbms.html',
+                icon: '<path d="M12 4c-4.418 0-8 1.79-8 4s3.582 4 8 4 8-1.79 8-4-3.582-4-8-4Z" /><path d="M4 8v8c0 2.21 3.582 4 8 4s8-1.79 8-4V8" /><path d="M4 12c0 2.21 3.582 4 8 4s8-1.79 8-4" />'
+            },
+            {
+                id: 'dbms',
+                topic: 'Databases',
+                type: 'Concept',
+                fact: 'Indexing improves data retrieval speed (like a book\'s index) but slows down write operations due to the overhead of updating the index.',
+                color: '#525252',
+                url: 'dbms.html',
+                icon: '<path d="M12 4c-4.418 0-8 1.79-8 4s3.582 4 8 4 8-1.79 8-4-3.582-4-8-4Z" /><path d="M4 8v8c0 2.21 3.582 4 8 4s8-1.79 8-4V8" /><path d="M4 12c0 2.21 3.582 4 8 4s8-1.79 8-4" />'
+            },
+            {
+                id: 'linux',
+                topic: 'Linux',
+                type: 'Command',
+                fact: '"chmod 777" grants read, write, and execute permissions to Everyone. Use with extreme caution!',
+                color: '#ca8a04',
+                url: 'linux.html',
+                icon: '<polyline points="4 17 10 11 4 5" /><line x1="12" y1="19" x2="20" y2="19" />'
+            },
+            {
+                id: 'linux',
+                topic: 'Linux',
+                type: 'Command',
+                fact: '"grep" stands for Global Regular Expression Print. It searches for specific patterns within files.',
+                color: '#ca8a04',
+                url: 'linux.html',
+                icon: '<polyline points="4 17 10 11 4 5" /><line x1="12" y1="19" x2="20" y2="19" />'
+            },
+            {
+                id: 'oops',
+                topic: 'OOP',
+                type: 'Principle',
+                fact: 'Polymorphism allows objects of different classes to be treated as objects of a common superclass.',
+                color: '#dc2626',
+                url: 'oops.html',
+                icon: '<rect x="3" y="3" width="7" height="7" rx="1" /><rect x="14" y="3" width="7" height="7" rx="1" /><rect x="14" y="14" width="7" height="7" rx="1" /><rect x="3" y="14" width="7" height="7" rx="1" /><path d="M10 7h4" /><path d="M10 17h4" /><path d="M7 10v4" /><path d="M17 10v4" />'
+            },
+            {
+                id: 'oops',
+                topic: 'OOP',
+                type: 'Concept',
+                fact: 'Encapsulation bundles data (attributes) and methods (functions) together, restricting direct access to some of an object\'s components.',
+                color: '#dc2626',
+                url: 'oops.html',
+                icon: '<rect x="3" y="3" width="7" height="7" rx="1" /><rect x="14" y="3" width="7" height="7" rx="1" /><rect x="14" y="14" width="7" height="7" rx="1" /><rect x="3" y="14" width="7" height="7" rx="1" /><path d="M10 7h4" /><path d="M10 17h4" /><path d="M7 10v4" /><path d="M17 10v4" />'
+            },
+            {
+                id: 'pigeon',
+                topic: 'Math',
+                type: 'Theorem',
+                fact: 'If n+1 items are put into n containers, at least one container must hold more than one item.',
+                color: '#2563eb',
+                url: 'pigeon.html',
+                icon: '<rect x="4" y="4" width="7" height="7" rx="1" /><rect x="4" y="15" width="7" height="7" rx="1" /><rect x="15" y="4" width="7" height="7" rx="1" /><rect x="15" y="15" width="7" height="7" rx="1" /><circle cx="18.5" cy="18.5" r="1.5" fill="currentColor" /><circle cx="18.5" cy="16.5" r="1.5" fill="currentColor" /><circle cx="7.5" cy="18.5" r="1.5" fill="currentColor" />'
+            },
+            {
+                id: 'design',
+                topic: 'Design',
+                type: 'Quote',
+                fact: 'Dieter Rams: "Good design is as little design as possible." Focus on the essential.',
+                color: '#52525b',
+                url: 'design.html',
+                icon: '<rect x="3" y="3" width="18" height="18" rx="2" ry="2" /><line x1="3" y1="9" x2="21" y2="9" /><line x1="9" y1="21" x2="9" y2="9" />'
+            },
+            {
+                id: 'quanta',
+                topic: 'Quantum',
+                type: 'Physics',
+                fact: 'Superposition allows a qubit to exist as a complex linear combination of 0 and 1 simultaneously.',
+                color: '#ea580c',
+                url: 'quanta.html',
+                icon: '<ellipse cx="12" cy="12" rx="10" ry="4" transform="rotate(45 12 12)" /><ellipse cx="12" cy="12" rx="10" ry="4" transform="rotate(-45 12 12)" /><circle cx="12" cy="12" r="2.5" fill="currentColor" />'
+            },
+            {
+                id: 'quanta',
+                topic: 'Quantum',
+                type: 'Physics',
+                fact: 'Entanglement links qubits such that the state of one (spin up/down) instantly determines the state of the other, no matter the distance.',
+                color: '#ea580c',
+                url: 'quanta.html',
+                icon: '<ellipse cx="12" cy="12" rx="10" ry="4" transform="rotate(45 12 12)" /><ellipse cx="12" cy="12" rx="10" ry="4" transform="rotate(-45 12 12)" /><circle cx="12" cy="12" r="2.5" fill="currentColor" />'
+            },
+            {
+                id: 'react',
+                topic: 'React',
+                type: 'Rendering',
+                fact: 'Virtual DOM improves performance by calculating the minimal set of changes needed before updating the browser.',
+                color: '#0ea5e9',
+                url: 'react.html',
+                viewBox: '-11 -11 22 22',
+                icon: '<circle cx="0" cy="0" r="2" fill="currentColor" stroke="none" /><ellipse rx="10" ry="4.5" /><ellipse rx="10" ry="4.5" transform="rotate(60)" /><ellipse rx="10" ry="4.5" transform="rotate(120)" />'
+            },
+            {
+                id: 'react',
+                topic: 'React',
+                type: 'Hook',
+                fact: 'useEffect(fn, []) runs only once after the initial render, mimicking componentDidMount.',
+                color: '#0ea5e9',
+                url: 'react.html',
+                viewBox: '-11 -11 22 22',
+                icon: '<circle cx="0" cy="0" r="2" fill="currentColor" stroke="none" /><ellipse rx="10" ry="4.5" /><ellipse rx="10" ry="4.5" transform="rotate(60)" /><ellipse rx="10" ry="4.5" transform="rotate(120)" />'
+            },
+            {
+                id: 'system',
+                topic: 'System Arch',
+                type: 'Theorem',
+                fact: 'CAP Theorem: A distributed system can only provide two of Consistency, Availability, and Partition Tolerance.',
+                color: '#78350f',
+                url: 'system.html',
+                icon: '<rect x="2" y="2" width="20" height="8" rx="2" ry="2" /><rect x="2" y="14" width="20" height="8" rx="2" ry="2" /><line x1="6" y1="6" x2="6.01" y2="6" /><line x1="6" y1="18" x2="6.01" y2="18" />'
+            },
+            {
+                id: 'system',
+                topic: 'System Arch',
+                type: 'Strategy',
+                fact: 'Load Balancing distributes incoming network traffic across multiple servers to ensure no single server becomes overwhelmed.',
+                color: '#78350f',
+                url: 'system.html',
+                icon: '<rect x="2" y="2" width="20" height="8" rx="2" ry="2" /><rect x="2" y="14" width="20" height="8" rx="2" ry="2" /><line x1="6" y1="6" x2="6.01" y2="6" /><line x1="6" y1="18" x2="6.01" y2="18" />'
+            },
+            {
+                id: 'computation',
+                topic: 'Theory',
+                type: 'Paradox',
+                fact: 'The Halting Problem proves it is impossible to know if an arbitrary program will eventually stop.',
+                color: '#6b21a8',
+                url: 'computation.html',
+                icon: '<circle cx="6" cy="6" r="3" /><circle cx="18" cy="6" r="3" /><circle cx="12" cy="18" r="3" /><path d="M9 6h6" /><path d="M6 9v5" /><path d="M18 9v5" />'
+            },
+            {
+                id: 'computation',
+                topic: 'Theory',
+                type: 'Complexity',
+                fact: 'P vs NP asks if every problem whose solution can be quickly verified (NP) can also be quickly solved (P).',
+                color: '#6b21a8',
+                url: 'computation.html',
+                icon: '<circle cx="6" cy="6" r="3" /><circle cx="18" cy="6" r="3" /><circle cx="12" cy="18" r="3" /><path d="M9 6h6" /><path d="M6 9v5" /><path d="M18 9v5" />'
+            },
+            {
+                id: 'uiux',
+                topic: 'UI/UX',
+                type: 'Heuristic',
+                fact: 'Fitts\'s Law: Time to acquire a target depends on distance to and size of the target. Make buttons big!',
+                color: '#6594B1',
+                url: 'uiux.html',
+                icon: '<path d="M12 19l7-7 3 3-7 7-3-3z"></path><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"></path><path d="M2 2l7.586 7.586"></path><circle cx="11" cy="11" r="2"></circle>'
+            },
+            {
+                id: 'uiux',
+                topic: 'UI/UX',
+                type: 'Heuristic',
+                fact: 'Jakob\'s Law: Users spend most of their time on other sites, so they prefer your site to work the same way as all the other sites they already know.',
+                color: '#6594B1',
+                url: 'uiux.html',
+                icon: '<path d="M12 19l7-7 3 3-7 7-3-3z"></path><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"></path><path d="M2 2l7.586 7.586"></path><circle cx="11" cy="11" r="2"></circle>'
+            },
+            {
+                id: 'git',
+                topic: 'Git',
+                type: 'Concept',
+                fact: '"Detached HEAD" means you are viewing a past commit not attached to any branch tip.',
+                color: '#c2410c',
+                url: 'git.html',
+                icon: '<circle cx="12" cy="18" r="3" /><circle cx="6" cy="6" r="3" /><circle cx="18" cy="6" r="3" /><path d="M18 9v1a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2V9" /><path d="M12 12v3" />'
+            },
+            {
+                id: 'git',
+                topic: 'Git',
+                type: 'Diff',
+                fact: 'A "Merge Conflict" happens when Git cannot automatically resolve differences in code between two commits (e.g. same line edited).',
+                color: '#c2410c',
+                url: 'git.html',
+                icon: '<circle cx="12" cy="18" r="3" /><circle cx="6" cy="6" r="3" /><circle cx="18" cy="6" r="3" /><path d="M18 9v1a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2V9" /><path d="M12 12v3" />'
+            },
+            {
+                id: 'algo',
+                topic: 'Algorithms',
+                type: 'Sorting',
+                fact: 'Merge Sort is a stable, divide-and-conquer algorithm with a time complexity of O(n log n) in all cases.',
+                color: '#db2777',
+                url: 'algo.html',
+                icon: '<rect x="3" y="3" width="6" height="6" rx="1" /><rect x="15" y="15" width="6" height="6" rx="1" /><path d="M6 9v3a2 2 0 0 0 2 2h8a2 2 0 0 1 2 2v-1" /><path d="M18 9h.01" /><path d="M6 18h.01" />'
+            },
+            {
+                id: 'android',
+                topic: 'Android',
+                type: 'Component',
+                fact: 'An Activity represents a single screen with a user interface, serving as an entry point for user interaction.',
+                color: '#3DDC84',
+                url: 'android.html',
+                icon: '<rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line>'
+            },
+            {
+                id: 'ai',
+                topic: 'AI',
+                type: 'Structure',
+                fact: 'Neural Networks are composed of layers of nodes (neurons) that transform input data into output through weighted connections.',
+                color: '#4f46e5',
+                url: 'ai.html',
+                icon: '<path d="M12 4.5a2.5 2.5 0 0 0-4.96-.46 2.5 2.5 0 0 0-1.98 3 2.5 2.5 0 0 0-1.32 4.24 3 3 0 0 0 .34 5.58 2.5 2.5 0 0 0 2.96 3.08 2.5 2.5 0 0 0 4.96.44v-15.88Z" /><path d="M12 4.5a2.5 2.5 0 0 1 4.96-.46 2.5 2.5 0 0 1 1.98 3 2.5 2.5 0 0 1 1.32 4.24 3 3 0 0 1-.34 5.58 2.5 2.5 0 0 1-2.96 3.08 2.5 2.5 0 0 1-4.96.44v-15.88Z" />'
+            },
+            {
+                id: 'networks',
+                topic: 'Networks',
+                type: 'Infra',
+                fact: 'A CDN (Content Delivery Network) caches content in servers geographically closer to the user to reduce latency.',
+                color: '#0e7490',
+                url: 'networks.html',
+                icon: '<circle cx="12" cy="12" r="10" /><line x1="2" y1="12" x2="22" y2="12" /><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />'
+            },
+            {
+                id: 'ds',
+                topic: 'Data Structures',
+                type: 'Tree',
+                fact: 'In a Binary Search Tree (BST), the left child is smaller than the parent, and the right child is larger.',
+                color: '#15803d',
+                url: 'ds.html',
+                icon: '<rect x="9" y="3" width="6" height="6" rx="1" /><path d="M12 9v3" /><path d="M12 12H5v3" /><path d="M12 12h7v3" /><rect x="2" y="15" width="6" height="6" rx="1" /><rect x="16" y="15" width="6" height="6" rx="1" />'
+            },
+            {
+                id: 'dbms',
+                topic: 'Databases',
+                type: 'Comparison',
+                fact: 'SQL databases are relational and structured (tables), while NoSQL databases are non-relational and flexible (documents, key-value).',
+                color: '#525252',
+                url: 'dbms.html',
+                icon: '<path d="M12 4c-4.418 0-8 1.79-8 4s3.582 4 8 4 8-1.79 8-4-3.582-4-8-4Z" /><path d="M4 8v8c0 2.21 3.582 4 8 4s8-1.79 8-4V8" /><path d="M4 12c0 2.21 3.582 4 8 4s8-1.79 8-4" />'
+            },
+            {
+                id: 'linux',
+                topic: 'Linux',
+                type: 'Command',
+                fact: '"sudo" allows a permitted user to execute a command as the superuser (root) or another user.',
+                color: '#ca8a04',
+                url: 'linux.html',
+                icon: '<polyline points="4 17 10 11 4 5" /><line x1="12" y1="19" x2="20" y2="19" />'
+            },
+            {
+                id: 'oops',
+                topic: 'OOP',
+                type: 'Relation',
+                fact: 'Inheritance enables new classes to derive properties and behavior from existing classes, promoting code reuse.',
+                color: '#dc2626',
+                url: 'oops.html',
+                icon: '<rect x="3" y="3" width="7" height="7" rx="1" /><rect x="14" y="3" width="7" height="7" rx="1" /><rect x="14" y="14" width="7" height="7" rx="1" /><rect x="3" y="14" width="7" height="7" rx="1" /><path d="M10 7h4" /><path d="M10 17h4" /><path d="M7 10v4" /><path d="M17 10v4" />'
+            },
+            {
+                id: 'design',
+                topic: 'Design',
+                type: 'Visual',
+                fact: 'Whitespace (Negative Space) is not empty space; it is an active design element that improves readability and focus.',
+                color: '#52525b',
+                url: 'design.html',
+                icon: '<rect x="3" y="3" width="18" height="18" rx="2" ry="2" /><line x1="3" y1="9" x2="21" y2="9" /><line x1="9" y1="21" x2="9" y2="9" />'
+            },
+            {
+                id: 'react',
+                topic: 'React',
+                type: 'Syntax',
+                fact: 'JSX is a syntax extension for JavaScript that looks like HTML, making it easier to write and understand the UI structure.',
+                color: '#0ea5e9',
+                url: 'react.html',
+                viewBox: '-11 -11 22 22',
+                icon: '<circle cx="0" cy="0" r="2" fill="currentColor" stroke="none" /><ellipse rx="10" ry="4.5" /><ellipse rx="10" ry="4.5" transform="rotate(60)" /><ellipse rx="10" ry="4.5" transform="rotate(120)" />'
+            },
+            {
+                id: 'uiux',
+                topic: 'UI/UX',
+                type: 'Ethics',
+                fact: 'Dark Patterns are UI designs carefully crafted to trick users into doing things they might not otherwise do (e.g., hidden unsubscribe).',
+                color: '#6594B1',
+                url: 'uiux.html',
+                icon: '<path d="M12 19l7-7 3 3-7 7-3-3z"></path><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"></path><path d="M2 2l7.586 7.586"></path><circle cx="11" cy="11" r="2"></circle>'
+            },
+            {
+                id: 'git',
+                topic: 'Git',
+                type: 'Workflow',
+                fact: '"git commit" saves your changes to the local repository, while "git push" uploads those changes to a remote repository.',
+                color: '#c2410c',
+                url: 'git.html',
+                icon: '<circle cx="12" cy="18" r="3" /><circle cx="6" cy="6" r="3" /><circle cx="18" cy="6" r="3" /><path d="M18 9v1a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2V9" /><path d="M12 12v3" />'
+            },
+            {
+                id: 'system',
+                topic: 'System Arch',
+                type: 'Pattern',
+                fact: 'Microservices architecture structures an application as a collection of loosely coupled services, independently deployable and scalable.',
+                color: '#78350f',
+                url: 'system.html',
+                icon: '<rect x="2" y="2" width="20" height="8" rx="2" ry="2" /><rect x="2" y="14" width="20" height="8" rx="2" ry="2" /><line x1="6" y1="6" x2="6.01" y2="6" /><line x1="6" y1="18" x2="6.01" y2="18" />'
+            },
+            {
+                id: 'computation',
+                topic: 'Theory',
+                type: 'Notation',
+                fact: 'Big O Notation describes the upper bound of an algorithm\'s growth rate, classifying algorithms by how they respond to changes in input size.',
+                color: '#6b21a8',
+                url: 'computation.html',
+                icon: '<circle cx="6" cy="6" r="3" /><circle cx="18" cy="6" r="3" /><circle cx="12" cy="18" r="3" /><path d="M9 6h6" /><path d="M6 9v5" /><path d="M18 9v5" />'
+            },
+            {
+                id: 'networks',
+                topic: 'Networks',
+                type: 'System',
+                fact: 'DNS (Domain Name System) is the phonebook of the Internet, translating human-readable domain names (google.com) into IP addresses.',
+                color: '#0e7490',
+                url: 'networks.html',
+                icon: '<circle cx="12" cy="12" r="10" /><line x1="2" y1="12" x2="22" y2="12" /><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />'
+            },
+            {
+                id: 'quanta',
+                topic: 'Quantum',
+                type: 'Unit',
+                fact: 'A Qubit (Quantum Bit) is the basic unit of quantum information, capable of representing 0, 1, or a superposition of both.',
+                color: '#ea580c',
+                url: 'quanta.html',
+                icon: '<ellipse cx="12" cy="12" rx="10" ry="4" transform="rotate(45 12 12)" /><ellipse cx="12" cy="12" rx="10" ry="4" transform="rotate(-45 12 12)" /><circle cx="12" cy="12" r="2.5" fill="currentColor" />'
+            },
+            {
+                id: 'android',
+                topic: 'Android',
+                type: 'Manifest',
+                fact: 'The AndroidManifest.xml file contains essential information about your app, such as permissions, activities, and services.',
+                color: '#3DDC84',
+                url: 'android.html',
+                icon: '<rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line>'
+            },
+            {
+                id: 'react',
+                topic: 'React',
+                type: 'State',
+                fact: 'State is an object that determines how a component renders and behaves. When state changes, the component re-renders.',
+                color: '#0ea5e9',
+                url: 'react.html',
+                viewBox: '-11 -11 22 22',
+                icon: '<circle cx="0" cy="0" r="2" fill="currentColor" stroke="none" /><ellipse rx="10" ry="4.5" /><ellipse rx="10" ry="4.5" transform="rotate(60)" /><ellipse rx="10" ry="4.5" transform="rotate(120)" />'
+            },
+            {
+                id: 'linux',
+                topic: 'Linux',
+                type: 'Filesystem',
+                fact: 'The root directory in Linux is denoted by a single slash "/". All other files and directories are contained within it.',
+                color: '#ca8a04',
+                url: 'linux.html',
+                icon: '<polyline points="4 17 10 11 4 5" /><line x1="12" y1="19" x2="20" y2="19" />'
+            },
+            {
+                id: 'ai',
+                topic: 'AI',
+                type: 'Learning',
+                fact: 'Reinforcement Learning involves an agent observing the environment, taking actions, and receiving rewards or penalties.',
+                color: '#4f46e5',
+                url: 'ai.html',
+                icon: '<path d="M12 4.5a2.5 2.5 0 0 0-4.96-.46 2.5 2.5 0 0 0-1.98 3 2.5 2.5 0 0 0-1.32 4.24 3 3 0 0 0 .34 5.58 2.5 2.5 0 0 0 2.96 3.08 2.5 2.5 0 0 0 4.96.44v-15.88Z" /><path d="M12 4.5a2.5 2.5 0 0 1 4.96-.46 2.5 2.5 0 0 1 1.98 3 2.5 2.5 0 0 1 1.32 4.24 3 3 0 0 1-.34 5.58 2.5 2.5 0 0 1-2.96 3.08 2.5 2.5 0 0 1-4.96.44v-15.88Z" />'
+            },
+            {
+                id: 'ds',
+                topic: 'Data Structures',
+                type: 'Graph',
+                fact: 'A Graph consists of vertices (nodes) and edges (connections). It can be directed or undirected, weighted or unweighted.',
+                color: '#15803d',
+                url: 'ds.html',
+                icon: '<rect x="9" y="3" width="6" height="6" rx="1" /><path d="M12 9v3" /><path d="M12 12H5v3" /><path d="M12 12h7v3" /><rect x="2" y="15" width="6" height="6" rx="1" /><rect x="16" y="15" width="6" height="6" rx="1" />'
+            },
+            {
+                id: 'networks',
+                topic: 'Networks',
+                type: 'Model',
+                fact: 'The OSI Model has 7 layers: Physical, Data Link, Network, Transport, Session, Presentation, and Application.',
+                color: '#0e7490',
+                url: 'networks.html',
+                icon: '<circle cx="12" cy="12" r="10" /><line x1="2" y1="12" x2="22" y2="12" /><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />'
+            },
+            {
+                id: 'uiux',
+                topic: 'UI/UX',
+                type: 'Color',
+                fact: 'Complementary colors are opposite each other on the color wheel and create high contrast and high impact.',
+                color: '#6594B1',
+                url: 'uiux.html',
+                icon: '<path d="M12 19l7-7 3 3-7 7-3-3z"></path><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"></path><path d="M2 2l7.586 7.586"></path><circle cx="11" cy="11" r="2"></circle>'
+            },
+            {
+                id: 'algo',
+                topic: 'Algorithms',
+                type: 'Traversal',
+                fact: 'BFS (Breadth-First Search) explores neighbor nodes first, while DFS (Depth-First Search) explores as far as possible along each branch.',
+                color: '#db2777',
+                url: 'algo.html',
+                icon: '<rect x="3" y="3" width="6" height="6" rx="1" /><rect x="15" y="15" width="6" height="6" rx="1" /><path d="M6 9v3a2 2 0 0 0 2 2h8a2 2 0 0 1 2 2v-1" /><path d="M18 9h.01" /><path d="M6 18h.01" />'
+            },
+            {
+                id: 'dbms',
+                topic: 'Databases',
+                type: 'Keys',
+                fact: 'A Primary Key uniquely identifies a record in a table, while a Foreign Key links a record to the Primary Key of another table.',
+                color: '#525252',
+                url: 'dbms.html',
+                icon: '<path d="M12 4c-4.418 0-8 1.79-8 4s3.582 4 8 4 8-1.79 8-4-3.582-4-8-4Z" /><path d="M4 8v8c0 2.21 3.582 4 8 4s8-1.79 8-4V8" /><path d="M4 12c0 2.21 3.582 4 8 4s8-1.79 8-4" />'
+            },
+            {
+                id: 'git',
+                topic: 'Git',
+                type: 'Commands',
+                fact: '"git status" displays the state of the working directory and staging area, showing which changes are staged or untracked.',
+                color: '#c2410c',
+                url: 'git.html',
+                icon: '<circle cx="12" cy="18" r="3" /><circle cx="6" cy="6" r="3" /><circle cx="18" cy="6" r="3" /><path d="M18 9v1a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2V9" /><path d="M12 12v3" />'
+            },
+            {
+                id: 'software',
+                topic: 'Software Engineering',
+                type: 'Process',
+                fact: 'The Software Development Life Cycle (SDLC) is a structured process used to design, develop, and test high-quality software.',
+                color: '#E6B800',
+                url: 'software.html',
+                icon: '<path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" />'
+            },
+            {
+                id: 'software',
+                topic: 'Software Engineering',
+                type: 'Agile',
+                fact: 'The Agile Manifesto prioritizes "Individuals and interactions over processes and tools" and "Working software over comprehensive documentation".',
+                color: '#E6B800',
+                url: 'software.html',
+                icon: '<path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" />'
+            },
+            {
+                id: 'software',
+                topic: 'Software Engineering',
+                type: 'Models',
+                fact: 'The Waterfall model is a linear-sequential life cycle where each phase must be completed before the next begins.',
+                color: '#E6B800',
+                url: 'software.html',
+                icon: '<path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" />'
+            },
+            {
+                id: 'software',
+                topic: 'Software Engineering',
+                type: 'Quality',
+                fact: 'Refactoring is the process of restructuring existing code without changing its external behavior to improve its internal structure and readability.',
+                color: '#E6B800',
+                url: 'software.html',
+                icon: '<path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" />'
+            },
+            {
+                id: 'software',
+                topic: 'Software Engineering',
+                type: 'DevOps',
+                fact: 'CI/CD (Continuous Integration and Continuous Deployment) automates the transition of code from development to production through automated building, testing, and deployment.',
+                color: '#E6B800',
+                url: 'software.html',
+                icon: '<path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" />'
+            },
+            {
+                id: 'software',
+                topic: 'Software Engineering',
+                type: 'Maintenance',
+                fact: 'Technical Debt represents the implied cost of additional rework caused by choosing an easy (quick) solution now instead of a better approach.',
+                color: '#E6B800',
+                url: 'software.html',
+                icon: '<path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" />'
+            },
+            {
+                id: 'design',
+                topic: 'Design',
+                type: 'Rule',
+                fact: 'The "Rule of Thirds" suggests dividing an image into nine equal parts to create balanced and visually interesting compositions.',
+                color: '#52525b',
+                url: 'design.html',
+                icon: '<rect x="3" y="3" width="18" height="18" rx="2" ry="2" /><line x1="3" y1="9" x2="21" y2="9" /><line x1="9" y1="21" x2="9" y2="9" />'
+            },
+            {
+                id: 'system',
+                topic: 'System Arch',
+                type: 'Concept',
+                fact: 'Scalability is the property of a system to handle a growing amount of work by adding resources to the system.',
+                color: '#78350f',
+                url: 'system.html',
+                icon: '<rect x="2" y="2" width="20" height="8" rx="2" ry="2" /><rect x="2" y="14" width="20" height="8" rx="2" ry="2" /><line x1="6" y1="6" x2="6.01" y2="6" /><line x1="6" y1="18" x2="6.01" y2="18" />'
+            },
+            {
+                id: 'computation',
+                topic: 'Theory',
+                type: 'Concept',
+                fact: 'A Finite Automaton is a mathematical model of computation used to design and solve problems, consisting of states and transitions.',
+                color: '#6b21a8',
+                url: 'computation.html',
+                icon: '<circle cx="6" cy="6" r="3" /><circle cx="18" cy="6" r="3" /><circle cx="12" cy="18" r="3" /><path d="M9 6h6" /><path d="M6 9v5" /><path d="M18 9v5" />'
+            },
+            {
+                id: 'oops',
+                topic: 'OOP',
+                type: 'Concept',
+                fact: 'Abstraction handles complexity by hiding unnecessary details from the user, exposing only the essential features of an object.',
+                color: '#dc2626',
+                url: 'oops.html',
+                icon: '<rect x="3" y="3" width="7" height="7" rx="1" /><rect x="14" y="3" width="7" height="7" rx="1" /><rect x="14" y="14" width="7" height="7" rx="1" /><rect x="3" y="14" width="7" height="7" rx="1" /><path d="M10 7h4" /><path d="M10 17h4" /><path d="M7 10v4" /><path d="M17 10v4" />'
+            },
+            {
+                id: 'pigeon',
+                topic: 'Math',
+                type: 'Logic',
+                fact: 'Modus Ponens is a rule of logic: If P implies Q, and P is true, then Q must also be true.',
+                color: '#2563eb',
+                url: 'pigeon.html',
+                icon: '<rect x="4" y="4" width="7" height="7" rx="1" /><rect x="4" y="15" width="7" height="7" rx="1" /><rect x="15" y="4" width="7" height="7" rx="1" /><rect x="15" y="15" width="7" height="7" rx="1" /><circle cx="18.5" cy="18.5" r="1.5" fill="currentColor" /><circle cx="18.5" cy="16.5" r="1.5" fill="currentColor" /><circle cx="7.5" cy="18.5" r="1.5" fill="currentColor" />'
+            },
+            {
+                id: 'algo',
+                topic: 'Algorithms',
+                type: 'Pathfinding',
+                fact: 'Dijkstra\'s Algorithm finds the shortest path between nodes in a graph, essential for GPS and network routing.',
+                color: '#db2777',
+                url: 'algo.html',
+                icon: '<rect x="3" y="3" width="6" height="6" rx="1" /><rect x="15" y="15" width="6" height="6" rx="1" /><path d="M6 9v3a2 2 0 0 0 2 2h8a2 2 0 0 1 2 2v-1" /><path d="M18 9h.01" /><path d="M6 18h.01" />'
+            },
+            {
+                id: 'networks',
+                topic: 'Networks',
+                type: 'Protocol',
+                fact: 'TCP (Transmission Control Protocol) provides reliable, ordered, and error-checked delivery of a stream of data.',
+                color: '#0e7490',
+                url: 'networks.html',
+                icon: '<circle cx="12" cy="12" r="10" /><line x1="2" y1="12" x2="22" y2="12" /><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />'
+            },
+            {
+                id: 'ai',
+                topic: 'AI',
+                type: 'Problem',
+                fact: 'Overfitting occurs when a model learns the "noise" in the training data rather than the underlying pattern, performing poorly on new data.',
+                color: '#4f46e5',
+                url: 'ai.html',
+                icon: '<path d="M12 4.5a2.5 2.5 0 0 0-4.96-.46 2.5 2.5 0 0 0-1.98 3 2.5 2.5 0 0 0-1.32 4.24 3 3 0 0 0 .34 5.58 2.5 2.5 0 0 0 2.96 3.08 2.5 2.5 0 0 0 4.96.44v-15.88Z" /><path d="M12 4.5a2.5 2.5 0 0 1 4.96-.46 2.5 2.5 0 0 1 1.98 3 2.5 2.5 0 0 1 1.32 4.24 3 3 0 0 1-.34 5.58 2.5 2.5 0 0 1-2.96 3.08 2.5 2.5 0 0 1-4.96.44v-15.88Z" />'
+            },
+            {
+                id: 'react',
+                topic: 'React',
+                type: 'Concept',
+                fact: 'Props (Properties) are read-only inputs passed from a parent component to a child component to configure it.',
+                color: '#0ea5e9',
+                url: 'react.html',
+                viewBox: '-11 -11 22 22',
+                icon: '<circle cx="0" cy="0" r="2" fill="currentColor" stroke="none" /><ellipse rx="10" ry="4.5" /><ellipse rx="10" ry="4.5" transform="rotate(60)" /><ellipse rx="10" ry="4.5" transform="rotate(120)" />'
+            },
+            {
+                id: 'linux',
+                topic: 'Linux',
+                type: 'Command',
+                fact: '"man" simply displays the manual page for a command. "man ls" tells you everything about the list command.',
+                color: '#ca8a04',
+                url: 'linux.html',
+                icon: '<polyline points="4 17 10 11 4 5" /><line x1="12" y1="19" x2="20" y2="19" />'
+            },
+            {
+                id: 'ds',
+                topic: 'Data Structures',
+                type: 'List',
+                fact: 'A Linked List is a linear data structure where elements are not stored in contiguous memory; each element points to the next.',
+                color: '#15803d',
+                url: 'ds.html',
+                icon: '<rect x="9" y="3" width="6" height="6" rx="1" /><path d="M12 9v3" /><path d="M12 12H5v3" /><path d="M12 12h7v3" /><rect x="2" y="15" width="6" height="6" rx="1" /><rect x="16" y="15" width="6" height="6" rx="1" />'
+            },
+            {
+                id: 'dbms',
+                topic: 'Databases',
+                type: 'Design',
+                fact: 'Normalization is the process of organizing data in a database to reduce redundancy and improve data integrity.',
+                color: '#525252',
+                url: 'dbms.html',
+                icon: '<path d="M12 4c-4.418 0-8 1.79-8 4s3.582 4 8 4 8-1.79 8-4-3.582-4-8-4Z" /><path d="M4 8v8c0 2.21 3.582 4 8 4s8-1.79 8-4V8" /><path d="M4 12c0 2.21 3.582 4 8 4s8-1.79 8-4" />'
+            },
+            {
+                id: 'oops',
+                topic: 'OOP',
+                type: 'Concept',
+                fact: 'A Constructor is a special method used to initialize objects. It is called automatically when an object of a class is created.',
+                color: '#dc2626',
+                url: 'oops.html',
+                icon: '<rect x="3" y="3" width="7" height="7" rx="1" /><rect x="14" y="3" width="7" height="7" rx="1" /><rect x="14" y="14" width="7" height="7" rx="1" /><rect x="3" y="14" width="7" height="7" rx="1" /><path d="M10 7h4" /><path d="M10 17h4" /><path d="M7 10v4" /><path d="M17 10v4" />'
+            },
+            {
+                id: 'system',
+                topic: 'System Arch',
+                type: 'Performance',
+                fact: 'Caching stores copies of frequently accessed data in a fast storage layer (like RAM) to reduce retrieval time.',
+                color: '#78350f',
+                url: 'system.html',
+                icon: '<rect x="2" y="2" width="20" height="8" rx="2" ry="2" /><rect x="2" y="14" width="20" height="8" rx="2" ry="2" /><line x1="6" y1="6" x2="6.01" y2="6" /><line x1="6" y1="18" x2="6.01" y2="18" />'
+            },
+            {
+                id: 'design',
+                topic: 'Design',
+                type: 'Typography',
+                fact: 'Kerning is the adjustment of space between individual characters to achieve a visually pleasing result.',
+                color: '#52525b',
+                url: 'design.html',
+                icon: '<rect x="3" y="3" width="18" height="18" rx="2" ry="2" /><line x1="3" y1="9" x2="21" y2="9" /><line x1="9" y1="21" x2="9" y2="9" />'
+            },
+            {
+                id: 'uiux',
+                topic: 'UI/UX',
+                type: 'Psychology',
+                fact: 'Affordance refers to the properties of an object that show users the actions they can take (e.g., a button looking clickable).',
+                color: '#6594B1',
+                url: 'uiux.html',
+                icon: '<path d="M12 19l7-7 3 3-7 7-3-3z"></path><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"></path><path d="M2 2l7.586 7.586"></path><circle cx="11" cy="11" r="2"></circle>'
+            },
+            {
+                id: 'git',
+                topic: 'Git',
+                type: 'Workflow',
+                fact: 'A Branch represents an independent line of development. "main" is the default branch in many repositories.',
+                color: '#c2410c',
+                url: 'git.html',
+                icon: '<circle cx="12" cy="18" r="3" /><circle cx="6" cy="6" r="3" /><circle cx="18" cy="6" r="3" /><path d="M18 9v1a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2V9" /><path d="M12 12v3" />'
+            },
+            {
+                id: 'pigeon',
+                topic: 'Math',
+                type: 'Sequence',
+                fact: 'The Fibonacci Sequence starts with 0 and 1, and each subsequent number is the sum of the previous two (0, 1, 1, 2, 3, 5...).',
+                color: '#2563eb',
+                url: 'pigeon.html',
+                icon: '<rect x="4" y="4" width="7" height="7" rx="1" /><rect x="4" y="15" width="7" height="7" rx="1" /><rect x="15" y="4" width="7" height="7" rx="1" /><rect x="15" y="15" width="7" height="7" rx="1" /><circle cx="18.5" cy="18.5" r="1.5" fill="currentColor" /><circle cx="18.5" cy="16.5" r="1.5" fill="currentColor" /><circle cx="7.5" cy="18.5" r="1.5" fill="currentColor" />'
+            },
+            {
+                id: 'computation',
+                topic: 'Theory',
+                type: 'Concept',
+                fact: 'A Turing Machine is a mathematical model of computation that defines an abstract machine which manipulates symbols on a strip of tape.',
+                color: '#6b21a8',
+                url: 'computation.html',
+                icon: '<circle cx="6" cy="6" r="3" /><circle cx="18" cy="6" r="3" /><circle cx="12" cy="18" r="3" /><path d="M9 6h6" /><path d="M6 9v5" /><path d="M18 9v5" />'
+            },
+            {
+                id: 'android',
+                topic: 'Android',
+                type: 'Component',
+                fact: 'An Intent is a messaging object used to request an action from another app component (e.g., starting an Activity).',
+                color: '#3DDC84',
+                url: 'android.html',
+                icon: '<rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line>'
+            },
+            {
+                id: 'quanta',
+                topic: 'Quantum',
+                type: 'Theory',
+                fact: 'Heisenberg\'s Uncertainty Principle states that one cannot simultaneously know the exact position and momentum of a particle.',
+                color: '#ea580c',
+                url: 'quanta.html',
+                icon: '<ellipse cx="12" cy="12" rx="10" ry="4" transform="rotate(45 12 12)" /><ellipse cx="12" cy="12" rx="10" ry="4" transform="rotate(-45 12 12)" /><circle cx="12" cy="12" r="2.5" fill="currentColor" />'
+            },
+            {
+                id: 'bigdata',
+                topic: 'Big Data',
+                type: 'Concept',
+                fact: 'The "Variety" in Big Data refers to the different types of data: structured (SQL), semi-structured (JSON), and unstructured (Video, Audio).',
+                color: '#85193C',
+                url: 'bigdata.html',
+                icon: '<circle cx="12" cy="12" r="3"></circle><line x1="12" y1="9" x2="12" y2="4"></line><line x1="12" y1="20" x2="12" y2="15"></line><line x1="9" y1="12" x2="4" y2="12"></line><line x1="20" y1="12" x2="15" y2="12"></line><circle cx="12" cy="4" r="1"></circle><circle cx="12" cy="20" r="1"></circle><circle cx="4" cy="12" r="1"></circle><circle cx="20" cy="12" r="1"></circle>'
+            },
+            {
+                id: 'bigdata',
+                topic: 'Big Data',
+                type: 'Storage',
+                fact: 'HDFS stores files in blocks (default 128MB) and replicates them across multiple nodes (default 3x) for fault tolerance.',
+                color: '#85193C',
+                url: 'bigdata.html',
+                icon: '<circle cx="12" cy="12" r="3"></circle><line x1="12" y1="9" x2="12" y2="4"></line><line x1="12" y1="20" x2="12" y2="15"></line><line x1="9" y1="12" x2="4" y2="12"></line><line x1="20" y1="12" x2="15" y2="12"></line><circle cx="12" cy="4" r="1"></circle><circle cx="12" cy="20" r="1"></circle><circle cx="4" cy="12" r="1"></circle><circle cx="20" cy="12" r="1"></circle>'
+            },
+            {
+                id: 'bigdata',
+                topic: 'Big Data',
+                type: 'Processing',
+                fact: 'MapReduce processes data in two main phases: Map (filtering/sorting) and Reduce (aggregating results) across a cluster.',
+                color: '#85193C',
+                url: 'bigdata.html',
+                icon: '<circle cx="12" cy="12" r="3"></circle><line x1="12" y1="9" x2="12" y2="4"></line><line x1="12" y1="20" x2="12" y2="15"></line><line x1="9" y1="12" x2="4" y2="12"></line><line x1="20" y1="12" x2="15" y2="12"></line><circle cx="12" cy="4" r="1"></circle><circle cx="12" cy="20" r="1"></circle><circle cx="4" cy="12" r="1"></circle><circle cx="20" cy="12" r="1"></circle>'
+            },
+            {
+                id: 'bigdata',
+                topic: 'Big Data',
+                type: 'Speed',
+                fact: 'Apache Spark utilizes Resilient Distributed Datasets (RDDs) for in-memory processing, making it up to 100x faster than MapReduce.',
+                color: '#85193C',
+                url: 'bigdata.html',
+                icon: '<circle cx="12" cy="12" r="3"></circle><line x1="12" y1="9" x2="12" y2="4"></line><line x1="12" y1="20" x2="12" y2="15"></line><line x1="9" y1="12" x2="4" y2="12"></line><line x1="20" y1="12" x2="15" y2="12"></line><circle cx="12" cy="4" r="1"></circle><circle cx="12" cy="20" r="1"></circle><circle cx="4" cy="12" r="1"></circle><circle cx="20" cy="12" r="1"></circle>'
+            },
+            {
+                id: 'bigdata',
+                topic: 'Big Data',
+                type: 'Negotiator',
+                fact: 'YARN (Yet Another Resource Negotiator) separates storage (HDFS) from processing, acting as the operating system for Hadoop.',
+                color: '#85193C',
+                url: 'bigdata.html',
+                icon: '<circle cx="12" cy="12" r="3"></circle><line x1="12" y1="9" x2="12" y2="4"></line><line x1="12" y1="20" x2="12" y2="15"></line><line x1="9" y1="12" x2="4" y2="12"></line><line x1="20" y1="12" x2="15" y2="12"></line><circle cx="12" cy="4" r="1"></circle><circle cx="12" cy="20" r="1"></circle><circle cx="4" cy="12" r="1"></circle><circle cx="20" cy="12" r="1"></circle>'
+            },
+            {
+                id: 'os',
+                topic: 'Operating Systems',
+                type: 'Kernel',
+                fact: 'The Kernel is the core program of the OS that manages system resources (CPU, Memory, I/O) and acts as a bridge between software and hardware.',
+                color: '#5c6b55',
+                url: 'os.html',
+                icon: '<rect x="4" y="4" width="16" height="16" rx="2" /><rect x="9" y="9" width="6" height="6" /><line x1="9" y1="1" x2="9" y2="4" /><line x1="15" y1="1" x2="15" y2="4" /><line x1="9" y1="20" x2="9" y2="23" /><line x1="15" y1="20" x2="15" y2="23" /><line x1="20" y1="9" x2="23" y2="9" /><line x1="20" y1="14" x2="23" y2="14" /><line x1="1" y1="9" x2="4" y2="9" /><line x1="1" y1="14" x2="4" y2="14" />'
+            },
+            {
+                id: 'os',
+                topic: 'Operating Systems',
+                type: 'Process',
+                fact: 'A Context Switch saves the state of a currently running process so it can be resumed later, allowing multiple processes to share a single CPU.',
+                color: '#5c6b55',
+                url: 'os.html',
+                icon: '<rect x="4" y="4" width="16" height="16" rx="2" /><rect x="9" y="9" width="6" height="6" /><line x1="9" y1="1" x2="9" y2="4" /><line x1="15" y1="1" x2="15" y2="4" /><line x1="9" y1="20" x2="9" y2="23" /><line x1="15" y1="20" x2="15" y2="23" /><line x1="20" y1="9" x2="23" y2="9" /><line x1="20" y1="14" x2="23" y2="14" /><line x1="1" y1="9" x2="4" y2="9" /><line x1="1" y1="14" x2="4" y2="14" />'
+            },
+            {
+                id: 'os',
+                topic: 'Operating Systems',
+                type: 'Deadlock',
+                fact: 'A Deadlock occurs when a set of processes are blocked because each is holding a resource and waiting for another resource acquired by some other process.',
+                color: '#5c6b55',
+                url: 'os.html',
+                icon: '<rect x="4" y="4" width="16" height="16" rx="2" /><rect x="9" y="9" width="6" height="6" /><line x1="9" y1="1" x2="9" y2="4" /><line x1="15" y1="1" x2="15" y2="4" /><line x1="9" y1="20" x2="9" y2="23" /><line x1="15" y1="20" x2="15" y2="23" /><line x1="20" y1="9" x2="23" y2="9" /><line x1="20" y1="14" x2="23" y2="14" /><line x1="1" y1="9" x2="4" y2="9" /><line x1="1" y1="14" x2="4" y2="14" />'
+            },
+            {
+                id: 'os',
+                topic: 'Operating Systems',
+                type: 'Virtual Memory',
+                fact: 'Virtual Memory creates an illusion of large memory by temporarily transferring data from RAM to disk storage (swapping) when physical memory is low.',
+                color: '#5c6b55',
+                url: 'os.html',
+                icon: '<rect x="4" y="4" width="16" height="16" rx="2" /><rect x="9" y="9" width="6" height="6" /><line x1="9" y1="1" x2="9" y2="4" /><line x1="15" y1="1" x2="15" y2="4" /><line x1="9" y1="20" x2="9" y2="23" /><line x1="15" y1="20" x2="15" y2="23" /><line x1="20" y1="9" x2="23" y2="9" /><line x1="20" y1="14" x2="23" y2="14" /><line x1="1" y1="9" x2="4" y2="9" /><line x1="1" y1="14" x2="4" y2="14" />'
+            },
+            {
+                id: 'os',
+                topic: 'Operating Systems',
+                type: 'Scheduling',
+                fact: 'Round Robin is a preemptive CPU scheduling algorithm where each process is assigned a fixed time slot (quantum) in a cyclic order.',
+                color: '#5c6b55',
+                url: 'os.html',
+                icon: '<rect x="4" y="4" width="16" height="16" rx="2" /><rect x="9" y="9" width="6" height="6" /><line x1="9" y1="1" x2="9" y2="4" /><line x1="15" y1="1" x2="15" y2="4" /><line x1="9" y1="20" x2="9" y2="23" /><line x1="15" y1="20" x2="15" y2="23" /><line x1="20" y1="9" x2="23" y2="9" /><line x1="20" y1="14" x2="23" y2="14" /><line x1="1" y1="9" x2="4" y2="9" /><line x1="1" y1="14" x2="4" y2="14" />'
+            },
+            {
+                id: 'pigeon-math',
+                topic: 'Math',
+                type: 'Formula',
+                fact: 'Generalized Pigeonhole Principle: If n pigeons are put into m holes, then at least one hole contains at least ⌈n/m⌉ pigeons.',
+                color: '#2563eb',
+                url: 'pigeon.html',
+                icon: '<rect x="4" y="4" width="7" height="7" rx="1" /><rect x="4" y="15" width="7" height="7" rx="1" /><rect x="15" y="4" width="7" height="7" rx="1" /><rect x="15" y="15" width="7" height="7" rx="1" /><circle cx="18.5" cy="18.5" r="1.5" fill="currentColor" /><circle cx="18.5" cy="16.5" r="1.5" fill="currentColor" /><circle cx="7.5" cy="18.5" r="1.5" fill="currentColor" />'
+            },
+            {
+                id: 'algo-search',
+                topic: 'Algorithms',
+                type: 'Complexity',
+                fact: 'Binary Search: A divide-and-conquer search algorithm with a logarithmic time complexity of O(log n).',
+                color: '#db2777',
+                url: 'algo.html',
+                icon: '<rect x="3" y="3" width="6" height="6" rx="1" /><rect x="15" y="15" width="6" height="6" rx="1" /><path d="M6 9v3a2 2 0 0 0 2 2h8a2 2 0 0 1 2 2v-1" /><path d="M18 9h.01" /><path d="M6 18h.01" />'
+            },
+            {
+                id: 'algo-sort',
+                topic: 'Algorithms',
+                type: 'Complexity',
+                fact: 'Merge Sort: A stable, divide-and-conquer sorting algorithm with a consistent time complexity of O(n log n).',
+                color: '#db2777',
+                url: 'algo.html',
+                icon: '<rect x="3" y="3" width="6" height="6" rx="1" /><rect x="15" y="15" width="6" height="6" rx="1" /><path d="M6 9v3a2 2 0 0 0 2 2h8a2 2 0 0 1 2 2v-1" /><path d="M18 9h.01" /><path d="M6 18h.01" />'
+            },
+            {
+                id: 'os-metrics-1',
+                topic: 'Operating Systems',
+                type: 'Formula',
+                fact: 'Turnaround Time = Completion Time - Arrival Time. It represents the total time taken from submission to completion.',
+                color: '#5c6b55',
+                url: 'os.html',
+                icon: '<rect x="4" y="4" width="16" height="16" rx="2" /><rect x="9" y="9" width="6" height="6" /><line x1="9" y1="1" x2="9" y2="4" /><line x1="15" y1="1" x2="15" y2="4" /><line x1="9" y1="20" x2="9" y2="23" /><line x1="15" y1="20" x2="15" y2="23" /><line x1="20" y1="9" x2="23" y2="9" /><line x1="20" y1="14" x2="23" y2="14" /><line x1="1" y1="9" x2="4" y2="9" /><line x1="1" y1="14" x2="4" y2="14" />'
+            },
+            {
+                id: 'os-metrics-2',
+                topic: 'Operating Systems',
+                type: 'Formula',
+                fact: 'Waiting Time = Turnaround Time - Burst Time. It represents the total time a process spends waiting in the ready queue.',
+                color: '#5c6b55',
+                url: 'os.html',
+                icon: '<rect x="4" y="4" width="16" height="16" rx="2" /><rect x="9" y="9" width="6" height="6" /><line x1="9" y1="1" x2="9" y2="4" /><line x1="15" y1="1" x2="15" y2="4" /><line x1="9" y1="20" x2="9" y2="23" /><line x1="15" y1="20" x2="15" y2="23" /><line x1="20" y1="9" x2="23" y2="9" /><line x1="20" y1="14" x2="23" y2="14" /><line x1="1" y1="9" x2="4" y2="9" /><line x1="1" y1="14" x2="4" y2="14" />'
+            },
+            {
+                id: 'os-memory',
+                topic: 'Operating Systems',
+                type: 'Concept',
+                fact: "Logical Address Translation: (p, d) where 'p' is the page number (index into page table) and 'd' is the page offset.",
+                color: '#5c6b55',
+                url: 'os.html',
+                icon: '<rect x="4" y="4" width="16" height="16" rx="2" /><rect x="9" y="9" width="6" height="6" /><line x1="9" y1="1" x2="9" y2="4" /><line x1="15" y1="1" x2="15" y2="4" /><line x1="9" y1="20" x2="9" y2="23" /><line x1="15" y1="20" x2="15" y2="23" /><line x1="20" y1="9" x2="23" y2="9" /><line x1="20" y1="14" x2="23" y2="14" /><line x1="1" y1="9" x2="4" y2="9" /><line x1="1" y1="14" x2="4" y2="14" />'
+            },
+            {
+                id: 'system-amdahl',
+                topic: 'System Arch',
+                type: 'Performance',
+                fact: "Amdahl's Law: Speedup = 1 / [(1 - f) + (f / s)], where 'f' is the parallelizable fraction and 's' is the speedup of that fraction.",
+                color: '#78350f',
+                url: 'system.html',
+                icon: '<rect x="2" y="2" width="20" height="8" rx="2" ry="2" /><rect x="2" y="14" width="20" height="8" rx="2" ry="2" /><line x1="6" y1="6" x2="6.01" y2="6" /><line x1="6" y1="18" x2="6.01" y2="18" />'
+            },
+            {
+                id: 'crypto-cia',
+                topic: 'Security',
+                type: 'Foundations',
+                fact: 'The CIA Triad stands for Confidentiality (privacy), Integrity (accuracy), and Availability (access).',
+                color: '#5DD3B6',
+                url: 'crypto.html',
+                icon: '<rect x="3" y="11" width="18" height="11" rx="2" ry="2" /><path d="M7 11V7a5 5 0 0 1 10 0v4" />'
+            },
+            {
+                id: 'crypto-asym',
+                topic: 'Security',
+                type: 'Encryption',
+                fact: 'Asymmetric Cryptography uses a public key to encrypt data and a private key to decrypt it.',
+                color: '#5DD3B6',
+                url: 'crypto.html',
+                icon: '<rect x="3" y="11" width="18" height="11" rx="2" ry="2" /><path d="M7 11V7a5 5 0 0 1 10 0v4" />'
+            },
+            {
+                id: 'crypto-hash',
+                topic: 'Security',
+                type: 'Integrity',
+                fact: 'A Hash Function is one-way and deterministic; any change in input produces a completely different fixed-size output.',
+                color: '#5DD3B6',
+                url: 'crypto.html',
+                icon: '<rect x="3" y="11" width="18" height="11" rx="2" ry="2" /><path d="M7 11V7a5 5 0 0 1 10 0v4" />'
+            },
+            {
+                id: 'crypto-dh',
+                topic: 'Security',
+                type: 'Key Exchange',
+                fact: 'Diffie-Hellman allows two parties to create a shared private secret over a public channel without ever sending the key itself.',
+                color: '#5DD3B6',
+                url: 'crypto.html',
+                icon: '<rect x="3" y="11" width="18" height="11" rx="2" ry="2" /><path d="M7 11V7a5 5 0 0 1 10 0v4" />'
+            },
+            {
+                id: 'crypto-steg',
+                topic: 'Security',
+                type: 'Steganography',
+                fact: 'LSB Steganography hides data by altering the least significant bit of pixel color values, making changes invisible to the human eye.',
+                color: '#5DD3B6',
+                url: 'crypto.html',
+                icon: '<rect x="3" y="11" width="18" height="11" rx="2" ry="2" /><path d="M7 11V7a5 5 0 0 1 10 0v4" />'
+            },
+            {
+                id: 'crypto-pqc',
+                topic: 'Security',
+                type: 'Quantum-Safe',
+                fact: 'Post-Quantum Cryptography (PQC) uses math problems (like Lattices) that even powerful Quantum Computers cannot easily solve.',
+                color: '#5DD3B6',
+                url: 'crypto.html',
+                icon: '<rect x="3" y="11" width="18" height="11" rx="2" ry="2" /><path d="M7 11V7a5 5 0 0 1 10 0v4" />'
+            },
+            {
+                id: 'js-strict',
+                topic: 'JavaScript',
+                type: 'Syntax',
+                fact: 'Strict Equality (===) checks for both value and type, avoiding the pitfalls of type coercion associated with abstract equality (==).',
+                color: '#F7DF1E',
+                url: 'js.html#fundamentals',
+                icon: '<path d="M3 3h18v18H3z" /><path d="M7 15l1 1h1a2 2 0 0 0 2-2V9" /><path d="M14 15h3a1 1 0 0 0 1-1v-1a1 1 0 0 0-1-1h-2a1 1 0 0 1-1-1v-1a1 1 0 0 1 1-1h3" />'
+            },
+            {
+                id: 'js-closure',
+                topic: 'JavaScript',
+                type: 'Concept',
+                fact: 'A Closure is a function bundled with its lexical environment, allowing it to "remember" and access variables from an outer scope even after that scope has closed.',
+                color: '#F7DF1E',
+                url: 'js.html#scopes',
+                icon: '<path d="M3 3h18v18H3z" /><path d="M7 15l1 1h1a2 2 0 0 0 2-2V9" /><path d="M14 15h3a1 1 0 0 0 1-1v-1a1 1 0 0 0-1-1h-2a1 1 0 0 1-1-1v-1a1 1 0 0 1 1-1h3" />'
+            },
+            {
+                id: 'js-hoisting',
+                topic: 'JavaScript',
+                type: 'Behavior',
+                fact: 'Hoisting is the mechanism where variable and function declarations are moved to the top of their containing scope during the compilation phase.',
+                color: '#F7DF1E',
+                url: 'js.html#glossary',
+                icon: '<path d="M3 3h18v18H3z" /><path d="M7 15l1 1h1a2 2 0 0 0 2-2V9" /><path d="M14 15h3a1 1 0 0 0 1-1v-1a1 1 0 0 0-1-1h-2a1 1 0 0 1-1-1v-1a1 1 0 0 1 1-1h3" />'
+            },
+            {
+                id: 'js-eventloop',
+                topic: 'JavaScript',
+                type: 'Runtime',
+                fact: 'The Event Loop continuously checks the call stack and moves tasks from the callback/microtask queues to the stack once it is empty, enabling non-blocking I/O.',
+                color: '#F7DF1E',
+                url: 'js.html#event-loop',
+                icon: '<path d="M3 3h18v18H3z" /><path d="M7 15l1 1h1a2 2 0 0 0 2-2V9" /><path d="M14 15h3a1 1 0 0 0 1-1v-1a1 1 0 0 0-1-1h-2a1 1 0 0 1-1-1v-1a1 1 0 0 1 1-1h3" />'
+            },
+            {
+                id: 'js-prototype',
+                topic: 'JavaScript',
+                type: 'OOP',
+                fact: 'Prototypal Inheritance allows objects to inherit properties and methods from other objects via the prototype chain, forming the basis of JS object-oriented behavior.',
+                color: '#F7DF1E',
+                url: 'js.html#prototypes',
+                icon: '<path d="M3 3h18v18H3z" /><path d="M7 15l1 1h1a2 2 0 0 0 2-2V9" /><path d="M14 15h3a1 1 0 0 0 1-1v-1a1 1 0 0 0-1-1h-2a1 1 0 0 1-1-1v-1a1 1 0 0 1 1-1h3" />'
+            },
+            {
+                id: 'js-engine',
+                topic: 'JavaScript',
+                type: 'Engine',
+                fact: 'Modern JS Engines like V8 use JIT (Just-In-Time) compilation to convert high-level code into optimized machine code during execution for near-native performance.',
+                color: '#F7DF1E',
+                url: 'js.html#engine',
+                icon: '<path d="M3 3h18v18H3z" /><path d="M7 15l1 1h1a2 2 0 0 0 2-2V9" /><path d="M14 15h3a1 1 0 0 0 1-1v-1a1 1 0 0 0-1-1h-2a1 1 0 0 1-1-1v-1a1 1 0 0 1 1-1h3" />'
+            },
+            {
+                id: 'html-doctype',
+                topic: 'HTML',
+                type: 'Declaration',
+                fact: 'The &lt;!DOCTYPE html&gt; declaration tells the browser which version of HTML is being used. It is an instruction, not a tag.',
+                color: '#e34c26',
+                url: 'html.html#structure',
+                icon: '<path d="M4 2v20l8-4 8 4V2H4z" /><polyline points="8 10 12 14 16 10" />'
+            },
+            {
+                id: 'html-semantic',
+                topic: 'HTML',
+                type: 'Structure',
+                fact: 'Semantic tags like &lt;header&gt; and &lt;main&gt; describe their meaning to browsers and search engines, improving SEO and accessibility.',
+                color: '#e34c26',
+                url: 'html.html#semantic',
+                icon: '<path d="M4 2v20l8-4 8 4V2H4z" /><polyline points="8 10 12 14 16 10" />'
+            },
+            {
+                id: 'html-void',
+                topic: 'HTML',
+                type: 'Tags',
+                fact: 'Void elements like &lt;img&gt; and &lt;br&gt; don\'t have content or closing tags. They are self-contained and stand alone.',
+                color: '#e34c26',
+                url: 'html.html#elements',
+                icon: '<path d="M4 2v20l8-4 8 4V2H4z" /><polyline points="8 10 12 14 16 10" />'
+            },
+            {
+                id: 'html-alt',
+                topic: 'HTML',
+                type: 'Accessibility',
+                fact: 'The alt attribute provides text descriptions for images, which is essential for screen readers and users with visual impairments.',
+                color: '#e34c26',
+                url: 'html.html#elements',
+                icon: '<path d="M4 2v20l8-4 8 4V2H4z" /><polyline points="8 10 12 14 16 10" />'
+            },
+            {
+                id: 'html-dom',
+                topic: 'HTML',
+                type: 'Concept',
+                fact: 'The DOM (Document Object Model) is a tree-like interface that allows JavaScript to dynamically change the structure and content of a web page.',
+                color: '#e34c26',
+                url: 'html.html#structure',
+                icon: '<path d="M4 2v20l8-4 8 4V2H4z" /><polyline points="8 10 12 14 16 10" />'
+            }
+        ];
+
+        // --- Refactored Deck Logic ---
+        const masterDeck = [...cardsData]; // Immutable copy of all cards
+        let currentDeck = []; // The deck currently being played
+        let history = []; // Stack for undo
+        let currentTopic = 'All';
+
+        const container = document.getElementById('stack-container');
+        const emptyState = document.getElementById('empty-state');
+        const controlsContainer = document.getElementById('controls-container');
+        const btnReject = document.getElementById('btn-reject');
+        const btnAccept = document.getElementById('btn-accept');
+
+        // Custom scrollbar hidden util
+        const style = document.createElement('style');
+        style.innerHTML = `
+            .custom-scrollbar::-webkit-scrollbar { display: none; }
+            .custom-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        `;
+        document.head.appendChild(style);
+
+        // Inject Filter UI
+        const filterContainer = document.createElement('div');
+        // Fit into header: right aligned
+        filterContainer.className = "ml-4";
+
+        // Get unique topics and sort, ensuring "All" is always first
+        const uniqueTopics = [...new Set(masterDeck.map(c => c.topic))].sort();
+        const topics = ['All', ...uniqueTopics];
+
+        // Custom Dropdown State
+        let isDropdownOpen = false;
+        let isSearchExpanded = false;
+        let searchQuery = '';
+
+        // Initialize Filter UI Structure (Dynamic based on Expanded State)
+        function initFilterUI() {
+            // If Collapsed: Show Icon Button
+            if (!isSearchExpanded) {
+                filterContainer.innerHTML = `
+                    <div class="relative">
+                        <button onclick="expandSearch()" class="w-10 h-10 bg-white hover:bg-gray-50 border-2 border-black rounded-full flex items-center justify-center transition-transform hover:scale-105 focus:outline-none shadow-sm">
+                             <svg class="w-5 h-5 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                        </button>
+                    </div>
+                `;
+            }
+            // If Expanded: Show Input + Dropdown
+            else {
+                filterContainer.innerHTML = `
+                    <div class="relative animate-expand origin-right">
+                        <div class="relative">
+                             <input 
+                                type="text" 
+                                id="topic-search"
+                                value="${searchQuery}" 
+                                placeholder="SEARCH TOPIC..."
+                                oninput="handleSearch(this.value)"
+                                onfocus="openDropdown()"
+                                onclick="event.stopPropagation()"
+                                class="appearance-none bg-white border-2 border-black text-[10px] sm:text-xs font-mono font-black uppercase tracking-widest py-2 pl-4 pr-10 rounded-full transition-all focus:outline-none w-full max-w-[200px] truncate text-black placeholder-gray-400 shadow-none"
+                            />
+                            <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-black" id="search-icon-container">
+                                 <svg class="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                            </div>
+                        </div>
+                        <!-- Dropdown Container -->
+                        <div id="dropdown-menu-container"></div>
+                    </div>
+                `;
+                // Render list immediately
+                renderDropdownList();
+
+                // Focus Logic
+                setTimeout(() => {
+                    const input = document.getElementById('topic-search');
+                    if (input) {
+                        input.focus();
+                        if (searchQuery) input.value = searchQuery;
+                    }
+                }, 0);
+            }
+        }
+
+        // Render Only the Dropdown List (Dynamic)
+        function renderDropdownList() {
+            const activeTopic = currentTopic;
+
+            // Filter topics based on search query
+            const filteredTopics = topics.filter(t =>
+                t.toLowerCase().includes(searchQuery.toLowerCase())
+            );
+
+            const dropdownHTML = `
+                <div class="${isDropdownOpen ? 'opacity-100 scale-100 pointer-events-auto' : 'opacity-0 scale-95 pointer-events-none'} absolute top-full right-0 mt-2 w-48 bg-white border border-gray-200 rounded-xl shadow-xl z-50 transform origin-top-right transition-all duration-200 overflow-hidden">
+                    <div class="max-h-[60vh] overflow-y-auto custom-scrollbar py-1" style="overscroll-behavior: contain; touch-action: pan-y;" onwheel="event.stopPropagation()" ontouchmove="event.stopPropagation()">
+                        ${filteredTopics.length > 0 ? filteredTopics.map(t => `
+                            <div class="px-4 py-2 hover:bg-gray-50 cursor-pointer flex items-center justify-between group transition-colors" onclick="selectTopic('${t}')">
+                                <span class="text-xs font-mono font-bold uppercase tracking-widest ${t === activeTopic ? 'text-black' : 'text-gray-500 group-hover:text-black'}">${t}</span>
+                                ${t === activeTopic ? '<svg class="w-3 h-3 text-black" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>' : ''}
+                            </div>
+                        `).join('') : '<div class="px-4 py-2 text-xs text-gray-400 font-mono text-center">NO TOPICS FOUND</div>'}
+                    </div>
+                </div>
+             `;
+
+            const container = document.getElementById('dropdown-menu-container');
+            if (container) container.innerHTML = dropdownHTML;
+        }
+
+        // Filter Actions
+        window.expandSearch = function () {
+            isSearchExpanded = true;
+            isDropdownOpen = true;
+            searchQuery = '';
+            initFilterUI();
+            toggleBackdrop(true);
+            event.stopPropagation();
+        };
+
+        window.collapseSearch = function () {
+            isSearchExpanded = false;
+            isDropdownOpen = false;
+            initFilterUI();
+            toggleBackdrop(false);
+        };
+
+        window.openDropdown = function () {
+            if (!isDropdownOpen) {
+                isDropdownOpen = true;
+                renderDropdownList();
+                toggleBackdrop(true);
+            }
+        };
+
+        function toggleBackdrop(show) {
+            const backdrop = document.getElementById('menu-backdrop');
+            if (show) {
+                backdrop.classList.remove('hidden');
+                // Small delay to allow display:block to apply before opacity transition
+                requestAnimationFrame(() => {
+                    backdrop.classList.remove('opacity-0');
+                    backdrop.classList.add('opacity-100');
+                });
+                document.body.style.overflow = 'hidden'; // Prevent body scroll
+            } else {
+                backdrop.classList.remove('opacity-100');
+                backdrop.classList.add('opacity-0');
+                setTimeout(() => {
+                    backdrop.classList.add('hidden');
+                }, 300); // Wait for transition
+                document.body.style.overflow = ''; // Restore body scroll
+            }
+        }
+
+        window.handleSearch = function (val) {
+            searchQuery = val;
+            isDropdownOpen = true;
+            renderDropdownList();
+        };
+
+        window.selectTopic = function (topic) {
+            currentTopic = topic;
+            collapseSearch();
+            resetDeck();
+        };
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', (e) => {
+            if (isSearchExpanded && !filterContainer.contains(e.target)) {
+                collapseSearch();
+            }
+        });
+
+        initFilterUI();
+
+        // Insert filter into HEADER, replacing the old "Info Cards" badge
+        const header = document.querySelector('header');
+        // Robustly find the element to replace (it's the second child, the "Info Cards" badge)
+        // If it's already a filter info, we replace that too.
+        const rightSideElement = header.lastElementChild;
+
+        if (rightSideElement && rightSideElement !== header.firstElementChild) {
+            rightSideElement.replaceWith(filterContainer);
+        } else {
+            header.appendChild(filterContainer);
+        }
+
+        function resetDeck() {
+            // Filter from master
+            if (currentTopic === 'All') {
+                currentDeck = [...masterDeck];
+            } else {
+                currentDeck = masterDeck.filter(c => c.topic === currentTopic);
+            }
+
+            // Shuffle
+            currentDeck.sort(() => Math.random() - 0.5);
+
+            // Clear history on reset
+            history = [];
+
+            // Render
+            renderStack();
+            updateUndoButtonState();
+        }
+
+
+        function renderStack() {
+            // Update counter - Removed as countBadge is no longer used in this UI
+            // countBadge.innerText = currentDeck.length;
+            // countBadge.classList.remove('scale-125');
+            // void countBadge.offsetWidth; // trigger reflow
+            // if (currentDeck.length > 0) countBadge.classList.add('scale-125');
+
+            // Remove existing cards
+            const existing = container.querySelectorAll('.flash-card, .flash-card-shadow');
+            existing.forEach(e => e.remove());
+
+            if (currentDeck.length === 0) {
+                emptyState.classList.remove('hidden');
+                // Change empty message based on filter?
+                const emptyTitle = emptyState.querySelector('h3');
+                const emptyText = emptyState.querySelector('p');
+
+                if (currentTopic !== 'All' && masterDeck.filter(c => c.topic === currentTopic).length > 0) {
+                    // Completed a specific topic
+                    emptyTitle.innerText = `${currentTopic} Complete`;
+                    emptyText.innerText = `You've mastered all cards in ${currentTopic}. Select another topic or restart.`;
+                } else {
+                    // Completed everything
+                    emptyTitle.innerText = "Knowledge Refreshed";
+                    emptyText.innerText = "You've mastered this deck. Every fact has been reviewed. Ready for another round?";
+                }
+
+                controlsContainer.style.opacity = '0';
+                controlsContainer.style.pointerEvents = 'none';
+                return;
+            } else {
+                emptyState.classList.add('hidden');
+                controlsContainer.style.opacity = '1';
+                controlsContainer.style.pointerEvents = 'auto';
+            }
+
+            // Render max 3 items
+            const limit = Math.min(currentDeck.length, 3);
+
+            for (let i = limit - 1; i >= 0; i--) {
+                const card = createCard(currentDeck[i], i);
+                container.appendChild(card);
+            }
+
+            initSwipe();
+        }
+
+        function createCard(data, index) {
+            const el = document.createElement('article');
+            el.className = 'flash-card';
+            el.style.zIndex = 100 - index;
+
+            const scale = 1 - (index * 0.05);
+            const translateY = index * 12; // px
+            const brightness = 100 - (index * 5);
+
+            el.style.transform = `translateY(${translateY}px) scale(${scale})`;
+            el.style.filter = `brightness(${brightness}%)`;
+
+            if (index > 0) {
+                el.style.pointerEvents = 'none';
+            }
+
+            const textLength = data.fact.length;
+            let textSizeClass = 'text-2xl';
+            if (textLength > 100) textSizeClass = 'text-lg';
+            else if (textLength > 60) textSizeClass = 'text-xl';
+            else if (textLength < 30) textSizeClass = 'text-3xl';
+
+            const viewBox = data.viewBox || "0 0 24 24";
+
+            el.innerHTML = `
+                <div class="status-badge status-yep">UNDRSTOOD</div>
+                <div class="status-badge status-nop">UNDRSTOOD</div>
+
+                <div class="flash-card-header">
+                    <div class="flex items-center gap-3">
+                         <div class="w-8 h-8 rounded-md flex items-center justify-center text-white shadow-sm" style="background-color: ${data.color}">
+                            <svg width="18" height="18" viewBox="${viewBox}" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                ${data.icon}
+                            </svg>
+                        </div>
+                        <div class="flex flex-col text-left">
+                            <span class="mono text-[0.6rem] font-bold uppercase tracking-widest text-gray-400">${data.topic}</span>
+                            <span class="text-sm font-semibold text-black leading-none">${data.type}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flash-card-body">
+                    <h2 class="${textSizeClass} font-bold text-gray-900 leading-tight mb-2">
+                        ${data.fact}
+                    </h2>
+                </div>
+
+                <div class="flash-card-footer transition-colors" style="background-color: ${data.color}">
+                    Click to Explore Topic
+                </div>
+            `;
+
+            el.addEventListener('click', () => {
+                if (!isDragging) {
+                    window.location.href = data.url;
+                }
+            });
+
+            return el;
+        }
+
+        /* --- Swipe Logic --- */
+        let isDragging = false;
+        let startX = 0;
+        let activeCard = null;
+
+        function initSwipe() {
+            activeCard = container.lastElementChild;
+        }
+
+        document.addEventListener('touchstart', onDragStart, { passive: false });
+        document.addEventListener('touchmove', onDragMove, { passive: false });
+        document.addEventListener('touchend', onDragEnd);
+
+        document.addEventListener('mousedown', onDragStart);
+        document.addEventListener('mousemove', onDragMove);
+        document.addEventListener('mouseup', onDragEnd);
+
+
+        function onDragStart(e) {
+            const target = e.target.closest('.flash-card');
+            if (!target || target !== container.lastElementChild) return;
+
+            activeCard = target;
+            isDragging = true;
+
+            if (e.type === 'touchstart') {
+                startX = e.touches[0].clientX;
+            } else {
+                startX = e.clientX;
+            }
+
+            activeCard.style.transition = 'none';
+        }
+
+        function onDragMove(e) {
+            if (!isDragging || !activeCard) return;
+            e.preventDefault();
+
+            let x;
+            if (e.type === 'touchmove') {
+                x = e.touches[0].clientX;
+            } else {
+                x = e.clientX;
+            }
+
+            const deltaX = x - startX;
+            const rotate = deltaX * 0.05;
+
+            activeCard.style.transform = `translate(${deltaX}px, 0) rotate(${rotate}deg)`;
+
+            const badgeYep = activeCard.querySelector('.status-yep');
+            const badgeNop = activeCard.querySelector('.status-nop');
+
+            if (deltaX > 0) {
+                badgeYep.style.opacity = Math.min(deltaX / 100, 1);
+                badgeNop.style.opacity = 0;
+            } else {
+                badgeNop.style.opacity = Math.min(Math.abs(deltaX) / 100, 1);
+                badgeYep.style.opacity = 0;
+            }
+        }
+
+        function onDragEnd(e) {
+            if (!isDragging || !activeCard) return;
+            isDragging = false;
+
+            let endX;
+            if (e.type === 'touchend') {
+                endX = e.changedTouches[0].clientX;
+            } else {
+                endX = e.clientX;
+            }
+
+            const deltaX = endX - startX;
+            const threshold = 100;
+
+            if (Math.abs(deltaX) > threshold) {
+                // Swipe Out
+                const direction = deltaX > 0 ? 1 : -1;
+                const endPos = window.innerWidth * 1.5 * direction;
+
+                activeCard.style.transition = 'transform 0.4s ease-out';
+                activeCard.style.transform = `translate(${endPos}px, 0) rotate(${direction * 20}deg)`;
+
+                const badge = deltaX > 0 ? activeCard.querySelector('.status-yep') : activeCard.querySelector('.status-nop');
+                badge.style.opacity = 1;
+
+                setTimeout(() => {
+                    const removedCard = currentDeck.shift(); // Use currentDeck
+                    history.push(removedCard);
+
+                    activeCard.remove();
+                    renderStack();
+                    updateUndoButtonState();
+                }, 300);
+
+            } else {
+                // Reset
+                activeCard.style.transition = 'transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1)';
+                activeCard.style.transform = 'translate(0, 0) rotate(0deg)';
+
+                activeCard.querySelector('.status-yep').style.opacity = 0;
+                activeCard.querySelector('.status-nop').style.opacity = 0;
+            }
+        }
+
+        // UNDO Button
+        btnReject.addEventListener('click', () => {
+            if (history.length > 0) {
+                const prevCard = history.pop();
+                currentDeck.unshift(prevCard); // Use currentDeck
+                renderStack();
+
+                const card = container.lastElementChild;
+                if (card) {
+                    card.style.transition = 'none';
+                    card.style.transform = 'translate(-120vw, 0) rotate(-20deg)';
+                    void card.offsetWidth;
+                    card.style.transition = 'transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1)';
+                    card.style.transform = 'translate(0, 0) rotate(0deg)';
+                }
+                updateUndoButtonState();
+            }
+        });
+
+        btnAccept.addEventListener('click', () => {
+            const card = container.lastElementChild;
+            if (card && card.classList.contains('flash-card')) {
+                card.style.transition = 'transform 0.5s ease-out';
+                card.style.transform = `translate(120vw, 0) rotate(20deg)`;
+                card.querySelector('.status-yep').style.opacity = 1;
+                setTimeout(() => {
+                    const removedCard = currentDeck.shift(); // Use currentDeck
+                    history.push(removedCard);
+
+                    card.remove();
+                    renderStack();
+                    updateUndoButtonState();
+                }, 300);
+            }
+        });
+
+        function updateUndoButtonState() {
+            if (history.length === 0) {
+                btnReject.style.opacity = '0.5';
+                btnReject.style.cursor = 'not-allowed';
+            } else {
+                btnReject.style.opacity = '1';
+                btnReject.style.cursor = 'pointer';
+            }
+        }
+
+        // Overwrite restart button logic based on new structure
+        window.restartDeck = function () {
+            resetDeck();
+        }
+
+        // Update the HTML restart button to call restartDeck() instead of location.reload()
+        const restartBtn = emptyState.querySelector('button');
+        restartBtn.setAttribute('onclick', 'restartDeck()');
+
+        // Initialize
+        resetDeck(); // Initial setup using Reset to populate currentDeck
+
+    </script>
+    <script src="js/script.js"></script>
+</body>
+
+</html>

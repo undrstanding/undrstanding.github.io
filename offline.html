@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>You're Offline</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Outfit:wght@300;400;600;800&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --bg: #ffffff;
+            --accent: #000000;
+            --text: #111111;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            overflow: hidden;
+            user-select: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+        }
+
+        .mono {
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .main-container {
+            max-width: 400px;
+            width: 100%;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .offline-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #abc2fe;
+            border: 1px solid #eef2ff;
+            border-radius: 100px;
+            color: var(--accent);
+        }
+
+        .btn-minimal {
+            background: var(--text);
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+
+        .btn-minimal:hover {
+            opacity: 0.9;
+        }
+
+        .status-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 4px 12px;
+            background: #fff5f5;
+            border: 1px solid #ffe3e3;
+            border-radius: 100px;
+            color: #ff4d4d;
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="main-container">
+        <div class="offline-icon">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
+                stroke-linecap="round" stroke-linejoin="round">
+                <path d="M16.72 11.06A10.94 10.94 0 0 1 19 12.55" />
+                <path d="M5 12.55a10.94 10.94 0 0 1 5.17-2.39" />
+                <path d="M10.71 5.05A16 16 0 0 1 22.58 9" />
+                <path d="M1.42 9a15.91 15.91 0 0 1 4.7-2.88" />
+                <path d="M8.53 16.11a6 6 0 0 1 6.95 0" />
+                <line x1="1" y1="1" x2="23" y2="23" />
+            </svg>
+        </div>
+
+        <div class="mb-6">
+            <div class="status-tag mono mb-4">
+                <span class="w-1.5 h-1.5 rounded-full bg-red-500"></span>
+                OFFLINE
+            </div>
+            <h1 class="text-2xl font-bold mb-3 tracking-tight">Signal Interrupted</h1>
+            <p class="text-gray-400 text-sm leading-relaxed px-4">Looks like you are currently offline. Please check
+                your
+                connection to continue learning and <b>Undrstanding</b></p>
+        </div>
+
+        <button onclick="window.location.reload()"
+            class="btn-minimal px-8 py-3.5 rounded-xl font-bold text-xs tracking-widest uppercase flex items-center justify-center gap-3 mx-auto">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"
+                stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 2v6h-6" />
+                <path d="M3 12a9 9 0 0 1 15-6.7L21 8" />
+                <path d="M3 22v-6h6" />
+                <path d="M21 12a9 9 0 0 1-15 6.7L3 16" />
+            </svg>
+            Retry Connection
+        </button>
+
+    </div>
+    <script>
+        // Disable copy, cut, paste and context menu
+        document.addEventListener('copy', (e) => e.preventDefault());
+        document.addEventListener('cut', (e) => e.preventDefault());
+        document.addEventListener('paste', (e) => e.preventDefault());
+        document.addEventListener('contextmenu', (e) => e.preventDefault());
+
+        // Prevent keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            if ((e.ctrlKey || e.metaKey) && (e.key === 'c' || e.key === 'v' || e.key === 'x' || e.key === 'u' || e.key === 's')) {
+                e.preventDefault();
+            }
+        });
+    </script>
+</body>
+
+
+</html>

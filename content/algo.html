@@ -1,0 +1,3269 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Algorithms</title>
+    <link rel="icon" type="image/svg+xml" href="../assests/undrlogo.svg">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Roboto+Mono:wght@400;500&display=swap');
+
+        /* Global Scrollbar */
+        ::-webkit-scrollbar {
+            width: 1px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #000;
+        }
+
+        :root {
+            /* Rams Palette */
+            --bg-color: #f4f4f4;
+            --card-bg: #ffffff;
+            --text-main: #111111;
+            --text-muted: #737373;
+            /* Colors */
+            --accent: #db2777;
+            /* Pink-600 */
+            --accent-light: #fce7f3;
+            /* Pink-100 */
+            --compare: #eab308;
+            /* Yellow-500 */
+            --compare-light: #fef9c3;
+            /* Yellow-100 */
+            --sorted: #111111;
+            /* Black */
+            --border: #e5e5e5;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            -webkit-font-smoothing: antialiased;
+            line-height: 1.6;
+            overflow-x: hidden;
+            max-width: 100vw;
+        }
+
+        html {
+            overflow-x: hidden;
+            max-width: 100vw;
+        }
+
+        h1,
+        h2,
+        h3,
+        h4,
+        h5 {
+            font-weight: 600;
+            letter-spacing: -0.02em;
+            color: var(--text-main);
+        }
+
+        p {
+            color: #404040;
+        }
+
+        .mono {
+            font-family: 'Roboto Mono', monospace;
+        }
+
+        /* Industrial Grid Layout */
+        .rams-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            transition: all 0.3s ease;
+        }
+
+        .rams-card:hover {
+            border-color: #a3a3a3;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        }
+
+        @media (min-width: 768px) {
+            .rams-card {
+                padding: 2.5rem;
+            }
+        }
+
+        .rams-label {
+            font-family: 'Inter', sans-serif;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        /* Controls */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.5rem 1.25rem;
+            font-size: 0.85rem;
+            font-weight: 500;
+            border-radius: 2px;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            white-space: nowrap;
+        }
+
+        .btn-primary {
+            background-color: var(--accent);
+            color: white;
+            border: 1px solid var(--accent);
+        }
+
+        .btn-primary:hover {
+            background-color: #be185d;
+        }
+
+        .btn-secondary {
+            background-color: transparent;
+            color: var(--text-main);
+            border: 1px solid #a3a3a3;
+        }
+
+        .btn-secondary:hover {
+            background-color: #f0f0f0;
+            border-color: #555;
+        }
+
+        .btn-ghost {
+            color: var(--text-muted);
+        }
+
+        .btn-ghost:hover {
+            color: var(--text-main);
+            text-decoration: underline;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 0;
+            overflow-x: auto;
+        }
+
+        .btn-group .btn {
+            border-radius: 0;
+            border-right: 0;
+        }
+
+        .btn-group .btn:first-child {
+            border-top-left-radius: 2px;
+            border-bottom-left-radius: 2px;
+        }
+
+        .btn-group .btn:last-child {
+            border-top-right-radius: 2px;
+            border-bottom-right-radius: 2px;
+            border-right: 1px solid #a3a3a3;
+        }
+
+        .btn-group .btn.active {
+            background-color: #e5e5e5;
+            color: black;
+            font-weight: 600;
+        }
+
+        /* Nav */
+        .nav-link {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            padding: 0.5rem 0;
+            display: block;
+            transition: color 0.2s;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            color: var(--text-main);
+            font-weight: 500;
+        }
+
+        .nav-link.active::before {
+            content: "• ";
+            color: var(--accent);
+        }
+
+        /* Animation */
+        .section-reveal {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+        }
+
+        .section-reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Visuals */
+        .bar {
+            transition: height 0.3s ease, background-color 0.2s;
+        }
+
+        .grid-cell {
+            transition: background-color 0.2s ease, transform 0.2s ease;
+        }
+
+        .grid-cell.wall {
+            background-color: #111;
+            border-color: #111;
+        }
+
+        .grid-cell.visited {
+            background-color: var(--accent-light);
+            animation: pulsePink 0.4s forwards;
+        }
+
+        .grid-cell.frontier {
+            background-color: var(--compare-light);
+            border-color: var(--compare);
+        }
+
+        .grid-cell.path {
+            background-color: var(--accent);
+            border-color: var(--accent);
+        }
+
+        .search-box.dimmed {
+            opacity: 0.2;
+        }
+
+        .dp-cell.hit {
+            background-color: #dcfce7 !important;
+            border-color: #15803d !important;
+            transform: scale(1.1);
+        }
+
+        .dp-cell.calc {
+            background-color: #fce7f3 !important;
+            border-color: #db2777 !important;
+        }
+
+        /* Backtracking */
+        .queen-cell {
+            transition: all 0.3s;
+        }
+
+        .queen-cell.queen {
+            background-color: var(--accent);
+            color: white;
+        }
+
+        .queen-cell.conflict {
+            background-color: #ef4444;
+        }
+
+        /* Red */
+        .queen-cell.check {
+            background-color: #fef9c3;
+        }
+
+        /* Yellow */
+
+        /* Knapsack */
+        .item-card {
+            transition: all 0.3s ease;
+            border: 1px solid #e5e5e5;
+        }
+
+        .item-card.selected {
+            border-color: var(--accent);
+            background-color: var(--accent-light);
+            transform: translateY(-4px);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .item-card.checking {
+            border-color: var(--compare);
+            background-color: var(--compare-light);
+        }
+
+        .item-card.discarded {
+            opacity: 0.4;
+        }
+
+        /* Deep Dive Box */
+        .deep-dive {
+            background-color: #f9fafb;
+            border: 1px solid #e5e5e5;
+            padding: 1.5rem;
+            margin-top: 1.5rem;
+            font-size: 0.9rem;
+            line-height: 1.7;
+            color: #4b5563;
+        }
+
+        .deep-dive h4 {
+            color: #111;
+            font-weight: 600;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .deep-dive h4::before {
+            content: "";
+            display: inline-block;
+            width: 4px;
+            height: 4px;
+            background: var(--accent);
+            border-radius: 50%;
+        }
+
+        .deep-dive strong {
+            color: #111;
+            font-weight: 500;
+        }
+
+        @keyframes pulsePink {
+            0% {
+                transform: scale(0.8);
+                opacity: 0.5;
+            }
+
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        @keyframes dropIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px) scale(0.8);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .coin-drop {
+            animation: dropIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="flex min-h-screen flex-col lg:flex-row">
+
+        <!-- Mobile Header -->
+        <header
+            class="lg:hidden fixed top-0 w-full bg-[#f4f4f4] border-b border-[#e5e5e5] z-[100] px-6 py-4 flex justify-between items-center h-16">
+            <div>
+                <h1 class="text-sm font-semibold tracking-wide uppercase text-black leading-tight">Algo<br>rithms</h1>
+            </div>
+            <button onclick="toggleMobileMenu()" class="text-black focus:outline-none p-2 rounded">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+            </button>
+        </header>
+
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="fixed inset-0 bg-[#f4f4f4] z-[90] hidden flex-col pt-20 px-6 overflow-y-auto">
+            <nav class="flex flex-col">
+                <span class="text-[10px] text-gray-400 font-bold uppercase tracking-wider px-0 py-2">01.
+                    Fundamentals</span>
+                <a href="#sorting" class="mobile-nav-link" onclick="toggleMobileMenu()">Sorting</a>
+                <a href="#searching" class="mobile-nav-link" onclick="toggleMobileMenu()">Searching</a>
+                <span class="text-[10px] text-gray-400 font-bold uppercase tracking-wider px-0 py-2 mt-4">02.
+                    Logic</span>
+                <a href="#euclid" class="mobile-nav-link" onclick="toggleMobileMenu()">Euclid's Algo</a>
+                <a href="#union-find" class="mobile-nav-link" onclick="toggleMobileMenu()">Union-Find</a>
+                <a href="#recursion" class="mobile-nav-link" onclick="toggleMobileMenu()">Recursion</a>
+                <a href="#backtracking" class="mobile-nav-link" onclick="toggleMobileMenu()">Backtracking</a>
+                <a href="#pathfinding" class="mobile-nav-link" onclick="toggleMobileMenu()">Pathfinding</a>
+                <span class="text-[10px] text-gray-400 font-bold uppercase tracking-wider px-0 py-2 mt-4">03.
+                    Optimization</span>
+                <a href="#knapsack" class="mobile-nav-link" onclick="toggleMobileMenu()">Knapsack</a>
+                <a href="#tsp" class="mobile-nav-link" onclick="toggleMobileMenu()">Traveling Salesman</a>
+                <a href="#greedy" class="mobile-nav-link" onclick="toggleMobileMenu()">Greedy</a>
+                <a href="#dp" class="mobile-nav-link" onclick="toggleMobileMenu()">Dynamic Programming</a>
+                <span class="text-[10px] text-gray-400 font-bold uppercase tracking-wider px-0 py-2 mt-4">04.
+                    Analysis</span>
+                <a href="#complexity" class="mobile-nav-link" onclick="toggleMobileMenu()">Complexity</a>
+                <span class="text-[10px] text-gray-400 font-bold uppercase tracking-wider px-0 py-2 mt-4">05.
+                    Assessment</span>
+                <a href="#glossary" class="mobile-nav-link" onclick="toggleMobileMenu()">Glossary</a>
+                <a href="#quiz" class="mobile-nav-link" onclick="toggleMobileMenu()">Knowledge Check</a>
+            </nav>
+        </div>
+
+        <!-- Sidebar -->
+        <aside
+            class="hidden lg:block w-64 fixed h-screen bg-[#f4f4f4] border-r border-[#e5e5e5] z-50 overflow-y-auto thin-scrollbar">
+            <div class="p-8 h-full flex flex-col justify-between">
+                <div>
+                    <a href="../index.html"
+                        class="inline-flex items-center gap-2 px-4 py-2 mb-8 text-[10px] font-mono uppercase tracking-wider text-gray-600 border border-gray-300 hover:bg-black hover:text-white hover:border-black transition-all duration-200">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                        </svg>
+                        Back to Home
+                    </a>
+                    <div class="mb-12">
+                        <h1 class="text-sm font-semibold tracking-wide uppercase text-black">Algo<br>rithms</h1>
+                        <p class="text-[10px] text-gray-400 mt-1 uppercase tracking-wider font-bold">
+                            Algorithms</p>
+                    </div>
+                    <nav class="space-y-1">
+                        <a href="#intro" class="nav-link font-medium text-black">Introduction</a>
+                        <div class="pt-4 pb-1 text-[10px] text-gray-400 font-bold uppercase tracking-wider">01.
+                            Fundamentals</div>
+                        <a href="#sorting" class="nav-link">Sorting</a>
+                        <a href="#searching" class="nav-link">Searching</a>
+                        <div class="pt-4 pb-1 text-[10px] text-gray-400 font-bold uppercase tracking-wider">02. Logic
+                        </div>
+                        <a href="#euclid" class="nav-link">Euclid's Algo</a>
+                        <a href="#union-find" class="nav-link">Union-Find</a>
+                        <a href="#recursion" class="nav-link">Recursion</a>
+                        <a href="#backtracking" class="nav-link">Backtracking</a>
+                        <a href="#pathfinding" class="nav-link">Pathfinding</a>
+                        <div class="pt-4 pb-1 text-[10px] text-gray-400 font-bold uppercase tracking-wider">03.
+                            Optimization</div>
+                        <a href="#knapsack" class="nav-link">Knapsack (0/1)</a>
+                        <a href="#tsp" class="nav-link">Traveling Salesman</a>
+                        <a href="#greedy" class="nav-link">Greedy</a>
+                        <a href="#dp" class="nav-link">Dynamic Programming</a>
+                        <div class="pt-4 pb-1 text-[10px] text-gray-400 font-bold uppercase tracking-wider">04. Analysis
+                        </div>
+                        <a href="#complexity" class="nav-link">Big O Notation</a>
+                        <div class="pt-4 pb-1 text-[10px] text-gray-400 font-bold uppercase tracking-wider">05.
+                            Evaluation
+                        </div>
+                        <a href="#glossary" class="nav-link">Glossary</a>
+                        <a href="#quiz" class="nav-link">Knowledge Check</a>
+                    </nav>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 lg:ml-64 bg-white w-full">
+            <div class="max-w-3xl mx-auto px-4 sm:px-8 py-24 lg:py-20">
+
+                <!-- Hero -->
+                <section id="intro" class="mb-16 md:mb-24">
+                    <h2 class="text-3xl md:text-5xl font-semibold mb-6 text-black tracking-tight leading-tight">Recipes
+                        for <br>Computation</h2>
+                    <p class="text-base md:text-lg text-gray-600 max-w-xl font-light leading-relaxed mb-6">
+                        An algorithm is an unambiguous specification of how to solve a class of problems. It can perform
+                        calculation, data processing, and automated reasoning tasks. This guide visualizes the internal
+                        logic of these digital engines.
+                    </p>
+                </section>
+
+                <div class="divider hidden md:block"></div>
+
+                <!-- 01. Sorting -->
+                <section id="sorting" class="mb-20 md:mb-24">
+                    <span class="rams-label">01 / Bringing Order</span>
+                    <h3 class="text-xl font-medium mb-4">Sorting Algorithms</h3>
+                    <p class="text-sm text-gray-600 mb-6 max-w-xl">
+                        Sorting organizes data to make subsequent retrieval (searching) efficient.
+                    </p>
+
+                    <div class="rams-card">
+                        <div class="flex flex-col gap-6">
+                            <div
+                                class="flex gap-4 text-[10px] uppercase font-bold tracking-widest text-gray-400 justify-end">
+                                <div class="flex items-center gap-1">
+                                    <div class="w-2 h-2 bg-yellow-500 rounded-full"></div> Compare
+                                </div>
+                                <div class="flex items-center gap-1">
+                                    <div class="w-2 h-2 bg-pink-600 rounded-full"></div> Swap/Active
+                                </div>
+                                <div class="flex items-center gap-1">
+                                    <div class="w-2 h-2 bg-black rounded-full"></div> Sorted
+                                </div>
+                            </div>
+                            <!-- Added overflow-x-auto wrapper for mobile sorting fairness -->
+                            <div class="w-full max-w-full overflow-x-auto pb-2">
+                                <div class="h-80 flex items-end justify-center gap-1 border-b border-gray-200 pb-1 min-w-max md:min-w-0 mx-auto"
+                                    id="sort-container"></div>
+                            </div>
+                            <div
+                                class="flex flex-col md:flex-row justify-between items-center gap-4 pt-4 border-t border-gray-100">
+                                <div class="flex flex-col gap-3 w-full md:w-auto">
+                                    <div class="btn-group w-full md:w-auto overflow-x-auto no-scrollbar">
+                                        <button onclick="setSortMethod('bubble')" id="btn-bubble"
+                                            class="btn btn-secondary text-xs active px-3">Bubble</button>
+                                        <button onclick="setSortMethod('selection')" id="btn-selection"
+                                            class="btn btn-secondary text-xs px-3">Select</button>
+                                        <button onclick="setSortMethod('insertion')" id="btn-insertion"
+                                            class="btn btn-secondary text-xs px-3">Insert</button>
+                                        <button onclick="setSortMethod('merge')" id="btn-merge"
+                                            class="btn btn-secondary text-xs px-3">Merge</button>
+                                        <button onclick="setSortMethod('quick')" id="btn-quick"
+                                            class="btn btn-secondary text-xs px-3">Quick</button>
+                                        <button onclick="setSortMethod('heap')" id="btn-heap"
+                                            class="btn btn-secondary text-xs px-3">Heap</button>
+                                        <button onclick="setSortMethod('counting')" id="btn-counting"
+                                            class="btn btn-secondary text-xs px-3">Counting</button>
+                                        <button onclick="setSortMethod('bogo')" id="btn-bogo"
+                                            class="btn btn-secondary text-xs px-3">Bogo</button>
+                                    </div>
+                                    <div class="flex gap-2 flex-wrap items-center">
+                                        <button onclick="runSort()" id="sort-btn"
+                                            class="btn btn-primary text-xs w-full sm:w-auto">Start Sort</button>
+                                        <button onclick="toggleManualMode()" id="btn-manual"
+                                            class="btn btn-secondary text-xs w-full sm:w-auto">Manual: OFF</button>
+                                        <button onclick="triggerNextStep()" id="btn-next"
+                                            class="btn btn-secondary text-xs w-full sm:w-auto" disabled>Next
+                                            Step</button>
+                                        <button onclick="resetSort()" id="reset-sort-btn"
+                                            class="btn btn-ghost text-xs">Reset</button>
+                                    </div>
+                                </div>
+                                <div class="text-xs font-mono text-gray-500 text-right w-full md:w-64" id="sort-status">
+                                    Select a method.</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="deep-dive">
+                        <h4>Understanding the Mechanics</h4>
+                        <div class="space-y-6">
+                            <div>
+                                <p class="mb-1"><strong>Bubble Sort (O(n²))</strong></p>
+                                <p class="text-sm text-gray-500">Think of air bubbles rising to the surface. In each
+                                    pass, adjacent elements are compared. If they are in the wrong order (e.g., 5 then
+                                    2), they are swapped. The largest unsorted element "bubbles up" to its correct
+                                    position at the end of the list with each full iteration. It is simple to implement
+                                    but extremely inefficient for large datasets.</p>
+                                <button class="btn btn-ghost text-[10px] p-0 h-auto mt-2 text-pink-600"
+                                    onclick="toggleCode('code-bubble')">Show Code</button>
+                                <pre id="code-bubble"
+                                    class="hidden bg-gray-900 text-green-400 p-3 rounded text-xs mt-2 overflow-x-auto font-mono">
+void bubbleSort(int arr[], int n) {
+    for (int i = 0; i < n-1; i++)
+        for (int j = 0; j < n-i-1; j++)
+            if (arr[j] > arr[j+1])
+                swap(&arr[j], &arr[j+1]);
+}</pre>
+                            </div>
+                            <div>
+                                <p class="mb-1"><strong>Selection Sort (O(n²))</strong></p>
+                                <p class="text-sm text-gray-500">This algorithm divides the list into a "sorted" left
+                                    side and an "unsorted" right side. It scans the entire unsorted side to find the
+                                    fewer swaps than Bubble Sort but the same number of comparisons.</p>
+                                <button class="btn btn-ghost text-[10px] p-0 h-auto mt-2 text-pink-600"
+                                    onclick="toggleCode('code-selection')">Show Code</button>
+                                <pre id="code-selection"
+                                    class="hidden bg-gray-900 text-green-400 p-3 rounded text-xs mt-2 overflow-x-auto font-mono">
+void selectionSort(int arr[], int n) {
+    for (int i = 0; i < n-1; i++) {
+        int min_idx = i;
+        for (int j = i+1; j < n; j++)
+            if (arr[j] < arr[min_idx])
+                min_idx = j;
+        swap(&arr[min_idx], &arr[i]);
+    }
+}</pre>
+                            </div>
+                            <div>
+                                <p class="mb-1"><strong>Insertion Sort (O(n²))</strong></p>
+                                <p class="text-sm text-gray-500">Analogous to sorting playing cards in your hand. You
+                                    pick up one card at a time from the unsorted pile and slide it into its correct
+                                    or lists that are already mostly sorted.</p>
+                                <button class="btn btn-ghost text-[10px] p-0 h-auto mt-2 text-pink-600"
+                                    onclick="toggleCode('code-insertion')">Show Code</button>
+                                <pre id="code-insertion"
+                                    class="hidden bg-gray-900 text-green-400 p-3 rounded text-xs mt-2 overflow-x-auto font-mono">
+void insertionSort(int arr[], int n) {
+    for (int i = 1; i < n; i++) {
+        int key = arr[i];
+        let j = i - 1;
+        while (j >= 0 && arr[j] > key) {
+            arr[j + 1] = arr[j];
+            j = j - 1;
+        }
+        arr[j + 1] = key;
+    }
+}</pre>
+                            </div>
+                            <div>
+                                <p class="mb-1"><strong>Merge Sort (O(n log n))</strong></p>
+                                <p class="text-sm text-gray-500">A "Divide and Conquer" powerhouse. It recursively
+                                    splits the list in half until every sub-list contains only one element (which is
+                                    inherently sorted). Then, it merges these sub-lists back together in sorted order.
+                                    It is mathematically guaranteed to be fast and stable (preserves order of
+                                    duplicates).</p>
+                                <button class="btn btn-ghost text-[10px] p-0 h-auto mt-2 text-pink-600"
+                                    onclick="toggleCode('code-merge')">Show Code</button>
+                                <pre id="code-merge"
+                                    class="hidden bg-gray-900 text-green-400 p-3 rounded text-xs mt-2 overflow-x-auto font-mono">
+void merge(int arr[], int l, int m, int r) {
+    int n1 = m - l + 1;
+    int n2 = r - m;
+    int L[n1], R[n2];
+    for (int i = 0; i < n1; i++) L[i] = arr[l + i];
+    for (int j = 0; j < n2; j++) R[j] = arr[m + 1 + j];
+    int i = 0, j = 0, k = l;
+    while (i < n1 && j < n2) {
+        if (L[i] <= R[j]) arr[k++] = L[i++];
+        else arr[k++] = R[j++];
+    }
+    while (i < n1) arr[k++] = L[i++];
+    while (j < n2) arr[k++] = R[j++];
+}</pre>
+                            </div>
+                            <div>
+                                <p class="mb-1"><strong>Quick Sort (O(n log n))</strong></p>
+                                <p class="text-sm text-gray-500">Also "Divide and Conquer", but works in-place. It picks
+                                    a "pivot" element and partitions the array so that all smaller elements are to the
+                                    left and all larger elements are to the right. It then recursively sorts the
+                                    sub-arrays. It is often the fastest sorting algorithm in practice, though a bad
+                                    pivot choice can slow it down.</p>
+                                <button class="btn btn-ghost text-[10px] p-0 h-auto mt-2 text-pink-600"
+                                    onclick="toggleCode('code-quick')">Show Code</button>
+                                <pre id="code-quick"
+                                    class="hidden bg-gray-900 text-green-400 p-3 rounded text-xs mt-2 overflow-x-auto font-mono">
+int partition(int arr[], int low, int high) {
+    int pivot = arr[high];
+    int i = (low - 1);
+    for (int j = low; j <= high - 1; j++) {
+        if (arr[j] < pivot) {
+            i++;
+            swap(&arr[i], &arr[j]);
+        }
+    }
+    swap(&arr[i + 1], &arr[high]);
+    return (i + 1);
+}</pre>
+                            </div>
+                            <div>
+                                <p class="mb-1"><strong>Heap Sort (O(n log n))</strong></p>
+                                <p class="text-sm text-gray-500">Uses a Binary Heap data structure. It divides the input
+                                    into
+                                    sorted and unsorted regions, and iteratively shrinks the unsorted region by
+                                    extracting
+                                    the largest element and moving that to the sorted region. It is efficient and
+                                    requires
+                                    minimal extra space.</p>
+                                <button class="btn btn-ghost text-[10px] p-0 h-auto mt-2 text-pink-600"
+                                    onclick="toggleCode('code-heap')">Show Code</button>
+                                <pre id="code-heap"
+                                    class="hidden bg-gray-900 text-green-400 p-3 rounded text-xs mt-2 overflow-x-auto font-mono">
+void heapify(int arr[], int n, int i) {
+    int largest = i;
+    int l = 2 * i + 1;
+    int r = 2 * i + 2;
+    if (l < n && arr[l] > arr[largest]) largest = l;
+    if (r < n && arr[r] > arr[largest]) largest = r;
+    if (largest != i) {
+        swap(&arr[i], &arr[largest]);
+        heapify(arr, n, largest);
+    }
+}</pre>
+                            </div>
+                            <div>
+                                <p class="mb-1"><strong>Counting Sort (O(n + k))</strong></p>
+                                <p class="text-sm text-gray-500">A non-comparative sorting algorithm. It counts the
+                                    number of objects having distinct key values (like hashing). Then it does some
+                                    arithmetic to calculate the position of each object in the output sequence. It is
+                                    efficient when the range of input values (k) is not significantly greater than the
+                                    number of objects (n).</p>
+                                <button class="btn btn-ghost text-[10px] p-0 h-auto mt-2 text-pink-600"
+                                    onclick="toggleCode('code-counting')">Show Code</button>
+                                <pre id="code-counting"
+                                    class="hidden bg-gray-900 text-green-400 p-3 rounded text-xs mt-2 overflow-x-auto font-mono">
+void countingSort(int array[], int size) {
+  int output[10];
+  int count[10];
+  int max = array[0];
+  for (int i = 1; i < size; i++) {
+    if (array[i] > max)
+      max = array[i];
+  }
+  for (int i = 0; i <= max; ++i) count[i] = 0;
+  for (int i = 0; i < size; i++) count[array[i]]++;
+  for (int i = 1; i <= max; i++) count[i] += count[i - 1];
+  for (int i = size - 1; i >= 0; i--) {
+    output[count[array[i]] - 1] = array[i];
+    count[array[i]]--;
+  }
+}</pre>
+                            </div>
+                            <div>
+                                <p class="mb-1"><strong>Bogo Sort (O((n+1)!))</strong></p>
+                                <p class="text-sm text-gray-500">Also known as "Stupid Sort" or "Monkey Sort". It simply
+                                    shuffles the array randomly and checks if it's sorted. It exists solely as a warning
+                                    against inefficiency.</p>
+                                <button class="btn btn-ghost text-[10px] p-0 h-auto mt-2 text-pink-600"
+                                    onclick="toggleCode('code-bogo')">Show Code</button>
+                                <pre id="code-bogo"
+                                    class="hidden bg-gray-900 text-green-400 p-3 rounded text-xs mt-2 overflow-x-auto font-mono">
+void bogoSort(int* arr, int n) {
+    while (!isSorted(arr, n))
+        shuffle(arr, n);
+}</pre>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                <!-- Check: Sorting -->
+                <div id="quiz-algo-sorting"></div>
+
+                <!-- 02. Searching -->
+                <section id="searching" class="mb-20 md:mb-24">
+                    <span class="rams-label">02 / Divide & Conquer</span>
+                    <h3 class="text-xl font-medium mb-4">Searching Algorithms</h3>
+                    <div class="rams-card">
+                        <div class="flex flex-col gap-6">
+                            <div class="flex flex-wrap justify-center gap-2" id="search-container"></div>
+                            <div class="flex flex-col gap-4 border-t border-gray-100 pt-6">
+                                <div class="flex flex-col sm:flex-row gap-4 items-center justify-between">
+                                    <div class="flex flex-col sm:flex-row gap-2 items-center w-full sm:w-auto">
+                                        <div class="btn-group">
+                                            <button onclick="setSearchMethod('binary')" id="btn-search-bin"
+                                                class="btn btn-secondary text-xs active">Binary</button>
+                                            <button onclick="setSearchMethod('linear')" id="btn-search-lin"
+                                                class="btn btn-secondary text-xs">Linear</button>
+                                        </div>
+                                        <div class="flex gap-2 w-full sm:w-auto">
+                                            <input type="number" id="search-target" placeholder="Target"
+                                                class="w-20 border border-gray-300 p-2 text-sm font-mono focus:outline-none focus:border-pink-600 rounded-sm"
+                                                min="1" max="99">
+                                            <button onclick="startSearch()" id="search-btn"
+                                                class="btn btn-primary text-xs flex-1 sm:flex-none">Find</button>
+                                            <button onclick="resetSearch()"
+                                                class="btn btn-secondary text-xs">Reset</button>
+                                        </div>
+                                    </div>
+                                    <div class="text-xs font-mono text-gray-500" id="search-status">Select method &
+                                        number.</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="deep-dive">
+                        <h4>The Power of Structure</h4>
+                        <p class="mb-4"><strong>Linear Search (O(n)):</strong> The simplest method. You look at every
+                            item one by one until you find what you need. It works on any list, sorted or not, but is
+                            inefficient for large datasets.</p>
+                        <p><strong>Binary Search (O(log n)):</strong> This algorithm fundamentally relies on the data
+                            being <strong>sorted</strong>. By checking the middle element, it can instantly discard half
+                            of the remaining possibilities. If you are looking for a name in a phone book of 1,000,000
+                            people, Linear Search might take 1,000,000 steps. Binary Search takes at most 20 steps (log₂
+                            1,000,000 ≈ 20).</p>
+                        <p class="mt-4"><strong>Hash Table (O(1)):</strong> The fastest search method. It uses a hash
+                            function to map keys to values directly, allowing for average constant-time lookups, unlike
+                            scanning an array.</p>
+                    </div>
+                </section>
+                <!-- Check: Searching -->
+                <div id="quiz-algo-searching"></div>
+
+                <!-- 03. Euclid's Algo -->
+                <section id="euclid" class="mb-20 md:mb-24">
+                    <span class="rams-label">03 / Number Theory</span>
+                    <h3 class="text-xl font-medium mb-4">Euclid's Algorithm (GCD)</h3>
+                    <div class="rams-card">
+                        <div class="flex flex-col gap-8">
+                            <div class="flex justify-center items-center gap-4 bg-gray-50 p-4 sm:p-8 rounded min-h-[200px] overflow-x-auto"
+                                id="euclid-visual">
+                                <div class="text-gray-400 italic text-center">Enter numbers to visualize GCD</div>
+                            </div>
+                            <div
+                                class="flex flex-col md:flex-row justify-between items-center gap-6 pt-4 border-t border-gray-100">
+                                <div class="flex flex-col sm:flex-row gap-2 items-center w-full sm:w-auto">
+                                    <div class="flex gap-2 w-full sm:w-auto">
+                                        <input type="number" id="euclid-a" placeholder="A"
+                                            class="flex-1 min-w-0 sm:w-24 border border-gray-300 p-2 text-sm font-mono focus:outline-none focus:border-pink-600 rounded-sm"
+                                            min="1">
+                                        <input type="number" id="euclid-b" placeholder="B"
+                                            class="flex-1 min-w-0 sm:w-24 border border-gray-300 p-2 text-sm font-mono focus:outline-none focus:border-pink-600 rounded-sm"
+                                            min="1">
+                                    </div>
+                                    <button onclick="startEuclid()" id="euclid-btn"
+                                        class="btn btn-primary text-xs w-full sm:w-auto">Calculate GCD</button>
+                                </div>
+                                <div class="text-xs font-mono text-gray-500 w-full text-center md:text-right"
+                                    id="euclid-status">Ready.</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="deep-dive">
+                        <h4>Ancient & Elegant</h4>
+                        <p class="mb-4"><strong>The Principle:</strong> The Greatest Common Divisor (GCD) of two numbers
+                            doesn't change if you replace the larger number with the difference (or modulo).
+                            <code>GCD(A, B) = GCD(B, A % B)</code>.
+                        </p>
+                        <p><strong>Visualization:</strong> Using the "subtraction" method involves cutting rectangles.
+                            If you have a rectangle of 48x18, you can cut off two 18x18 squares, leaving a 12x18
+                            rectangle. Then cut 12x12, leaving 12x6. Finally two 6x6 fit perfectly. Square size 6 is the
+                            GCD.</p>
+                    </div>
+                </section>
+                <div id="quiz-algo-euclid"></div>
+
+                <!-- 04. Union-Find -->
+                <section id="union-find" class="mb-20 md:mb-24">
+                    <span class="rams-label">04 / Disjoint Sets</span>
+                    <h3 class="text-xl font-medium mb-4">Union-Find</h3>
+                    <div class="rams-card">
+                        <div class="flex flex-col gap-6">
+                            <div class="flex flex-wrap justify-center gap-4 p-4 min-h-[150px]" id="uf-container">
+                                <!-- Nodes go here -->
+                            </div>
+                            <div
+                                class="flex flex-col md:flex-row justify-between items-center gap-4 pt-4 border-t border-gray-100">
+                                <div class="flex gap-2 items-center flex-wrap w-full sm:w-auto">
+                                    <select id="uf-select-1"
+                                        class="border border-gray-300 p-2 text-sm rounded-sm bg-white"></select>
+                                    <select id="uf-select-2"
+                                        class="border border-gray-300 p-2 text-sm rounded-sm bg-white"></select>
+                                    <button onclick="ufUnion()" id="uf-union-btn"
+                                        class="btn btn-primary text-xs">Union</button>
+                                    <button onclick="ufFind()" id="uf-find-btn" class="btn btn-secondary text-xs">Find
+                                        (Node 1)</button>
+                                    <button onclick="initUF()" class="btn btn-ghost text-xs">Reset</button>
+                                </div>
+                                <div class="text-xs font-mono text-gray-500" id="uf-status">Ready.</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="deep-dive">
+                        <h4>Connectivity & Cycles</h4>
+                        <p class="mb-4"><strong>Union-Find</strong> (or Disjoint-Set Union / DSU) keeps track of
+                            elements partitioned into disjoint sets. It's incredibly fast (nearly constant time
+                            `O(α(n))`) for two operations:
+                            <br>1. <strong>Union:</strong> Merge two sets.
+                            <br>2. <strong>Find:</strong> Determine which set an element belongs to.
+                        </p>
+                        <p>It is widely used in network connectivity, image processing, and Kruskal's Algorithm for
+                            Minimum Spanning Trees.</p>
+                    </div>
+                </section>
+                <div id="quiz-algo-uf"></div>
+
+                <!-- 05. Recursion -->
+                <section id="recursion" class="mb-20 md:mb-24">
+                    <span class="rams-label">05 / The Stack</span>
+                    <h3 class="text-xl font-medium mb-4">Recursion</h3>
+                    <div class="rams-card">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
+                            <div class="bg-gray-50 border border-gray-200 h-64 relative flex flex-col-reverse items-center p-4 overflow-y-auto thin-scrollbar"
+                                id="recursion-stack">
+                                <div class="absolute top-2 right-2 text-[10px] uppercase text-gray-400 font-bold">Memory
+                                    Stack</div>
+                            </div>
+                            <div class="flex flex-col justify-center gap-6">
+                                <div
+                                    class="font-mono text-sm bg-gray-100 p-4 rounded text-gray-700 border-l-4 border-pink-600">
+                                    function fact(n) {<br>
+                                    &nbsp;&nbsp;if (n <= 1) return 1;<br>
+                                        &nbsp;&nbsp;return n * <span
+                                            class="text-pink-600 font-bold">fact(n-1)</span>;<br>
+                                        }
+                                </div>
+                                <div class="flex gap-3">
+                                    <button onclick="runRecursion(3)" class="btn btn-primary text-xs w-full">Calc
+                                        Factorial(3)</button>
+                                    <button onclick="runRecursion(4)" class="btn btn-secondary text-xs w-full">Calc
+                                        Factorial(4)</button>
+                                </div>
+                                <div class="text-xs font-mono text-gray-500 h-4" id="recursion-status">Ready.</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="deep-dive">
+                        <h4>Self-Referential Logic</h4>
+                        <p class="mb-4"><strong>Concept:</strong> Recursion is a method where the solution to a problem
+                            depends on solutions to smaller instances of the same problem. It consists of a <strong>Base
+                                Case</strong> (when to stop) and a <strong>Recursive Step</strong> (breaking the problem
+                            down).</p>
+                        <p><strong>The Call Stack:</strong> Computers handle function calls using a "Stack". When
+                            <code>fact(3)</code> calls <code>fact(2)</code>, it doesn't finish immediately; it pauses
+                            and adds a new "frame" to memory. Only when the base case is reached do the frames "pop"
+                            off, passing values back up the chain. If you forget the base case, you get the infinite
+                            loop known as a <strong>Stack Overflow</strong>.
+                        </p>
+                    </div>
+                </section>
+                <!-- Check: Recursion -->
+                <div id="quiz-algo-recursion"></div>
+
+                <!-- 06. Backtracking -->
+                <section id="backtracking" class="mb-20 md:mb-24">
+                    <span class="rams-label">06 / Trial & Error</span>
+                    <h3 class="text-xl font-medium mb-4">Backtracking: N-Queens</h3>
+                    <div class="rams-card">
+                        <div class="flex flex-col md:flex-row gap-10">
+                            <div class="flex justify-center items-center flex-1">
+                                <div class="grid grid-cols-4 gap-1 p-2 bg-gray-200 border border-gray-300"
+                                    id="nqueens-board"></div>
+                            </div>
+                            <div class="flex-1 flex flex-col justify-center gap-6">
+                                <div class="font-mono text-sm bg-gray-100 p-4 rounded text-gray-700 overflow-x-auto">
+                                    function solve(row) {<br>
+                                    &nbsp;&nbsp;if (row >= 4) return true;<br>
+                                    &nbsp;&nbsp;for (col = 0 to 3) {<br>
+                                    &nbsp;&nbsp;&nbsp;&nbsp;if (isValid(row, col)) {<br>
+                                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;board[row] = col;<br>
+                                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if (solve(row + 1)) return true;<br>
+                                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="text-red-600 font-bold">board[row]
+                                        = -1; // Backtrack</span><br>
+                                    &nbsp;&nbsp;&nbsp;&nbsp;}<br>
+                                    &nbsp;&nbsp;}<br>
+                                    &nbsp;&nbsp;return false;<br>
+                                    }
+                                </div>
+                                <div class="flex gap-2">
+                                    <button onclick="startNQueens()" id="nq-btn"
+                                        class="btn btn-primary text-xs w-full">Start Solver</button>
+                                    <button onclick="resetNQueens()"
+                                        class="btn btn-secondary text-xs w-full">Reset</button>
+                                </div>
+                                <div class="text-xs font-mono text-gray-500 h-8" id="nq-status">Ready.</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="deep-dive">
+                        <h4>Constraint Satisfaction</h4>
+                        <p class="mb-4"><strong>Concept:</strong> Backtracking is an algorithmic-technique for solving
+                            problems recursively by trying to build a solution incrementally, one piece at a time,
+                            removing those solutions that fail to satisfy the constraints of the problem at any point of
+                            time.</p>
+                        <p><strong>In Action:</strong> In the N-Queens problem, the algorithm places a Queen in the
+                            first available column of the current row. It then moves to the next row. If it finds it
+                            cannot place a Queen anywhere in the new row without being attacked, it realizes the
+                            <em>previous</em> placement was a mistake. It "backtracks" (returns) to the previous row,
+                            moves that Queen to a new spot, and tries again.
+                        </p>
+                    </div>
+                </section>
+                <!-- Check: Backtracking -->
+                <div id="quiz-algo-backtracking"></div>
+
+                <!-- 07. Pathfinding -->
+                <section id="pathfinding" class="mb-20 md:mb-24">
+                    <span class="rams-label">07 / Traversal</span>
+                    <h3 class="text-xl font-medium mb-4">Pathfinding</h3>
+                    <div class="rams-card">
+                        <div class="flex flex-col gap-6">
+                            <!-- Canvas Container -->
+                            <div
+                                class="w-full h-96 bg-gray-50 relative border border-gray-200 rounded-lg overflow-hidden group">
+                                <canvas id="graph-canvas"
+                                    class="w-full h-full cursor-grab active:cursor-grabbing"></canvas>
+                                <!-- Overlay Controls -->
+                                <div
+                                    class="absolute bottom-4 left-4 right-4 bg-white/90 backdrop-blur px-4 py-2 rounded-lg border border-gray-200 shadow-sm flex flex-wrap gap-2 justify-between items-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                    <div class="btn-group">
+                                        <button onclick="setPathMethod('bfs')" id="btn-bfs"
+                                            class="btn btn-secondary text-xs active">BFS</button>
+                                        <button onclick="setPathMethod('dfs')" id="btn-dfs"
+                                            class="btn btn-secondary text-xs">DFS</button>
+                                        <button onclick="setPathMethod('dijkstra')" id="btn-dijkstra"
+                                            class="btn btn-secondary text-xs">Dijkstra</button>
+                                        <button onclick="setPathMethod('astar')" id="btn-astar"
+                                            class="btn btn-secondary text-xs">A*</button>
+                                    </div>
+                                    <div class="flex gap-2">
+                                        <button onclick="startGraphPathfinding()" id="path-btn"
+                                            class="btn btn-primary text-xs">Start Graph Path</button>
+                                        <button onclick="initGraph()" class="btn btn-ghost text-xs">New Graph</button>
+                                    </div>
+                                </div>
+                                <!-- Instruction Tooltip -->
+                                <div id="graph-instruction"
+                                    class="absolute top-4 left-4 text-xs text-gray-500 bg-white/80 px-2 py-1 rounded border border-gray-100 transition-opacity duration-300 opacity-0 group-hover:opacity-100">
+                                    Drag nodes to rearrange • Click weight to edit • Click Start
+                                </div>
+                                <!-- Stats Display -->
+                                <div class="absolute top-4 right-4 flex flex-col sm:flex-row gap-2 items-end">
+                                    <div
+                                        class="bg-white/90 backdrop-blur px-3 py-1.5 rounded-lg border border-gray-200 shadow-sm text-xs font-mono">
+                                        Visited: <span id="visited-count" class="font-bold text-pink-600">0</span>
+                                    </div>
+                                    <div
+                                        class="bg-white/90 backdrop-blur px-3 py-1.5 rounded-lg border border-gray-200 shadow-sm text-xs font-mono">
+                                        Cost: <span id="path-cost" class="font-bold text-black">0</span>
+                                    </div>
+                                </div>
+                                <!-- Weight Edit Modal -->
+                                <div id="weight-modal"
+                                    class="absolute inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center opacity-0 pointer-events-none transition-opacity duration-200 z-20">
+                                    <div class="bg-white p-4 rounded-lg shadow-xl w-64 transform scale-95 transition-transform duration-200"
+                                        id="weight-modal-content">
+                                        <h5 class="text-sm font-bold text-gray-800 mb-2">Edit Edge Weight</h5>
+                                        <input type="number" id="weight-input" min="1" max="50"
+                                            class="w-full border border-gray-300 rounded px-2 py-1 mb-1 text-sm focus:outline-none focus:border-pink-500 font-mono">
+                                        <p class="text-[10px] text-red-500 mb-3">⚠️ Enter weight less than 50</p>
+                                        <div class="flex justify-end gap-2">
+                                            <button onclick="closeWeightModal()"
+                                                class="px-3 py-1 text-xs text-gray-600 hover:bg-gray-100 rounded">Cancel</button>
+                                            <button onclick="updateWeight()"
+                                                class="px-3 py-1 text-xs bg-pink-600 text-white hover:bg-pink-700 rounded shadow-sm">Update</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="deep-dive">
+                        <h4>Exploring Graphs</h4>
+                        <p class="mb-4"><strong>BFS (Breadth-First Search):</strong> Uses a <strong>Queue</strong>
+                            (FIFO). It radiates out from the starting node level by level. Guaranteed to find the
+                            shortest path (fewest edges) in an unweighted graph.</p>
+                        <p class="mb-4"><strong>DFS (Depth-First Search):</strong> Uses a <strong>Stack</strong>
+                            (LIFO). It plunges deep into one path before backtracking. It doesn't find the shortest path
+                            but is useful for exploring all connected components.</p>
+                        <p class="mb-4"><strong>Dijkstra's Algorithm:</strong> Uses a <strong>Priority Queue</strong>
+                            based on path cost. It excels in <strong>Weighted Graphs</strong> (where edges have
+                            different lengths/costs). It always finds the absolute lowest-cost path.</p>
+                        <p><strong>A* Search (A-Star):</strong> A smart search that uses a <strong>Heuristic</strong>
+                            (Euclidean distance here). It prioritizes nodes physically closer to the target, often
+                            finding the path much faster.</p>
+                    </div>
+                </section>
+                <!-- Check: Pathfinding -->
+                <div id="quiz-algo-pathfinding"></div>
+
+                <!-- 08. Huffman Coding -->
+                <section id="huffman" class="mb-20 md:mb-24">
+                    <span class="rams-label">08 / Compression</span>
+                    <h3 class="text-xl font-medium mb-2">Huffman Coding</h3>
+                    <p class="text-sm text-gray-600 mb-8 max-w-lg">
+                        A popular algorithm for lossless data compression. It assigns shorter binary codes to more
+                        frequent characters.
+                    </p>
+
+                    <div class="rams-card">
+                        <div class="flex flex-col gap-6">
+                            <div class="flex flex-col sm:flex-row gap-4 items-stretch sm:items-end">
+                                <div class="flex-1">
+                                    <label class="text-[10px] uppercase font-bold text-gray-400 mb-1 block">Input
+                                        Text</label>
+                                    <input type="text" id="huffman-input" value="mississippi river"
+                                        class="w-full bg-gray-50 border-b border-gray-300 p-2 font-mono text-sm focus:outline-none focus:border-black transition-colors"
+                                        autocomplete="off">
+                                </div>
+                                <button onclick="startHuffman()" id="huffman-btn"
+                                    class="h-10 px-6 bg-black text-white text-xs font-bold uppercase tracking-wider hover:bg-gray-800 transition-colors">
+                                    Compress
+                                </button>
+                            </div>
+
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                <!-- Frequency Table -->
+                                <div>
+                                    <h4 class="text-[10px] uppercase font-bold text-gray-400 mb-3">1. Frequency</h4>
+                                    <div id="huff-freq" class="grid grid-cols-2 gap-2 text-xs font-mono mb-4">
+                                        <!-- JS Generated -->
+                                    </div>
+
+                                    <!-- New Code Table -->
+                                    <h4
+                                        class="text-[10px] uppercase font-bold text-gray-400 mb-3 pt-4 border-t border-gray-100">
+                                        2. Code Table</h4>
+                                    <div id="huff-codes"
+                                        class="space-y-1 text-xs font-mono h-32 overflow-y-auto pr-2 custom-scrollbar">
+                                        <div class="text-gray-400 italic">Run to generate...</div>
+                                    </div>
+                                </div>
+
+                                <!-- Tree Visual & Steps -->
+                                <div class="md:col-span-2 flex flex-col gap-4">
+                                    <div>
+                                        <h4 class="text-[10px] uppercase font-bold text-gray-400 mb-3">3. Optimal Tree
+                                            Construction</h4>
+                                        <div class="relative w-full h-64 bg-gray-50 border border-gray-200 overflow-hidden"
+                                            id="huff-tree-container">
+                                            <canvas id="huff-canvas" class="w-full h-full"></canvas>
+                                        </div>
+                                    </div>
+
+                                    <!-- Calculation Log -->
+                                    <div>
+                                        <h4 class="text-[10px] uppercase font-bold text-gray-400 mb-2">Calculation Log
+                                        </h4>
+                                        <div id="huff-log"
+                                            class="bg-gray-900 text-gray-300 font-mono text-[10px] p-3 rounded h-32 overflow-y-auto custom-scrollbar whitespace-pre-wrap">
+                                            Waiting for input...</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Binary Output & Stats -->
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4 border-t border-gray-100">
+                                <div>
+                                    <h4 class="text-[10px] uppercase font-bold text-gray-400 mb-3">4. Result</h4>
+                                    <div class="p-3 bg-gray-900 text-green-400 font-mono text-xs rounded break-all min-h-[60px]"
+                                        id="huff-output">
+                                        Ready.
+                                    </div>
+                                </div>
+                                <div>
+                                    <h4 class="text-[10px] uppercase font-bold text-gray-400 mb-3">5. Efficiency Stats
+                                    </h4>
+                                    <div id="huff-stats"
+                                        class="grid grid-cols-2 gap-y-2 text-xs font-mono text-gray-600">
+                                        <span>Original Size:</span> <span class="text-black font-bold">-</span>
+                                        <span>Compressed Size:</span> <span class="text-black font-bold">-</span>
+                                        <span>Compression Ratio:</span> <span class="text-pink-600 font-bold">-</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="deep-dive">
+                        <h4>Deep Dive: Why it works</h4>
+                        <p class="mb-4">
+                            <strong>1. Variable Length Codes:</strong> In ASCII, every character is 8 bits (e.g., 'a' is
+                            01100001). Huffman uses variable lengths. Frequent characters like 'e' or 's' might get
+                            just 2 or 3 bits, while rare ones get longer codes.
+                        </p>
+                        <p class="mb-4">
+                            <strong>2. The Prefix Property:</strong> Notice that no code is a <em>prefix</em> of
+                            another. If 'a' = 0, then 'b' cannot be 01, because the decoder wouldn't know if "01" is "a"
+                            followed by "1" or just "b". By ensuring this property (via the tree structure), we don't
+                            need separators between codes.
+                        </p>
+                        <p>
+                            <strong>3. Greedy Strategy:</strong> The algorithm is "greedy" because at each step, it
+                            makes the locally optimal choice: it merges the two smallest probability nodes. This simple
+                            local rule guarantees a globally optimal tree for the entire message.
+                        </p>
+                    </div>
+                </section>
+                <!-- Check: Huffman -->
+                <div id="quiz-algo-huffman"></div>
+
+
+
+                <!-- 09. Knapsack Problem -->
+                <section id="knapsack" class="mb-20 md:mb-24">
+                    <span class="rams-label">09 / Optimization Strategies</span>
+                    <h3 class="text-xl font-medium mb-4">Knapsack Problem (0/1)</h3>
+                    <p class="text-sm text-gray-600 mb-6 max-w-xl">
+                        <strong>The Challenge:</strong> Capacity 10kg. Maximize Value.
+                    </p>
+                    <div class="rams-card">
+                        <div class="flex flex-col gap-8">
+                            <div class="flex justify-center gap-4 flex-wrap" id="knapsack-items"></div>
+                            <div class="flex flex-col items-center">
+                                <div class="w-full bg-gray-200 h-4 rounded-full overflow-hidden mb-2 relative">
+                                    <div id="knapsack-bar" class="h-full bg-pink-600 w-0 transition-all duration-500">
+                                    </div>
+                                </div>
+                                <div class="flex justify-between w-full text-xs font-mono text-gray-500">
+                                    <span id="knapsack-weight">Weight: 0 / 10kg</span>
+                                    <span id="knapsack-value" class="text-black font-bold">Total Value: $0</span>
+                                </div>
+                            </div>
+                            <div class="flex justify-center gap-2 pt-4 border-t border-gray-100">
+                                <button onclick="solveKnapsackGreedy()" id="k-greedy-btn"
+                                    class="btn btn-secondary text-xs">Run Greedy</button>
+                                <button onclick="solveKnapsackDP()" id="k-dp-btn" class="btn btn-primary text-xs">Run DP
+                                    (Optimal)</button>
+                                <button onclick="resetKnapsack()" class="btn btn-ghost text-xs">Reset</button>
+                            </div>
+                            <div class="text-center text-xs font-mono text-gray-500" id="knapsack-status">Ready to pack.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="deep-dive">
+                        <h4>Greedy vs. Dynamic Programming</h4>
+                        <p class="mb-4"><strong>The Greedy Flaw:</strong> A greedy strategy picks the item with the
+                            highest value-to-weight ratio first. In the example above, it picks the 6kg/$90 item. This
+                            fills the bag so much (6/10kg) that it cannot fit the next best items (5kg/$70). It ends up
+                            with $100 total.</p>
+                        <p><strong>The DP Solution:</strong> Dynamic Programming breaks the problem down. It effectively
+                            asks: "For a capacity of X kg, is it better to take this item or leave it?" It checks every
+                            combination mathematically. It realizes that skipping the high-ratio 6kg item allows us to
+                            take <em>two</em> 5kg items, resulting in $140 total.</p>
+                    </div>
+                </section>
+                <!-- Check: Knapsack -->
+                <div id="quiz-algo-knapsack"></div>
+
+                <!-- 10. TSP (Updated) -->
+                <section id="tsp" class="mb-20 md:mb-24">
+                    <span class="rams-label">10 / NP-Hard</span>
+                    <h3 class="text-xl font-medium mb-4">Traveling Salesman Problem</h3>
+                    <p class="text-sm text-gray-600 mb-6 max-w-xl">
+                        <strong>Visualization Key:</strong>
+                        <span class="text-gray-400">Gray Dashed</span> = Testing Path.
+                        <span class="text-pink-600 font-bold">Pink Solid</span> = Best Path.
+                    </p>
+                    <div class="rams-card">
+                        <div class="flex flex-col gap-6">
+                            <div class="relative h-64 bg-gray-50 border border-gray-200 overflow-hidden"
+                                id="tsp-container">
+                                <canvas id="tsp-canvas" class="absolute inset-0 w-full h-full"></canvas>
+                            </div>
+                            <div
+                                class="flex flex-col sm:flex-row justify-between items-center gap-4 pt-4 border-t border-gray-100">
+                                <div class="flex gap-2">
+                                    <button onclick="solveTSP()" id="tsp-btn" class="btn btn-primary text-xs">Find
+                                        Shortest Route</button>
+                                    <button onclick="resetTSP()" class="btn btn-secondary text-xs">New Map</button>
+                                </div>
+                                <div class="text-xs font-mono text-right">
+                                    <div class="text-gray-500">Current Check: <span id="tsp-current-dist"
+                                            class="text-gray-700">0</span></div>
+                                    <div class="text-gray-500">Best Dist: <span id="tsp-dist"
+                                            class="text-black font-bold">-</span></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="deep-dive">
+                        <h4>Combinatorial Explosion</h4>
+                        <p class="mb-4"><strong>The Problem:</strong> Given a list of cities, find the shortest route
+                            that visits each city exactly once and returns to the origin city.</p>
+                        <p><strong>Why it's Hard:</strong> There is no known fast algorithm for this. We must use Brute
+                            Force (checking every permutation). For 5 cities, there are only (5-1)! / 2 = 12 unique
+                            routes. But for 20 cities, there are 60 quadrillion routes. This is an
+                            <strong>NP-Hard</strong> problem.
+                        </p>
+                    </div>
+                </section>
+                <!-- Check: TSP -->
+                <div id="quiz-algo-tsp"></div>
+
+                <!-- 11. Greedy -->
+                <section id="greedy" class="mb-20 md:mb-24">
+                    <span class="rams-label">11 / Greedy Approach</span>
+                    <h3 class="text-xl font-medium mb-4">Coin Change</h3>
+                    <div class="rams-card">
+                        <div class="flex flex-col gap-10">
+                            <div class="flex justify-center gap-4 sm:gap-8 items-end h-20" id="coin-options">
+                                <div class="flex flex-col items-center gap-2">
+                                    <div
+                                        class="w-10 h-10 rounded-full border border-gray-300 bg-gray-50 flex items-center justify-center font-mono font-bold text-gray-500 shadow-sm">
+                                        25</div>
+                                </div>
+                                <div class="flex flex-col items-center gap-2">
+                                    <div
+                                        class="w-9 h-9 rounded-full border border-gray-300 bg-gray-50 flex items-center justify-center font-mono font-bold text-gray-500 shadow-sm">
+                                        10</div>
+                                </div>
+                                <div class="flex flex-col items-center gap-2">
+                                    <div
+                                        class="w-8 h-8 rounded-full border border-gray-300 bg-gray-50 flex items-center justify-center font-mono font-bold text-gray-500 shadow-sm">
+                                        5</div>
+                                </div>
+                                <div class="flex flex-col items-center gap-2">
+                                    <div
+                                        class="w-6 h-6 rounded-full border border-gray-300 bg-gray-50 flex items-center justify-center font-mono font-bold text-gray-500 shadow-sm">
+                                        1</div>
+                                </div>
+                            </div>
+                            <div class="bg-gray-100 border border-dashed border-gray-300 rounded p-6 min-h-[100px] flex flex-wrap justify-center items-center gap-2"
+                                id="coin-result">
+                                <span class="text-gray-400 text-xs uppercase tracking-widest">Coins will appear
+                                    here</span>
+                            </div>
+                            <div
+                                class="flex flex-col md:flex-row justify-between items-center gap-4 pt-4 border-t border-gray-100">
+                                <div class="flex gap-2 items-center w-full sm:w-auto">
+                                    <input type="number" id="coin-amount" placeholder="Amount (e.g. 42)"
+                                        class="w-32 border border-gray-300 p-2 text-sm font-mono focus:outline-none focus:border-pink-600 rounded-sm"
+                                        min="1" max="99">
+                                    <button onclick="calculateCoins()" id="coin-btn"
+                                        class="btn btn-primary text-xs flex-1 sm:flex-none">Calculate</button>
+                                    <button onclick="resetCoins()" class="btn btn-secondary text-xs">Reset</button>
+                                </div>
+                                <div class="text-xs font-mono text-gray-500" id="coin-status">Enter amount.</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="deep-dive">
+                        <h4>Greedy vs. Optimal</h4>
+                        <p>For canonical coin systems (like US Dollars: 1, 5, 10, 25), a Greedy algorithm (always taking
+                            the largest coin possible) is guaranteed to produce the optimal solution (fewest coins).
+                            However, for arbitrary systems (e.g., coins 1, 3, 4), Greedy fails. To make 6, Greedy would
+                            choose 4+1+1 (3 coins), while the optimal is 3+3 (2 coins).</p>
+                    </div>
+                </section>
+                <!-- Check: Greedy -->
+                <div id="quiz-algo-greedy"></div>
+
+                <!-- 12. Dynamic Programming -->
+                <section id="dp" class="mb-20 md:mb-24">
+                    <span class="rams-label">12 / Memoization</span>
+                    <h3 class="text-xl font-medium mb-4">Fibonacci DP</h3>
+                    <div class="rams-card">
+                        <div class="flex flex-col gap-6">
+                            <div class="w-full max-w-full overflow-x-auto pb-2">
+                                <div class="flex gap-2 min-w-max" id="dp-memo-table"></div>
+                            </div>
+                            <div
+                                class="flex flex-col md:flex-row justify-between items-center gap-4 pt-4 border-t border-gray-100">
+                                <div class="flex gap-2 items-center w-full sm:w-auto">
+                                    <input type="number" id="dp-input" placeholder="N (e.g. 7)"
+                                        class="w-20 border border-gray-300 p-2 text-sm font-mono focus:outline-none focus:border-pink-600 rounded-sm"
+                                        min="1" max="15">
+                                    <button onclick="startDP()" id="dp-btn"
+                                        class="btn btn-primary text-xs flex-1 sm:flex-none">Calculate Fib(N)</button>
+                                    <button onclick="resetDP()" class="btn btn-secondary text-xs">Reset Cache</button>
+                                </div>
+                                <div class="text-xs font-mono text-gray-500" id="dp-status">Cache empty.</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="deep-dive">
+                        <h4>Trading Space for Time</h4>
+                        <p>Naive recursion for Fibonacci is O(2ⁿ) because it recalculates the same values over and over
+                            (e.g., calculating Fib(5) requires Fib(3) multiple times). This is known as
+                            <strong>Overlapping Subproblems</strong>. <strong>Memoization</strong>
+                            stores these results in a table (cache) the first time they are computed. This reduces the
+                            time complexity to O(n) at the cost of O(n) memory space.
+                        </p>
+                    </div>
+                </section>
+                <!-- Check: DP -->
+                <div id="quiz-algo-dp"></div>
+
+                <!-- 13. Complexity -->
+                <section id="complexity" class="mb-12">
+                    <span class="rams-label">13 / Performance Analysis</span>
+                    <h3 class="text-xl font-medium mb-4">Time & Space Complexity</h3>
+                    <div class="rams-card">
+                        <div class="flex flex-col gap-8">
+                            <div class="flex items-end justify-between border-b border-gray-100 pb-4">
+                                <div>
+                                    <label class="text-[10px] text-gray-400 uppercase tracking-wide block mb-1">Data
+                                        Input (N)</label>
+                                    <span id="n-display" class="font-mono text-3xl font-bold text-black">10</span>
+                                    <span class="text-xs text-gray-400 ml-1">items</span>
+                                </div>
+                            </div>
+                            <input type="range" id="complexity-slider" min="1" max="100" value="10" class="w-full">
+                            <div class="space-y-6 mt-4">
+                                <div>
+                                    <div class="flex justify-between text-xs mb-2"><span
+                                            class="font-mono font-bold text-black">O(1) & O(log n)</span><span
+                                            class="text-gray-400">Instant</span></div>
+                                    <div class="w-full bg-gray-100 h-2 rounded-full overflow-hidden">
+                                        <div id="bar-log" class="h-full bg-green-500 transition-all duration-300"
+                                            style="width: 10%"></div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="flex justify-between text-xs mb-2"><span
+                                            class="font-mono font-bold text-black">O(n)</span><span
+                                            class="text-gray-400">Linear</span></div>
+                                    <div class="w-full bg-gray-100 h-2 rounded-full overflow-hidden">
+                                        <div id="bar-n" class="h-full bg-yellow-500 transition-all duration-300"
+                                            style="width: 20%"></div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="flex justify-between text-xs mb-2"><span
+                                            class="font-mono font-bold text-black">O(n²)</span><span
+                                            class="text-gray-400">Quadratic</span></div>
+                                    <div class="w-full bg-gray-100 h-2 rounded-full overflow-hidden">
+                                        <div id="bar-n2" class="h-full bg-orange-500 transition-all duration-300"
+                                            style="width: 40%"></div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="flex justify-between text-xs mb-2"><span
+                                            class="font-mono font-bold text-black">O(2ⁿ)</span><span
+                                            class="text-gray-400">Exponential</span></div>
+                                    <div class="w-full bg-gray-100 h-2 rounded-full overflow-hidden">
+                                        <div id="bar-exp" class="h-full bg-red-600 transition-all duration-300"
+                                            style="width: 60%"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="deep-dive">
+                        <h4>Space vs Time</h4>
+                        <p class="mb-4"><strong>Big O Notation:</strong> A mathematical notation that describes the
+                            limiting behavior of a function. It classifies algorithms according to how their run time or
+                            space requirements grow as the input size grows.</p>
+                        <p><strong>Space Complexity:</strong> Algorithms don't just consume time; they consume memory.
+                            <br>• <strong>In-Place (O(1)):</strong> Algorithms like Bubble Sort and Insertion Sort
+                            reorder elements within the original array, requiring almost no extra memory.
+                            <br>• <strong>Linear Space (O(n)):</strong> Merge Sort creates new sub-arrays to perform the
+                            merge step, requiring memory proportional to the dataset size.
+                            <br>• <strong>Recursion Stack:</strong> Recursive algorithms use memory for the Call Stack.
+                            Depth matters.
+                        </p>
+                    </div>
+                </section>
+                <!-- Check: Complexity -->
+                <div id="quiz-algo-complexity"></div>
+
+
+                <!-- Glossary Section -->
+                <section id="glossary" class="mb-20">
+                    <span class="rams-label">Glossary</span>
+                    <h3 class="text-xl font-medium mb-8">Key Definitions</h3>
+                    <div class="rams-card">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <h4 class="font-bold text-sm mb-2">Algorithm</h4>
+                                <p class="text-xs text-gray-600">An unambiguous specification of how to solve a class of
+                                    problems.</p>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-sm mb-2">Sorting</h4>
+                                <p class="text-xs text-gray-600">Organizing data to make subsequent retrieval
+                                    (searching) efficient.</p>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-sm mb-2">Big O Notation</h4>
+                                <p class="text-xs text-gray-600">A mathematical notation that describes the limiting
+                                    behavior of a function (complexity).</p>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-sm mb-2">Recursion</h4>
+                                <p class="text-xs text-gray-600">A method where the solution involves solving smaller
+                                    instances of the same problem.</p>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-sm mb-2">Backtracking</h4>
+                                <p class="text-xs text-gray-600">An algorithmic-technique for solving problems
+                                    recursively by trying to build a solution incrementally.</p>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-sm mb-2">Dynamic Programming (DP)</h4>
+                                <p class="text-xs text-gray-600">Breaking a problem into simpler subproblems and storing
+                                    the results to avoid re-computation.</p>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-sm mb-2">Greedy Algorithm</h4>
+                                <p class="text-xs text-gray-600">Making the locally optimal choice at each stage with
+                                    the intent of finding a global optimum.</p>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-sm mb-2">Divide and Conquer</h4>
+                                <p class="text-xs text-gray-600">Breaking a problem into sub-problems, solving them, and
+                                    combining the results.</p>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-sm mb-2">Pathfinding</h4>
+                                <p class="text-xs text-gray-600">Finding the shortest route between two points.</p>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-sm mb-2">Knapsack Problem</h4>
+                                <p class="text-xs text-gray-600">A combinatorial optimization problem to maximize value
+                                    within a weight limit.</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 14. Quiz -->
+                <section id="quiz" class="mb-20 md:mb-24">
+                    <span class="rams-label">14 / Knowledge Check</span>
+                    <div id="quiz-container" class="rams-card">
+                        <!-- Quiz loads here -->
+                    </div>
+                </section>
+
+                <!-- 15. Certificate (Initially Hidden) -->
+                <section id="certificate" class="mb-20 md:mb-24 hidden">
+                    <span class="rams-label">15 / Certification</span>
+                    <h3 class="text-xl font-medium mb-6">Completion Certificate</h3>
+
+                    <div class="rams-card !p-0 overflow-hidden">
+                        <div class="p-6 md:p-8">
+                            <div class="flex flex-col md:flex-row gap-8 items-start">
+                                <div class="w-full md:w-1/3 space-y-4">
+                                    <p class="text-sm text-gray-600">
+                                        Enter your name below to generate your personalized certificate of completion
+                                        for
+                                        the Algorithms series.
+                                    </p>
+                                    <div>
+                                        <label for="cert-name"
+                                            class="block text-xs font-bold text-gray-500 uppercase mb-1">Full
+                                            Name</label>
+                                        <input type="text" id="cert-name"
+                                            class="w-full border border-gray-300 p-2 font-mono text-sm focus:border-black outline-none"
+                                            placeholder="Al-Khwarizmi">
+                                        <p id="cert-error" class="text-red-500 text-xs mt-2 hidden">Please enter your
+                                            name.
+                                        </p>
+                                    </div>
+                                    <button onclick="generateCert()"
+                                        class="btn btn-primary bg-black border-black text-white w-full hover:bg-gray-800">Generate
+                                        Certificate</button>
+                                    <button onclick="downloadCert()" id="btn-download"
+                                        class="btn btn-secondary w-full hidden">Download PNG</button>
+
+                                </div>
+
+                                <div
+                                    class="w-full md:w-2/3 bg-gray-50 border border-gray-200 p-4 flex items-center justify-center">
+                                    <canvas id="cert-canvas" class="w-full shadow-lg bg-white"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="bg-gray-50 px-6 py-3 border-t border-gray-100 text-center">
+                            <p class="text-[10px] text-gray-400 italic">
+                                This certificate confirms successful completion of learning and assessment on this
+                                platform
+                                and is not an accredited or government-recognized qualification.
+                            </p>
+                        </div>
+                    </div>
+                </section>
+
+                <script src="js/script.js"></script>
+                <script>
+                    document.addEventListener('DOMContentLoaded', () => {
+                        new InlineQuiz('quiz-algo-sorting', {
+                            question: "Which of these sorting algorithms divides the list into 'sorted' and 'unsorted' regions and picks the smallest element?",
+                            options: ["Bubble Sort", "Insertion Sort", "Selection Sort", "Merge Sort"],
+                            answer: 2,
+                            explanation: "Selection Sort repeatedly scans the unsorted region to find the minimum element and moves it to the sorted region."
+                        });
+
+                        new InlineQuiz('quiz-algo-searching', {
+                            question: "What is the primary requirement for Binary Search to work?",
+                            options: ["The list must be unique", "The list must be sorted", "The list must be numbers only", "The list must be small"],
+                            answer: 1,
+                            explanation: "Binary Search relies on the order of elements to eliminate half of the remaining search space at each step."
+                        });
+
+                        new InlineQuiz('quiz-algo-recursion', {
+                            question: "What happens if a recursive function lacks a 'Base Case'?",
+                            options: ["It returns only 0", "It runs faster", "Stack Overflow (Infinite Loop)", "It converts to iteration automatically"],
+                            answer: 2,
+                            explanation: "Without a base case, the function calls itself indefinitely, filling up the memory stack until it overflows."
+                        });
+
+                        new InlineQuiz('quiz-algo-backtracking', {
+                            question: "In Backtracking (like N-Queens), what does the algorithm do when it reaches a dead end?",
+                            options: ["It stops and throws an error", "It backtracks to the previous decision point and tries a different option", "It randomly restarts", "It ignores the constraint"],
+                            answer: 1,
+                            explanation: "Backtracking involves abandoning a potential solution path as soon as it determines that it cannot possibly lead to a valid full solution, stepping back to try alternatives."
+                        });
+
+                        new InlineQuiz('quiz-algo-pathfinding', {
+                            question: "Which algorithm is guaranteed to find the shortest path in an unweighted graph?",
+                            options: ["DFS (Depth-First Search)", "BFS (Breadth-First Search)", "Greedy Best-First", "Random Walk"],
+                            answer: 1,
+                            explanation: "BFS explores neighbors level by level, ensuring the first time it reaches the target, it has taken the fewest steps."
+                        });
+
+                        new InlineQuiz('quiz-algo-huffman', {
+                            question: "Why does Huffman Coding assign shorter codes to frequent characters?",
+                            options: ["To make the file look better", "To minimize total file size (Compression)", "It is a random assignment", "To encrypt the data"],
+                            answer: 1,
+                            explanation: "By giving frequent characters shorter bit sequences, the overall number of bits required to store the data is minimized."
+                        });
+
+                        new InlineQuiz('quiz-algo-knapsack', {
+                            question: "Why does the Greedy approach fail for the 0/1 Knapsack problem?",
+                            options: ["It is too slow", "It doesn't consider value", "It might choose a high-value item that prevents fitting other better combinations", "Greedy always works"],
+                            answer: 2,
+                            explanation: "Greedy picks the 'best looking' item now, which might use up capacity needed for a better combination of smaller items later."
+                        });
+
+                        new InlineQuiz('quiz-algo-tsp', {
+                            question: "What class of problem is the Traveling Salesman Problem (TSP)?",
+                            options: ["P (Easy)", "NP-Hard", "Linear", "Constant"],
+                            answer: 1,
+                            explanation: "TSP is NP-Hard, meaning no known algorithm can solve it efficiently (in polynomial time) for all cases."
+                        });
+
+                        new InlineQuiz('quiz-algo-greedy', {
+                            question: "A Greedy Algorithm makes a choice that is:",
+                            options: ["Globally optimal", "Locally optimal", "Random", "Worst case"],
+                            answer: 1,
+                            explanation: "Greedy algorithms make the best choice at the CURRENT step (locally optimal), hoping it leads to a global optimum."
+                        });
+
+                        new InlineQuiz('quiz-algo-dp', {
+                            question: "What is 'Memoization' in Dynamic Programming?",
+                            options: ["Creating a memo for the user", "Storing the results of expensive function calls to avoid re-computation", "Using memory pointers", "Deleting old data"],
+                            answer: 1,
+                            explanation: "Memoization caches the return values of function calls so that calculating `Fib(5)` doesn't require re-calculating `Fib(3)` multiple times."
+                        });
+
+
+                        new InlineQuiz('quiz-algo-complexity', {
+                            question: "Which Time Complexity is the most efficient (fastest) for large N?",
+                            options: ["O(n)", "O(n^2)", "O(log n)", "O(1)"],
+                            answer: 3,
+                            explanation: "O(1) means constant time; the operation takes the same amount of time regardless of the input size."
+                        });
+
+                        new InlineQuiz('quiz-algo-euclid', {
+                            question: "What does Euclid's Algorithm calculate?",
+                            options: ["Prime Factors", "Least Common Multiple (LCM)", "Greatest Common Divisor (GCD)", "Fibonacci Sequence"],
+                            answer: 2,
+                            explanation: "Euclid's Algorithm is an efficient method for computing the Greatest Common Divisor (GCD) of two integers."
+                        });
+
+                        new InlineQuiz('quiz-algo-uf', {
+                            question: "What is the time complexity of the Union-Find operations with path compression?",
+                            options: ["O(n)", "O(log n)", "O(1)", "Nearly O(1) [Inverse Ackermann]"],
+                            answer: 3,
+                            explanation: "With path compression and union by rank, the amortized time complexity is nearly constant, described by the Inverse Ackermann function α(n)."
+                        });
+                    });
+                </script>
+                <script>
+                    // Quiz Data
+                    const questions = [
+                        {
+                            question: "What does Big O notation describe?",
+                            options: ["The exact execution time", "The worst-case time complexity/growth rate", "The space on hard drive", "The number of lines of code"],
+                            answer: 1
+                        },
+                        {
+                            question: "Which algorithm uses a 'Divide and Conquer' strategy?",
+                            options: ["Bubble Sort", "Merge Sort", "Insertion Sort", "Selection Sort"],
+                            answer: 1
+                        },
+                        {
+                            question: "What is the time complexity of Binary Search?",
+                            options: ["O(n)", "O(n^2)", "O(log n)", "O(1)"],
+                            answer: 2
+                        },
+                        {
+                            question: "What is a 'Base Case' in recursion?",
+                            options: ["The first line of code", "The condition that stops the recursion", "The most complex part", "The initial variable"],
+                            answer: 1
+                        },
+                        {
+                            question: "Which data structure does Breadth-First Search (BFS) use?",
+                            options: ["Stack", "Queue", "Tree", "Graph"],
+                            answer: 1
+                        },
+                        {
+                            question: "What is Dynamic Programming mainly used for?",
+                            options: ["Sorting arrays", "Solving problems with overlapping subproblems", "Searching databases", "encrypting data"],
+                            answer: 1
+                        },
+                        {
+                            question: "What is the key feature of a Greedy Algorithm?",
+                            options: ["It always looks ahead", "It makes the locally optimal choice at each step", "It is always the slowest", "It uses recursion"],
+                            answer: 1
+                        },
+                        {
+                            question: "Which sorting algorithm relies on a 'pivot' element?",
+                            options: ["Quick Sort", "Merge Sort", "Heap Sort", "Bubble Sort"],
+                            answer: 0
+                        },
+                        {
+                            question: "What is the average time complexity for a lookup in a Hash Table?",
+                            options: ["O(n)", "O(log n)", "O(1)", "O(n^2)"],
+                            answer: 2
+                        },
+                        {
+                            question: "Dijkstra's Algorithm is used for?",
+                            options: ["Sorting", "Finding the shortest path in a graph", "Searching text", "Compressing images"],
+                            answer: 1
+                        }
+                    ];
+
+                    // Init Quiz
+                    new QuizManager('quiz-container', questions, () => {
+                        document.getElementById('certificate').classList.remove('hidden');
+                        setTimeout(() => {
+                            document.getElementById('certificate').scrollIntoView({ behavior: 'smooth' });
+                        }, 100);
+                    });
+
+                    // Certificate Logic
+                    const certGen = new CertificateGenerator('cert-canvas', 'Algorithms');
+
+                    function generateCert() {
+                        const nameInput = document.getElementById('cert-name');
+                        const errorMsg = document.getElementById('cert-error');
+                        const name = nameInput.value.trim();
+                        const nameRegex = /^[a-zA-Z\s\-\.'’]+$/;
+
+                        // Reset error state
+                        errorMsg.classList.add('hidden');
+                        nameInput.classList.remove('border-red-500');
+
+                        if (!name) {
+                            errorMsg.textContent = "Please enter your name.";
+                            errorMsg.classList.remove('hidden');
+                            nameInput.classList.add('border-red-500');
+                            return;
+                        }
+
+                        if (name.length < 3 || name.length > 35) {
+                            errorMsg.textContent = "Name must be between 3 and 35 characters.";
+                            errorMsg.classList.remove('hidden');
+                            nameInput.classList.add('border-red-500');
+                            return;
+                        }
+
+                        if (!nameRegex.test(name)) {
+                            errorMsg.textContent = "Name cannot contain numbers or special characters.";
+                            errorMsg.classList.remove('hidden');
+                            nameInput.classList.add('border-red-500');
+                            return;
+                        }
+
+                        certGen.generate(name);
+                        document.getElementById('btn-download').classList.remove('hidden');
+                    }
+
+                    function downloadCert() {
+                        const name = document.getElementById('cert-name').value.trim();
+                        certGen.download(`Undrstanding_Algo_Certificate_${name.replace(/\s+/g, '_')}.png`);
+                    }
+                </script>
+
+
+
+                <footer class="w-full mt-12 mb-12">
+                    <div class="border-t border-gray-200 pt-8 flex justify-between items-center">
+                        <span class="text-[10px] mono uppercase text-gray-400">Undrstanding</span>
+                        <span class="text-[10px] mono uppercase text-gray-400">For Humans, From Humans</span>
+                    </div>
+                </footer>
+
+            </div>
+        </main>
+    </div>
+
+    <script>
+        function sleep(ms) { return new Promise(resolve => setTimeout(resolve, ms)); }
+
+        // --- 01. Sorting ---
+        const sortContainer = document.getElementById('sort-container');
+        const sortStatus = document.getElementById('sort-status');
+        let sorting = false;
+        let sortArray = [];
+        let sortMethod = 'bubble';
+        let isManual = false;
+        let resolveNextStep = null;
+        let abortSorting = false;
+
+        function setSortMethod(method) {
+            if (sorting) return;
+            sortMethod = method;
+            document.querySelectorAll('#sorting .btn-group .btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(`btn-${method}`).classList.add('active');
+            sortStatus.textContent = `Selected: ${method.charAt(0).toUpperCase() + method.slice(1)} Sort.`;
+            initSortArray();
+        }
+
+        function toggleManualMode() {
+            isManual = !isManual;
+            const btn = document.getElementById('btn-manual');
+            const nextBtn = document.getElementById('btn-next');
+            btn.textContent = `Manual: ${isManual ? 'ON' : 'OFF'}`;
+            btn.classList.toggle('active', isManual);
+            if (!isManual && resolveNextStep) { resolveNextStep(); resolveNextStep = null; }
+            if (sorting) { nextBtn.disabled = !isManual; if (isManual) nextBtn.classList.remove('opacity-50'); else nextBtn.classList.add('opacity-50'); }
+        }
+
+        function triggerNextStep() { if (resolveNextStep) { resolveNextStep(); resolveNextStep = null; } }
+
+        async function waitStep(delay = 600) {
+            if (abortSorting) throw new Error("RESET");
+            if (isManual) {
+                const nextBtn = document.getElementById('btn-next');
+                nextBtn.disabled = false;
+                nextBtn.classList.replace('btn-secondary', 'btn-primary');
+                await new Promise(resolve => resolveNextStep = resolve);
+                nextBtn.disabled = true;
+                nextBtn.classList.replace('btn-primary', 'btn-secondary');
+            } else { await sleep(delay); }
+            if (abortSorting) throw new Error("RESET");
+        }
+
+        function initSortArray() {
+            sortArray = Array.from({ length: 15 }, () => Math.floor(Math.random() * 80) + 10);
+            renderSortArray();
+        }
+
+        function renderSortArray(compare = [], swap = [], sorted = [], pivot = -1) {
+            sortContainer.innerHTML = '';
+            sortArray.forEach((val, idx) => {
+                const bar = document.createElement('div');
+                let bgColor = 'bg-gray-300';
+                if (compare.includes(idx)) bgColor = 'bg-yellow-500';
+                if (swap.includes(idx)) bgColor = 'bg-pink-600';
+                if (idx === pivot) bgColor = 'bg-purple-600';
+                if (sorted.includes(idx)) bgColor = 'bg-black';
+                bar.className = `w-6 sm:w-10 ${bgColor} bar rounded-t-sm relative group`;
+                bar.style.height = `${val}%`;
+                bar.innerHTML = `<span class="absolute -top-6 left-1/2 transform -translate-x-1/2 text-[10px] font-mono text-gray-500 font-bold px-1">${val}</span>`;
+                sortContainer.appendChild(bar);
+            });
+        }
+
+        async function runSort() {
+            if (sorting) return;
+            sorting = true;
+            abortSorting = false;
+            document.getElementById('sort-btn').disabled = true;
+            document.querySelectorAll('#sorting .btn-group .btn').forEach(b => b.disabled = true);
+            const nextBtn = document.getElementById('btn-next');
+            nextBtn.disabled = !isManual;
+            if (!isManual) nextBtn.classList.add('opacity-50');
+
+            try {
+                if (sortMethod === 'bubble') await bubbleSort();
+                else if (sortMethod === 'selection') await selectionSort();
+                else if (sortMethod === 'insertion') await insertionSort();
+                else if (sortMethod === 'quick') await startQuickSort();
+                else if (sortMethod === 'merge') await startMergeSort();
+                else if (sortMethod === 'heap') await startHeapSort();
+                else if (sortMethod === 'counting') await countingSort();
+                else if (sortMethod === 'bogo') await startBogoSort();
+                sortStatus.textContent = "Sorting Complete.";
+            } catch (e) {
+                if (e.message === "RESET") { sortStatus.textContent = "Reset."; initSortArray(); } else console.error(e);
+            } finally {
+                sorting = false;
+                document.getElementById('sort-btn').disabled = false;
+                document.querySelectorAll('#sorting .btn-group .btn').forEach(b => b.disabled = false);
+                nextBtn.disabled = true;
+                nextBtn.classList.add('opacity-50');
+            }
+        }
+
+        async function bubbleSort() { let n = sortArray.length; let sortedIndices = []; for (let i = 0; i < n - 1; i++) { for (let j = 0; j < n - i - 1; j++) { renderSortArray([j, j + 1], [], sortedIndices); await waitStep(); if (sortArray[j] > sortArray[j + 1]) { renderSortArray([], [j, j + 1], sortedIndices); await waitStep();[sortArray[j], sortArray[j + 1]] = [sortArray[j + 1], sortArray[j]]; renderSortArray([], [j, j + 1], sortedIndices); await waitStep(100); } } sortedIndices.push(n - i - 1); } sortedIndices.push(0); renderSortArray([], [], sortedIndices); }
+        async function selectionSort() { let n = sortArray.length; let sortedIndices = []; for (let i = 0; i < n; i++) { let minIdx = i; for (let j = i + 1; j < n; j++) { renderSortArray([j, minIdx], [], sortedIndices); await waitStep(300); if (sortArray[j] < sortArray[minIdx]) minIdx = j; } if (minIdx !== i) { renderSortArray([], [i, minIdx], sortedIndices); await waitStep();[sortArray[i], sortArray[minIdx]] = [sortArray[minIdx], sortArray[i]]; } sortedIndices.push(i); renderSortArray([], [], sortedIndices); } }
+        async function insertionSort() { let n = sortArray.length; for (let i = 1; i < n; i++) { let key = sortArray[i]; let j = i - 1; while (j >= 0 && sortArray[j] > key) { renderSortArray([j], [j + 1], Array.from({ length: i }, (_, k) => k)); await waitStep(); sortArray[j + 1] = sortArray[j]; j = j - 1; } sortArray[j + 1] = key; renderSortArray([], [], Array.from({ length: i + 1 }, (_, k) => k)); await waitStep(); } renderSortArray([], [], Array.from({ length: n }, (_, k) => k)); }
+        async function startQuickSort() { await quickSortRecursive(0, sortArray.length - 1); renderSortArray([], [], Array.from({ length: sortArray.length }, (_, k) => k)); }
+        async function quickSortRecursive(low, high) { if (low < high) { let pi = await partition(low, high); await quickSortRecursive(low, pi - 1); await quickSortRecursive(pi + 1, high); } }
+        async function partition(low, high) { let pivot = sortArray[high]; let i = (low - 1); for (let j = low; j <= high - 1; j++) { renderSortArray([j], [], [], high); await waitStep(300); if (sortArray[j] < pivot) { i++;[sortArray[i], sortArray[j]] = [sortArray[j], sortArray[i]]; renderSortArray([], [i, j], [], high); await waitStep(); } } [sortArray[i + 1], sortArray[high]] = [sortArray[high], sortArray[i + 1]]; return (i + 1); }
+        async function startMergeSort() { await mergeSortRecursive(0, sortArray.length - 1); renderSortArray([], [], Array.from({ length: sortArray.length }, (_, k) => k)); }
+        async function mergeSortRecursive(l, r) { if (l >= r) return; let m = l + parseInt((r - l) / 2); await mergeSortRecursive(l, m); await mergeSortRecursive(m + 1, r); await merge(l, m, r); }
+        async function merge(l, m, r) { let n1 = m - l + 1; let n2 = r - m; let L = new Array(n1); let R = new Array(n2); for (let i = 0; i < n1; i++) L[i] = sortArray[l + i]; for (let j = 0; j < n2; j++) R[j] = sortArray[m + 1 + j]; let i = 0, j = 0, k = l; while (i < n1 && j < n2) { renderSortArray([l + i, m + 1 + j]); await waitStep(); if (L[i] <= R[j]) { sortArray[k] = L[i]; i++; } else { sortArray[k] = R[j]; j++; } renderSortArray([], [k]); await waitStep(); k++; } while (i < n1) { sortArray[k] = L[i]; renderSortArray([], [k]); await waitStep(); i++; k++; } while (j < n2) { sortArray[k] = R[j]; renderSortArray([], [k]); await waitStep(); j++; k++; } }
+
+        async function startHeapSort() {
+            let n = sortArray.length;
+            // Build heap (rearrange array)
+            for (let i = Math.floor(n / 2) - 1; i >= 0; i--)
+                await heapify(n, i);
+
+            // One by one extract an element from heap
+            for (let i = n - 1; i > 0; i--) {
+                // Move current root to end
+                renderSortArray([], [0, i]);
+                await waitStep();
+                [sortArray[0], sortArray[i]] = [sortArray[i], sortArray[0]];
+
+                // Call max heapify on the reduced heap
+                await heapify(i, 0);
+            }
+            renderSortArray([], [], Array.from({ length: sortArray.length }, (_, k) => k));
+        }
+        async function heapify(n, i) {
+            let largest = i; // Initialize largest as root
+            let l = 2 * i + 1; // left = 2*i + 1
+            let r = 2 * i + 2; // right = 2*i + 2
+
+            // If left child is larger than root
+            if (l < n) {
+                renderSortArray([l, largest]);
+                await waitStep(100);
+                if (sortArray[l] > sortArray[largest]) largest = l;
+            }
+
+            // If right child is larger than largest so far
+            if (r < n) {
+                renderSortArray([r, largest]);
+                await waitStep(100);
+                if (sortArray[r] > sortArray[largest]) largest = r;
+            }
+
+            // If largest is not root
+            if (largest != i) {
+                renderSortArray([], [i, largest]);
+                await waitStep();
+                [sortArray[i], sortArray[largest]] = [sortArray[largest], sortArray[i]];
+
+                // Recursively heapify the affected sub-tree
+                await heapify(n, largest);
+            }
+        }
+
+        async function countingSort() {
+            let n = sortArray.length;
+            if (n === 0) return;
+
+            // 1. Find Max
+            sortStatus.textContent = "Finding Maximum value...";
+            let max = sortArray[0];
+            for (let i = 1; i < n; i++) {
+                renderSortArray([i], [], [], -1);
+                if (sortArray[i] > max) max = sortArray[i];
+                await waitStep(100);
+            }
+
+            // 2. Count Frequencies
+            let count = new Array(max + 1).fill(0);
+            for (let i = 0; i < n; i++) {
+                count[sortArray[i]]++;
+                renderSortArray([i]);
+                sortStatus.textContent = `Counting ${sortArray[i]}... (Frequency: ${count[sortArray[i]]})`;
+                await waitStep(100);
+            }
+
+            // 3. Reconstruct
+            let index = 0;
+            for (let i = 0; i <= max; i++) {
+                while (count[i] > 0) {
+                    sortArray[index] = i;
+                    renderSortArray([], [index], Array.from({ length: index }, (_, k) => k));
+                    sortStatus.textContent = `Placing value ${i} based on counts.`;
+                    await waitStep(150);
+                    index++;
+                    count[i]--;
+                }
+            }
+            renderSortArray([], [], Array.from({ length: n }, (_, k) => k));
+        }
+
+        async function startBogoSort() {
+            while (!isSorted()) {
+                sortStatus.textContent = "Shuffling randomly...";
+                shuffleArray();
+                renderSortArray();
+                await waitStep(300);
+            }
+            renderSortArray([], [], Array.from({ length: sortArray.length }, (_, k) => k));
+        }
+        function isSorted() { for (let i = 0; i < sortArray.length - 1; i++) if (sortArray[i] > sortArray[i + 1]) return false; return true; }
+        function shuffleArray() { for (let i = sortArray.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1));[sortArray[i], sortArray[j]] = [sortArray[j], sortArray[i]]; } }
+
+        function resetSort() { if (sorting) { abortSorting = true; if (resolveNextStep) { resolveNextStep(); resolveNextStep = null; } } else { initSortArray(); sortStatus.textContent = "Reset."; } }
+        initSortArray();
+
+        // --- 02. Searching ---
+        const searchContainer = document.getElementById('search-container'), searchStatus = document.getElementById('search-status'); let searchArray = [], searching = !1, searchMethod = 'binary';
+        function setSearchMethod(e) { searching || (searchMethod = e, document.querySelectorAll('#searching .btn-group .btn').forEach(e => e.classList.remove('active')), document.getElementById(`btn-search-${'binary' === e ? 'bin' : 'lin'}`).classList.add('active'), resetSearch()) }
+        function initSearchArray() { searchArray = Array.from({ length: 14 }, () => Math.floor(10 * Math.random()) + 1); if ('binary' === searchMethod) { for (let e = 1; e < searchArray.length; e++)searchArray[e] += searchArray[e - 1]; searchArray = searchArray.map(e => Math.min(e, 99)), searchArray = [...new Set(searchArray)].sort((e, t) => e - t) } else searchArray = searchArray.map(e => Math.floor(99 * Math.random())); renderSearchArray(), searchStatus.textContent = "Ready." }
+        function renderSearchArray(e = [], t = -1, a = -1, r = -1) { searchContainer.innerHTML = "", searchArray.forEach((n, s) => { const c = document.createElement("div"); let o = "search-box w-8 h-8 sm:w-10 sm:h-10 border flex items-center justify-center font-mono text-xs sm:text-sm transition-all duration-300 "; t === s ? o += "border-2 border-pink-600 bg-pink-600 text-white font-bold scale-110 shadow-lg z-10" : e.includes(s) ? o += "border-2 border-pink-600 bg-pink-50 text-pink-700 font-bold scale-105 z-10" : s >= a && s <= r ? o += "border-gray-200 text-gray-300 bg-gray-50 dimmed" : o += "border-gray-300 text-black bg-white", c.className = o, c.textContent = n, searchContainer.appendChild(c) }) }
+        async function startSearch() { const e = document.getElementById("search-target"), t = parseInt(e.value); t && !searching && (searching = !0, "binary" === searchMethod ? await binarySearch(t) : await linearSearch(t), searching = !1) }
+        async function linearSearch(e) { for (let t = 0; t < searchArray.length; t++) { if (searchStatus.textContent = `Checking Index ${t}...`, renderSearchArray([t]), await sleep(300), searchArray[t] === e) return searchStatus.textContent = `Found ${e} at Index ${t}!`, renderSearchArray([t], t), void 0 } searchStatus.textContent = "Target not found.", renderSearchArray([]) }
+        async function binarySearch(e) { let t = 0, a = searchArray.length - 1; for (; t <= a;) { let r = Math.floor((t + a) / 2); if (searchStatus.textContent = `Range [${t}-${a}]. Checking Mid ${r}`, searchContainer.innerHTML = "", searchArray.forEach((e, n) => { const s = document.createElement("div"); let c = "search-box w-8 h-8 sm:w-10 sm:h-10 border flex items-center justify-center font-mono text-xs sm:text-sm transition-all duration-300 "; n === r ? c += "border-2 border-pink-600 bg-pink-600 text-pink-700 font-bold scale-105 z-10" : n < t || n > a ? c += "border-gray-100 text-gray-300 bg-gray-50 opacity-30" : c += "border-gray-300 text-black bg-white", s.className = c, s.textContent = e, searchContainer.appendChild(s) }), await sleep(1000), searchArray[r] === e) return searchStatus.textContent = `Found ${e} at Index ${r}!`, searchContainer.children[r].className = "search-box w-10 h-10 border-2 border-pink-600 bg-pink-600 text-white font-bold scale-110 shadow-lg z-10 flex items-center justify-center font-mono", void 0; searchArray[r] < e ? t = r + 1 : a = r - 1 } searchStatus.textContent = "Target not found.", renderSearchArray([]) }
+        function resetSearch() { searching || (initSearchArray(), searchStatus.textContent = "Ready.") } initSearchArray();
+
+        // --- 03. Recursion ---
+        const stackContainer = document.getElementById("recursion-stack"), recStatus = document.getElementById("recursion-status"); let isRecRunning = !1;
+        async function runRecursion(e) { isRecRunning || (isRecRunning = !0, stackContainer.innerHTML = '<div class="absolute top-2 right-2 text-[10px] uppercase text-gray-400 font-bold">Memory Stack</div>', recStatus.textContent = `Starting Factorial(${e})...`, await recursiveStep(e), recStatus.textContent = "Calculation Complete.", isRecRunning = !1) }
+        async function recursiveStep(e) { const t = document.createElement("div"); t.className = "w-full border-2 border-black bg-pink-50 text-black font-mono text-xs p-2 mb-1 shadow-sm section-reveal active", t.id = `frame-${e}`, t.innerHTML = `<span class="font-bold">fact(${e})</span> <span class="text-gray-500 text-[10px] float-right">return ${e} * fact(${e - 1})</span>`, e <= 1 && (t.classList.remove("bg-pink-50"), t.classList.add("bg-pink-600", "text-white", "border-pink-700"), t.innerHTML = `<span class="font-bold">fact(1)</span> <span class="text-pink-100 text-[10px] float-right">Base Case: 1</span>`), stackContainer.prepend(t), await sleep(800); let a; a = e <= 1 ? 1 : e * await recursiveStep(e - 1); const r = document.getElementById(`frame-${e}`); return r && (r.innerHTML = `<span class="font-bold">fact(${e})</span> <span class="float-right font-bold text-pink-700">= ${a}</span>`, r.style.backgroundColor = "#dcfce7", r.style.borderColor = "#15803d", await sleep(500), r.style.transform = "translateX(100px)", r.style.opacity = "0", await sleep(500), r.remove()), a }
+
+        // --- 04. Backtracking ---
+        const nqBoard = document.getElementById("nqueens-board"), nqStatus = document.getElementById("nq-status"); let isNQRunning = !1, queens = [];
+        function initNQ() { nqBoard.innerHTML = "", queens = [-1, -1, -1, -1]; for (let e = 0; e < 16; e++) { const t = document.createElement("div"); t.className = "w-10 h-10 sm:w-14 sm:h-14 bg-white border border-gray-100 flex items-center justify-center font-bold text-lg queen-cell", t.id = `q-cell-${Math.floor(e / 4)}-${e % 4}`, (Math.floor(e / 4) + e % 4) % 2 == 1 && t.classList.add("bg-gray-50"), nqBoard.appendChild(t) } }
+        async function startNQueens() { isNQRunning || (isNQRunning = !0, document.getElementById("nq-btn").disabled = !0, initNQ(), nqStatus.textContent = "Starting Solver...", (await solveNQ(0)) ? nqStatus.textContent = "Solution Found!" : nqStatus.textContent = "No solution possible.", isNQRunning = !1, document.getElementById("nq-btn").disabled = !1) }
+        function isValid(row, col) {
+            for (let i = 0; i < row; i++) {
+                if (queens[i] === col) return false;
+                if (Math.abs(queens[i] - col) === Math.abs(i - row)) return false;
+            }
+            return true;
+        }
+
+        async function solveNQ(row) {
+            if (row >= 4) return true;
+            for (let col = 0; col < 4; col++) {
+                const cell = document.getElementById(`q-cell-${row}-${col}`);
+                cell.classList.add("check");
+                await sleep(200);
+                cell.classList.remove("check");
+
+                if (isValid(row, col)) {
+                    queens[row] = col;
+                    cell.textContent = "Q";
+                    cell.classList.add("queen");
+                    await sleep(400);
+
+                    if (await solveNQ(row + 1)) return true;
+
+                    queens[row] = -1;
+                    cell.textContent = "";
+                    cell.classList.remove("queen");
+                    cell.classList.add("conflict");
+                    await sleep(300);
+                    cell.classList.remove("conflict");
+                }
+            }
+            return false;
+        }
+        function resetNQueens() { isNQRunning || (initNQ(), nqStatus.textContent = "Board Reset.") } initNQ();
+
+        // --- 05. Pathfinding ---
+        // --- 05. Graph Pathfinding ---
+        const canvas = document.getElementById("graph-canvas");
+        const ctx = canvas.getContext("2d");
+        const pathBtn = document.getElementById("path-btn");
+        let isPathfinding = false, pathMethod = "bfs";
+
+        // Graph State
+        let nodes = [];
+        let edges = [];
+        let startNodeId = null;
+        let endNodeId = null;
+        let running = false;
+        let draggingNode = null;
+
+        let visitedSet = new Set();
+        let frontierSet = new Set();
+        let pathSet = new Set();
+        let parentMap = new Map(); // childId -> parentId
+
+
+
+        // Visual State
+        const NODE_RADIUS = 20;
+
+        // --- 12. Euclid's Algo ---
+        async function startEuclid() {
+            const aInput = document.getElementById('euclid-a');
+            const bInput = document.getElementById('euclid-b');
+            const visual = document.getElementById('euclid-visual');
+            const status = document.getElementById('euclid-status');
+
+            let a = parseInt(aInput.value);
+            let b = parseInt(bInput.value);
+
+            if (!a || !b) { status.textContent = "Please enter valid numbers."; return; }
+
+            visual.innerHTML = '';
+            status.textContent = `Calculating GCD(${a}, ${b})...`;
+
+            // Visualization: Recursive Modulo
+            // Display as blocks
+
+            async function showStep(valA, valB) {
+                visual.innerHTML = `<div class="flex flex-wrap gap-4 items-center justify-center font-mono text-sm sm:text-xl text-center"><span>GCD(${valA}, ${valB})</span> <span class="text-gray-400">-></span> <span class="font-bold text-pink-600">${valB === 0 ? valA : valA % valB}</span></div>`;
+                await sleep(800);
+            }
+
+            while (b !== 0) {
+                await showStep(a, b);
+                let temp = b;
+                b = a % b;
+                a = temp;
+            }
+
+            visual.innerHTML = `<div class="text-center"><div class="text-4xl font-bold text-green-600 mb-2">${a}</div><div class="text-gray-500 text-sm">Greatest Common Divisor</div></div>`;
+            status.textContent = "Done.";
+        }
+
+        // --- 13. Union-Find ---
+        let ufParent = [];
+        let ufColors = [];
+        const UF_SIZE = 10;
+        const UF_COLORS_PALETTE = ['#ef4444', '#f97316', '#f59e0b', '#84cc16', '#10b981', '#06b6d4', '#3b82f6', '#6366f1', '#a855f7', '#ec4899'];
+
+        function initUF() {
+            ufParent = Array.from({ length: UF_SIZE }, (_, i) => i);
+            ufColors = [...UF_COLORS_PALETTE];
+
+            const container = document.getElementById('uf-container');
+            const sel1 = document.getElementById('uf-select-1');
+            const sel2 = document.getElementById('uf-select-2');
+
+            container.innerHTML = '';
+            sel1.innerHTML = '';
+            sel2.innerHTML = '';
+
+            for (let i = 0; i < UF_SIZE; i++) {
+                // DOM Node
+                const node = document.createElement('div');
+                node.id = `uf-node-${i}`;
+                node.className = "w-10 h-10 rounded-full flex items-center justify-center text-white font-bold shadow-md transition-all duration-500";
+                node.style.backgroundColor = ufColors[i];
+                node.textContent = i;
+                container.appendChild(node);
+
+                // Select Options
+                const opt1 = document.createElement('option'); opt1.value = i; opt1.textContent = i;
+                const opt2 = document.createElement('option'); opt2.value = i; opt2.textContent = i;
+                sel1.appendChild(opt1);
+                sel2.appendChild(opt2);
+            }
+            // Explicitly set value to 0 to prevent empty/NaN issues
+            sel1.value = 0;
+            sel2.value = 0;
+            document.getElementById('uf-status').textContent = "Ready.";
+        }
+
+        async function ufFind(target = null) {
+            const status = document.getElementById('uf-status');
+            const selVal = document.getElementById('uf-select-1').value;
+            // Lazy init if empty
+            if (selVal === "") { initUF(); await sleep(50); }
+
+            const nodeIdx = target !== null ? target : parseInt(document.getElementById('uf-select-1').value);
+
+            if (isNaN(nodeIdx)) {
+                status.textContent = "Error: Please select a valid node.";
+                return null;
+            }
+
+            status.textContent = `Finding parent of ${nodeIdx}...`;
+
+            let curr = nodeIdx;
+            let path = [];
+
+            // Highlight path
+            while (curr !== ufParent[curr]) {
+                path.push(curr);
+                document.getElementById(`uf-node-${curr}`).style.transform = "scale(1.2)";
+                document.getElementById(`uf-node-${curr}`).style.border = "2px solid black";
+                await sleep(300);
+                document.getElementById(`uf-node-${curr}`).style.transform = "scale(1)";
+                document.getElementById(`uf-node-${curr}`).style.border = "none";
+                curr = ufParent[curr];
+            }
+            // Root
+            document.getElementById(`uf-node-${curr}`).style.transform = "scale(1.3)";
+            document.getElementById(`uf-node-${curr}`).style.boxShadow = "0 0 15px rgba(0,0,0,0.3)";
+            status.textContent = `Root of ${nodeIdx} is ${curr}.`;
+            await sleep(500);
+            document.getElementById(`uf-node-${curr}`).style.transform = "scale(1)";
+            document.getElementById(`uf-node-${curr}`).style.boxShadow = "";
+
+            return curr;
+        }
+
+        async function ufUnion() {
+            const i = parseInt(document.getElementById('uf-select-1').value);
+            const j = parseInt(document.getElementById('uf-select-2').value);
+            const status = document.getElementById('uf-status');
+
+            if (i === j) { status.textContent = "Same node."; return; }
+            if (isNaN(i) || isNaN(j)) { status.textContent = "Select valid nodes."; return; }
+
+            document.getElementById('uf-union-btn').disabled = true;
+
+            status.textContent = `Union(${i}, ${j}). Finding roots...`;
+            const rootI = await ufFind(i);
+            const rootJ = await ufFind(j);
+
+            if (rootI === null || rootJ === null) {
+                document.getElementById('uf-union-btn').disabled = false;
+                return;
+            }
+
+            if (rootI !== rootJ) {
+                status.textContent = `Merging sets ${rootI} and ${rootJ}...`;
+                ufParent[rootI] = rootJ;
+
+                // Update Colors: Find all nodes with rootI and change to rootJ color (Naive visual update for clarity)
+                // In actual path compression things happen lazily, but for visual we update color immediately
+                const newColor = ufColors[rootJ];
+
+                // Animate change
+                for (let k = 0; k < UF_SIZE; k++) {
+                    // Check real root
+                    let temp = k;
+                    while (temp !== ufParent[temp]) temp = ufParent[temp];
+
+                    if (temp === rootJ) {
+                        const node = document.getElementById(`uf-node-${k}`);
+                        node.style.backgroundColor = newColor;
+                        node.classList.add('animate-bounce');
+                        setTimeout(() => node.classList.remove('animate-bounce'), 500);
+                    }
+                }
+                ufColors[rootI] = newColor; // Track change
+
+                status.textContent = "Merged.";
+            } else {
+                status.textContent = "Already in same set.";
+            }
+            document.getElementById('uf-union-btn').disabled = false;
+        }
+
+        setTimeout(initUF, 100);
+
+        function setPathMethod(e) {
+            if (running) return;
+            pathMethod = e;
+            document.querySelectorAll("#pathfinding .btn-group .btn").forEach(btn => btn.classList.remove("active"));
+            document.getElementById(`btn-${e}`).classList.add("active");
+        }
+
+        // --- Initialization ---
+        function resizeCanvas() {
+            if (!canvas) return; // Guard for page navigation
+            canvas.width = canvas.parentElement.clientWidth;
+            canvas.height = canvas.parentElement.clientHeight;
+            if (nodes.length > 0) drawGraph();
+        }
+        window.addEventListener('resize', resizeCanvas);
+
+        function initGraph() {
+            if (!canvas) return;
+            resizeCanvas();
+            nodes = [];
+            edges = [];
+            visitedSet.clear();
+            frontierSet.clear();
+            pathSet.clear();
+            parentMap.clear();
+
+            // Generate Random Nodes
+            const w = canvas.width;
+            const h = canvas.height;
+            const nodeCount = 10; // Fewer nodes
+
+            for (let i = 0; i < nodeCount; i++) {
+                let x, y, tooClose;
+                do {
+                    x = 40 + Math.random() * (w - 80);
+                    y = 40 + Math.random() * (h - 80);
+                    tooClose = nodes.some(n => Math.hypot(n.x - x, n.y - y) < 80);
+                } while (tooClose);
+
+                nodes.push({ id: i, x, y, label: String.fromCharCode(65 + i) }); // A, B, C...
+            }
+
+            // Connect Nodes 
+            for (let i = 0; i < nodes.length; i++) {
+                let potential = nodes.filter(n => n.id !== i)
+                    .map(n => ({ id: n.id, dist: Math.hypot(n.x - nodes[i].x, n.y - nodes[i].y) }))
+                    .sort((a, b) => a.dist - b.dist)
+                    .slice(0, 3);
+
+                potential.forEach(p => {
+                    if (!edges.some(e => (e.u === i && e.v === p.id) || (e.u === p.id && e.v === i))) {
+                        let cost = Math.max(1, Math.round(p.dist / 15));
+                        edges.push({ u: i, v: p.id, cost });
+                    }
+                });
+            }
+
+            // Ensure Start/End
+            startNodeId = 0;
+            endNodeId = nodes.length - 1;
+            drawGraph();
+        }
+
+
+
+        async function startPathfinding_OLD() {
+            return; // Disabled
+            if (isPathfinding) return;
+            isPathfinding = !0, pathBtn.disabled = !0;
+
+            const startNode = { r: 1, c: 1 };
+            const endNode = { r: 8, c: 13 };
+            let cameFrom = new Map();
+            let found = false;
+
+            if (pathMethod === 'bfs' || pathMethod === 'dfs') {
+                let queue = [startNode];
+                let visited = new Set();
+                visited.add(`${startNode.r},${startNode.c}`);
+
+                while (queue.length > 0) {
+                    const current = pathMethod === 'bfs' ? queue.shift() : queue.pop();
+                    const { r: cr, c: cc } = current;
+
+                    if (cr === endNode.r && cc === endNode.c) { found = true; break; }
+
+                    const cell = grid[cr][cc];
+                    if (cell.dataset.type !== "start") {
+                        cell.classList.remove("frontier");
+                        cell.classList.add("visited");
+                    }
+
+                    // Neighbors (ESWN)
+                    let neighbors = [{ r: cr - 1, c: cc }, { r: cr, c: cc + 1 }, { r: cr + 1, c: cc }, { r: cr, c: cc - 1 }];
+                    if (pathMethod === 'dfs') neighbors.sort(() => Math.random() - 0.5); // Randomize DFS
+
+                    for (let n of neighbors) {
+                        if (n.r >= 0 && n.r < rows && n.c >= 0 && n.c < cols) {
+                            const nCell = grid[n.r][n.c];
+                            const nKey = `${n.r},${n.c}`;
+                            if (!visited.has(nKey) && nCell.dataset.type !== "wall") {
+                                visited.add(nKey);
+                                cameFrom.set(nKey, current);
+                                queue.push(n);
+                                if (nCell.dataset.type !== "end") nCell.classList.add("frontier");
+                            }
+                        }
+                    }
+                    await sleep(pathMethod === 'bfs' ? 40 : 60);
+                }
+            } else if (pathMethod === 'dijkstra' || pathMethod === 'astar') {
+                let pq = new PQueue();
+                pq.enqueue(startNode, 0);
+                let costSoFar = new Map();
+                let startKey = `${startNode.r},${startNode.c}`;
+                costSoFar.set(startKey, 0);
+                cameFrom.set(startKey, null);
+
+                while (!pq.isEmpty()) {
+                    const currentObj = pq.dequeue();
+                    const current = currentObj.element;
+                    const { r: cr, c: cc } = current;
+
+                    if (cr === endNode.r && cc === endNode.c) { found = true; break; }
+
+                    const cell = grid[cr][cc];
+                    if (cell.dataset.type !== "start") {
+                        cell.classList.remove("frontier");
+                        cell.classList.add("visited");
+                    }
+
+                    let neighbors = [{ r: cr - 1, c: cc }, { r: cr, c: cc + 1 }, { r: cr + 1, c: cc }, { r: cr, c: cc - 1 }];
+
+                    for (let n of neighbors) {
+                        if (n.r >= 0 && n.r < rows && n.c >= 0 && n.c < cols) {
+                            const nCell = grid[n.r][n.c];
+                            const nKey = `${n.r},${n.c}`;
+                            if (nCell.dataset.type !== "wall") {
+                                const newCost = costSoFar.get(`${cr},${cc}`) + 1; // Uniform cost 1
+                                if (!costSoFar.has(nKey) || newCost < costSoFar.get(nKey)) {
+                                    costSoFar.set(nKey, newCost);
+                                    let priority = newCost;
+                                    if (pathMethod === 'astar') {
+                                        // Manhattan Distance Heuristic
+                                        priority += Math.abs(endNode.r - n.r) + Math.abs(endNode.c - n.c);
+                                    }
+                                    pq.enqueue(n, priority);
+                                    cameFrom.set(nKey, current);
+                                    if (nCell.dataset.type !== "end") nCell.classList.add("frontier");
+                                }
+                            }
+                        }
+                    }
+                    await sleep(40);
+                }
+            }
+
+            if (found) {
+                let curr = cameFrom.get(`${endNode.r},${endNode.c}`);
+                while (curr) {
+                    if (curr.r === startNode.r && curr.c === startNode.c) break;
+                    const pathCell = grid[curr.r][curr.c];
+                    pathCell.classList.remove("visited", "frontier");
+                    pathCell.classList.add("path");
+                    await sleep(30);
+                    curr = cameFrom.get(`${curr.r},${curr.c}`);
+                }
+            }
+
+            isPathfinding = !1, pathBtn.disabled = !1
+        } // initGrid();
+
+        // --- Drawing ---
+        function drawGraph() {
+            if (!ctx) return;
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Draw Edges
+            edges.forEach(e => {
+                const u = nodes.find(n => n.id === e.u);
+                const v = nodes.find(n => n.id === e.v);
+                if (!u || !v) return;
+
+                // Color based on path state
+                if (pathSet.has(`${e.u}-${e.v}`) || pathSet.has(`${e.v}-${e.u}`)) {
+                    ctx.strokeStyle = "#be185d"; // Pink-700
+                    ctx.lineWidth = 4;
+                } else {
+                    ctx.strokeStyle = "#e5e7eb"; // Gray-200
+                    ctx.lineWidth = 2;
+                }
+
+                ctx.beginPath();
+                ctx.moveTo(u.x, u.y);
+                ctx.lineTo(v.x, v.y);
+                ctx.stroke();
+
+                // Draw Weight
+                const midX = (u.x + v.x) / 2;
+                const midY = (u.y + v.y) / 2;
+
+                // Weight Background
+                ctx.fillStyle = "#f3f4f6";
+                ctx.beginPath();
+                ctx.arc(midX, midY, 8, 0, Math.PI * 2);
+                ctx.fill();
+
+                ctx.fillStyle = "#6b7280";
+                ctx.font = "10px sans-serif";
+                ctx.textAlign = "center";
+                ctx.textBaseline = "middle";
+                ctx.fillText(e.cost, midX, midY);
+            });
+
+            // Draw Nodes
+            nodes.forEach(n => {
+                ctx.beginPath();
+                ctx.arc(n.x, n.y, NODE_RADIUS, 0, Math.PI * 2);
+
+                // Fill Color
+                if (n.id === startNodeId) ctx.fillStyle = "#db2777"; // Start
+                else if (n.id === endNodeId) ctx.fillStyle = "#000"; // End
+                else if (pathSet.has(n.id)) ctx.fillStyle = "#be185d"; // Final Path node
+                else if (visitedSet.has(n.id)) ctx.fillStyle = "#fbcfe8"; // Visited (Light Pink)
+                else if (frontierSet.has(n.id)) ctx.fillStyle = "#f472b6"; // Frontier (Darker Pink)
+                else ctx.fillStyle = "#fff"; // Default
+
+                ctx.fill();
+
+                // Border
+                ctx.strokeStyle = (n.id === startNodeId || n.id === endNodeId) ? "transparent" : "#d1d5db";
+                ctx.lineWidth = 2;
+                ctx.stroke();
+
+                // Label
+                ctx.fillStyle = (n.id === startNodeId || n.id === endNodeId || pathSet.has(n.id)) ? "#fff" : "#374151";
+                ctx.font = "bold 12px sans-serif";
+                ctx.textAlign = "center";
+                ctx.textBaseline = "middle";
+                ctx.fillText(n.label, n.x, n.y);
+            });
+        }
+
+        // --- Interaction (Drag) ---
+        if (canvas) {
+            canvas.addEventListener('mousedown', e => {
+                if (running) return;
+                const rect = canvas.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+
+                // Check Node Drag
+                draggingNode = nodes.find(n => Math.hypot(n.x - x, n.y - y) < NODE_RADIUS);
+                if (draggingNode) return;
+
+                // Check Edge Weight Click
+                const clickedEdge = edges.find(edge => {
+                    const u = nodes.find(n => n.id === edge.u);
+                    const v = nodes.find(n => n.id === edge.v);
+                    if (!u || !v) return false;
+                    const midX = (u.x + v.x) / 2;
+                    const midY = (u.y + v.y) / 2;
+                    return Math.hypot(midX - x, midY - y) < 12; // Radius 12 click area
+                });
+
+                if (clickedEdge) {
+                    openWeightModal(clickedEdge);
+                }
+            });
+            canvas.addEventListener('mousemove', e => {
+                if (!draggingNode || running) return;
+                const rect = canvas.getBoundingClientRect();
+                draggingNode.x = e.clientX - rect.left;
+                draggingNode.y = e.clientY - rect.top;
+                drawGraph();
+            });
+            canvas.addEventListener('mouseup', () => draggingNode = null);
+            canvas.addEventListener('mouseleave', () => draggingNode = null);
+        }
+
+        // --- Weight Modal Logic ---
+        let currentEditingEdge = null;
+        const modal = document.getElementById('weight-modal');
+        const modalContent = document.getElementById('weight-modal-content');
+        const weightInput = document.getElementById('weight-input');
+
+        function openWeightModal(edge) {
+            currentEditingEdge = edge;
+            weightInput.value = edge.cost;
+            modal.classList.remove('opacity-0', 'pointer-events-none');
+            modalContent.classList.remove('scale-95');
+            modalContent.classList.add('scale-100');
+            weightInput.focus();
+            weightInput.select();
+        }
+
+        function closeWeightModal() {
+            modal.classList.add('opacity-0', 'pointer-events-none');
+            modalContent.classList.remove('scale-100');
+            modalContent.classList.add('scale-95');
+            currentEditingEdge = null;
+        }
+
+        function updateWeight() {
+            if (!currentEditingEdge) return;
+            const val = parseInt(weightInput.value);
+            if (!isNaN(val) && val > 0 && val <= 50) {
+                currentEditingEdge.cost = val;
+                drawGraph();
+                closeWeightModal();
+            } else {
+                weightInput.classList.add('border-red-500');
+                setTimeout(() => weightInput.classList.remove('border-red-500'), 500);
+            }
+        }
+
+        // Handle Enter key in modal
+        weightInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') updateWeight();
+            if (e.key === 'Escape') closeWeightModal();
+        });
+
+        // --- Algorithms ---
+        class PQueue {
+            constructor() { this.items = []; }
+            enqueue(element, priority) {
+                let contain = false;
+                const node = { element, priority };
+                for (let i = 0; i < this.items.length; i++) {
+                    if (this.items[i].priority > node.priority) {
+                        this.items.splice(i, 0, node);
+                        contain = true;
+                        break;
+                    }
+                }
+                if (!contain) this.items.push(node);
+            }
+            dequeue() { return this.items.length === 0 ? null : this.items.shift(); }
+            isEmpty() { return this.items.length === 0; }
+        }
+
+        function getNeighbors(id) {
+            return edges.filter(e => e.u === id || e.v === id).map(e => ({
+                id: e.u === id ? e.v : e.u,
+                cost: e.cost
+            }));
+        }
+
+        async function startGraphPathfinding() {
+            if (running || startNodeId === null || endNodeId === null) return;
+            running = true;
+            document.getElementById("path-btn").disabled = true;
+
+            // Reset visual state only
+            visitedSet.clear();
+            frontierSet.clear();
+            pathSet.clear();
+            parentMap.clear();
+            drawGraph();
+
+            let found = false;
+
+            if (pathMethod === 'bfs' || pathMethod === 'dfs') {
+                let structure = [startNodeId]; // Queue for BFS, Stack for DFS
+                visitedSet.add(startNodeId);
+
+                while (structure.length > 0) {
+                    let curr = pathMethod === 'bfs' ? structure.shift() : structure.pop();
+
+                    if (curr === endNodeId) { found = true; break; }
+
+                    // Add neighbors
+                    let neighbors = getNeighbors(curr);
+                    if (pathMethod === 'dfs') neighbors.sort(() => Math.random() - 0.5);
+
+                    for (let n of neighbors) {
+                        if (!visitedSet.has(n.id)) {
+                            visitedSet.add(n.id);
+                            parentMap.set(n.id, curr);
+                            structure.push(n.id);
+                            frontierSet.add(n.id);
+                            document.getElementById('visited-count').textContent = visitedSet.size;
+                        }
+                    }
+                    drawGraph();
+                    await sleep(500);
+                    frontierSet.delete(curr);
+                }
+
+            } else { // Dijkstra & A*
+                let pq = new PQueue();
+                pq.enqueue(startNodeId, 0);
+                let costSoFar = new Map();
+                costSoFar.set(startNodeId, 0);
+                parentMap.set(startNodeId, null);
+
+                while (!pq.isEmpty()) {
+                    let currentObj = pq.dequeue();
+                    let curr = currentObj.element; // ID
+
+                    if (curr === endNodeId) { found = true; break; }
+
+                    if (!visitedSet.has(curr)) {
+                        visitedSet.add(curr);
+                        document.getElementById('visited-count').textContent = visitedSet.size;
+
+                        let neighbors = getNeighbors(curr);
+                        for (let n of neighbors) {
+                            let newCost = costSoFar.get(curr) + n.cost;
+                            if (!costSoFar.has(n.id) || newCost < costSoFar.get(n.id)) {
+                                costSoFar.set(n.id, newCost);
+                                let priority = newCost;
+                                if (pathMethod === 'astar') {
+                                    let a = nodes.find(node => node.id === n.id);
+                                    let b = nodes.find(node => node.id === endNodeId);
+                                    // Heuristic: Euclidean Distance scaled down to match edge weights
+                                    priority += Math.hypot(a.x - b.x, a.y - b.y) / 15;
+                                }
+                                pq.enqueue(n.id, priority);
+                                parentMap.set(n.id, curr);
+                                frontierSet.add(n.id);
+                            }
+                        }
+                    }
+                    drawGraph();
+                    await sleep(500);
+                }
+            }
+
+            if (found) {
+                let curr = endNodeId;
+                let totalCost = 0;
+                while (curr !== null && curr !== undefined) {
+                    pathSet.add(curr);
+                    let p = parentMap.get(curr);
+                    if (p !== undefined && p !== null) {
+                        pathSet.add(`${p}-${curr}`);
+                        pathSet.add(`${curr}-${p}`);
+
+                        // Calculate cost
+                        const edge = edges.find(e => (e.u === p && e.v === curr) || (e.u === curr && e.v === p));
+                        if (edge) totalCost += edge.cost;
+                    }
+                    if (curr === startNodeId) break;
+                    curr = p;
+                    drawGraph();
+                    await sleep(100);
+                }
+                document.getElementById('path-cost').textContent = totalCost;
+            } else {
+                document.getElementById('path-cost').textContent = "No Path";
+            }
+
+            running = false;
+            document.getElementById("path-btn").disabled = false;
+        }
+
+        // Init on load
+        setTimeout(initGraph, 100);
+
+        // --- 06. Knapsack (Corrected) ---
+        const knapItems = [{ w: 6, v: 90 }, { w: 5, v: 70 }, { w: 5, v: 70 }, { w: 2, v: 10 }];
+        const capacity = 10;
+        let isKnapRunning = false;
+
+        function initKnapsack() {
+            const container = document.getElementById('knapsack-items');
+            container.innerHTML = '';
+            knapItems.forEach((item, idx) => {
+                const el = document.createElement('div');
+                el.className = "item-card w-20 h-24 bg-white rounded flex flex-col items-center justify-center gap-1 shadow-sm";
+                el.id = `k-item-${idx}`;
+                el.innerHTML = `<span class="font-bold text-lg">$${item.v}</span><span class="text-xs text-gray-500">${item.w}kg</span>`;
+                container.appendChild(el);
+            });
+            document.getElementById('knapsack-bar').style.width = '0%';
+            document.getElementById('knapsack-weight').textContent = 'Weight: 0 / 10kg';
+            document.getElementById('knapsack-value').textContent = 'Total Value: $0';
+        }
+
+        async function solveKnapsackGreedy() {
+            if (isKnapRunning) return;
+            isKnapRunning = true;
+            disableKnapBtns(true);
+
+            let sortedItems = knapItems.map((item, idx) => ({ ...item, idx, ratio: item.v / item.w }))
+                .sort((a, b) => b.ratio - a.ratio);
+
+            let currentW = 0;
+            let currentV = 0;
+            const status = document.getElementById('knapsack-status');
+
+            for (let item of sortedItems) {
+                const el = document.getElementById(`k-item-${item.idx}`);
+                el.classList.add('checking');
+                status.textContent = `Checking Item (Ratio: ${item.ratio.toFixed(1)})...`;
+                await sleep(500);
+
+                if (currentW + item.w <= capacity) {
+                    currentW += item.w;
+                    currentV += item.v;
+                    el.classList.remove('checking');
+                    el.classList.add('selected');
+                    status.textContent = `Taken.`;
+                    document.getElementById('knapsack-bar').style.width = `${(currentW / capacity) * 100}%`;
+                    document.getElementById('knapsack-weight').textContent = `Weight: ${currentW} / 10kg`;
+                    document.getElementById('knapsack-value').textContent = `Total Value: $${currentV}`;
+                } else {
+                    el.classList.remove('checking');
+                    el.classList.add('discarded');
+                    status.textContent = `Skipped (Full).`;
+                }
+                await sleep(500);
+            }
+            status.textContent = `Greedy Result: $${currentV} (Suboptimal!)`;
+            isKnapRunning = false;
+            disableKnapBtns(false);
+        }
+
+        async function solveKnapsackDP() {
+            if (isKnapRunning) return;
+            isKnapRunning = true;
+            disableKnapBtns(true);
+            const status = document.getElementById('knapsack-status');
+
+            let n = knapItems.length;
+            let K = Array(n + 1).fill().map(() => Array(capacity + 1).fill(0));
+
+            status.textContent = "Calculating Optimal DP Table...";
+            for (let i = 0; i <= n; i++) {
+                for (let w = 0; w <= capacity; w++) {
+                    if (i === 0 || w === 0) K[i][w] = 0;
+                    else if (knapItems[i - 1].w <= w) {
+                        K[i][w] = Math.max(knapItems[i - 1].v + K[i - 1][w - knapItems[i - 1].w], K[i - 1][w]);
+                    } else {
+                        K[i][w] = K[i - 1][w];
+                    }
+                }
+            }
+            await sleep(800);
+
+            let res = K[n][capacity];
+            let w = capacity;
+            let currentW = 0;
+
+            for (let i = n; i > 0 && res > 0; i--) {
+                const el = document.getElementById(`k-item-${i - 1}`);
+                el.classList.add('checking');
+                status.textContent = `Backtracking Item ${i}...`;
+                await sleep(300);
+                el.classList.remove('checking');
+
+                if (res === K[i - 1][w]) {
+                    el.classList.add('discarded');
+                } else {
+                    el.classList.add('selected');
+                    const item = knapItems[i - 1];
+                    currentW += item.w;
+                    document.getElementById('knapsack-bar').style.width = `${(currentW / capacity) * 100}%`;
+                    document.getElementById('knapsack-weight').textContent = `Weight: ${currentW} / 10kg`;
+                    res -= item.v;
+                    w -= item.w;
+                }
+                await sleep(300);
+            }
+
+            document.getElementById('knapsack-value').textContent = `Total Value: $${K[n][capacity]}`;
+            status.textContent = `DP Result: $${K[n][capacity]} (Optimal!)`;
+            isKnapRunning = false;
+            disableKnapBtns(false);
+        }
+
+        function disableKnapBtns(disabled) {
+            document.getElementById('k-greedy-btn').disabled = disabled;
+            document.getElementById('k-dp-btn').disabled = disabled;
+        }
+
+        function resetKnapsack() {
+            if (isKnapRunning) return;
+            initKnapsack();
+            document.getElementById('knapsack-status').textContent = "Ready.";
+        }
+        initKnapsack();
+
+
+        // --- 07. TSP (Enhanced) ---
+        const tspCanvas = document.getElementById('tsp-canvas');
+        const tspCtx = tspCanvas.getContext('2d');
+        let cities = [];
+        let isTSPRunning = false;
+
+        function resizeTSP() {
+            tspCanvas.width = tspCanvas.parentElement.offsetWidth;
+            tspCanvas.height = tspCanvas.parentElement.offsetHeight;
+            if (cities.length > 0) drawTSP([], [], -1);
+        }
+        window.addEventListener('resize', resizeTSP);
+
+        function initTSP() {
+            resizeTSP();
+            cities = [];
+            const labels = ['A', 'B', 'C', 'D', 'E'];
+            for (let i = 0; i < 5; i++) {
+                cities.push({
+                    x: Math.random() * (tspCanvas.width - 60) + 30,
+                    y: Math.random() * (tspCanvas.height - 60) + 30,
+                    label: labels[i]
+                });
+            }
+            drawTSP([], [], 0);
+            document.getElementById('tsp-dist').textContent = "-";
+            document.getElementById('tsp-current-dist').textContent = "-";
+        }
+
+        function drawTSP(path, bestPath, bestDist) {
+            tspCtx.clearRect(0, 0, tspCanvas.width, tspCanvas.height);
+
+            // Draw Edges with weights
+            tspCtx.font = "10px Inter";
+            tspCtx.textAlign = "center";
+            tspCtx.textBaseline = "middle";
+
+            // Draw Best Path (Pink)
+            if (bestPath && bestPath.length > 0) {
+                tspCtx.beginPath();
+                tspCtx.moveTo(cities[bestPath[0]].x, cities[bestPath[0]].y);
+                for (let i = 1; i < bestPath.length; i++) tspCtx.lineTo(cities[bestPath[i]].x, cities[bestPath[i]].y);
+                tspCtx.lineTo(cities[bestPath[0]].x, cities[bestPath[0]].y);
+                tspCtx.strokeStyle = "#db2777";
+                tspCtx.lineWidth = 3;
+                tspCtx.stroke();
+            }
+
+            // Draw Current Path (Dashed Gray)
+            if (path && path.length > 0) {
+                tspCtx.beginPath();
+                tspCtx.setLineDash([5, 5]);
+                tspCtx.moveTo(cities[path[0]].x, cities[path[0]].y);
+                for (let i = 1; i < path.length; i++) {
+                    const c1 = cities[path[i - 1]];
+                    const c2 = cities[path[i]];
+                    tspCtx.lineTo(c2.x, c2.y);
+                    // Draw distance label
+                    const mx = (c1.x + c2.x) / 2;
+                    const my = (c1.y + c2.y) / 2;
+                    const d = Math.round(dist(c1, c2));
+                    // tspCtx.fillStyle = "#555";
+                    // tspCtx.fillText(d, mx, my); // Clutters view during animation
+                }
+                // Last edge back to start
+                const cLast = cities[path[path.length - 1]];
+                const cStart = cities[path[0]];
+                tspCtx.lineTo(cStart.x, cStart.y);
+
+                tspCtx.strokeStyle = "#9ca3af";
+                tspCtx.lineWidth = 1;
+                tspCtx.stroke();
+                tspCtx.setLineDash([]);
+            }
+
+            // Draw Cities
+            cities.forEach((c, i) => {
+                tspCtx.beginPath();
+                tspCtx.arc(c.x, c.y, 12, 0, Math.PI * 2);
+                tspCtx.fillStyle = "#fff";
+                tspCtx.fill();
+                tspCtx.strokeStyle = "#111";
+                tspCtx.lineWidth = 2;
+                tspCtx.stroke();
+
+                tspCtx.fillStyle = "#111";
+                tspCtx.font = "bold 12px Inter";
+                tspCtx.fillText(c.label, c.x, c.y);
+            });
+        }
+
+        function dist(c1, c2) { return Math.sqrt(Math.pow(c1.x - c2.x, 2) + Math.pow(c1.y - c2.y, 2)); }
+        function calcPathDist(path) {
+            let d = 0;
+            for (let i = 0; i < path.length - 1; i++) d += dist(cities[path[i]], cities[path[i + 1]]);
+            d += dist(cities[path[path.length - 1]], cities[path[0]]);
+            return d;
+        }
+
+        function* permute(permutation) {
+            var length = permutation.length, c = Array(length).fill(0), i = 1, k, p;
+            yield permutation.slice();
+            while (i < length) {
+                if (c[i] < i) {
+                    k = i % 2 && c[i];
+                    p = permutation[i]; permutation[i] = permutation[k]; permutation[k] = p;
+                    ++c[i]; i = 1; yield permutation.slice();
+                } else { c[i] = 0; ++i; }
+            }
+        }
+
+        async function solveTSP() {
+            if (isTSPRunning) return;
+            isTSPRunning = true;
+            document.getElementById('tsp-btn').disabled = true;
+
+            let baseArr = [1, 2, 3, 4];
+            let bestPath = null;
+            let minD = Infinity;
+
+            for (let p of permute(baseArr)) {
+                let currentPath = [0, ...p];
+                let d = calcPathDist(currentPath);
+
+                document.getElementById('tsp-current-dist').textContent = Math.round(d);
+
+                if (d < minD) {
+                    minD = d;
+                    bestPath = currentPath;
+                    document.getElementById('tsp-dist').textContent = Math.round(d);
+                }
+
+                drawTSP(currentPath, bestPath, minD);
+                await sleep(50); // Slow enough to see path attempt
+            }
+
+            drawTSP([], bestPath, minD);
+            isTSPRunning = false;
+            document.getElementById('tsp-btn').disabled = false;
+        }
+
+        function resetTSP() {
+            if (isTSPRunning) return;
+            initTSP();
+        }
+        setTimeout(initTSP, 100);
+
+
+        // --- 08. Greedy & 09. DP (Standard Logic) ---
+        let calculatingCoins = false;
+        let abortCoin = false;
+
+        async function calculateCoins() {
+            if (calculatingCoins) return;
+
+            const input = document.getElementById("coin-amount");
+            let amount = parseInt(input.value);
+
+            if (!amount || amount <= 0) {
+                document.getElementById("coin-status").textContent = "Enter a valid amount.";
+                return;
+            }
+
+            calculatingCoins = true;
+            abortCoin = false;
+            document.getElementById("coin-btn").disabled = true;
+            const coinResult = document.getElementById("coin-result");
+            const coinStatus = document.getElementById("coin-status");
+            coinResult.innerHTML = "";
+
+            const coins = [25, 10, 5, 1];
+            let totalCoins = 0;
+
+            try {
+                for (let coin of coins) {
+                    while (amount >= coin) {
+                        if (abortCoin) throw new Error("RESET");
+
+                        amount -= coin;
+                        totalCoins++;
+
+                        // Visual
+                        const coinEl = document.createElement("div");
+                        let sizeClass = coin === 25 ? "w-10 h-10" : coin === 10 ? "w-9 h-9" : coin === 5 ? "w-8 h-8" : "w-6 h-6";
+                        coinEl.className = `${sizeClass} rounded-full bg-pink-600 border border-pink-700 text-white flex items-center justify-center font-bold shadow-md coin-drop`;
+                        coinEl.textContent = coin;
+                        coinResult.appendChild(coinEl);
+
+                        coinStatus.textContent = `Added ${coin}. Remaining: ${amount}`;
+                        await sleep(300);
+                    }
+                    if (abortCoin) throw new Error("RESET");
+                    await sleep(200);
+                }
+                coinStatus.textContent = `Complete! Total: ${totalCoins} coins.`;
+            } catch (e) {
+                if (e.message === "RESET") {
+                    coinStatus.textContent = "Reset.";
+                    coinResult.innerHTML = '<span class="text-gray-400 text-xs uppercase tracking-widest">Coins will appear here</span>';
+                }
+            } finally {
+                calculatingCoins = false;
+                document.getElementById("coin-btn").disabled = false;
+            }
+        }
+
+        function resetCoins() {
+            if (calculatingCoins) {
+                abortCoin = true;
+            } else {
+                document.getElementById("coin-result").innerHTML = '<span class="text-gray-400 text-xs uppercase tracking-widest">Coins will appear here</span>';
+                document.getElementById("coin-status").textContent = "Enter amount.";
+                document.getElementById("coin-amount").value = "";
+            }
+        }
+
+
+        // --- 11. Huffman Coding Logic ---
+        const huffCanvas = document.getElementById('huff-canvas');
+        const huffCtx = huffCanvas ? huffCanvas.getContext('2d') : null;
+        let isHuffmanRunning = false;
+
+        function resizeHuff() {
+            if (!huffCanvas) return;
+            huffCanvas.width = huffCanvas.parentElement.offsetWidth;
+            huffCanvas.height = huffCanvas.parentElement.offsetHeight;
+        }
+        window.addEventListener('resize', resizeHuff);
+
+        async function startHuffman() {
+            if (isHuffmanRunning) return;
+            isHuffmanRunning = true;
+            resizeHuff();
+            const btn = document.getElementById('huffman-btn');
+            btn.disabled = true;
+
+            const text = document.getElementById('huffman-input').value;
+            if (!text) { isHuffmanRunning = false; btn.disabled = false; return; }
+
+            const logDiv = document.getElementById('huff-log');
+            logDiv.textContent = "Starting Process...\n";
+            document.getElementById('huff-codes').innerHTML = '<div class="text-gray-400 italic">Generating...</div>';
+
+            // 1. Count Frequencies
+            const freqs = {};
+            for (let char of text) freqs[char] = (freqs[char] || 0) + 1;
+
+            logDiv.textContent += `1. Counted frequencies for ${text.length} characters.\n`;
+
+            // Display Freq Table
+            const freqContainer = document.getElementById('huff-freq');
+            freqContainer.innerHTML = '';
+            for (let char in freqs) {
+                const row = document.createElement('div');
+                row.className = "flex justify-between border-b border-gray-100 py-1";
+                row.innerHTML = `<span>'${char === ' ' ? 'SPC' : char}'</span><span class="font-bold">${freqs[char]}</span>`;
+                freqContainer.appendChild(row);
+            }
+            await sleep(500);
+
+            // 2. Build Tree (Simulation)
+            let nodes = [];
+            for (let char in freqs) nodes.push({ char, freq: freqs[char], id: Math.random() });
+
+            logDiv.textContent += `2. Initialized ${nodes.length} leaf nodes.\n`;
+
+            while (nodes.length > 1) {
+                // Sort
+                nodes.sort((a, b) => a.freq - b.freq);
+
+                // Take two smallest
+                const left = nodes.shift();
+                const right = nodes.shift();
+
+                logDiv.textContent += `> Merging: [${left.char ? `'${left.char}'` : 'Node'}:${left.freq}] + [${right.char ? `'${right.char}'` : 'Node'}:${right.freq}] -> New Node:${left.freq + right.freq}\n`;
+                logDiv.scrollTop = logDiv.scrollHeight;
+
+                const parent = {
+                    char: null,
+                    freq: left.freq + right.freq,
+                    left,
+                    right,
+                    id: Math.random()
+                };
+                nodes.push(parent);
+                await sleep(600); // Slow down to read log
+            }
+            const root = nodes[0];
+            logDiv.textContent += "3. Tree Construction Complete.\n";
+
+            // 3. Generate Codes
+            const codes = {};
+            function traverse(node, code) {
+                if (!node.left && !node.right) {
+                    codes[node.char] = code;
+                    return;
+                }
+                if (node.left) traverse(node.left, code + '0');
+                if (node.right) traverse(node.right, code + '1');
+            }
+            if (root) traverse(root, '');
+
+            // Populate Code Table
+            const codeContainer = document.getElementById('huff-codes');
+            codeContainer.innerHTML = '';
+            for (let char in codes) {
+                const row = document.createElement('div');
+                row.className = "flex justify-between border-b border-gray-100 border-dashed py-1";
+                row.innerHTML = `<span class="w-8">'${char === ' ' ? 'SPC' : char}'</span><span class="text-pink-600 font-bold">${codes[char]}</span>`;
+                codeContainer.appendChild(row);
+            }
+
+            // Display Output
+            const outputDiv = document.getElementById('huff-output');
+            outputDiv.innerHTML = '';
+            let binaryString = '';
+            let originalBits = text.length * 8;
+            let compressedBits = 0;
+
+            for (let char of text) {
+                binaryString += (codes[char] || '') + ' ';
+                compressedBits += codes[char].length;
+            }
+
+            // Typewriter effect for binary
+            outputDiv.textContent = "";
+            let i = 0;
+            const typeVar = setInterval(() => {
+                if (i < binaryString.length) {
+                    outputDiv.textContent += binaryString[i];
+                    i++;
+                } else {
+                    clearInterval(typeVar);
+                }
+            }, 5);
+
+            // Update Stats
+            const statsDiv = document.getElementById('huff-stats');
+            const ratio = (1 - (compressedBits / originalBits)) * 100;
+            statsDiv.innerHTML = `
+                <span>Original Size:</span> <span class="text-black font-bold">${originalBits} bits</span>
+                <span>Compressed Size:</span> <span class="text-black font-bold">${compressedBits} bits</span>
+                <span>Compression Ratio:</span> <span class="text-pink-600 font-bold">${ratio.toFixed(1)}%</span>
+                <span class="col-span-2 text-[10px] text-gray-400 mt-1">Note: Excluding tree metadata overhead.</span>
+            `;
+
+
+            // 4. Draw Tree
+            await drawHuffmanTree(root);
+
+            isHuffmanRunning = false;
+            btn.disabled = false;
+        }
+
+        async function drawHuffmanTree(root) {
+            if (!huffCtx) return;
+            huffCtx.clearRect(0, 0, huffCanvas.width, huffCanvas.height);
+            if (!root) return;
+
+            // Calculate positions
+            const levels = [];
+            function mapDepth(node, depth, x, width) {
+                if (!levels[depth]) levels[depth] = [];
+                node.x = x;
+                node.y = 30 + depth * 40;
+                levels[depth].push(node);
+
+                if (node.left) mapDepth(node.left, depth + 1, x - width / 2, width / 2);
+                if (node.right) mapDepth(node.right, depth + 1, x + width / 2, width / 2);
+            }
+            mapDepth(root, 0, huffCanvas.width / 2, huffCanvas.width / 4);
+
+            // Draw Edges & Nodes with Delay
+            async function drawRecursive(node) {
+                if (!node) return;
+
+                // Draw Parent
+                huffCtx.beginPath();
+                huffCtx.arc(node.x, node.y, 10, 0, Math.PI * 2);
+                huffCtx.fillStyle = node.char ? '#fff' : '#000';
+                huffCtx.fill();
+                huffCtx.strokeStyle = '#000';
+                huffCtx.stroke();
+
+                huffCtx.fillStyle = node.char ? '#000' : '#fff';
+                huffCtx.font = "10px monospace";
+                huffCtx.textAlign = "center";
+                huffCtx.textBaseline = "middle";
+                huffCtx.fillText(node.char ? (node.char === ' ' ? 'SPC' : node.char) : node.freq, node.x, node.y);
+
+                await sleep(50);
+
+                if (node.left) {
+                    huffCtx.beginPath();
+                    huffCtx.moveTo(node.x, node.y + 10);
+                    huffCtx.lineTo(node.left.x, node.left.y - 10);
+                    huffCtx.strokeStyle = "#555";
+                    huffCtx.stroke();
+                    huffCtx.fillStyle = "red";
+                    huffCtx.fillText("0", (node.x + node.left.x) / 2, (node.y + node.left.y) / 2);
+                    await drawRecursive(node.left);
+                }
+                if (node.right) {
+                    huffCtx.beginPath();
+                    huffCtx.moveTo(node.x, node.y + 10);
+                    huffCtx.lineTo(node.right.x, node.right.y - 10);
+                    huffCtx.strokeStyle = "#555";
+                    huffCtx.stroke();
+                    huffCtx.fillStyle = "blue";
+                    huffCtx.fillText("1", (node.x + node.right.x) / 2, (node.y + node.right.y) / 2);
+                    await drawRecursive(node.right);
+                }
+            }
+            await drawRecursive(root);
+        }
+        if (huffCanvas) resizeHuff();
+
+
+        const dpTable = document.getElementById("dp-memo-table"), dpStatus = document.getElementById("dp-status"); let memo = {}, isDPRunning = !1;
+        function initDP() { dpTable.innerHTML = "", memo = {}; for (let e = 1; e <= 15; e++) { const t = document.createElement("div"); t.className = "flex flex-col items-center gap-1", t.innerHTML = `<span class="text-[10px] text-gray-400">Fib(${e})</span><div id="memo-cell-${e}" class="w-10 h-10 border border-gray-300 bg-white flex items-center justify-center font-mono text-sm shadow-sm dp-cell transition-all"><span class="text-gray-300">-</span></div>`, dpTable.appendChild(t) } }
+        async function startDP() { if (!isDPRunning) { const e = document.getElementById("dp-input"), t = parseInt(e.value); if (!t || t > 15 || t < 1) return dpStatus.textContent = "Enter 1-15.", void 0; isDPRunning = !0, document.getElementById("dp-btn").disabled = !0, dpStatus.textContent = `Checking cache for Fib(${t})...`; const n = await fibMemo(t); dpStatus.textContent = `Fib(${t}) = ${n}.`, isDPRunning = !1, document.getElementById("dp-btn").disabled = !1 } }
+        async function fibMemo(e) { const t = document.getElementById(`memo-cell-${e}`); if (void 0 !== memo[e]) return t.classList.add("hit"), await sleep(600), t.classList.remove("hit"), memo[e]; if (e <= 2) return t.classList.add("calc"), t.innerHTML = '<span class="text-black font-bold">1</span>', memo[e] = 1, await sleep(400), t.classList.remove("calc"), 1; t.classList.add("calc"), await sleep(300); const n = await fibMemo(e - 1) + await fibMemo(e - 2); return memo[e] = n, t.innerHTML = `<span class="text-black font-bold">${n}</span>`, t.classList.remove("calc"), n }
+        function resetDP() { isDPRunning || (initDP(), dpStatus.textContent = "Cache cleared.") } initDP();
+
+        // --- Init & Complexity ---
+        const complexitySlider = document.getElementById("complexity-slider"), nDisplay = document.getElementById("n-display"), barLog = document.getElementById("bar-log"), barN = document.getElementById("bar-n"), barN2 = document.getElementById("bar-n2"), barExp = document.getElementById("bar-exp");
+        complexitySlider.addEventListener("input", e => { const t = parseInt(e.target.value); nDisplay.textContent = t; const a = 10 * Math.log10(t) / 2; barLog.style.width = `${Math.max(2, a)}%`, barN.style.width = `${t}%`; const r = t * t / 100; barN2.style.width = `${Math.min(100, r)}%`; const n = Math.pow(2, t / 10); barExp.style.width = `${Math.min(100, n)}%` });
+        function toggleMobileMenu() { const e = document.getElementById("mobile-menu"); e.classList.contains("hidden") ? (e.classList.remove("hidden"), e.classList.add("flex"), document.body.style.overflow = "hidden") : (e.classList.add("hidden"), e.classList.remove("flex"), document.body.style.overflow = "auto") }
+        /*
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add("active");
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.1 });
+
+        document.querySelectorAll("section").forEach(section => {
+            section.classList.add("section-reveal");
+            observer.observe(section);
+        });
+
+        // Failsafe: Force visibility after 1s if observer misses
+        setTimeout(() => {
+            document.querySelectorAll(".section-reveal").forEach(el => {
+                if (!el.classList.contains("active")) {
+                    el.classList.add("active");
+                    // Force overrides in case of CSS issues
+                    el.style.opacity = "1";
+                    el.style.transform = "translateY(0)";
+                }
+            });
+        }, 1000);
+        */
+        function toggleCode(id) {
+            const pre = document.getElementById(id);
+            if (pre.classList.contains('hidden')) {
+                pre.classList.remove('hidden');
+            } else {
+                pre.classList.add('hidden');
+            }
+        }
+    </script>
+
+
+</body>
+
+</html>

@@ -1,0 +1,1263 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>React.js</title>
+    <link rel="icon" type="image/svg+xml" href="../assests/undrlogo.svg">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Context Animation Keyframes */
+        @keyframes dashDraw {
+            to {
+                stroke-dashoffset: 0;
+            }
+        }
+
+        .context-flow-active {
+            animation: dashDraw 1s linear forwards;
+            opacity: 1 !important;
+            stroke: #0ea5e9 !important;
+            filter: drop-shadow(0 0 4px rgba(14, 165, 233, 0.5));
+        }
+
+        .node-active {
+            transform: scale(1.05);
+            box-shadow: 0 0 0 4px rgba(14, 165, 233, 0.2);
+        }
+    </style>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Roboto+Mono:wght@400;500&display=swap');
+
+        /* Global Scrollbar */
+        ::-webkit-scrollbar {
+            width: 1px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #000;
+        }
+
+        :root {
+            /* Rams Palette */
+            --bg-color: #f4f4f4;
+            --card-bg: #ffffff;
+            --text-main: #111111;
+            --text-muted: #737373;
+            /* React Colors */
+            --accent: #0ea5e9;
+            /* Sky-500 */
+            --accent-light: #e0f2fe;
+            /* Sky-100 */
+            --border: #e5e5e5;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            -webkit-font-smoothing: antialiased;
+            line-height: 1.6;
+            overflow-x: hidden;
+            max-width: 100vw;
+        }
+
+        h1,
+        h2,
+        h3,
+        h4,
+        h5 {
+            font-weight: 600;
+            letter-spacing: -0.02em;
+            color: var(--text-main);
+        }
+
+        p {
+            color: #404040;
+        }
+
+        .mono {
+            font-family: 'Roboto Mono', monospace;
+        }
+
+        .rams-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            transition: all 0.3s ease;
+        }
+
+        .rams-card:hover {
+            border-color: #a3a3a3;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        }
+
+        @media (min-width: 768px) {
+            .rams-card {
+                padding: 2.5rem;
+            }
+        }
+
+        .rams-label {
+            font-family: 'Inter', sans-serif;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        /* Controls */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.5rem 1.25rem;
+            font-size: 0.85rem;
+            font-weight: 500;
+            border-radius: 2px;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            white-space: nowrap;
+        }
+
+        .btn-primary {
+            background-color: var(--accent);
+            color: white;
+            border: 1px solid var(--accent);
+        }
+
+        .btn-primary:hover {
+            background-color: #0284c7;
+        }
+
+        .btn-secondary {
+            background-color: transparent;
+            color: var(--text-main);
+            border: 1px solid #a3a3a3;
+        }
+
+        .btn-secondary:hover {
+            background-color: #f0f0f0;
+            border-color: #555;
+        }
+
+        /* Nav */
+        .nav-link {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            padding: 0.5rem 0;
+            display: block;
+            transition: color 0.2s;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            color: var(--text-main);
+            font-weight: 500;
+        }
+
+        .nav-link.active::before {
+            content: "• ";
+            color: var(--accent);
+        }
+
+        /* Syntax Highlight */
+        .code-block {
+            background-color: #1e1e1e;
+            color: #d4d4d4;
+            padding: 1rem;
+            border-radius: 4px;
+            font-family: 'Roboto Mono', monospace;
+            font-size: 0.8rem;
+            overflow-x: auto;
+        }
+
+        .keyword {
+            color: #569cd6;
+        }
+
+        .string {
+            color: #ce9178;
+        }
+
+        .function {
+            color: #dcdcaa;
+        }
+
+        .tag {
+            color: #808080;
+        }
+
+        .attr {
+            color: #9cdcfe;
+        }
+
+        /* React Logo Animation */
+        @keyframes spin {
+            from {
+                transform: rotate(0deg);
+            }
+
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .react-logo {
+            animation: spin 20s linear infinite;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="flex min-h-screen flex-col lg:flex-row">
+
+        <!-- Mobile Header -->
+        <header
+            class="lg:hidden fixed top-0 w-full bg-[#f4f4f4] border-b border-[#e5e5e5] z-[100] px-6 py-4 flex justify-between items-center h-16">
+            <div>
+                <h1 class="text-sm font-semibold tracking-wide uppercase text-black leading-tight">React<br>.js</h1>
+            </div>
+            <button onclick="toggleMobileMenu()" class="text-black focus:outline-none p-2 rounded">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+            </button>
+        </header>
+
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="fixed inset-0 bg-[#f4f4f4] z-[90] hidden flex-col pt-20 px-6 overflow-y-auto">
+            <nav class="flex flex-col">
+                <span class="text-[10px] text-gray-400 font-bold uppercase tracking-wider px-0 py-2">01.
+                    Fundamentals</span>
+                <a href="#intro" class="mobile-nav-link" onclick="toggleMobileMenu()">JSX & Components</a>
+                <a href="#props-state" class="mobile-nav-link" onclick="toggleMobileMenu()">Props vs State</a>
+
+                <span class="text-[10px] text-gray-400 font-bold uppercase tracking-wider px-0 py-2 mt-4">02.
+                    Hooks</span>
+                <a href="#hooks" class="mobile-nav-link" onclick="toggleMobileMenu()">Usage of Hooks</a>
+
+                <span class="text-[10px] text-gray-400 font-bold uppercase tracking-wider px-0 py-2 mt-4">03.
+                    Architecture</span>
+                <a href="#vdom" class="mobile-nav-link" onclick="toggleMobileMenu()">Virtual DOM</a>
+                <a href="#context" class="mobile-nav-link" onclick="toggleMobileMenu()">Context API</a>
+
+                <span class="text-[10px] text-gray-400 font-bold uppercase tracking-wider px-0 py-2 mt-4">04.
+                    Scaling</span>
+                <a href="#performance" class="mobile-nav-link" onclick="toggleMobileMenu()">Performance</a>
+                <a href="#ecosystem" class="mobile-nav-link" onclick="toggleMobileMenu()">Ecosystem</a>
+
+                <span class="text-[10px] text-gray-400 font-bold uppercase tracking-wider px-0 py-2 mt-4">05.
+                    Assessment</span>
+                <a href="#glossary" class="mobile-nav-link" onclick="toggleMobileMenu()">Glossary</a>
+                <a href="#quiz" class="mobile-nav-link" onclick="toggleMobileMenu()">Knowledge Check</a>
+            </nav>
+        </div>
+
+        <!-- Sidebar -->
+        <aside
+            class="hidden lg:block w-64 fixed h-screen bg-[#f4f4f4] border-r border-[#e5e5e5] z-50 overflow-y-auto thin-scrollbar">
+            <div class="p-8 h-full flex flex-col justify-between">
+                <div>
+                    <a href="../index.html"
+                        class="inline-flex items-center gap-2 px-4 py-2 mb-8 text-[10px] font-mono uppercase tracking-wider text-gray-600 border border-gray-300 hover:bg-black hover:text-white hover:border-black transition-all duration-200">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                        </svg>
+                        Back to Home
+                    </a>
+                    <div class="mb-12">
+                        <h1 class="text-sm font-semibold tracking-wide uppercase text-black">React<br>.js</h1>
+                        <p class="text-[10px] text-gray-500 mt-1 uppercase tracking-wider">Frontend</p>
+                    </div>
+                    <nav class="space-y-1">
+                        <a href="#intro" class="nav-link font-medium text-black">Introduction</a>
+
+                        <div class="pt-4 pb-1 text-[10px] text-gray-400 font-bold uppercase tracking-wider">01.
+                            Core</div>
+                        <a href="#components" class="nav-link">Components</a>
+                        <a href="#props-state" class="nav-link">Props & State</a>
+
+                        <div class="pt-4 pb-1 text-[10px] text-gray-400 font-bold uppercase tracking-wider">02.
+                            Logic</div>
+                        <a href="#hooks" class="nav-link">Hooks</a>
+                        <a href="#effects" class="nav-link">Side Effects</a>
+
+                        <div class="pt-4 pb-1 text-[10px] text-gray-400 font-bold uppercase tracking-wider">03.
+                            Internals</div>
+                        <a href="#vdom" class="nav-link">Virtual DOM</a>
+                        <a href="#context" class="nav-link">Context API</a>
+
+                        <div class="pt-4 pb-1 text-[10px] text-gray-400 font-bold uppercase tracking-wider">04.
+                            Scaling</div>
+                        <a href="#performance" class="nav-link">Performance</a>
+                        <a href="#ecosystem" class="nav-link">Ecosystem</a>
+
+                        <div class="pt-4 pb-1 text-[10px] text-gray-400 font-bold uppercase tracking-wider">05.
+                            Summary</div>
+                        <a href="#glossary" class="nav-link">Glossary</a>
+                        <a href="#quiz" class="nav-link">Knowledge Check</a>
+                    </nav>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 lg:ml-64 bg-white w-full">
+            <div class="max-w-3xl mx-auto px-4 sm:px-8 py-24 lg:py-20">
+
+                <!-- Hero -->
+                <section id="intro" class="mb-16 md:mb-24">
+                    <div class="flex items-center gap-4 mb-6">
+                        <svg viewBox="-10.5 -9.45 21 18.9" fill="none" class="w-16 h-16 react-logo text-[#0ea5e9]">
+                            <circle cx="0" cy="0" r="2" fill="currentColor"></circle>
+                            <g stroke="currentColor" stroke-width="1" fill="none">
+                                <ellipse rx="10" ry="4.5"></ellipse>
+                                <ellipse rx="10" ry="4.5" transform="rotate(60)"></ellipse>
+                                <ellipse rx="10" ry="4.5" transform="rotate(120)"></ellipse>
+                            </g>
+                        </svg>
+                        <h2 class="text-3xl md:text-5xl font-semibold text-black tracking-tight leading-tight">The UI
+                            as<br>a Function</h2>
+                    </div>
+
+                    <p class="text-base md:text-lg text-gray-600 max-w-xl font-light leading-relaxed mb-6">
+                        React is a JavaScript library for building user interfaces. Ideally, it lets you describe your
+                        UI as a function of your state: <code class="bg-gray-100 text-sm px-1">UI = f(state)</code>.
+                    </p>
+                </section>
+
+                <div class="divider hidden md:block border-t border-gray-100 my-10"></div>
+
+                <!-- 00. Setup -->
+                <section id="setup" class="mb-20 md:mb-24">
+                    <span class="rams-label">00 / Setup</span>
+                    <h3 class="text-xl font-medium mb-4">Getting Started</h3>
+                    <p class="text-sm text-gray-600 mb-6 max-w-xl">
+                        React is a library, not a framework. You can add it to an existing HTML page, but for new
+                        projects, it's best to use a toolchain. You'll need <strong>Node.js</strong> installed.
+                    </p>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- CRA -->
+                        <div class="rams-card">
+                            <h4 class="text-xs font-bold uppercase mb-2 text-gray-500">The Classic Way</h4>
+                            <p class="text-sm font-bold mb-2">Create React App (CRA)</p>
+                            <p class="text-xs text-gray-600 mb-4">Good for beginners, but slower and less flexible than
+                                modern tools.</p>
+                            <div class="code-block text-xs">
+                                <span class="keyword">npx</span> create-react-app my-app<br>
+                                <span class="keyword">cd</span> my-app<br>
+                                <span class="keyword">npm</span> start
+                            </div>
+                        </div>
+
+                        <!-- Vite -->
+                        <div class="rams-card border-blue-200 bg-blue-50/20">
+                            <h4 class="text-xs font-bold uppercase mb-2 text-blue-500">The Modern Way</h4>
+                            <p class="text-sm font-bold mb-2 text-blue-900">Vite (Recommended)</p>
+                            <p class="text-xs text-blue-800 mb-4">Extremely fast build tool. Use this for production
+                                apps.</p>
+                            <div class="code-block text-xs !bg-blue-900 !text-blue-100">
+                                <span class="keyword">npm</span> create vite@latest my-app -- --template react<br>
+                                <span class="keyword">cd</span> my-app<br>
+                                <span class="keyword">npm</span> install<br>
+                                <span class="keyword">npm</span> run dev
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <div class="divider hidden md:block border-t border-gray-100 my-10"></div>
+
+                <!-- 01. Components -->
+                <section id="components" class="mb-20 md:mb-24">
+                    <span class="rams-label">01 / Building Blocks</span>
+                    <h3 class="text-xl font-medium mb-4">Components & JSX</h3>
+                    <p class="text-sm text-gray-600 mb-6 max-w-xl">
+                        React apps are made out of components. A component is a piece of the UI (User Interface) that
+                        has its own logic and appearance. React components are JavaScript functions that return markup.
+                    </p>
+
+                    <div class="rams-card">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                            <div>
+                                <h4 class="text-xs font-bold uppercase mb-2">The Code</h4>
+                                <div class="code-block">
+                                    <span class="keyword">function</span> <span class="function">Button</span>() {
+                                    <span class="keyword">return</span> (
+                                    &lt;<span class="tag">button</span> <span class="attr">className</span>=<span
+                                        class="string">"btn"</span>&gt;
+                                    Click me
+                                    &lt;/<span class="tag">button</span>&gt;
+                                    );
+                                    }
+                                </div>
+                                <p class="text-[10px] text-gray-400 mt-2">
+                                    JSX allows writing HTML-like syntax inside JavaScript.
+                                </p>
+                            </div>
+                            <div
+                                class="flex flex-col justify-center items-center border border-dashed border-gray-200 rounded p-8 bg-gray-50">
+                                <h4 class="text-xs font-bold uppercase mb-4 text-gray-400">The Result</h4>
+                                <button
+                                    class="btn btn-primary shadow-sm transform transition-transform active:scale-95">Click
+                                    me</button>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Expanded Components Details -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8 text-xs text-gray-600">
+                        <div class="p-4 bg-gray-50 border border-t-[3px] border-t-black border-gray-200">
+                            <h4 class="font-bold text-black mb-2 uppercase tracking-wide">Why Components?</h4>
+                            <p class="mb-2"><strong>1. Reusability:</strong> Write a button once, use it everywhere.
+                                Consistency is automatic.</p>
+                            <p><strong>2. Isolation:</strong> If a button breaks, it doesn't crash the whole header.
+                                Each
+                                component manages its own errors.</p>
+                        </div>
+                        <div class="p-4 bg-gray-50 border border-t-[3px] border-t-black border-gray-200">
+                            <h4 class="font-bold text-black mb-2 uppercase tracking-wide">The Lifecycle</h4>
+                            <ul class="list-disc pl-4 space-y-1">
+                                <li><strong>Mounting:</strong> Born. Added to the screen (DOM).</li>
+                                <li><strong>Updating:</strong> Changed. Re-rendered due to new props or state.</li>
+                                <li><strong>Unmounting:</strong> Died. Removed from the screen.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Quick Check 1 -->
+                <div class="mb-20 md:mb-24 p-4 border-l-4 border-gray-200 bg-gray-50 rounded-r" id="qc-1">
+                    <p class="text-xs font-bold text-gray-500 uppercase mb-2">Quick Check</p>
+                    <p class="text-sm font-medium mb-4">True or False: React component names must always start with a
+                        capital letter?</p>
+                    <div class="flex gap-2">
+                        <button
+                            onclick="checkQuickAnswer(this, true, 'Correct! Lowercase tags are reserved for HTML elements.')"
+                            class="btn btn-secondary text-xs bg-white">True</button>
+                        <button
+                            onclick="checkQuickAnswer(this, false, 'Incorrect. Component names start with capital letters to distinguish them from regular HTML tags.')"
+                            class="btn btn-secondary text-xs bg-white">False</button>
+                    </div>
+                    <p class="text-xs mt-3 hidden feedback"></p>
+                </div>
+
+                <!-- 02. Props & State -->
+                <section id="props-state" class="mb-20 md:mb-24">
+                    <span class="rams-label">01 / Data Flow</span>
+                    <h3 class="text-xl font-medium mb-4">Props vs State</h3>
+
+                    <div class="rams-card">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                            <!-- Props -->
+                            <div class="p-4 bg-blue-50 border border-blue-100 rounded">
+                                <h4 class="text-sm font-bold text-blue-800 mb-2">PROPS (Properties)</h4>
+                                <ul class="list-disc pl-4 text-xs text-blue-700 space-y-1">
+                                    <li>Passed <strong>into</strong> a component (like function arguments).</li>
+                                    <li><strong>Immutable</strong> (Read-Only) by the receiving component.</li>
+                                    <li>Used to configure a component.</li>
+                                </ul>
+                            </div>
+
+                            <!-- State -->
+                            <div class="p-4 bg-green-50 border border-green-100 rounded">
+                                <h4 class="text-sm font-bold text-green-800 mb-2">STATE</h4>
+                                <ul class="list-disc pl-4 text-xs text-green-700 space-y-1">
+                                    <li>Managed <strong>within</strong> the component.</li>
+                                    <li><strong>Mutable</strong> (Can change over time).</li>
+                                    <li>Triggers a re-render when changed.</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- Interactive Demo -->
+                        <div class="mt-8 border-t border-gray-100 pt-6">
+                            <h4 class="text-xs font-bold uppercase mb-4 text-center">Interactive State Demo</h4>
+
+                            <div class="flex flex-col items-center gap-6">
+                                <div class="text-4xl font-mono font-bold text-gray-800" id="counter-display">0</div>
+                                <div class="flex gap-2">
+                                    <button onclick="updateCount(-1)" class="btn btn-secondary">-</button>
+                                    <button onclick="updateCount(1)" class="btn btn-primary">+</button>
+                                </div>
+                                <div class="w-full bg-gray-100 p-3 rounded text-xs font-mono text-gray-600">
+                                    <span class="text-purple-600">const</span> [count, setCount] = <span
+                                        class="text-blue-600">useState</span>(<span id="code-count">0</span>);
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Quick Check 2 -->
+                <div class="mb-20 md:mb-24 p-4 border-l-4 border-gray-200 bg-gray-50 rounded-r" id="qc-2">
+                    <p class="text-xs font-bold text-gray-500 uppercase mb-2">Quick Check</p>
+                    <p class="text-sm font-medium mb-4">Which of these is <strong>mutable</strong> (can be changed by
+                        the component)?</p>
+                    <div class="flex gap-2">
+                        <button onclick="checkQuickAnswer(this, false, 'Incorrect. Props are read-only (immutable).')"
+                            class="btn btn-secondary text-xs bg-white">Props</button>
+                        <button
+                            onclick="checkQuickAnswer(this, true, 'Correct! State is managed within the component and can change.')"
+                            class="btn btn-secondary text-xs bg-white">State</button>
+                    </div>
+                    <p class="text-xs mt-3 hidden feedback"></p>
+                </div>
+
+                <!-- 03. Hooks -->
+                <section id="hooks" class="mb-20 md:mb-24">
+                    <span class="rams-label">02 / Logic</span>
+                    <h3 class="text-xl font-medium mb-4">Hooks</h3>
+                    <p class="text-sm text-gray-600 mb-6 max-w-xl">
+                        Hooks let you use state and other React features without writing a class.
+                    </p>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="rams-card">
+                            <h4 class="font-bold text-sm mb-2 text-[#0ea5e9]">useState</h4>
+                            <p class="text-xs text-gray-600 mb-2">Adds local state to function components.</p>
+                            <code class="text-[10px] bg-gray-100 p-1 rounded">const [val, setVal] = useState(0);</code>
+                        </div>
+                        <div class="rams-card">
+                            <h4 class="font-bold text-sm mb-2 text-[#8b5cf6]">useEffect</h4>
+                            <p class="text-xs text-gray-600 mb-2">Performs side effects (API calls, DOM updates).</p>
+                            <code class="text-[10px] bg-gray-100 p-1 rounded">useEffect(() => { ... }, [deps]);</code>
+                        </div>
+                        <div class="rams-card">
+                            <h4 class="font-bold text-sm mb-2 text-[#f59e0b]">useContext</h4>
+                            <p class="text-xs text-gray-600 mb-2">Subscribes to React Context without nesting.</p>
+                            <code
+                                class="text-[10px] bg-gray-100 p-1 rounded">const value = useContext(MyContext);</code>
+                        </div>
+                        <div class="rams-card">
+                            <h4 class="font-bold text-sm mb-2 text-[#ef4444]">useRef</h4>
+                            <p class="text-xs text-gray-600 mb-2">Persists values between renders without causing
+                                re-renders.</p>
+                            <code class="text-[10px] bg-gray-100 p-1 rounded">const ref = useRef(initial);</code>
+                        </div>
+                    </div>
+
+                    <!-- Expanded Hooks Rules -->
+                    <div class="mt-8 p-4 border border-red-100 bg-red-50/50 rounded">
+                        <h4 class="text-xs font-bold text-red-800 uppercase mb-3 flex items-center gap-2">
+                            <span class="text-lg">⚠️</span> The 2 Rules of Hooks
+                        </h4>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 text-xs">
+                            <div>
+                                <strong class="block text-red-900 mb-1">1. Only Call at the Top Level</strong>
+                                <p class="text-red-800/80 mb-2">Don't call Hooks inside loops, conditions, or nested
+                                    functions.</p>
+                                <div class="code-block !bg-red-50 !text-red-900 border border-red-200 !p-2">
+                                    <span class="opacity-50">// ❌ Bad</span><br>
+                                    if (data) { useEffect(...) }
+                                </div>
+                            </div>
+                            <div>
+                                <strong class="block text-red-900 mb-1">2. Only Call from React Functions</strong>
+                                <p class="text-red-800/80 mb-2">Call Hooks from function components or custom Hooks.</p>
+                                <div class="code-block !bg-green-50 !text-green-900 border border-green-200 !p-2">
+                                    <span class="opacity-50">// ✅ Good</span><br>
+                                    function Component() { useState(...) }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Quick Check 3 -->
+                <div class="mb-20 md:mb-24 p-4 border-l-4 border-gray-200 bg-gray-50 rounded-r" id="qc-3">
+                    <p class="text-xs font-bold text-gray-500 uppercase mb-2">Quick Check</p>
+                    <p class="text-sm font-medium mb-4">Can you use Hooks inside standard Class components?</p>
+                    <div class="flex gap-2">
+                        <button
+                            onclick="checkQuickAnswer(this, false, 'Incorrect. Hooks only work in Function components.')"
+                            class="btn btn-secondary text-xs bg-white">Yes</button>
+                        <button
+                            onclick="checkQuickAnswer(this, true, 'Correct! Hooks allow you to use state without writing a class.')"
+                            class="btn btn-secondary text-xs bg-white">No</button>
+                    </div>
+                    <p class="text-xs mt-3 hidden feedback"></p>
+                </div>
+
+                <!-- 03b. Side Effects -->
+                <section id="effects" class="mb-20 md:mb-24">
+                    <span class="rams-label">02 / Logic</span>
+                    <h3 class="text-xl font-medium mb-4">Side Effects & Lifecycle</h3>
+                    <p class="text-sm text-gray-600 mb-6 max-w-xl">
+                        Components need to do more than just display data—they need to fetch data, set up subscriptions,
+                        or manually change the DOM (like focusing an input). These are called "Side Effects".
+                    </p>
+
+                    <div class="rams-card">
+                        <h4 class="font-bold text-sm mb-4 text-[#8b5cf6]">The useEffect Hook</h4>
+                        <p class="text-xs text-gray-600 mb-6">
+                            <code>useEffect</code> tells React that your component needs to do something <em>after</em>
+                            render.
+                            You control <strong>when</strong> it runs using a "Dependency Array".
+                        </p>
+
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <!-- Run Once -->
+                            <div class="p-3 bg-gray-50 border border-gray-200 rounded">
+                                <h5 class="text-xs font-bold text-gray-700 mb-2">Run Once (Mount)</h5>
+                                <div class="code-block text-[10px] mb-2">
+                                    useEffect(() => {<br>
+                                    &nbsp;&nbsp;<span class="tag">fetchData</span>();<br>
+                                    }, <span class="function">[]</span>);
+                                </div>
+                                <p class="text-[10px] text-gray-500">
+                                    Empty array <code>[]</code>. Runs only once after the first render (like
+                                    componentDidMount).
+                                </p>
+                            </div>
+
+                            <!-- Run on Change -->
+                            <div class="p-3 bg-blue-50 border border-blue-100 rounded">
+                                <h5 class="text-xs font-bold text-blue-800 mb-2">Run on Change</h5>
+                                <div class="code-block text-[10px] mb-2">
+                                    useEffect(() => {<br>
+                                    &nbsp;&nbsp;<span class="tag">update</span>(id);<br>
+                                    }, [<span class="attr">id</span>]);
+                                </div>
+                                <p class="text-[10px] text-blue-700">
+                                    Runs after mount AND whenever <code>id</code> changes.
+                                </p>
+                            </div>
+
+                            <!-- Run Every Time -->
+                            <div class="p-3 bg-red-50 border border-red-100 rounded">
+                                <h5 class="text-xs font-bold text-red-800 mb-2">Run Every Render</h5>
+                                <div class="code-block text-[10px] mb-2">
+                                    useEffect(() => {<br>
+                                    &nbsp;&nbsp;<span class="tag">log</span>();<br>
+                                    });
+                                </div>
+                                <p class="text-[10px] text-red-700">
+                                    No array. Runs after <strong>every</strong> single render. (Be careful!).
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Cleanup Function Expansion -->
+                    <div class="mt-6 p-4 bg-purple-50 border-l-4 border-purple-400">
+                        <h4 class="text-sm font-bold text-purple-900 mb-2">The Cleanup Function</h4>
+                        <p class="text-xs text-purple-800 mb-3">
+                            Sometimes effects create "mess" (open connections, timers). If you return a function from
+                            <code>useEffect</code>, React runs it to clean up before running the effect again (or
+                            unmounting).
+                        </p>
+                        <div class="code-block !bg-purple-900/10 !text-purple-900 border border-purple-200">
+                            useEffect(() => {<br>
+                            &nbsp;&nbsp;const timer = setInterval(tick, 1000);<br>
+                            &nbsp;&nbsp;<span class="text-purple-600 font-bold">return () =>
+                                clearInterval(timer);</span> <span class="opacity-50">// Cleanup!</span><br>
+                            }, []);
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Quick Check 4 -->
+                <div class="mb-20 md:mb-24 p-4 border-l-4 border-gray-200 bg-gray-50 rounded-r" id="qc-4">
+                    <p class="text-xs font-bold text-gray-500 uppercase mb-2">Quick Check</p>
+                    <p class="text-sm font-medium mb-4">When does <code>useEffect(fn, [])</code> (with an empty array)
+                        run?</p>
+                    <div class="flex gap-2">
+                        <button onclick="checkQuickAnswer(this, false, 'Incorrect. It only runs once on mount.')"
+                            class="btn btn-secondary text-xs bg-white">Every Render</button>
+                        <button
+                            onclick="checkQuickAnswer(this, true, 'Correct! Empty dependency array means it runs once after the initial render.')"
+                            class="btn btn-secondary text-xs bg-white">Only on Mount</button>
+                    </div>
+                    <p class="text-xs mt-3 hidden feedback"></p>
+                </div>
+
+                <!-- 04. VDOM -->
+                <section id="vdom" class="mb-20 md:mb-24">
+                    <span class="rams-label">03 / Internals</span>
+                    <h3 class="text-xl font-medium mb-4">The Virtual DOM</h3>
+                    <p class="text-sm text-gray-600 mb-6 max-w-xl">
+                        React creates a lightweight copy of the DOM called the Virtual DOM. When state changes, React
+                        compares the new Virtual DOM with the previous one (Diffing) and only updates the actual DOM
+                        where necessary (Reconciliation).
+                    </p>
+
+                    <div class="mb-8 p-3 bg-blue-50 border border-blue-100 rounded text-xs text-blue-800">
+                        <strong class="block mb-1 font-bold uppercase">⚡ Performance Note: Batching</strong>
+                        React doesn't update the screen instantly for every state change. It "batches" (groups) multiple
+                        state updates into a single re-render to save performance. It's like a waiter taking all orders
+                        at a table before going to the kitchen, instead of running back and forth for every person.
+                    </div>
+
+                    <div class="rams-card flex flex-col items-center">
+                        <div class="flex flex-col md:flex-row gap-8 items-center text-center">
+                            <div class="opacity-50 blur-[1px] transform scale-95 transition-all duration-500"
+                                id="vdom-old">
+                                <div
+                                    class="w-24 h-32 border border-gray-300 rounded p-2 bg-gray-50 flex flex-col gap-2">
+                                    <div class="h-4 bg-gray-200 rounded"></div>
+                                    <div class="h-4 bg-gray-200 rounded"></div>
+                                    <div class="h-4 bg-gray-200 rounded"></div>
+                                </div>
+                                <p class="text-[10px] mt-2 text-gray-400">Previous</p>
+                            </div>
+
+                            <div class="text-2xl text-gray-300 transform rotate-90 md:rotate-0">&rarr;</div>
+
+                            <div class="transform transition-all duration-500" id="vdom-new">
+                                <div class="w-24 h-32 border border-gray-300 rounded p-2 bg-gray-50 flex flex-col gap-2 transition-colors duration-300"
+                                    id="vdom-new-box">
+                                    <div class="h-4 bg-gray-200 rounded"></div>
+                                    <div class="h-4 bg-gray-200 rounded transition-colors duration-300"
+                                        id="vdom-new-node">
+                                    </div>
+                                    <div class="h-4 bg-gray-200 rounded"></div>
+                                </div>
+                                <p class="text-[10px] mt-2 text-gray-400 font-bold transition-colors duration-300"
+                                    id="vdom-new-text">New VDOM</p>
+                            </div>
+
+                            <div class="text-2xl text-gray-300 transform rotate-90 md:rotate-0">&rarr;</div>
+
+                            <div id="real-dom">
+                                <div
+                                    class="w-24 h-32 border border-black rounded p-2 bg-white flex flex-col gap-2 shadow-xl">
+                                    <div class="h-4 bg-gray-200 rounded"></div>
+                                    <div class="h-4 bg-gray-200 rounded transition-colors duration-300"
+                                        id="real-dom-node">
+                                    </div>
+                                    <div class="h-4 bg-gray-200 rounded"></div>
+                                </div>
+                                <p class="text-[10px] mt-2 text-black font-bold">Real DOM</p>
+                            </div>
+                        </div>
+                        <button onclick="triggerDiff()" class="mt-8 btn btn-secondary text-xs">Simulate Update</button>
+                    </div>
+                </section>
+
+                <!-- 05. Context -->
+                <section id="context" class="mb-20 md:mb-24">
+                    <span class="rams-label">03 / State Management</span>
+                    <h3 class="text-xl font-medium mb-4">Context API</h3>
+                    <p class="text-sm text-gray-600 mb-6 max-w-xl">
+                        Passing props down multiple levels ("Prop Drilling") is tedious. Context provides a way to share
+                        values like these between components without having to explicitly pass a prop through every
+                        level of the tree.
+                    </p>
+
+                    <div class="rams-card">
+                        <div class="flex flex-col gap-6">
+                            <div
+                                class="flex justify-between items-center text-xs text-gray-500 font-mono border-b border-gray-100 pb-2">
+                                <span>Global Theme State</span>
+                                <span>App Component</span>
+                            </div>
+
+                            <!-- Visual Tree -->
+                            <div class="flex flex-col items-center gap-4 relative">
+                                <!-- Connection Line (Top Level) -->
+                                <svg class="absolute inset-0 w-full h-full pointer-events-none z-0 text-sky-300 opacity-50 hidden md:block"
+                                    viewBox="0 0 300 250" preserveAspectRatio="xMidYMin meet" fill="none"
+                                    stroke="currentColor">
+                                    <path id="ctx-line" d="M 150 45 C 150 100, 215 100, 215 170" stroke-width="3"
+                                        stroke-dasharray="300" stroke-dashoffset="300"
+                                        class="transition-all duration-500" />
+                                    <defs>
+                                        <marker id="arrow" markerWidth="10" markerHeight="10" refX="0" refY="3"
+                                            orient="auto">
+                                            <path d="M0,0 L0,6 L9,3 z" fill="currentColor" />
+                                        </marker>
+                                    </defs>
+                                </svg>
+                                <!-- Provider -->
+                                <div id="ctx-provider"
+                                    class="p-3 border border-black bg-white rounded shadow-sm w-32 text-center text-xs font-bold transition-colors duration-500 z-10 relative">
+                                    App Provider
+
+                                </div>
+                                <div class="h-8 w-px bg-gray-300"></div>
+                                <div class="flex gap-8">
+                                    <div class="flex flex-col items-center gap-4">
+                                        <div
+                                            class="p-2 border border-gray-300 bg-gray-50 rounded w-24 text-center text-[10px] text-gray-400">
+                                            Nav</div>
+                                        <div class="h-8 w-px bg-gray-300"></div>
+                                        <div
+                                            class="p-2 border border-gray-300 bg-gray-50 rounded w-24 text-center text-[10px] text-gray-400">
+                                            Button</div>
+                                    </div>
+                                    <div class="flex flex-col items-center gap-4">
+                                        <div
+                                            class="p-2 border border-gray-300 bg-gray-50 rounded w-24 text-center text-[10px] text-gray-400">
+                                            Layout</div>
+                                        <div class="h-8 w-px bg-gray-300"></div>
+
+                                        <!-- Consumer -->
+                                        <div id="ctx-consumer"
+                                            class="p-2 border border-sky-500 bg-sky-50 text-sky-700 rounded w-24 text-center text-[10px] font-bold shadow-sm transition-colors duration-500 z-10">
+                                            ThemeBtn
+                                        </div>
+
+
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="flex justify-center mt-4">
+                                <button onclick="toggleTheme()" class="btn btn-primary text-xs flex items-center gap-2">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none"
+                                        viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                                    </svg>
+                                    Toggle Global Theme
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 06. Performance -->
+                <section id="performance" class="mb-20 md:mb-24">
+                    <span class="rams-label">04 / Scaling</span>
+                    <h3 class="text-xl font-medium mb-4">Performance</h3>
+                    <p class="text-sm text-gray-600 mb-6 max-w-xl">
+                        React is fast by default, but complex apps need optimization. Re-rendering large trees
+                        unnecessarily can cause lag.
+                    </p>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div class="rams-card">
+                            <h4 class="font-bold text-sm mb-2">React.memo</h4>
+                            <p class="text-xs text-gray-600 mb-2">HOC that skips re-rendering a component if its props
+                                haven't changed.</p>
+                        </div>
+                        <div class="rams-card">
+                            <h4 class="font-bold text-sm mb-2">useMemo</h4>
+                            <p class="text-xs text-gray-600 mb-2">Caches the result of a calculation between re-renders.
+                            </p>
+                        </div>
+                        <div class="rams-card">
+                            <h4 class="font-bold text-sm mb-2">useCallback</h4>
+                            <p class="text-xs text-gray-600 mb-2">Caches a function definition to prevent it from
+                                changing on every render.</p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 07. Ecosystem -->
+                <section id="ecosystem" class="mb-20 md:mb-24">
+                    <span class="rams-label">05 / The Landscape</span>
+                    <h3 class="text-xl font-medium mb-4">Ecosystem</h3>
+
+                    <div class="space-y-4">
+                        <div class="rams-card border-l-4 border-l-black">
+                            <h4 class="font-bold text-sm mb-1">React Router</h4>
+                            <p class="text-xs text-gray-600">Standard library for routing in React. Enables Single Page
+                                Applications (SPAs) with client-side navigation.</p>
+                        </div>
+                        <div class="rams-card border-l-4 border-l-black">
+                            <h4 class="font-bold text-sm mb-1">Next.js / Remix</h4>
+                            <p class="text-xs text-gray-600">Full-stack frameworks built on React. They add Server-Side
+                                Rendering (SSR), Static Site Generation (SSG), and API routes.</p>
+                        </div>
+                        <div class="rams-card border-l-4 border-l-black">
+                            <h4 class="font-bold text-sm mb-1">React Native</h4>
+                            <p class="text-xs text-gray-600">A framework for building native apps for iOS and Android
+                                using React components.</p>
+                        </div>
+                    </div>
+                </section>
+
+                <div class="divider hidden md:block border-t border-gray-100 my-10"></div>
+
+                <!-- Glossary Section -->
+                <section id="glossary" class="mb-20">
+                    <span class="rams-label">Glossary</span>
+                    <h3 class="text-xl font-medium mb-8">Key Definitions</h3>
+                    <div class="rams-card">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <h4 class="font-bold text-sm mb-2">Component</h4>
+                                <p class="text-xs text-gray-600">A reusable, self-contained piece of UI logic and
+                                    structure.</p>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-sm mb-2">JSX</h4>
+                                <p class="text-xs text-gray-600">JavaScript XML. A syntax extension that lets you write
+                                    HTML-like code in JS.</p>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-sm mb-2">State</h4>
+                                <p class="text-xs text-gray-600">Data managed within a component that triggers a
+                                    re-render when changed.</p>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-sm mb-2">Props</h4>
+                                <p class="text-xs text-gray-600">Read-only data passed from a parent component to a
+                                    child.</p>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-sm mb-2">Virtual DOM</h4>
+                                <p class="text-xs text-gray-600">A lightweight in-memory representation of the real DOM
+                                    used for performance.</p>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-sm mb-2">Reconciliation</h4>
+                                <p class="text-xs text-gray-600">The process of figuring out the most efficient way to
+                                    update the UI.</p>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-sm mb-2">Hook</h4>
+                                <p class="text-xs text-gray-600">A special function that lets you "hook into" React
+                                    features like state and lifecycle.</p>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-sm mb-2">Context</h4>
+                                <p class="text-xs text-gray-600">A way to pass data through the component tree without
+                                    manually passing props at every level.</p>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-sm mb-2">Memoization</h4>
+                                <p class="text-xs text-gray-600">An optimization technique used to speed up computer
+                                    programs by caching the results of expensive function calls.</p>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-sm mb-2">Prop Drilling</h4>
+                                <p class="text-xs text-gray-600">The process of passing data from a parent component
+                                    down to a deep child component through intermediate components.</p>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-sm mb-2">SPA</h4>
+                                <p class="text-xs text-gray-600">Single Page Application. A web app that interacts with
+                                    the web browser by dynamically rewriting the current web page with new data.</p>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-sm mb-2">SSR</h4>
+                                <p class="text-xs text-gray-600">Server-Side Rendering. Generating HTML on the server
+                                    for each request, improving SEO and initial load performance.</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Quiz -->
+                <section id="quiz" class="mb-20">
+                    <span class="rams-label">04 / Assessment</span>
+                    <h3 class="text-xl font-medium mb-8">Knowledge Check</h3>
+                    <div id="quiz-container" class="rams-card">
+                        <!-- Quiz loads here -->
+                    </div>
+                </section>
+
+                <!-- Certificate -->
+                <section id="certificate" class="mb-20 md:mb-24 hidden">
+                    <span class="rams-label">07 / Certification</span>
+                    <h3 class="text-xl font-medium mb-6">Completion Certificate</h3>
+
+                    <div class="rams-card !p-0 overflow-hidden">
+                        <div class="p-6 md:p-8">
+                            <div class="flex flex-col md:flex-row gap-8 items-start">
+                                <div class="w-full md:w-1/3 space-y-4">
+                                    <p class="text-sm text-gray-600">
+                                        Enter your name below to generate your personalized certificate.
+                                    </p>
+                                    <div>
+                                        <label for="cert-name"
+                                            class="block text-xs font-bold text-gray-500 uppercase mb-1">Full
+                                            Name</label>
+                                        <input type="text" id="cert-name"
+                                            class="w-full border border-gray-300 p-2 font-mono text-sm focus:border-black outline-none"
+                                            placeholder="Dan Abramov">
+                                        <p id="cert-error" class="text-red-500 text-xs mt-2 hidden">Please enter your
+                                            name.
+                                        </p>
+                                    </div>
+                                    <button onclick="generateCert()"
+                                        class="btn btn-primary bg-black border-black text-white w-full hover:bg-gray-800 p-2 rounded text-sm font-medium transition-colors">Generate
+                                        Certificate</button>
+                                    <button onclick="downloadCert()" id="btn-download"
+                                        class="btn btn-secondary w-full hidden border border-gray-300 text-gray-700 p-2 rounded text-sm font-medium hover:bg-gray-50 transition-colors">Download
+                                        PNG</button>
+
+                                </div>
+
+                                <div
+                                    class="w-full md:w-2/3 bg-gray-50 border border-gray-200 p-4 flex items-center justify-center">
+                                    <canvas id="cert-canvas" class="w-full shadow-lg bg-white"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="bg-gray-50 px-6 py-3 border-t border-gray-100 text-center">
+                            <p class="text-[10px] text-gray-400 italic">
+                                This certificate confirms successful completion of learning and assessment on this
+                                platform
+                                and is not an accredited or government-recognized qualification.
+                            </p>
+                        </div>
+                    </div>
+                </section>
+
+
+                <footer class="w-full mt-12 mb-12">
+                    <div class="border-t border-gray-200 pt-8 flex justify-between items-center">
+                        <span class="text-[10px] mono uppercase text-gray-400">Undrstanding</span>
+                        <span class="text-[10px] mono uppercase text-gray-400">For Humans, From Humans</span>
+                    </div>
+                </footer>
+
+            </div>
+        </main>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/script.js"></script>
+    <script>
+        // --- 1. Mobile Menu ---
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobile-menu');
+            if (menu.classList.contains('hidden')) {
+                menu.classList.remove('hidden');
+                menu.classList.add('flex');
+                document.body.style.overflow = 'hidden';
+            } else {
+                menu.classList.add('hidden');
+                menu.classList.remove('flex');
+                document.body.style.overflow = 'auto';
+            }
+        }
+
+        // --- 2. Interactive Counter ---
+        let count = 0;
+        const countDisplay = document.getElementById('counter-display');
+        const codeDisplay = document.getElementById('code-count');
+
+        function updateCount(delta) {
+            count += delta;
+            countDisplay.innerText = count;
+            codeDisplay.innerText = count;
+
+            // Visual feedback
+            countDisplay.classList.remove('text-gray-800');
+            countDisplay.classList.add('text-[#0ea5e9]');
+            setTimeout(() => {
+                countDisplay.classList.remove('text-[#0ea5e9]');
+                countDisplay.classList.add('text-gray-800');
+            }, 200);
+        }
+
+        // --- 3. VDOM Anim ---
+        function triggerDiff() {
+            const vOld = document.getElementById('vdom-old');
+            const vNew = document.getElementById('vdom-new');
+            const vNewBox = document.getElementById('vdom-new-box');
+            const vNewNode = document.getElementById('vdom-new-node');
+            const vNewText = document.getElementById('vdom-new-text');
+            const realNode = document.getElementById('real-dom-node');
+
+            // Prevent multiple clicks
+            if (vNew.classList.contains('animating')) return;
+            vNew.classList.add('animating');
+
+            // Step 1: State Change (Gray -> Blue)
+            vNewBox.classList.remove('border-gray-300', 'bg-gray-50');
+            vNewBox.classList.add('border-sky-300', 'bg-sky-50');
+            vNewNode.classList.remove('bg-gray-200');
+            vNewNode.classList.add('bg-sky-500');
+            vNewText.classList.remove('text-gray-400');
+            vNewText.classList.add('text-sky-600');
+            vNewText.textContent = "Diffing...";
+
+            // Step 2: Diff (Pulse/Scale)
+            setTimeout(() => {
+                vNew.classList.add('scale-110');
+            }, 600);
+
+            // Step 3: Reconciliation (Commit to Real DOM)
+            setTimeout(() => {
+                vNew.classList.remove('scale-110');
+                realNode.classList.remove('bg-gray-200');
+                realNode.classList.add('bg-sky-500');
+                vNewText.textContent = "Committed";
+            }, 1400);
+
+            // Step 4: Reset
+            setTimeout(() => {
+                // Reset VDOM
+                vNewBox.classList.add('border-gray-300', 'bg-gray-50');
+                vNewBox.classList.remove('border-sky-300', 'bg-sky-50');
+                vNewNode.classList.add('bg-gray-200');
+                vNewNode.classList.remove('bg-sky-500');
+                vNewText.classList.add('text-gray-400');
+                vNewText.classList.remove('text-sky-600');
+                vNewText.textContent = "New VDOM";
+
+                // Reset Real DOM
+                realNode.classList.add('bg-gray-200');
+                realNode.classList.remove('bg-sky-500');
+
+                vNew.classList.remove('animating');
+            }, 3000);
+        }
+
+        // --- 4. Context Anim ---
+        // --- 4. Context Anim ---
+        let isDark = false;
+        function toggleTheme() {
+            const provider = document.getElementById('ctx-provider');
+            const consumer = document.getElementById('ctx-consumer');
+            const line = document.getElementById('ctx-line');
+
+            isDark = !isDark;
+
+            // Activate Line Animation
+            line.classList.add('context-flow-active');
+
+            // Activate Node styles
+            provider.classList.add('node-active');
+
+            // 1. Change Provider Color
+            updateThemeColors(provider, isDark, true);
+
+            // 2. Change Consumer Color after short delay (data arrival)
+            setTimeout(() => {
+                updateThemeColors(consumer, isDark, false);
+                consumer.classList.add('node-active');
+            }, 600);
+
+            // Reset Animation Classes after completion
+            setTimeout(() => {
+                line.classList.remove('context-flow-active');
+                provider.classList.remove('node-active');
+                consumer.classList.remove('node-active');
+            }, 1500);
+        }
+
+        function updateThemeColors(el, dark, isProvider) {
+            if (!el) return;
+            if (dark) {
+                el.classList.remove('bg-white', 'bg-sky-50', 'text-sky-700', 'border-black', 'border-sky-500');
+                el.classList.add('bg-gray-800', 'text-white', 'border-gray-900');
+                if (!isProvider) el.textContent = "ThemeBtn (Dark)";
+            } else {
+                el.classList.remove('bg-gray-800', 'text-white', 'border-gray-900');
+                if (isProvider) {
+                    el.classList.add('bg-white', 'border-black');
+                } else {
+                    el.classList.add('bg-sky-50', 'text-sky-700', 'border-sky-500');
+                    el.textContent = "ThemeBtn (Light)";
+                }
+            }
+        }
+
+        // --- 4b. Quick Checks Logic ---
+        function checkQuickAnswer(btn, isCorrect, msg) {
+            const container = btn.closest('div').parentElement;
+            const feedback = container.querySelector('.feedback');
+
+            // Reset buttons
+            const buttons = container.querySelectorAll('button');
+            buttons.forEach(b => {
+                b.classList.remove('bg-green-100', 'border-green-500', 'bg-red-100', 'border-red-500');
+                b.disabled = true;
+            });
+
+            if (isCorrect) {
+                btn.classList.add('bg-green-100', 'border-green-500');
+                feedback.classList.remove('text-red-600', 'hidden');
+                feedback.classList.add('text-green-700');
+                feedback.textContent = msg;
+            } else {
+                btn.classList.add('bg-red-100', 'border-red-500');
+                feedback.classList.remove('text-green-700', 'hidden');
+                feedback.classList.add('text-red-600');
+                feedback.textContent = msg;
+            }
+        }
+
+        // --- 5. Quiz ---
+        window.addEventListener('DOMContentLoaded', () => {
+            if (typeof QuizManager !== 'undefined') {
+                const questions = [
+                    { q: "What is React mainly used for?", o: ["Database Management", "Building User Interfaces", "Server-side routing only", "Operating Systems"], a: 1 },
+                    { q: "Which syntax allows HTML inside JavaScript?", o: ["HTML5", "XML", "JSX", "TypeScript"], a: 2 },
+                    { q: "What happens when 'State' changes?", o: ["The page reloads", "The component re-renders", "Nothing", "The data is deleted"], a: 1 },
+                    { q: "Props are...", o: ["Mutable (Changeable)", "Immutable (Read-Only)", "Global variables", "Functions only"], a: 1 },
+                    { q: "Which Hook handles side effects?", o: ["useState", "useContext", "useEffect", "useReducer"], a: 2 },
+                    { q: "What is the Virtual DOM?", o: ["A browser plugin", "A lightweight copy of the DOM", "A CSS framework", "A database"], a: 1 },
+                    { q: "How do you pass data to a child component?", o: ["Using State", "Using Props", "Using HTML attributes", "Using SQL"], a: 1 },
+                    { q: "What is the problem Context API helps solve?", o: ["Database connection", "Prop Drilling", "CSS Styling", "Slow internet"], a: 1 },
+                    { q: "Which hook is used for performance optimization?", o: ["useState", "useEffect", "useMemo", "useContext"], a: 2 },
+                    { q: "What does Next.js add to React?", o: ["New HTML tags", "Server-Side Rendering (SSR)", "A database", "Python support"], a: 1 }
+                ];
+
+                new QuizManager('quiz-container', questions.map(qx => ({ question: qx.q, options: qx.o, answer: qx.a })), () => {
+                    // On Success
+                    const certArea = document.getElementById('certificate');
+                    certArea.classList.remove('hidden');
+                    certArea.scrollIntoView({ behavior: 'smooth' });
+                });
+            }
+
+            // --- Certificate Logic ---
+            const certGen = new CertificateGenerator('cert-canvas', 'React.js');
+
+            window.generateCert = function () {
+                const nameInput = document.getElementById('cert-name');
+                const errorMsg = document.getElementById('cert-error');
+                const name = nameInput.value.trim();
+                const nameRegex = /^[a-zA-Z\s\-\.'’]+$/;
+
+                errorMsg.classList.add('hidden');
+                nameInput.classList.remove('border-red-500');
+
+                if (!name) {
+                    errorMsg.textContent = "Please enter your name.";
+                    errorMsg.classList.remove('hidden');
+                    nameInput.classList.add('border-red-500');
+                    return;
+                }
+
+                if (name.length < 3 || name.length > 35) {
+                    errorMsg.textContent = "Name must be between 3 and 35 characters.";
+                    errorMsg.classList.remove('hidden');
+                    nameInput.classList.add('border-red-500');
+                    return;
+                }
+
+
+                if (!nameRegex.test(name)) {
+                    errorMsg.textContent = "Name cannot contain numbers or special characters.";
+                    errorMsg.classList.remove('hidden');
+                    nameInput.classList.add('border-red-500');
+                    return;
+                }
+
+                certGen.generate(name);
+                document.getElementById('btn-download').classList.remove('hidden');
+            };
+
+            window.downloadCert = function () {
+                const name = document.getElementById('cert-name').value.trim();
+                certGen.download(`UndrLib_React_Certificate_${name.replace(/\s+/g, '_')}.png`);
+            };
+        });
+    </script>
+</body>
+
+</html>

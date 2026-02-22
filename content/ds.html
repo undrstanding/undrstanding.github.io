@@ -1,0 +1,2215 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Structures</title>
+    <link rel="icon" type="image/svg+xml" href="../assests/undrlogo.svg">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Roboto+Mono:wght@400;500&display=swap');
+
+        /* Global Scrollbar */
+        ::-webkit-scrollbar {
+            width: 1px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #000;
+        }
+
+        :root {
+            /* Rams Palette - Data Edition */
+            --bg-color: #f4f4f4;
+            --card-bg: #ffffff;
+            --text-main: #111111;
+            --text-muted: #737373;
+            /* Green Accent (Forest/Industrial Green) - Used ONLY in visuals */
+            --accent: #15803d;
+            --accent-light: #dcfce7;
+            --border: #e5e5e5;
+            --line: #d4d4d4;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            -webkit-font-smoothing: antialiased;
+            line-height: 1.6;
+        }
+
+        h1,
+        h2,
+        h3,
+        h4,
+        h5 {
+            font-weight: 600;
+            letter-spacing: -0.02em;
+            color: var(--text-main);
+            /* Strictly Black/Dark Grey */
+        }
+
+        p {
+            color: #404040;
+            /* Dark Grey for readability */
+        }
+
+        .mono {
+            font-family: 'Roboto Mono', monospace;
+        }
+
+        /* Industrial Grid Layout */
+        .rams-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            transition: all 0.3s ease;
+        }
+
+        .rams-card:hover {
+            border-color: #a3a3a3;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        }
+
+        @media (min-width: 768px) {
+            .rams-card {
+                padding: 2.5rem;
+            }
+        }
+
+        .rams-label {
+            font-family: 'Inter', sans-serif;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+            margin-bottom: 1rem;
+            display: block;
+        }
+
+        /* Controls */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.5rem 1.25rem;
+            font-size: 0.85rem;
+            font-weight: 500;
+            border-radius: 2px;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            white-space: nowrap;
+        }
+
+        .btn-primary {
+            background-color: var(--accent);
+            color: white;
+            border: 1px solid var(--accent);
+        }
+
+        .btn-primary:hover {
+            background-color: #166534;
+        }
+
+        .btn-secondary {
+            background-color: transparent;
+            color: var(--text-main);
+            border: 1px solid #a3a3a3;
+        }
+
+        .btn-secondary:hover {
+            background-color: #f0f0f0;
+            border-color: #555;
+        }
+
+        .btn-ghost {
+            color: var(--text-muted);
+        }
+
+        .btn-ghost:hover {
+            color: var(--text-main);
+            text-decoration: underline;
+        }
+
+        /* Sliders */
+        input[type=range] {
+            -webkit-appearance: none;
+            appearance: none;
+            background: transparent;
+            margin: 1.5rem 0;
+            width: 100%;
+        }
+
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            height: 18px;
+            width: 18px;
+            background: var(--text-main);
+            border-radius: 50%;
+            cursor: pointer;
+            margin-top: -8px;
+            border: 2px solid white;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+            transition: transform 0.1s;
+        }
+
+        input[type=range]::-webkit-slider-thumb:hover {
+            transform: scale(1.1);
+        }
+
+        input[type=range]::-webkit-slider-runnable-track {
+            width: 100%;
+            height: 2px;
+            cursor: pointer;
+            background: #d4d4d4;
+        }
+
+        /* Navigation */
+        .nav-link {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            padding: 0.5rem 0;
+            display: block;
+            transition: color 0.2s;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            color: var(--text-main);
+            font-weight: 500;
+        }
+
+        .nav-link.active::before {
+            content: "• ";
+            color: var(--accent);
+            /* Only accent in UI elements */
+        }
+
+        .divider {
+            height: 1px;
+            background-color: var(--border);
+            width: 100%;
+            margin: 3rem 0;
+        }
+
+        /* Utility */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        .thin-scrollbar::-webkit-scrollbar {
+            width: 1px;
+        }
+
+        .thin-scrollbar::-webkit-scrollbar-thumb {
+            background: #d4d4d4;
+        }
+
+        /* Animation Classes */
+        .section-reveal {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+        }
+
+        .section-reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Visual Specific Animations */
+        .highlight-cell {
+            animation: highlightPulse 0.5s ease-out forwards;
+        }
+
+        @keyframes highlightPulse {
+            0% {
+                transform: scale(1);
+                background-color: #fff;
+                border-color: #e5e5e5;
+            }
+
+            50% {
+                transform: scale(1.1);
+                background-color: var(--accent-light);
+                border-color: var(--accent);
+            }
+
+            100% {
+                transform: scale(1);
+                background-color: var(--accent-light);
+                border-color: var(--accent);
+            }
+        }
+
+        .node-appear {
+            animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+
+        @keyframes popIn {
+            from {
+                opacity: 0;
+                transform: scale(0.5) translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+
+        .traverse-active {
+            box-shadow: 0 0 0 2px var(--accent);
+            background-color: var(--accent-light);
+            transition: all 0.3s ease;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="flex min-h-screen flex-col lg:flex-row">
+
+        <!-- Mobile Header -->
+        <header
+            class="lg:hidden fixed top-0 w-full bg-[#f4f4f4] border-b border-[#e5e5e5] z-[100] px-6 py-4 flex justify-between items-center h-16">
+            <div>
+                <h1 class="text-sm font-semibold tracking-wide uppercase text-black leading-tight">
+                    Data<br>Structures</h1>
+            </div>
+            <button onclick="toggleMobileMenu()" class="text-black focus:outline-none p-2 rounded">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+            </button>
+        </header>
+
+        <!-- Mobile Menu Overlay -->
+        <div id="mobile-menu" class="fixed inset-0 bg-[#f4f4f4] z-[90] hidden flex-col pt-20 px-6 overflow-y-auto">
+            <nav class="flex flex-col">
+                <span class="text-[10px] text-gray-400 font-bold uppercase tracking-wider px-0 py-2">01. Linear</span>
+                <a href="#intro" class="mobile-nav-link" onclick="toggleMobileMenu()">Introduction</a>
+                <a href="#arrays" class="mobile-nav-link" onclick="toggleMobileMenu()">Arrays</a>
+                <a href="#strings" class="mobile-nav-link" onclick="toggleMobileMenu()">Strings</a>
+                <a href="#linked-lists" class="mobile-nav-link" onclick="toggleMobileMenu()">Linked Lists</a>
+                <a href="#stacks" class="mobile-nav-link" onclick="toggleMobileMenu()">Stacks</a>
+                <a href="#queues" class="mobile-nav-link" onclick="toggleMobileMenu()">Queues</a>
+
+                <span class="text-[10px] text-gray-400 font-bold uppercase tracking-wider px-0 py-2 mt-4">02.
+                    Non-Linear</span>
+                <a href="#trees" class="mobile-nav-link" onclick="toggleMobileMenu()">Binary Trees</a>
+                <a href="#graphs" class="mobile-nav-link" onclick="toggleMobileMenu()">Graphs</a>
+                <a href="#hashmaps" class="mobile-nav-link" onclick="toggleMobileMenu()">Hash Maps (Dicts)</a>
+                <a href="#sets" class="mobile-nav-link" onclick="toggleMobileMenu()">Sets</a>
+
+                <span class="text-[10px] text-gray-400 font-bold uppercase tracking-wider px-0 py-2 mt-4">03.
+                    Analysis</span>
+                <a href="#complexity" class="mobile-nav-link" onclick="toggleMobileMenu()">Big O Notation</a>
+                <a href="#glossary" class="mobile-nav-link" onclick="toggleMobileMenu()">Glossary</a>
+
+                <span class="text-[10px] text-gray-400 font-bold uppercase tracking-wider px-0 py-2 mt-4">04.
+                    Assessment</span>
+                <a href="#quiz" class="mobile-nav-link border-b-0" onclick="toggleMobileMenu()">Knowledge Check</a>
+            </nav>
+        </div>
+
+        <!-- Sidebar (Desktop) -->
+        <aside
+            class="hidden lg:block w-64 fixed h-screen bg-[#f4f4f4] border-r border-[#e5e5e5] z-50 overflow-y-auto thin-scrollbar">
+            <div class="p-8 h-full flex flex-col justify-between">
+                <div>
+                    <a href="../index.html"
+                        class="inline-flex items-center gap-2 px-4 py-2 mb-8 text-[10px] font-mono uppercase tracking-wider text-gray-600 border border-gray-300 hover:bg-black hover:text-white hover:border-black transition-all duration-200">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                        </svg>
+                        Back to Home
+                    </a>
+                    <div class="mb-12">
+                        <h1 class="text-sm font-semibold tracking-wide uppercase text-black">Data<br>Structures</h1>
+                        <p class="text-[10px] text-gray-500 mt-1 uppercase tracking-wider">Data Structures
+                        </p>
+                    </div>
+
+                    <nav class="space-y-1">
+                        <a href="#intro" class="nav-link font-medium text-black">Introduction</a>
+
+                        <div class="pt-4 pb-1 text-[10px] text-gray-400 font-bold uppercase tracking-wider">01. Linear
+                        </div>
+                        <a href="#arrays" class="nav-link">Arrays</a>
+                        <a href="#strings" class="nav-link">Strings</a>
+                        <a href="#linked-lists" class="nav-link">Linked Lists</a>
+                        <a href="#stacks" class="nav-link">Stacks (LIFO)</a>
+                        <a href="#queues" class="nav-link">Queues (FIFO)</a>
+
+                        <div class="pt-4 pb-1 text-[10px] text-gray-400 font-bold uppercase tracking-wider">02.
+                            Non-Linear</div>
+                        <a href="#trees" class="nav-link">Binary Trees</a>
+                        <a href="#graphs" class="nav-link">Graphs</a>
+                        <a href="#hashmaps" class="nav-link">Hash Maps (Dicts)</a>
+                        <a href="#sets" class="nav-link">Sets</a>
+
+                        <div class="pt-4 pb-1 text-[10px] text-gray-400 font-bold uppercase tracking-wider">03. Analysis
+                        </div>
+                        <a href="#complexity" class="nav-link">Big O Notation</a>
+                        <a href="#glossary" class="nav-link">Glossary</a>
+
+                        <div class="pt-4 pb-1 text-[10px] text-gray-400 font-bold uppercase tracking-wider">04.
+                            Assessment
+                        </div>
+                        <a href="#quiz" class="nav-link">Knowledge Check</a>
+                    </nav>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 lg:ml-64 bg-white w-full">
+            <div class="max-w-3xl mx-auto px-4 sm:px-8 py-24 lg:py-20">
+
+                <!-- Hero Section -->
+                <section id="intro" class="mb-16 md:mb-24">
+                    <h2 class="text-3xl md:text-5xl font-semibold mb-6 text-black tracking-tight leading-tight">
+                        Principles of <br>Data Organization
+                    </h2>
+                    <p class="text-base md:text-lg text-gray-600 max-w-xl font-light leading-relaxed mb-6">
+                        To write efficient code, one must understand the physical reality of how computers store
+                        information.
+                        Data structures are not abstract concepts; they are blueprints for organizing memory.
+                    </p>
+                    <p class="text-sm text-gray-500 max-w-lg leading-relaxed">
+                        Every structure implies a trade-off. An <strong>Array</strong> offers instant access but is
+                        rigid in size.
+                        A <strong>Linked List</strong> is flexible but requires a treasure hunt to find data.
+                        This guide visualizes the mechanical nature of these digital containers.
+                    </p>
+                </section>
+
+                <!-- Inline Quiz: Intro -->
+                <div id="quiz-ds-intro" class="mb-16 md:mb-24"></div>
+
+                <div class="divider hidden md:block"></div>
+
+                <!-- 01. Arrays -->
+                <section id="arrays" class="mb-20 md:mb-24">
+                    <span class="rams-label">01 / Contiguous Memory</span>
+                    <h3 class="text-xl font-medium mb-4">Arrays</h3>
+                    <p class="text-sm text-gray-600 mb-4 max-w-xl">
+                        <strong>The Street Address Analogy:</strong> Imagine a street where every house is exactly the
+                        same width.
+                        If you know the address of the first house (index 0), you can mathematically calculate the exact
+                        location
+                        of the 5th house instantly without looking at the houses in between.
+                    </p>
+                    <p class="text-sm text-gray-500 mb-8 max-w-xl leading-relaxed border-l-2 border-gray-200 pl-4">
+                        <strong>The Trade-off:</strong> This rigidity allows for instant access (O(1)), but makes
+                        modification difficult.
+                        To insert a new element in the middle, you must shift every subsequent element down to make
+                        space, which is a slow O(n) operation. Fixed size also means you must know how much memory you
+                        need upfront.
+                    </p>
+
+                    <div class="rams-card">
+                        <div class="flex flex-col gap-8">
+                            <!-- Visual -->
+                            <div class="w-full overflow-x-auto no-scrollbar pb-2 pt-2">
+                                <div class="flex gap-2 min-w-max px-2" id="array-container">
+                                    <!-- JS will populate -->
+                                </div>
+                            </div>
+
+                            <!-- Controls -->
+                            <div class="border-t border-gray-100 pt-6">
+                                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
+                                    <div>
+                                        <div class="text-[10px] text-gray-400 uppercase tracking-wide mb-1">Calculation
+                                        </div>
+                                        <div class="font-mono text-sm text-gray-600">
+                                            Address = Start + (<span id="calc-index"
+                                                class="font-bold text-black">0</span> × Size)
+                                        </div>
+                                    </div>
+                                    <div class="text-right">
+                                        <div class="text-[10px] text-gray-400 uppercase tracking-wide mb-1">Time
+                                            Complexity</div>
+                                        <div class="font-mono text-xl font-bold text-black">O(1)</div>
+                                    </div>
+                                </div>
+
+                                <label class="text-[10px] text-gray-400 uppercase tracking-wide block mb-2">Select
+                                    Index</label>
+                                <input type="range" id="array-slider" min="0" max="9" value="0" class="w-full">
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Inline Quiz: Arrays -->
+                <div id="quiz-ds-arrays" class="mb-20 md:mb-24"></div>
+
+                <!-- 02. Strings (New) -->
+                <section id="strings" class="mb-20 md:mb-24">
+                    <span class="rams-label">02 / The Textual Array</span>
+                    <h3 class="text-xl font-medium mb-4">Strings</h3>
+                    <p class="text-sm text-gray-600 mb-4 max-w-xl">
+                        <strong>The Immutable Sequence:</strong> In many languages (like Python and Java), a String is
+                        essentially an immutable array of characters.
+                        Because they are contiguous in memory, accessing any character by index is instant (O(1)).
+                    </p>
+                    <p class="text-sm text-gray-500 mb-8 max-w-xl leading-relaxed border-l-2 border-gray-200 pl-4">
+                        <strong>Immutability:</strong> Unlike standard arrays, you often cannot change a single
+                        character
+                        in place (e.g., `s[0] = 'A'`).
+                        Instead, the computer must create an entirely new string in memory with the change. This helps
+                        prevent bugs but can be costly if you allow frequent modifications.
+                    </p>
+
+                    <div class="rams-card">
+                        <div class="flex flex-col gap-6">
+                            <div class="flex flex-wrap items-center gap-4">
+                                <input type="text" id="string-input" value="Hello" maxlength="12"
+                                    class="border border-gray-300 p-2 font-mono text-sm w-full md:w-48 focus:outline-none focus:border-black rounded-sm"
+                                    placeholder="Type literal...">
+                                <button onclick="renderString()" class="btn btn-primary text-xs">Alloc String</button>
+                            </div>
+
+                            <div class="w-full overflow-x-auto no-scrollbar pb-2">
+                                <div class="flex flex-nowrap" id="string-container">
+                                    <!-- JS Populates -->
+                                </div>
+                            </div>
+                            <div class="text-[10px] text-gray-400 font-mono">
+                                Memory Address: <span class="text-black">0x7F...</span> (Contiguous Block)
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Inline Quiz: Strings -->
+                <div id="quiz-ds-strings" class="mb-20 md:mb-24"></div>
+
+                <!-- 03. Linked Lists -->
+                <section id="linked-lists" class="mb-20 md:mb-24">
+                    <span class="rams-label">03 / Dynamic Memory</span>
+                    <h3 class="text-xl font-medium mb-4">Linked Lists</h3>
+                    <p class="text-sm text-gray-600 mb-4 max-w-xl">
+                        <strong>The Treasure Hunt Analogy:</strong> Unlike arrays, Linked Lists are not stored in a row.
+                        They are scattered randomly in memory. You only hold the first item. To find the third item,
+                        you must open the first, read the "next" pointer, go to the second, read its pointer, and so on.
+                        This makes "access" slow, but "growth" very easy.
+                    </p>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+                        <div class="rams-card mb-0">
+                            <h4 class="text-[10px] uppercase font-bold text-gray-400 mb-2">Doubly Linked List</h4>
+                            <p class="text-[11px] text-gray-500 leading-relaxed">
+                                Each node has two pointers: <strong>Next</strong> and <strong>Previous</strong>. This
+                                allows traversal in both directions but doubles the memory cost for pointers.
+                            </p>
+                        </div>
+                        <div class="rams-card mb-0">
+                            <h4 class="text-[10px] uppercase font-bold text-gray-400 mb-2">Circular Linked List</h4>
+                            <p class="text-[11px] text-gray-500 leading-relaxed">
+                                The last node points back to the <strong>Head</strong> instead of NULL. This is useful
+                                for buffers that repeat, like a music playlist.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="rams-card">
+                        <div class="flex flex-col gap-6">
+                            <div
+                                class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 mb-4">
+                                <span class="text-[10px] uppercase font-bold text-gray-400">Interactive
+                                    Visualizer</span>
+                                <div class="flex flex-wrap gap-2">
+                                    <button onclick="setListType('singly')" id="btn-singly"
+                                        class="text-[9px] uppercase font-bold px-2 py-1 border border-black bg-black text-white rounded-sm transition-all">Singly</button>
+                                    <button onclick="setListType('doubly')" id="btn-doubly"
+                                        class="text-[9px] uppercase font-bold px-2 py-1 border border-gray-200 text-gray-400 rounded-sm transition-all">Doubly</button>
+                                    <button onclick="setListType('circular')" id="btn-circular"
+                                        class="text-[9px] uppercase font-bold px-2 py-1 border border-gray-200 text-gray-400 rounded-sm transition-all">Circular</button>
+                                </div>
+                            </div>
+                            <!-- Visual -->
+                            <div class="min-h-[120px] flex items-center overflow-x-auto no-scrollbar py-4"
+                                id="ll-container">
+                                <!-- Nodes go here -->
+                            </div>
+
+                            <!-- Controls -->
+                            <div class="flex flex-col sm:flex-row gap-4 border-t border-gray-100 pt-6">
+                                <button onclick="addNode()" class="btn btn-primary text-xs w-full sm:w-auto">
+                                    Append Node (Traverse & Link)
+                                </button>
+                                <button onclick="resetList()" class="btn btn-secondary text-xs w-full sm:w-auto">
+                                    Reset
+                                </button>
+                            </div>
+                            <div id="ll-status" class="text-xs text-gray-500 font-mono h-4">
+                                Status: Ready.
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Inline Quiz: Linked Lists -->
+                <div id="quiz-ds-linked-lists" class="mb-20 md:mb-24"></div>
+
+                <!-- 04. Stacks -->
+                <section id="stacks" class="mb-20 md:mb-24">
+                    <span class="rams-label">04 / LIFO (Last In, First Out)</span>
+                    <h3 class="text-xl font-medium mb-4">The Stack</h3>
+                    <p class="text-sm text-gray-600 mb-4 max-w-xl">
+                        <strong>The Cafeteria Tray Analogy:</strong> Imagine a spring-loaded stack of trays.
+                        You can only place a new tray on top ("Push"), and you can only take the tray that is currently
+                        on top ("Pop").
+                        The bottom tray is trapped until all others are removed.
+                    </p>
+                    <p class="text-sm text-gray-500 mb-8 max-w-xl leading-relaxed border-l-2 border-gray-200 pl-4">
+                        <strong>Real World Context:</strong> This structure is fundamental to how computers run code.
+                        When a function calls another function, the computer "pauses" the first one and pushes it onto
+                        the <strong>Call Stack</strong>.
+                        When the second function finishes, it "pops" off, and the computer resumes the first function
+                        exactly where it left off.
+                    </p>
+
+                    <div class="rams-card">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
+                            <!-- Visual -->
+                            <div class="h-64 border-b-4 border-gray-300 relative flex flex-col-reverse items-center p-4 overflow-hidden bg-gray-50"
+                                id="visualizer-stack-container">
+                                <!-- Stack items -->
+                                <div class="absolute top-2 right-2 text-[10px] uppercase text-gray-400 font-bold">Max: 6
+                                    Items</div>
+                            </div>
+
+                            <!-- Controls -->
+                            <div class="flex flex-col justify-center gap-6">
+                                <div class="space-y-4">
+                                    <button onclick="pushStack()" class="btn btn-primary w-full justify-between group">
+                                        <span>Push Item</span>
+                                        <span
+                                            class="font-mono text-xs opacity-80 group-hover:opacity-100 transition-opacity">stack.push()</span>
+                                    </button>
+                                    <button onclick="popStack()" class="btn btn-secondary w-full justify-between group">
+                                        <span>Pop Item</span>
+                                        <span
+                                            class="font-mono text-xs text-gray-400 group-hover:text-black transition-colors">stack.pop()</span>
+                                    </button>
+                                </div>
+                                <div id="stack-status" class="text-xs text-gray-500 font-mono h-4">
+                                    Status: Ready.
+                                </div>
+                                <div>
+                                    <p class="text-xs text-gray-500 leading-relaxed border-l-2 border-gray-200 pl-3">
+                                        <strong>Use Case:</strong> Your browser's "Back" button. Each page you visit is
+                                        pushed onto a stack. Clicking back pops the current page off to reveal the
+                                        previous one.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Inline Quiz: Stacks -->
+                <div id="quiz-ds-stacks" class="mb-20 md:mb-24"></div>
+
+                <!-- 05. Queues -->
+                <section id="queues" class="mb-20 md:mb-24">
+                    <span class="rams-label">05 / FIFO (First In, First Out)</span>
+                    <h3 class="text-xl font-medium mb-4">The Queue</h3>
+                    <p class="text-sm text-gray-600 mb-4 max-w-xl">
+                        <strong>The Grocery Line Analogy:</strong> First come, first served. New elements join at the
+                        back (Enqueue),
+                        and are removed from the front (Dequeue). It preserves order.
+                    </p>
+                    <p class="text-sm text-gray-500 mb-8 max-w-xl leading-relaxed border-l-2 border-gray-200 pl-4">
+                        <strong>Real World Context:</strong> Queues are essential for buffering. When you send a
+                        document to a printer, or stream a video, data enters a queue. This allows the consumer
+                        (printer/screen) to process data at its own steady pace, smoothing out bursts of incoming
+                        information.
+                    </p>
+
+                    <div class="rams-card mb-8">
+                        <h4 class="text-[10px] uppercase font-bold text-gray-400 mb-4">The Priority Queue</h4>
+                        <p class="text-xs text-gray-500 mb-6 leading-relaxed max-w-xl">
+                            <strong>The Hospital Triage Analogy:</strong> In a standard queue, the first to arrive is
+                            served first. In a <strong>Priority Queue</strong>, each element has a priority value.
+                            Elements with higher priority are served before those with lower priority, regardless of
+                            arrival order. Underlying this is usually a <strong>Heap</strong> data structure.
+                        </p>
+
+                        <div class="bg-gray-50 border border-gray-100 p-4 rounded-sm">
+                            <div
+                                class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 mb-4">
+                                <span class="text-[10px] uppercase font-bold text-gray-400 tracking-widest">PQ
+                                    Visualizer</span>
+                                <div class="flex gap-2">
+                                    <button onclick="enqueuePQ()" class="btn btn-primary text-[10px] py-1 px-3">Enqueue
+                                        (Rand Priority)</button>
+                                    <button onclick="dequeuePQ()"
+                                        class="btn btn-secondary text-[10px] py-1 px-3">Dequeue (Max)</button>
+                                </div>
+                            </div>
+                            <div class="h-20 flex items-center gap-2 overflow-x-auto no-scrollbar" id="pq-container">
+                                <!-- PQ items go here -->
+                            </div>
+                            <div id="pq-status"
+                                class="text-[9px] text-gray-400 font-mono mt-2 uppercase tracking-tighter">
+                                Status: Ready. (Higher Number = Higher Priority)
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="rams-card">
+                        <div class="flex flex-col gap-8">
+                            <!-- Visual -->
+                            <div class="relative pt-6">
+                                <div class="absolute left-0 -top-2 text-[10px] uppercase font-bold text-gray-400">Front
+                                    (Head)</div>
+                                <div class="absolute right-0 -top-2 text-[10px] uppercase font-bold text-gray-400">Back
+                                    (Tail)</div>
+                                <div class="h-20 bg-gray-50 border-y-2 border-gray-200 relative flex items-center px-4 overflow-hidden gap-2"
+                                    id="queue-container">
+                                    <!-- Items -->
+                                </div>
+                                <div
+                                    class="absolute bottom-[-20px] right-0 text-[10px] uppercase text-gray-400 font-bold">
+                                    Max: 8 Items</div>
+                            </div>
+
+                            <!-- Controls -->
+                            <div
+                                class="flex flex-col sm:flex-row justify-between items-center gap-4 border-t border-gray-100 pt-6">
+                                <div class="flex flex-col gap-2">
+                                    <div class="flex gap-4">
+                                        <button onclick="enqueue()" class="btn btn-primary text-xs">Enqueue</button>
+                                        <button onclick="dequeue()" class="btn btn-secondary text-xs">Dequeue</button>
+                                    </div>
+                                    <div id="queue-status" class="text-xs text-gray-500 font-mono h-4 mt-1">Status:
+                                        Ready.</div>
+                                </div>
+                                <div class="text-right">
+                                    <div class="text-[10px] text-gray-400 uppercase tracking-wide">Operation</div>
+                                    <div class="font-mono text-sm text-black">Order Preserved</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Inline Quiz: Queues -->
+                <div id="quiz-ds-queues" class="mb-20 md:mb-24"></div>
+
+                <!-- 06. Binary Trees -->
+                <section id="trees" class="mb-20 md:mb-24">
+                    <span class="rams-label">06 / Hierarchical Data</span>
+                    <h3 class="text-xl font-medium mb-4">Binary Search Tree</h3>
+                    <p class="text-sm text-gray-600 mb-4 max-w-xl">
+                        <strong>The Phonebook Analogy:</strong> To find a name, you don't read every entry. You open the
+                        book to the middle.
+                        If the name is "Z", you ignore the first half (Left) and only check the second half (Right).
+                        A Binary Search Tree (BST) formalizes this: for any node, the <strong>Left Child</strong> is
+                        smaller, and the <strong>Right Child</strong> is greater.
+                        Every step cuts the remaining work in half.
+                    </p>
+                    <p class="text-sm text-gray-500 mb-8 max-w-xl leading-relaxed border-l-2 border-gray-200 pl-4">
+                        <strong>The Balance Problem:</strong> Efficiency depends on the tree being "balanced" (short and
+                        wide).
+                        If you insert numbers in order (1, 2, 3, 4...), the tree essentially becomes a Linked List (a
+                        straight line), degrading performance to O(n).
+                        Advanced trees (like AVL or Red-Black trees) automatically rotate nodes to keep the tree
+                        balanced.
+                    </p>
+
+                    <div class="rams-card mb-8">
+                        <h4 class="text-[10px] uppercase font-bold text-gray-400 mb-4">Tree Traversal</h4>
+                        <p class="text-xs text-gray-500 mb-6 leading-relaxed max-w-xl">
+                            How do you visit every node in a tree? Unlike linear structures, there are multiple paths.
+                            <strong>In-order</strong> (Left, Root, Right),
+                            <strong>Pre-order</strong> (Root, Left, Right), and
+                            <strong>Post-order</strong> (Left, Right, Root) are the standard methods for depth-first
+                            navigation.
+                        </p>
+
+                        <div class="flex flex-col md:flex-row gap-4 items-center border-t border-gray-100 pt-6">
+                            <div class="flex gap-2 w-full md:w-auto">
+                                <button onclick="startTraversal('inorder')"
+                                    class="btn btn-secondary text-[10px] py-1 px-3 flex-1">In-order</button>
+                                <button onclick="startTraversal('preorder')"
+                                    class="btn btn-secondary text-[10px] py-1 px-3 flex-1">Pre-order</button>
+                                <button onclick="startTraversal('postorder')"
+                                    class="btn btn-secondary text-[10px] py-1 px-3 flex-1">Post-order</button>
+                            </div>
+                            <div id="traversal-status" class="text-[10px] text-gray-400 font-mono">Select a method to
+                                visualize.</div>
+                        </div>
+                    </div>
+
+                    <div class="rams-card p-0 overflow-hidden">
+                        <div class="relative bg-gray-50 h-[350px] w-full flex justify-center border-b border-gray-200"
+                            id="tree-wrapper">
+                            <canvas id="tree-canvas" class="block w-full h-full"></canvas>
+                            <div id="tree-overlay"
+                                class="absolute top-4 left-4 text-xs font-mono text-gray-500 bg-white/80 p-2 rounded">
+                                Root Node
+                            </div>
+                        </div>
+                        <div class="p-6 md:p-8">
+                            <div class="flex flex-col md:flex-row items-center gap-4">
+                                <div class="flex items-center gap-2 w-full md:w-auto">
+                                    <input type="number" id="tree-input" placeholder="0-99"
+                                        class="w-20 border border-gray-300 p-2 text-sm font-mono focus:outline-none focus:border-black rounded-sm">
+                                    <button onclick="insertTree()"
+                                        class="btn btn-primary text-xs flex-1 md:flex-none">Insert Value</button>
+                                </div>
+                                <div class="h-4 w-[1px] bg-gray-300 hidden md:block"></div>
+                                <div class="text-xs text-gray-500 font-mono" id="tree-feedback">
+                                    Enter a number to visualize the path.
+                                </div>
+                                <button onclick="resetTree()" class="btn btn-ghost text-xs ml-auto">Reset</button>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Inline Quiz: Trees -->
+                <div id="quiz-ds-trees" class="mb-20 md:mb-24"></div>
+
+                <!-- 07. Graphs -->
+                <section id="graphs" class="mb-20 md:mb-24">
+                    <span class="rams-label">07 / Network Data</span>
+                    <h3 class="text-xl font-medium mb-4">Graphs</h3>
+                    <p class="text-sm text-gray-600 mb-4 max-w-xl">
+                        <strong>The Social Network Analogy:</strong> Graphs represent relationships. Nodes (also called
+                        <strong>Vertices</strong>) are
+                        connected by Edges (friendships).
+                        Unlike trees, graphs have no strict hierarchy and can contain cycles. This structure is used for
+                        maps, internet routing, and recommendation engines.
+                    </p>
+                    <p class="text-sm text-gray-500 mb-8 max-w-xl leading-relaxed border-l-2 border-gray-200 pl-4">
+                        <strong>Complexity:</strong> Graphs are the most versatile structure but also the most complex
+                        to navigate.
+                        Finding the shortest path between two nodes (like Google Maps does) requires specialized
+                        algorithms like Breadth-First Search (BFS) or Dijkstra's Algorithm.
+                    </p>
+
+                    <div class="rams-card">
+                        <div class="relative h-[300px] bg-gray-50 border border-gray-200 mb-6 cursor-crosshair overflow-hidden"
+                            id="graph-container">
+                            <canvas id="graph-canvas" class="block w-full h-full"></canvas>
+                            <div
+                                class="absolute bottom-4 left-4 text-xs text-gray-500 bg-white/90 p-2 border border-gray-200 pointer-events-none">
+                                Click empty space to add Node.<br>Click two nodes to connect.
+                            </div>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <div class="text-xs font-mono text-gray-500">
+                                Nodes: <span id="node-count" class="text-black font-bold">0</span> |
+                                Edges: <span id="edge-count" class="text-black font-bold">0</span>
+                            </div>
+                            <button onclick="resetGraph()" class="btn btn-secondary text-xs">Clear Graph</button>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Inline Quiz: Graphs -->
+                <div id="quiz-ds-graphs" class="mb-20 md:mb-24"></div>
+
+                <!-- 08. Hash Maps -->
+                <section id="hashmaps" class="mb-20 md:mb-24">
+                    <span class="rams-label">08 / Association</span>
+                    <h3 class="text-xl font-medium mb-4">Hash Maps (Dictionaries)</h3>
+                    <p class="text-sm text-gray-600 mb-4 max-w-xl">
+                        <strong>The Mailbox Analogy:</strong> Imagine a mailroom with 8 numbered boxes. When you receive
+                        a letter for "Alex",
+                        you don't search every box. You convert "Alex" into a number (e.g., 4) using a special math
+                        formula (Hash Function)
+                        and immediately place it in Box #4. Retrieval is instant.
+                        This Key-Value pair structure is how <strong>Dictionaries</strong> (in Python) and
+                        <strong>Objects</strong> (in JS) work
+                        under the hood.
+                    </p>
+                    <p class="text-sm text-gray-500 mb-8 max-w-xl leading-relaxed border-l-2 border-gray-200 pl-4">
+                        <strong>Handling Collisions:</strong> Sometimes, two different keys map to the same bucket
+                        (e.g., "Alex" and "John" might both hash to 4).
+                        This is a "Collision." A robust Hash Map handles this by creating a list inside that bucket
+                        (Chaining).
+                        If too many collisions occur, the map slows down, so a good Hash Function spreads data out
+                        evenly.
+                    </p>
+
+                    <div class="rams-card">
+                        <div class="flex flex-col gap-10">
+
+                            <!-- Top Row: Input & Process -->
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
+                                <!-- Input -->
+                                <div class="flex flex-col gap-2">
+                                    <span class="text-[10px] uppercase font-bold text-gray-400">Key (Input)</span>
+                                    <div class="flex gap-2">
+                                        <input type="text" id="hash-input" placeholder="Type a name..."
+                                            class="border border-gray-300 p-3 font-mono text-sm w-full focus:outline-none focus:border-black rounded-sm"
+                                            onkeypress="handleHashKey(event)">
+                                        <button onclick="calculateHash()"
+                                            class="btn btn-primary text-xs px-3">Enter</button>
+                                    </div>
+                                    <div class="text-[10px] text-gray-400">Press Enter or click button to map.</div>
+                                </div>
+
+                                <!-- Process -->
+                                <div class="flex flex-col items-center justify-center gap-2 relative">
+                                    <div class="bg-white px-4 z-10 flex flex-col items-center w-full">
+                                        <span class="text-[10px] uppercase font-bold text-gray-400 mb-1">Hash
+                                            Function</span>
+                                        <div id="hash-calc-display"
+                                            class="font-mono text-xs text-black bg-gray-100 px-3 py-2 rounded border border-gray-200 w-full text-center">
+                                            Index = Length % 8
+                                        </div>
+                                        <div class="mt-2 text-2xl text-gray-300 transform transition-transform duration-300"
+                                            id="hash-arrow">&rarr;</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Bottom Row: Output Buckets -->
+                            <div class="flex flex-col gap-4 border-t border-gray-100 pt-6">
+                                <span class="text-[10px] uppercase font-bold text-gray-400">Memory Buckets
+                                    (Storage)</span>
+                                <!-- Expanded grid for better spacing -->
+                                <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-3" id="hash-buckets">
+                                    <!-- 0-7 Buckets generated by JS -->
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Inline Quiz: Hash Maps -->
+                <div id="quiz-ds-hashmaps" class="mb-20 md:mb-24"></div>
+
+                <!-- 09. Sets (New) -->
+                <section id="sets" class="mb-20 md:mb-24">
+                    <span class="rams-label">09 / Unique Collection</span>
+                    <h3 class="text-xl font-medium mb-4">Sets</h3>
+                    <p class="text-sm text-gray-600 mb-4 max-w-xl">
+                        <strong>The VIP Club:</strong> A Set is a collection that refuses duplicates.
+                        If "Alice" is already in the club, adding "Alice" again does nothing.
+                        Internally, Sets often use Hash Maps (ignoring values, keeping only keys) to achieve O(1)
+                        checks.
+                    </p>
+
+                    <div class="rams-card">
+                        <div class="flex flex-col gap-6">
+                            <div class="flex flex-col sm:flex-row items-center gap-4">
+                                <input type="number" id="set-input" placeholder="Value (0-99)"
+                                    class="border border-gray-300 p-2 font-mono text-sm w-full md:w-48 focus:outline-none focus:border-black rounded-sm max-w-[120px]">
+                                <button onclick="addToSet()" class="btn btn-primary text-xs">Add to Set</button>
+                                <button onclick="resetSet()" class="btn btn-secondary text-xs">Reset</button>
+                            </div>
+                            <div id="set-feedback" class="text-xs text-gray-500 font-mono h-4">
+                                Status: Ready.
+                            </div>
+
+                            <div class="w-full bg-gray-50 border border-gray-200 min-h-[120px] p-6 relative flex flex-wrap gap-4 items-center justify-center rounded-full"
+                                id="set-container" style="border-radius: 50% / 20%;">
+                                <div
+                                    class="absolute -top-3 bg-white px-2 text-[10px] text-gray-400 font-bold uppercase tracking-wider">
+                                    The Set Container</div>
+                                <!-- JS Populates -->
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Inline Quiz: Sets -->
+                <div id="quiz-ds-sets" class="mb-20 md:mb-24"></div>
+
+                <!-- 10. Big O -->
+                <section id="complexity" class="mb-12">
+                    <span class="rams-label">10 / Efficiency</span>
+                    <h3 class="text-xl font-medium mb-4">Big O Notation</h3>
+                    <p class="text-sm text-gray-600 mb-4 max-w-xl">
+                        How does an algorithm slow down as data grows? If sorting 10 items takes 1 second, how long does
+                        100 items take?
+                        Big O notation describes this growth rate (Scaling), helping us choose the right structure for
+                        the job.
+                    </p>
+                    <p class="text-sm text-gray-500 mb-8 max-w-xl leading-relaxed border-l-2 border-gray-200 pl-4">
+                        <strong>Why it matters:</strong> An O(n²) algorithm might work fine for 10 users, but crash your
+                        server with 10,000 users.
+                        Engineers strive for O(1) or O(log n) whenever possible to ensure software remains fast at
+                        massive scale.
+                    </p>
+
+                    <div class="rams-card">
+                        <div class="flex flex-col gap-8">
+                            <div class="flex items-end justify-between border-b border-gray-100 pb-4">
+                                <div>
+                                    <label class="text-[10px] text-gray-400 uppercase tracking-wide block mb-1">Input
+                                        Size (N)</label>
+                                    <span id="n-display" class="font-mono text-3xl font-bold text-black">10</span>
+                                    <span class="text-xs text-gray-400 ml-1">items</span>
+                                </div>
+                                <div class="text-right">
+                                    <div class="text-[10px] text-gray-400 uppercase tracking-wide mb-1">Slowest Scenario
+                                    </div>
+                                    <div id="slowest-scenario" class="font-mono text-sm text-red-700 font-bold">100
+                                        operations</div>
+                                </div>
+                            </div>
+
+                            <input type="range" id="complexity-slider" min="1" max="100" value="10" class="w-full">
+
+                            <div class="space-y-6 mt-4">
+                                <!-- O(1) -->
+                                <div>
+                                    <div class="flex justify-between text-xs mb-2">
+                                        <span class="font-mono font-bold text-black">O(1) Constant</span>
+                                        <span class="text-gray-400">e.g. Array Access</span>
+                                    </div>
+                                    <div class="w-full bg-gray-100 h-2 rounded-full overflow-hidden">
+                                        <div class="h-full bg-green-600 w-[1%]"></div>
+                                    </div>
+                                </div>
+
+                                <!-- O(log n) -->
+                                <div>
+                                    <div class="flex justify-between text-xs mb-2">
+                                        <span class="font-mono font-bold text-black">O(log n) Logarithmic</span>
+                                        <span class="text-gray-400">e.g. Binary Search</span>
+                                    </div>
+                                    <div class="w-full bg-gray-100 h-2 rounded-full overflow-hidden">
+                                        <div id="bar-log" class="h-full bg-green-500 transition-all duration-300"
+                                            style="width: 10%"></div>
+                                    </div>
+                                </div>
+
+                                <!-- O(n) -->
+                                <div>
+                                    <div class="flex justify-between text-xs mb-2">
+                                        <span class="font-mono font-bold text-black">O(n) Linear</span>
+                                        <span class="text-gray-400">e.g. Simple Loop</span>
+                                    </div>
+                                    <div class="w-full bg-gray-100 h-2 rounded-full overflow-hidden">
+                                        <div id="bar-n" class="h-full bg-yellow-500 transition-all duration-300"
+                                            style="width: 20%"></div>
+                                    </div>
+                                </div>
+
+                                <!-- O(n^2) -->
+                                <div>
+                                    <div class="flex justify-between text-xs mb-2">
+                                        <span class="font-mono font-bold text-black">O(n²) Quadratic</span>
+                                        <span class="text-gray-400">e.g. Nested Loops</span>
+                                    </div>
+                                    <div class="w-full bg-gray-100 h-2 rounded-full overflow-hidden">
+                                        <div id="bar-n2" class="h-full bg-red-600 transition-all duration-300"
+                                            style="width: 40%"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Inline Quiz: Complexity -->
+                <div id="quiz-ds-complexity" class="mb-12"></div>
+
+                <!-- Glossary Section -->
+                <section id="glossary" class="mb-20">
+                    <span class="rams-label">Glossary</span>
+                    <h3 class="text-xl font-medium mb-8">Key Definitions</h3>
+                    <div class="rams-card">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <h4 class="font-bold text-sm mb-2">Array</h4>
+                                <p class="text-xs text-gray-600">A linear data structure that stores elements in
+                                    contiguous memory locations.</p>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-sm mb-2">Linked List</h4>
+                                <p class="text-xs text-gray-600">A linear structure where elements (nodes) are stored in
+                                    scattered memory, linked by pointers.</p>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-sm mb-2">Stack</h4>
+                                <p class="text-xs text-gray-600">A LIFO (Last In, First Out) collection. Useful for
+                                    function calls and undo mechanisms.</p>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-sm mb-2">Queue</h4>
+                                <p class="text-xs text-gray-600">A FIFO (First In, First Out) collection. Useful for
+                                    buffering and scheduling.</p>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-sm mb-2">Binary Search Tree</h4>
+                                <p class="text-xs text-gray-600">A hierarchical structure where the left child is
+                                    smaller and right child is greater than the parent.</p>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-sm mb-2">Graph</h4>
+                                <p class="text-xs text-gray-600">A network of nodes (vertices) and edges representing
+                                    relationships, potentially containing cycles.</p>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-sm mb-2">Hash Map</h4>
+                                <p class="text-xs text-gray-600">A key-value store that uses a hash function to map keys
+                                    to indices, providing O(1) access on average.</p>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-sm mb-2">Set</h4>
+                                <p class="text-xs text-gray-600">A collection of unique elements (no duplicates).</p>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-sm mb-2">Big O Notation</h4>
+                                <p class="text-xs text-gray-600">A mathematical notation used to describe the efficiency
+                                    and scalability of an algorithm.</p>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-sm mb-2">Priority Queue</h4>
+                                <p class="text-xs text-gray-600">A queue where elements are served based on priority
+                                    logic (e.g., max or min heap) rather than arrival time.</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 08. Quiz -->
+                <section id="quiz" class="mb-20 md:mb-24">
+                    <span class="rams-label">08 / Knowledge Check</span>
+                    <div id="quiz-container" class="rams-card">
+                        <!-- Quiz loads here -->
+                    </div>
+                </section>
+
+                <!-- 09. Certificate (Initially Hidden) -->
+                <section id="certificate" class="mb-20 md:mb-24 hidden">
+                    <span class="rams-label">09 / Certification</span>
+                    <h3 class="text-xl font-medium mb-6">Completion Certificate</h3>
+
+                    <div class="rams-card !p-0 overflow-hidden">
+                        <div class="p-6 md:p-8">
+                            <div class="flex flex-col md:flex-row gap-8 items-start">
+                                <div class="w-full md:w-1/3 space-y-4">
+                                    <p class="text-sm text-gray-600">
+                                        Enter your name below to generate your personalized certificate of completion
+                                        for
+                                        the Data Structures series.
+                                    </p>
+                                    <div>
+                                        <label for="cert-name"
+                                            class="block text-xs font-bold text-gray-500 uppercase mb-1">Full
+                                            Name</label>
+                                        <input type="text" id="cert-name"
+                                            class="w-full border border-gray-300 p-2 font-mono text-sm focus:border-black outline-none"
+                                            placeholder="Niklaus Wirth">
+                                        <p id="cert-error" class="text-red-500 text-xs mt-2 hidden">Please enter your
+                                            name.
+                                        </p>
+                                    </div>
+                                    <button onclick="generateCert()"
+                                        class="btn btn-primary bg-black border-black text-white w-full hover:bg-gray-800">Generate
+                                        Certificate</button>
+                                    <button onclick="downloadCert()" id="btn-download"
+                                        class="btn btn-secondary w-full hidden">Download PNG</button>
+
+                                </div>
+
+                                <div
+                                    class="w-full md:w-2/3 bg-gray-50 border border-gray-200 p-4 flex items-center justify-center">
+                                    <canvas id="cert-canvas" class="w-full shadow-lg bg-white"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="bg-gray-50 px-6 py-3 border-t border-gray-100 text-center">
+                            <p class="text-[10px] text-gray-400 italic">
+                                This certificate confirms successful completion of learning and assessment on this
+                                platform
+                                and is not an accredited or government-recognized qualification.
+                            </p>
+                        </div>
+                    </div>
+                </section>
+
+                <script src="js/script.js"></script>
+                <script>
+                    document.addEventListener('DOMContentLoaded', () => {
+                        new InlineQuiz('quiz-ds-intro', {
+                            question: "Why do we say Data Structures are 'blueprints for organizing memory'?",
+                            options: ["Because they are always blue", "They define how data physically sits in RAM for efficiency", "They are abstract concepts with no physical reality", "They are only used for printing"],
+                            answer: 1,
+                            explanation: "Data structures aren't just logic; they dictate how bits are arranged in hardware to optimize speed or space."
+                        });
+
+                        new InlineQuiz('quiz-ds-arrays', {
+                            question: "What is the primary advantage of an Array?",
+                            options: ["Infinite size", "Instant access to any element by index (O(1))", "Automatic sorting", "Zero memory usage"],
+                            answer: 1,
+                            explanation: "Because arrays are contiguous in memory, the computer can calculate the exact address of any element instantly."
+                        });
+
+                        new InlineQuiz('quiz-ds-strings', {
+                            question: "In most languages, Strings are 'immutable'. What does this mean?",
+                            options: ["They can be changed easily", "They cannot be changed in place; a new string must be created", "They disappear after use", "They are always empty"],
+                            answer: 1,
+                            explanation: "Immutability means you cannot alter the characters of a string object once created; you must create a new one to 'edit' it."
+                        });
+
+                        new InlineQuiz('quiz-ds-linked-lists', {
+                            question: "Unlike Arrays, Linked Lists are stored:",
+                            options: ["In a single contiguous block", "Scattered in memory, connected by pointers", "On the hard drive only", "In a nice pile"],
+                            answer: 1,
+                            explanation: "Linked List nodes can live anywhere in memory. Pointers ('next') tell the computer where to find the subsequent node."
+                        });
+
+                        new InlineQuiz('quiz-ds-stacks', {
+                            question: "Which principle does a Stack follow?",
+                            options: ["FIFO (First In, First Out)", "LIFO (Last In, First Out)", "Random Access", "Sorted Order"],
+                            answer: 1,
+                            explanation: "Think of a stack of plates: the last plate you put on top is the first one you can take off."
+                        });
+
+                        new InlineQuiz('quiz-ds-queues', {
+                            question: "What is a common real-world use for a Queue?",
+                            options: ["A browser's back button", "Buffering video data or print jobs", "Searching a database", "Storing a single variable"],
+                            answer: 1,
+                            explanation: "Queues smooth out processing by holding data in order (FIFO) until the consumer (printer, screen) is ready."
+                        });
+
+                        new InlineQuiz('quiz-ds-trees', {
+                            question: "In a valid Binary Search Tree (BST), where is a smaller value placed relative to a parent node?",
+                            options: ["To the Right", "To the Left", "Anywhere", "It replaces the parent"],
+                            answer: 1,
+                            explanation: "BST rules state: Left child < Parent < Right child. This structure allows for efficient searching."
+                        });
+
+                        new InlineQuiz('quiz-ds-graphs', {
+                            question: "What are the two main components of a Graph?",
+                            options: ["Pixels and Colors", "Nodes (Vertices) and Edges", "Rows and Columns", "Keys and Locks"],
+                            answer: 1,
+                            explanation: "Graphs are networks made of entities (Nodes) and the relationships connecting them (Edges)."
+                        });
+
+                        new InlineQuiz('quiz-ds-hashmaps', {
+                            question: "What enables a Hash Map to achieve near-instant (O(1)) access?",
+                            options: ["Sorting the data", "A Hash Function that converts a key directly into an index", "Checking every item", "Magic"],
+                            answer: 1,
+                            explanation: "The hash function does the math upfront to tell you exactly which 'bucket' the data is in, skipping the search."
+                        });
+
+                        new InlineQuiz('quiz-ds-sets', {
+                            question: "What is the defining feature of a Set?",
+                            options: ["It keeps data sorted", "It stores duplicates", "It guarantees uniqueness (no duplicates)", "It is read-only"],
+                            answer: 2,
+                            explanation: "Sets are collections that automatically reject duplicate values, making them perfect for uniqueness checks."
+                        });
+
+                        new InlineQuiz('quiz-ds-complexity', {
+                            question: "Which Big O notation represents the 'slowest' growth (most efficient)?",
+                            options: ["O(n) - Linear", "O(n^2) - Quadratic", "O(1) - Constant", "O(log n) - Logarithmic"],
+                            answer: 2,
+                            explanation: "O(1) means the time taken stays the same regardless of how much data you add. It is the gold standard of efficiency."
+                        });
+                    });
+                </script>
+                <script>
+                    // Quiz Data
+                    const questions = [
+                        {
+                            question: "What principle does a Stack follow?",
+                            options: ["FIFO (First In First Out)", "LIFO (Last In First Out)", "FILO (First In Last Out)", "Random Access"],
+                            answer: 1
+                        },
+                        {
+                            question: "What principle does a Queue follow?",
+                            options: ["LIFO (Last In First Out)", "FIFO (First In First Out)", "Random Access", "Sorted Order"],
+                            answer: 1
+                        },
+                        {
+                            question: "Which data structure consists of nodes containing data and a pointer to the next node?",
+                            options: ["Array", "Linked List", "Stack", "Queue"],
+                            answer: 1
+                        },
+                        {
+                            question: "How are elements stored in an Array?",
+                            options: ["In contiguous memory locations", "Scattered in memory", "Linked by pointers", "In a tree structure"],
+                            answer: 0
+                        },
+                        {
+                            question: "In a Binary Search Tree (BST), the left child is always?",
+                            options: ["Greater than the parent", "Smaller than the parent", "Equal to the parent", "Random"],
+                            answer: 1
+                        },
+                        {
+                            question: "A Graph is a collection of?",
+                            options: ["Rows and Columns", "Nodes (Vertices) and Edges", "Tags and Elements", "Keys and Values"],
+                            answer: 1
+                        },
+                        {
+                            question: "What does a Hash Map use to store data?",
+                            options: ["Index-Value pairs", "Key-Value pairs", "Only Values", "Only Keys"],
+                            answer: 1
+                        },
+                        {
+                            question: "What is the time complexity to access an element in an Array by index?",
+                            options: ["O(n)", "O(log n)", "O(1)", "O(n^2)"],
+                            answer: 2
+                        },
+                        {
+                            question: "Which data structure is typically used to implement a Priority Queue?",
+                            options: ["Stack", "Linked List", "Heap", "Array"],
+                            answer: 2
+                        },
+                        {
+                            question: "What distinguishes a Doubly Linked List from a Singly Linked List?",
+                            options: ["It has two heads", "Nodes have pointers to both next and previous nodes", "It is twice as fast", "It uses less memory"],
+                            answer: 1
+                        }
+                    ];
+
+                    // Init Quiz
+                    new QuizManager('quiz-container', questions, () => {
+                        document.getElementById('certificate').classList.remove('hidden');
+                        setTimeout(() => {
+                            document.getElementById('certificate').scrollIntoView({ behavior: 'smooth' });
+                        }, 100);
+                    });
+
+                    // Certificate Logic
+                    const certGen = new CertificateGenerator('cert-canvas', 'Data Structures');
+
+                    function generateCert() {
+                        const nameInput = document.getElementById('cert-name');
+                        const errorMsg = document.getElementById('cert-error');
+                        const name = nameInput.value.trim();
+                        const nameRegex = /^[a-zA-Z\s\-\.'’]+$/;
+
+                        // Reset error state
+                        errorMsg.classList.add('hidden');
+                        nameInput.classList.remove('border-red-500');
+
+                        if (!name) {
+                            errorMsg.textContent = "Please enter your name.";
+                            errorMsg.classList.remove('hidden');
+                            nameInput.classList.add('border-red-500');
+                            return;
+                        }
+
+                        if (name.length < 3 || name.length > 35) {
+                            errorMsg.textContent = "Name must be between 3 and 35 characters.";
+                            errorMsg.classList.remove('hidden');
+                            nameInput.classList.add('border-red-500');
+                            return;
+                        }
+
+                        if (!nameRegex.test(name)) {
+                            errorMsg.textContent = "Name cannot contain numbers or special characters.";
+                            errorMsg.classList.remove('hidden');
+                            nameInput.classList.add('border-red-500');
+                            return;
+                        }
+
+                        certGen.generate(name);
+                        document.getElementById('btn-download').classList.remove('hidden');
+                    }
+
+                    function downloadCert() {
+                        const name = document.getElementById('cert-name').value.trim();
+                        certGen.download(`Undrstanding_DS_Certificate_${name.replace(/\s+/g, '_')}.png`);
+                    }
+                </script>
+
+
+
+                <footer class="w-full mt-12 mb-12">
+                    <div class="border-t border-gray-200 pt-8 flex justify-between items-center">
+                        <span class="text-[10px] mono uppercase text-gray-400">Undrstanding</span>
+                        <span class="text-[10px] mono uppercase text-gray-400">For Humans, From Humans</span>
+                    </div>
+                </footer>
+
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Force scroll to top on load, robustly
+        window.history.scrollRestoration = 'manual';
+        window.addEventListener('load', () => {
+            window.scrollTo(0, 0);
+        });
+
+        // --- 00. Global & Animation Helpers ---
+        function sleep(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+
+        // --- 01. Arrays Logic ---
+        const arrayContainer = document.getElementById('array-container');
+        const arraySlider = document.getElementById('array-slider');
+        const calcIndex = document.getElementById('calc-index');
+        const arraySize = 10;
+
+        // Init Array with Data
+        for (let i = 0; i < arraySize; i++) {
+            const cell = document.createElement('div');
+            // Base style
+            cell.className = `w-12 h-12 flex-shrink-0 flex items-center justify-center border border-gray-300 bg-white font-mono text-sm relative transition-all duration-300`;
+            // Content
+            cell.innerHTML = `<span class="z-10">${Math.floor(Math.random() * 99)}</span>
+                              <span class="absolute -bottom-5 text-[9px] text-gray-400 font-sans tracking-widest">${i}</span>`;
+            cell.id = `cell-${i}`;
+            arrayContainer.appendChild(cell);
+        }
+
+        function updateArrayFocus(index, shouldScroll = true) {
+            // Reset all styles
+            for (let i = 0; i < arraySize; i++) {
+                const c = document.getElementById(`cell-${i}`);
+                c.className = `w-12 h-12 flex-shrink-0 flex items-center justify-center border border-gray-300 bg-white font-mono text-sm relative text-gray-400 scale-100 opacity-60 transition-all duration-300`;
+            }
+
+            // Highlight target
+            const target = document.getElementById(`cell-${index}`);
+            // Apply Highlight Style: Green accent
+            target.className = `w-14 h-14 flex-shrink-0 flex items-center justify-center border-2 border-green-700 bg-green-50 font-mono text-lg relative font-bold text-black scale-100 opacity-100 shadow-md transition-all duration-300 rounded-sm z-20`;
+
+            calcIndex.textContent = index;
+
+            // Scroll to view
+            if (shouldScroll) {
+                target.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+            }
+        }
+
+        arraySlider.addEventListener('input', (e) => updateArrayFocus(e.target.value, true));
+        updateArrayFocus(0, false); // Initial state, no scroll
+
+        // --- 02. Strings Logic ---
+        const stringContainer = document.getElementById('string-container');
+        const stringInput = document.getElementById('string-input');
+
+        function renderString() {
+            const val = stringInput.value;
+            if (!val) return;
+
+            stringContainer.innerHTML = '';
+
+            // Create cells
+            for (let i = 0; i < val.length; i++) {
+                const char = val[i];
+                // ASCII/Memory Address spoofing
+                const memAddr = (0x7FFF0000 + i).toString(16).toUpperCase();
+
+                const cell = document.createElement('div');
+                cell.className = "flex flex-col items-center mr-1 node-appear group";
+                cell.innerHTML = `
+                    <div class="w-10 h-10 border border-black bg-gray-50 flex items-center justify-center font-mono text-lg font-bold shadow-sm relative overflow-hidden">
+                        ${char === ' ' ? '<span class="text-xs text-gray-300">sp</span>' : char}
+                        <div class="absolute inset-0 bg-green-100 opacity-0 group-hover:opacity-30 transition-opacity"></div>
+                    </div>
+                    <span class="text-[8px] font-mono text-gray-400 mt-1 uppercase tracking-tighter hover:text-black cursor-help" title="Memory Address">...${memAddr.slice(-4)}</span>
+                    <span class="text-[8px] font-mono text-gray-300 -mt-1">idx:${i}</span>
+                `;
+                stringContainer.appendChild(cell);
+            }
+
+            // Null Terminator (Mental Model for C/C++)
+            const nullTerm = document.createElement('div');
+            nullTerm.className = "flex flex-col items-center opacity-50";
+            nullTerm.innerHTML = `
+                <div class="w-10 h-10 border border-gray-300 border-dashed bg-transparent flex items-center justify-center font-mono text-xs text-gray-400">
+                    \\0
+                </div>
+                <span class="text-[8px] font-mono text-gray-300 mt-1">END</span>
+            `;
+            stringContainer.appendChild(nullTerm);
+        }
+
+        // Init
+        renderString();
+
+
+        // --- 03. Linked List Logic ---
+        const llContainer = document.getElementById('ll-container');
+        const llStatus = document.getElementById('ll-status');
+        let llValues = [];
+        let currentListType = 'singly';
+
+        function setListType(type) {
+            currentListType = type;
+            const types = ['singly', 'doubly', 'circular'];
+            types.forEach(t => {
+                const btn = document.getElementById(`btn-${t}`);
+                if (btn) {
+                    if (t === type) {
+                        btn.className = "text-[9px] uppercase font-bold px-2 py-1 border border-black bg-black text-white rounded-sm transition-all";
+                    } else {
+                        btn.className = "text-[9px] uppercase font-bold px-2 py-1 border border-gray-200 text-gray-400 rounded-sm transition-all";
+                    }
+                }
+            });
+            renderLL();
+        }
+
+        function createNodeHtml(val, index, isLast) {
+            let arrows = '';
+            if (!isLast || currentListType === 'circular') {
+                arrows = `
+                    <div class="flex flex-col gap-1 mx-2 relative">
+                        <!-- Next Arrow -->
+                        <div class="w-12 h-[2px] bg-black relative">
+                            <div class="absolute right-0 -top-[3px] w-0 h-0 border-t-[4px] border-t-transparent border-l-[8px] border-l-black border-b-[4px] border-b-transparent"></div>
+                            ${isLast && currentListType === 'circular' ? '<span class="absolute -top-4 right-[-10px] text-[8px] font-bold text-green-600 whitespace-nowrap">LOOP TO HEAD</span>' : ''}
+                        </div>
+                        <!-- Prev Arrow (Doubly) -->
+                        ${currentListType === 'doubly' ? `
+                        <div class="w-12 h-[2px] bg-gray-300 relative">
+                            <div class="absolute left-0 -top-[3px] w-0 h-0 border-t-[4px] border-t-transparent border-r-[8px] border-r-gray-300 border-b-[4px] border-b-transparent"></div>
+                        </div>` : ''}
+                    </div>
+                `;
+            }
+
+            return `
+                <div class="flex items-center node-appear flex-shrink-0" id="ll-node-${index}">
+                    <div class="flex flex-col items-center group">
+                        <span class="text-[9px] uppercase text-gray-300 mb-1 group-hover:text-green-600 transition-colors">Addr: ${1000 + index * 4}</span>
+                        <div id="ll-box-${index}" class="w-14 h-14 border border-black bg-white flex items-center justify-center font-mono text-sm shadow-sm z-10 relative transition-colors duration-300">
+                            <span class="text-black font-bold">${val}</span>
+                        </div>
+                    </div>
+                    ${arrows}
+                </div>
+            `;
+        }
+
+        function renderLL() {
+            llContainer.innerHTML = '';
+            llValues.forEach((val, idx) => {
+                const isLast = idx === llValues.length - 1;
+                const nodeDiv = document.createElement('div');
+                nodeDiv.className = "flex items-center flex-shrink-0";
+                nodeDiv.innerHTML = createNodeHtml(val, idx, isLast);
+                llContainer.appendChild(nodeDiv);
+            });
+            llContainer.scrollLeft = llContainer.scrollWidth;
+        }
+
+        async function addNode() {
+            if (llValues.length >= 7) {
+                llStatus.textContent = "Memory Overflow! (Visual Limit 7 Nodes)";
+                llStatus.className = "text-xs text-red-600 font-mono h-4 font-bold animate-pulse";
+                setTimeout(() => {
+                    llStatus.className = "text-xs text-gray-500 font-mono h-4";
+                    llStatus.textContent = "Status: Ready.";
+                }, 2000);
+                return;
+            }
+
+            llStatus.textContent = "Allocating memory...";
+            const val = Math.floor(Math.random() * 99);
+
+            if (llValues.length > 0) {
+                llStatus.textContent = "Traversing pointers...";
+                for (let i = 0; i < llValues.length; i++) {
+                    const box = document.getElementById(`ll-box-${i}`);
+                    if (box) {
+                        box.style.borderColor = "#15803d";
+                        box.style.backgroundColor = "#dcfce7";
+                        await sleep(200);
+                        box.style.borderColor = "black";
+                        box.style.backgroundColor = "white";
+                    }
+                }
+            }
+
+            llValues.push(val);
+            renderLL();
+            llStatus.textContent = "Node appended successfully.";
+        }
+
+        function resetList() {
+            llValues = [Math.floor(Math.random() * 99)];
+            renderLL();
+            llStatus.textContent = "List reset.";
+        }
+
+        resetList();
+
+
+        // --- 04. Stack Logic ---
+        const stackContainer = document.getElementById('visualizer-stack-container');
+        const stackStatus = document.getElementById('stack-status');
+        let stackHeight = 0;
+
+        function pushStack() {
+            if (stackHeight > 5) {
+                stackStatus.textContent = "Stack Overflow! Capacity Reached.";
+                stackStatus.className = "text-xs text-red-600 font-mono h-4 font-bold animate-pulse";
+                setTimeout(() => {
+                    stackStatus.className = "text-xs text-gray-500 font-mono h-4";
+                    stackStatus.textContent = "Status: Ready.";
+                }, 2000);
+                return;
+            }
+            stackHeight++;
+            stackStatus.textContent = "Pushing frame...";
+            const val = Math.floor(Math.random() * 99);
+            const item = document.createElement('div');
+            // Initial state for animation
+            item.className = "w-48 h-10 border-2 border-black bg-green-100 flex items-center justify-between px-4 font-mono text-sm shadow-md mb-1 z-10 transition-all duration-300 transform -translate-y-[100px] opacity-0";
+            item.innerHTML = `<span>Val: ${val}</span><span class="text-[9px] uppercase opacity-50">Top</span>`;
+            item.id = `stack-item-${stackHeight}`;
+            stackContainer.appendChild(item);
+
+            // Animate in
+            setTimeout(() => {
+                item.classList.remove('-translate-y-[100px]', 'opacity-0');
+                stackStatus.textContent = "Status: Ready.";
+            }, 50);
+        }
+
+        function popStack() {
+            if (stackHeight === 0) {
+                stackStatus.textContent = "Stack Underflow! Stack is empty.";
+                stackStatus.className = "text-xs text-orange-600 font-mono h-4 font-bold";
+                setTimeout(() => {
+                    stackStatus.className = "text-xs text-gray-500 font-mono h-4";
+                    stackStatus.textContent = "Status: Ready.";
+                }, 2000);
+                return;
+            }
+            const item = document.getElementById(`stack-item-${stackHeight}`);
+            // Animate out
+            item.classList.add('-translate-y-[100px]', 'opacity-0');
+
+            setTimeout(() => item.remove(), 300);
+            stackHeight--;
+        }
+
+
+        // --- 05. Queue Logic ---
+        const queueContainer = document.getElementById('queue-container');
+        const queueStatus = document.getElementById('queue-status');
+        let queueItems = [];
+
+        function renderQueue() {
+            queueContainer.innerHTML = '';
+            queueItems.forEach((val, idx) => {
+                const item = document.createElement('div');
+                item.className = "w-12 h-12 flex-shrink-0 border border-black bg-white flex items-center justify-center font-mono text-sm node-appear shadow-sm";
+                item.textContent = val;
+                // Highlight head
+                if (idx === 0) {
+                    item.classList.add('bg-green-50', 'border-green-600', 'border-2', 'font-bold');
+                }
+                queueContainer.appendChild(item);
+            });
+        }
+
+        function enqueue() {
+            if (queueItems.length >= 8) {
+                queueStatus.textContent = "Queue Full! (Overflow)";
+                queueStatus.className = "text-xs text-red-600 font-mono h-4 font-bold animate-pulse";
+                setTimeout(() => {
+                    queueStatus.className = "text-xs text-gray-500 font-mono h-4 mt-1";
+                    queueStatus.textContent = "Status: Ready.";
+                }, 2000);
+                return;
+            }
+            queueItems.push(Math.floor(Math.random() * 99));
+            renderQueue();
+            queueContainer.scrollLeft = queueContainer.scrollWidth;
+        }
+
+        function dequeue() {
+            if (queueItems.length === 0) {
+                queueStatus.textContent = "Queue Empty! (Underflow)";
+                queueStatus.className = "text-xs text-orange-600 font-mono h-4 mt-1 font-bold";
+                setTimeout(() => {
+                    queueStatus.className = "text-xs text-gray-500 font-mono h-4 mt-1";
+                    queueStatus.textContent = "Status: Ready.";
+                }, 2000);
+                return;
+            }
+            // visual effect
+            const first = queueContainer.children[0];
+            if (first) {
+                first.style.transform = 'translateX(-50px)';
+                first.style.opacity = '0';
+                first.style.transition = 'all 0.3s ease';
+            }
+            setTimeout(() => {
+                queueItems.shift();
+                renderQueue();
+            }, 300);
+        }
+
+        // --- 05b. Priority Queue Logic ---
+        const pqContainer = document.getElementById('pq-container');
+        const pqStatus = document.getElementById('pq-status');
+        let pqItems = [];
+
+        function renderPQ() {
+            pqContainer.innerHTML = '';
+            pqItems.forEach((item, idx) => {
+                const el = document.createElement('div');
+                el.className = "flex flex-col items-center flex-shrink-0 node-appear";
+                el.innerHTML = `
+                    <div class="w-12 h-12 border-2 border-black bg-white flex items-center justify-center font-mono text-sm relative">
+                        <span class="text-black font-bold">${item.val}</span>
+                        <div class="absolute -top-2 -right-2 bg-black text-white text-[8px] px-1 font-bold">P${item.priority}</div>
+                    </div>
+                `;
+                pqContainer.appendChild(el);
+            });
+        }
+
+        async function enqueuePQ() {
+            if (pqItems.length >= 8) {
+                pqStatus.textContent = "Status: Buffer Full.";
+                return;
+            }
+            const val = Math.floor(Math.random() * 99);
+            const priority = Math.floor(Math.random() * 10) + 1;
+
+            pqStatus.textContent = `Status: Enqueuing val ${val} with priority ${priority}...`;
+            pqItems.push({ val, priority });
+            pqItems.sort((a, b) => b.priority - a.priority);
+
+            await sleep(300);
+            renderPQ();
+            pqStatus.textContent = "Status: Ready.";
+        }
+
+        async function dequeuePQ() {
+            if (pqItems.length === 0) {
+                pqStatus.textContent = "Status: Empty.";
+                return;
+            }
+
+            pqStatus.textContent = "Status: Dequeuing highest priority...";
+            // Check for children before accessing
+            if (pqContainer.children.length > 0) {
+                const first = pqContainer.children[0];
+                if (first && first.firstElementChild) {
+                    first.firstElementChild.style.backgroundColor = "#fee2e2";
+                    first.firstElementChild.style.borderColor = "#b91c1c";
+                }
+            }
+
+            await sleep(300);
+            pqItems.shift();
+            renderPQ();
+            pqStatus.textContent = "Status: Dequeued.";
+        }
+
+
+        // --- 06. Binary Tree Logic (Canvas + Animation) ---
+        const treeCanvas = document.getElementById('tree-canvas');
+        const treeCtx = treeCanvas.getContext('2d');
+        const treeFeedback = document.getElementById('tree-feedback');
+        let treeRoot = null;
+
+        class TreeNode {
+            constructor(value) {
+                this.value = value;
+                this.left = null;
+                this.right = null;
+                this.x = 0;
+                this.y = 0;
+                this.highlight = false; // For animation
+            }
+        }
+
+        function resizeTreeCanvas() {
+            treeCanvas.width = treeCanvas.parentElement.offsetWidth;
+            treeCanvas.height = 350;
+            if (treeRoot) drawTreeRecursive(treeRoot);
+        }
+        window.addEventListener('resize', resizeTreeCanvas);
+        setTimeout(resizeTreeCanvas, 100);
+
+        function drawTreeRecursive(node) {
+            if (!node) return;
+
+            treeCtx.lineWidth = 1;
+            treeCtx.strokeStyle = "#aaa";
+
+            if (node.left) {
+                treeCtx.beginPath();
+                treeCtx.moveTo(node.x, node.y + 15); // +radius
+                treeCtx.lineTo(node.left.x, node.left.y - 15);
+                treeCtx.stroke();
+                drawTreeRecursive(node.left);
+            }
+            if (node.right) {
+                treeCtx.beginPath();
+                treeCtx.moveTo(node.x, node.y + 15);
+                treeCtx.lineTo(node.right.x, node.right.y - 15);
+                treeCtx.stroke();
+                drawTreeRecursive(node.right);
+            }
+
+            // Draw Node Circle
+            treeCtx.beginPath();
+            treeCtx.arc(node.x, node.y, 16, 0, Math.PI * 2);
+            if (node.highlight) {
+                treeCtx.fillStyle = "#15803d"; // Green
+                treeCtx.strokeStyle = "#15803d";
+            } else {
+                treeCtx.fillStyle = "#fff";
+                treeCtx.strokeStyle = "#111";
+            }
+            treeCtx.fill();
+            treeCtx.stroke();
+
+            // Draw Value
+            treeCtx.fillStyle = node.highlight ? "#fff" : "#111";
+            treeCtx.font = "bold 9px Roboto Mono";
+            treeCtx.textAlign = "center";
+            treeCtx.fillText(node.value, node.x, node.y + 4);
+        }
+
+        async function startTraversal(type) {
+            if (!treeRoot) {
+                document.getElementById('traversal-status').textContent = "Add some nodes first!";
+                return;
+            }
+
+            const sequence = [];
+            if (type === 'inorder') inorder(treeRoot, sequence);
+            else if (type === 'preorder') preorder(treeRoot, sequence);
+            else if (type === 'postorder') postorder(treeRoot, sequence);
+
+            const statusEl = document.getElementById('traversal-status');
+            statusEl.innerHTML = `Running ${type}... Path: <span class="font-bold text-black">[</span>`;
+
+            for (const node of sequence) {
+                node.highlight = true;
+                treeCtx.clearRect(0, 0, treeCanvas.width, treeCanvas.height);
+                drawTreeRecursive(treeRoot);
+
+                // Update UI with value
+                statusEl.innerHTML += `<span class="font-bold text-green-600 mx-1 node-appear">${node.value}</span>`;
+
+                await sleep(600);
+                node.highlight = false;
+                treeCtx.clearRect(0, 0, treeCanvas.width, treeCanvas.height);
+                drawTreeRecursive(treeRoot);
+                await sleep(100);
+            }
+            statusEl.innerHTML += `<span class="font-bold text-black">]</span> Complete.`;
+        }
+
+        function inorder(node, arr) {
+            if (!node) return;
+            inorder(node.left, arr);
+            arr.push(node);
+            inorder(node.right, arr);
+        }
+
+        function preorder(node, arr) {
+            if (!node) return;
+            arr.push(node);
+            preorder(node.left, arr);
+            preorder(node.right, arr);
+        }
+
+        function postorder(node, arr) {
+            if (!node) return;
+            postorder(node.left, arr);
+            postorder(node.right, arr);
+            arr.push(node);
+        }
+
+
+
+        function insertTreeNodeHelper(node, value, level = 0, x, width) {
+            if (node === null) {
+                const newNode = new TreeNode(value);
+                newNode.x = x;
+                newNode.y = 50 + level * 60;
+                return newNode;
+            }
+            if (value < node.value) {
+                node.left = insertTreeNodeHelper(node.left, value, level + 1, x - width / 2, width / 2);
+            } else if (value > node.value) {
+                node.right = insertTreeNodeHelper(node.right, value, level + 1, x + width / 2, width / 2);
+            }
+            return node;
+        }
+
+        async function insertTree() {
+            const input = document.getElementById('tree-input');
+            const val = parseInt(input.value);
+            if (isNaN(val)) return;
+
+            // Visualization: Highlight path
+            let current = treeRoot;
+            treeFeedback.textContent = `Searching for spot for ${val}...`;
+
+            while (current) {
+                // Highlight current
+                current.highlight = true;
+                drawTreeRecursive(treeRoot); // Redraw
+                await sleep(500);
+                current.highlight = false;
+
+                if (val < current.value) {
+                    treeFeedback.textContent = `${val} < ${current.value} → Go Left`;
+                    if (!current.left) break; // Found spot
+                    current = current.left;
+                } else if (val > current.value) {
+                    treeFeedback.textContent = `${val} > ${current.value} → Go Right`;
+                    if (!current.right) break; // Found spot
+                    current = current.right;
+                } else {
+                    treeFeedback.textContent = `Value ${val} already exists!`;
+                    drawTreeRecursive(treeRoot);
+                    return;
+                }
+                drawTreeRecursive(treeRoot);
+            }
+
+            treeRoot = insertTreeNodeHelper(treeRoot, val, 0, treeCanvas.width / 2, treeCanvas.width / 2.2);
+            treeFeedback.textContent = `Inserted ${val}.`;
+            treeCtx.clearRect(0, 0, treeCanvas.width, treeCanvas.height);
+            drawTreeRecursive(treeRoot);
+            input.value = "";
+        }
+
+        function resetTree() {
+            treeRoot = new TreeNode(50); // Default root
+            treeRoot.x = treeCanvas.width / 2;
+            treeRoot.y = 50;
+            treeFeedback.textContent = "Tree reset with root 50.";
+            treeCtx.clearRect(0, 0, treeCanvas.width, treeCanvas.height);
+            drawTreeRecursive(treeRoot);
+        }
+
+
+        // --- 07. Graph Logic (Simple Force/Click) ---
+        const graphCanvas = document.getElementById('graph-canvas');
+        const graphCtx = graphCanvas.getContext('2d');
+        let nodes = [];
+        let edges = [];
+        let selectedNode = null;
+
+        function resizeGraphCanvas() {
+            graphCanvas.width = graphCanvas.parentElement.offsetWidth;
+            graphCanvas.height = 300;
+            drawGraph();
+        }
+        window.addEventListener('resize', resizeGraphCanvas);
+        setTimeout(resizeGraphCanvas, 100);
+
+        function drawGraph() {
+            graphCtx.clearRect(0, 0, graphCanvas.width, graphCanvas.height);
+
+            // Draw Edges
+            graphCtx.strokeStyle = "#ccc";
+            graphCtx.lineWidth = 1;
+            edges.forEach(edge => {
+                const n1 = nodes[edge[0]];
+                const n2 = nodes[edge[1]];
+                graphCtx.beginPath();
+                graphCtx.moveTo(n1.x, n1.y);
+                graphCtx.lineTo(n2.x, n2.y);
+                graphCtx.stroke();
+            });
+
+            // Draw Nodes
+            nodes.forEach((node, index) => {
+                graphCtx.beginPath();
+                graphCtx.arc(node.x, node.y, 15, 0, Math.PI * 2);
+
+                if (selectedNode === index) {
+                    graphCtx.fillStyle = "#15803d";
+                    graphCtx.strokeStyle = "#15803d";
+                } else {
+                    graphCtx.fillStyle = "#fff";
+                    graphCtx.strokeStyle = "#555";
+                }
+
+                graphCtx.fill();
+                graphCtx.stroke();
+
+                graphCtx.fillStyle = selectedNode === index ? "#fff" : "#111";
+                graphCtx.font = "10px Roboto Mono";
+                graphCtx.textAlign = "center";
+                graphCtx.textBaseline = "middle";
+                graphCtx.fillText(index, node.x, node.y);
+            });
+        }
+
+        // Interaction
+        graphCanvas.addEventListener('mousedown', (e) => {
+            const rect = graphCanvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+
+            // Check if clicked existing node
+            let clickedIndex = -1;
+            for (let i = 0; i < nodes.length; i++) {
+                const dx = x - nodes[i].x;
+                const dy = y - nodes[i].y;
+                if (Math.sqrt(dx * dx + dy * dy) < 20) {
+                    clickedIndex = i;
+                    break;
+                }
+            }
+
+            if (clickedIndex !== -1) {
+                // Node clicked
+                if (selectedNode !== null && selectedNode !== clickedIndex) {
+                    // Create Edge
+                    edges.push([selectedNode, clickedIndex]);
+                    selectedNode = null;
+                } else {
+                    // Select
+                    selectedNode = (selectedNode === clickedIndex) ? null : clickedIndex;
+                }
+            } else {
+                // Empty space -> Add Node
+                nodes.push({ x, y });
+            }
+
+            updateGraphStats();
+            drawGraph();
+        });
+
+        function updateGraphStats() {
+            document.getElementById('node-count').textContent = nodes.length;
+            document.getElementById('edge-count').textContent = edges.length;
+        }
+
+        function resetGraph() {
+            nodes = [];
+            edges = [];
+            selectedNode = null;
+            updateGraphStats();
+            drawGraph();
+        }
+
+
+        // --- 08. Hash Map Logic ---
+        const hashBuckets = document.getElementById('hash-buckets');
+        let hashMapState = Array(8).fill().map(() => []); // Array of arrays to handle collisions
+
+        // Init buckets with clearer labels
+        for (let i = 0; i < 8; i++) {
+            const b = document.createElement('div');
+            // Changed fixed height to min-height to allow growing (Chaining)
+            b.className = "border border-gray-200 bg-white min-h-[3.5rem] h-auto flex flex-col items-center justify-start py-2 font-mono text-xs text-gray-400 transition-all duration-300";
+            b.id = `bucket-${i}`;
+            b.innerHTML = `<span class="text-[8px] uppercase opacity-50 mb-1">Idx ${i}</span><div id="bucket-list-${i}" class="w-full flex flex-col items-center gap-1 px-1"></div>`;
+            hashBuckets.appendChild(b);
+        }
+
+        function handleHashKey(event) {
+            if (event.key === 'Enter') calculateHash();
+        }
+
+        function calculateHash() {
+            const inputEl = document.getElementById('hash-input');
+            const input = inputEl.value.trim();
+            const arrow = document.getElementById('hash-arrow');
+            const calcDisplay = document.getElementById('hash-calc-display'); // Get the element
+
+            // Reset styles
+            for (let i = 0; i < 8; i++) {
+                const b = document.getElementById(`bucket-${i}`);
+                // Reset to base style
+                b.className = "border border-gray-200 bg-white min-h-[3.5rem] h-auto flex flex-col items-center justify-start py-2 font-mono text-xs text-gray-400 transition-all duration-300";
+            }
+
+            if (input.length === 0) {
+                arrow.style.transform = `rotate(0deg)`;
+                calcDisplay.textContent = "Index = Length % 8"; // Reset
+                return;
+            }
+
+            // Simple hash: length % 8
+            const hash = input.length % 8;
+
+            // Show calculation
+            calcDisplay.innerHTML = `<span class="text-gray-500">"${input}" len</span> <span class="font-bold text-black">${input.length}</span> % 8 = <span class="font-bold text-green-700">${hash}</span>`;
+
+            // Animate Process
+            arrow.style.color = "#15803d";
+            arrow.style.transform = `rotate(90deg) scale(1.2)`;
+
+            const target = document.getElementById(`bucket-${hash}`);
+            const listDiv = document.getElementById(`bucket-list-${hash}`);
+
+            // Add to state if not exists (Collision Handling via Chaining)
+            const bucketArr = hashMapState[hash];
+            if (!bucketArr.includes(input)) {
+                bucketArr.push(input);
+            }
+
+            // Highlight Bucket
+            target.className = "border-2 border-green-600 bg-green-50 min-h-[3.5rem] h-auto flex flex-col items-center justify-start py-2 font-mono text-xs text-black transition-all duration-300 shadow-md transform scale-105";
+
+            // Render List (Visualizing the Chain)
+            // Added 'break-all' and 'text-[10px]' to prevent overflow
+            listDiv.innerHTML = bucketArr.map(item =>
+                `<span class="bg-white border border-green-200 w-full text-center rounded py-1 shadow-sm animate-pulse break-all text-[10px] leading-tight px-1">${item}</span>`
+            ).join('');
+
+            // Clear input for next entry
+            document.getElementById('hash-input').value = "";
+            document.getElementById('hash-input').focus();
+        }
+
+
+        // --- 09. Sets Logic ---
+        const setContainer = document.getElementById('set-container');
+        const setInput = document.getElementById('set-input');
+        const setFeedback = document.getElementById('set-feedback');
+        let mySet = new Set([1, 2, 3]);
+
+        function renderSet() {
+            setContainer.innerHTML = '<div class="absolute -top-3 bg-white px-2 text-[10px] text-gray-400 font-bold uppercase tracking-wider">The Set Container</div>';
+
+            mySet.forEach(val => {
+                const bubble = document.createElement('div');
+                bubble.className = "w-12 h-12 rounded-full border border-black bg-white flex items-center justify-center font-mono font-bold shadow-sm node-appear transform transition-all hover:scale-110 hover:bg-yellow-50 cursor-default";
+                bubble.textContent = val;
+                setContainer.appendChild(bubble);
+            });
+        }
+
+        async function addToSet() {
+            const val = parseInt(setInput.value);
+            if (isNaN(val)) return;
+
+            if (mySet.has(val)) {
+                setFeedback.textContent = `Duplicate! ${val} rejected.`;
+                setFeedback.className = "text-xs text-red-600 font-bold font-mono h-4";
+
+                // Visual shake effect on existing
+                // Find element
+                const bubbles = Array.from(setContainer.children).filter(c => c.textContent == val);
+                if (bubbles.length > 0) {
+                    bubbles[0].style.backgroundColor = "#fee2e2";
+                    bubbles[0].style.borderColor = "red";
+                    await sleep(200);
+                    bubbles[0].style.backgroundColor = "white";
+                    bubbles[0].style.borderColor = "black";
+                }
+            } else {
+                mySet.add(val);
+                setFeedback.textContent = `Added ${val}.`;
+                setFeedback.className = "text-xs text-green-600 font-mono h-4";
+                renderSet();
+            }
+
+            setTimeout(() => {
+                setFeedback.className = "text-xs text-gray-500 font-mono h-4";
+                setFeedback.textContent = "Status: Ready.";
+            }, 2000);
+
+            setInput.value = '';
+            setInput.focus();
+        }
+
+        function resetSet() {
+            mySet.clear();
+            renderSet();
+            setFeedback.textContent = "Set cleared.";
+        }
+
+        renderSet();
+
+        // --- 10. Big O Logic ---
+        const complexitySlider = document.getElementById('complexity-slider');
+        const nDisplay = document.getElementById('n-display');
+        const slowestScenario = document.getElementById('slowest-scenario');
+        const barLog = document.getElementById('bar-log');
+        const barN = document.getElementById('bar-n');
+        const barN2 = document.getElementById('bar-n2');
+
+        complexitySlider.addEventListener('input', (e) => {
+            const n = parseInt(e.target.value);
+            nDisplay.textContent = n;
+
+            // Scenario Calc (O(N^2))
+            const ops = n * n;
+            slowestScenario.textContent = `${ops.toLocaleString()} operations`;
+
+            // Normalize widths to visually represent growth relative to N=100
+            // N = 100%
+
+            // Log N: log10(100) = 2. log10(n). Relative to max log(100)
+            const wLog = (Math.log10(n) / 2) * 20; // Scale factor
+            barLog.style.width = `${Math.max(5, wLog)}%`;
+
+            // N: n / 100
+            const wN = n;
+            barN.style.width = `${wN}%`;
+
+            // N^2: (n^2) / 10000
+            const wN2 = (n * n) / 100;
+            barN2.style.width = `${wN2}%`;
+        });
+
+        // --- Init ---
+        // Toggle menu logic
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobile-menu');
+            if (menu.classList.contains('hidden')) {
+                menu.classList.remove('hidden');
+                menu.classList.add('flex');
+                document.body.style.overflow = 'hidden';
+            } else {
+                menu.classList.add('hidden');
+                menu.classList.remove('flex');
+                document.body.style.overflow = 'auto';
+            }
+        }
+
+        // Scroll Reveal
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('active');
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.1 });
+
+        document.querySelectorAll('section').forEach(section => {
+            section.classList.add('section-reveal');
+            observer.observe(section);
+        });
+
+    </script>
+
+
+</body>
+
+</html>
