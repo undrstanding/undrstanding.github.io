@@ -5,16 +5,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Operating Systems | Undrstanding</title>
-    <meta name="description" content="Learn about Operating Systems with Undrstanding - Interactive explorations for humans. educational repository for complex topics.">
+    <meta name="description"
+        content="Learn about Operating Systems with Undrstanding - Interactive explorations for humans. educational repository for complex topics.">
     <meta name="keywords" content="undrstanding, operating systems, computer science, learning, educational">
     <link rel="canonical" href="https://undrstanding.github.io/content/os.html">
     <meta property="og:title" content="Operating Systems | Undrstanding">
-    <meta property="og:description" content="Learn about Operating Systems with Undrstanding - Interactive explorations for humans.">
+    <meta property="og:description"
+        content="Learn about Operating Systems with Undrstanding - Interactive explorations for humans.">
     <meta property="og:url" content="https://undrstanding.github.io/content/os.html">
     <meta property="og:type" content="article">
     <meta name="twitter:card" content="summary">
     <meta name="twitter:title" content="Operating Systems | Undrstanding">
-    <meta name="twitter:description" content="Learn about Operating Systems with Undrstanding - Interactive explorations for humans.">
+    <meta name="twitter:description"
+        content="Learn about Operating Systems with Undrstanding - Interactive explorations for humans.">
     <link rel="icon" type="image/svg+xml" href="../assests/undrlogo.svg">
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -1766,488 +1769,487 @@
         }
 
         // --- Observer ---
-        const observer = new IntersectionObserver((entries) => {
-            const revealObserver = new IntersectionObserver((entries, observer) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        entry.target.classList.add('active');
-                        observer.unobserve(entry.target);
-                    }
-                });
-            }, {
-                threshold: 0.15,
-                rootMargin: "0px 0px -50px 0px"
+        const revealObserver = new IntersectionObserver((entries, observer) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('active');
+                    observer.unobserve(entry.target);
+                }
             });
+        }, {
+            threshold: 0.15,
+            rootMargin: "0px 0px -50px 0px"
+        });
 
-            const navObserver = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        const id = entry.target.getAttribute('id');
-                        if (!id) return;
-                        document.querySelectorAll('.nav-link, .mobile-nav-link').forEach(link => {
-                            const isActive = link.getAttribute('href') === `#${id}`;
-                            link.classList.toggle('active', isActive);
+        const navObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const id = entry.target.getAttribute('id');
+                    if (!id) return;
+                    document.querySelectorAll('.nav-link, .mobile-nav-link').forEach(link => {
+                        const isActive = link.getAttribute('href') === `#${id}`;
+                        link.classList.toggle('active', isActive);
 
-                            if (isActive && link.classList.contains('nav-link')) {
-                                const sidebar = link.closest('aside');
-                                if (sidebar) {
-                                    link.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-                                }
+                        if (isActive && link.classList.contains('nav-link')) {
+                            const sidebar = link.closest('aside');
+                            if (sidebar) {
+                                link.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
                             }
-                        });
-                    }
-                });
-            }, { threshold: 0.5 });
-
-            document.querySelectorAll('section').forEach(section => {
-                section.classList.add('section-reveal');
-                revealObserver.observe(section);
-                navObserver.observe(section);
-            });
-
-            // --- VISUAL: Scheduler Logic (Industrial V2) ---
-            const scheduler = {
-                jobQueue: [],
-                readyQueue: [],
-                runningProcess: null,
-                completed: [],
-                ganttData: [], // {id, start, duration, color}
-
-                // System Config
-                algorithm: 'FCFS',
-                quantum: 2,
-                timer: 0,
-                isRunning: false,
-                intervalId: null,
-                pidCounter: 1,
-
-                // Helpers
-                quantumCounter: 0,
-                currentBlock: null,
-
-                // Industrial Palette: High Contrast 600/700 shades
-                colors: ['#dc2626', '#ea580c', '#ca8a04', '#16a34a', '#0891b2', '#2563eb', '#7c3aed', '#db2777'],
-
-                init() {
-                    this.updateUI();
-                    this.toggleInputs();
-
-                    // Event Listener for Algo Change
-                    document.getElementById('algo-select').addEventListener('change', () => {
-                        this.toggleInputs();
-                    });
-
-                    this.log('System initialized. Waiting for jobs...');
-                },
-
-                toggleInputs() {
-                    const algo = document.getElementById('algo-select').value;
-                    const priContainer = document.getElementById('priority-container');
-                    const quantContainer = document.getElementById('quantum-container');
-
-                    // Hide all first
-                    priContainer.classList.add('hidden');
-                    quantContainer.classList.add('hidden');
-
-                    if (algo === 'RR') {
-                        quantContainer.classList.remove('hidden');
-                    } else if (algo === 'PRIORITY') {
-                        priContainer.classList.remove('hidden');
-                    }
-
-                    // Update Info Box
-                    const infoBox = document.getElementById('algo-info-box');
-                    const descEl = document.getElementById('algo-desc');
-                    const prosEl = document.getElementById('algo-pros');
-                    const consEl = document.getElementById('algo-cons');
-
-                    const data = {
-                        'FCFS': {
-                            desc: "Processes are executed in the exact order they arrive. Non-preemptive: once started, it runs to completion.",
-                            pros: ["Simple to implement.", "Fair (early arrivals served first).", "No starvation."],
-                            cons: ["Convoy Effect (short jobs wait for long ones).", "Poor average waiting time.", "Not for time-sharing."]
-                        },
-                        'SJF': {
-                            desc: "Selects the process with the smallest burst time. Non-preemptive. If burst times are equal, FCFS is used.",
-                            pros: ["Optimal average waiting time.", "Maximizes throughput."],
-                            cons: ["Starvation of long processes.", "Requires knowing burst time in advance.", "Not practical for general OS."]
-                        },
-                        'SRTF': {
-                            desc: "Preemptive version of SJF. If a new job arrives with a shorter remaining time than current, it takes over.",
-                            pros: ["Lowest possible average waiting time.", "Fast response for short jobs."],
-                            cons: ["High overhead (frequent context switches).", "Complex to implement.", "Starvation of long processes."]
-                        },
-                        'PRIORITY': {
-                            desc: "CPU assigned to process with highest priority (lowest number). Non-preemptive in this simulation.",
-                            pros: ["Handles urgent tasks immediately.", "Flexible (can mimic FCFS or SJF)."],
-                            cons: ["Indefinite blocking (Starvation).", "Solution: Aging (not implemented here)."]
-                        },
-                        'RR': {
-                            desc: "CPU assigned for a fixed Time Quantum. When time expires, process goes to back of ready queue.",
-                            pros: ["Fair (equal CPU share).", "Responsive (good for interactive systems)."],
-                            cons: ["Performance depends on Quantum.", "Small Q = High overhead.", "Large Q = Behave like FCFS."]
                         }
-                    };
+                    });
+                }
+            });
+        }, { threshold: 0.5 });
 
-                    if (infoBox && data[algo]) {
-                        infoBox.classList.remove('hidden');
-                        descEl.textContent = data[algo].desc;
-                        prosEl.innerHTML = data[algo].pros.map(p => `<li>${p}</li>`).join('');
-                        consEl.innerHTML = data[algo].cons.map(c => `<li>${c}</li>`).join('');
+        document.querySelectorAll('section').forEach(section => {
+            section.classList.add('section-reveal');
+            revealObserver.observe(section);
+            navObserver.observe(section);
+        });
+
+        // --- VISUAL: Scheduler Logic (Industrial V2) ---
+        const scheduler = {
+            jobQueue: [],
+            readyQueue: [],
+            runningProcess: null,
+            completed: [],
+            ganttData: [], // {id, start, duration, color}
+
+            // System Config
+            algorithm: 'FCFS',
+            quantum: 2,
+            timer: 0,
+            isRunning: false,
+            intervalId: null,
+            pidCounter: 1,
+
+            // Helpers
+            quantumCounter: 0,
+            currentBlock: null,
+
+            // Industrial Palette: High Contrast 600/700 shades
+            colors: ['#dc2626', '#ea580c', '#ca8a04', '#16a34a', '#0891b2', '#2563eb', '#7c3aed', '#db2777'],
+
+            init() {
+                this.updateUI();
+                this.toggleInputs();
+
+                // Event Listener for Algo Change
+                document.getElementById('algo-select').addEventListener('change', () => {
+                    this.toggleInputs();
+                });
+
+                this.log('System initialized. Waiting for jobs...');
+            },
+
+            toggleInputs() {
+                const algo = document.getElementById('algo-select').value;
+                const priContainer = document.getElementById('priority-container');
+                const quantContainer = document.getElementById('quantum-container');
+
+                // Hide all first
+                priContainer.classList.add('hidden');
+                quantContainer.classList.add('hidden');
+
+                if (algo === 'RR') {
+                    quantContainer.classList.remove('hidden');
+                } else if (algo === 'PRIORITY') {
+                    priContainer.classList.remove('hidden');
+                }
+
+                // Update Info Box
+                const infoBox = document.getElementById('algo-info-box');
+                const descEl = document.getElementById('algo-desc');
+                const prosEl = document.getElementById('algo-pros');
+                const consEl = document.getElementById('algo-cons');
+
+                const data = {
+                    'FCFS': {
+                        desc: "Processes are executed in the exact order they arrive. Non-preemptive: once started, it runs to completion.",
+                        pros: ["Simple to implement.", "Fair (early arrivals served first).", "No starvation."],
+                        cons: ["Convoy Effect (short jobs wait for long ones).", "Poor average waiting time.", "Not for time-sharing."]
+                    },
+                    'SJF': {
+                        desc: "Selects the process with the smallest burst time. Non-preemptive. If burst times are equal, FCFS is used.",
+                        pros: ["Optimal average waiting time.", "Maximizes throughput."],
+                        cons: ["Starvation of long processes.", "Requires knowing burst time in advance.", "Not practical for general OS."]
+                    },
+                    'SRTF': {
+                        desc: "Preemptive version of SJF. If a new job arrives with a shorter remaining time than current, it takes over.",
+                        pros: ["Lowest possible average waiting time.", "Fast response for short jobs."],
+                        cons: ["High overhead (frequent context switches).", "Complex to implement.", "Starvation of long processes."]
+                    },
+                    'PRIORITY': {
+                        desc: "CPU assigned to process with highest priority (lowest number). Non-preemptive in this simulation.",
+                        pros: ["Handles urgent tasks immediately.", "Flexible (can mimic FCFS or SJF)."],
+                        cons: ["Indefinite blocking (Starvation).", "Solution: Aging (not implemented here)."]
+                    },
+                    'RR': {
+                        desc: "CPU assigned for a fixed Time Quantum. When time expires, process goes to back of ready queue.",
+                        pros: ["Fair (equal CPU share).", "Responsive (good for interactive systems)."],
+                        cons: ["Performance depends on Quantum.", "Small Q = High overhead.", "Large Q = Behave like FCFS."]
                     }
-                },
+                };
 
-                notify(msg, isError = true) {
-                    const el = document.getElementById('sched-notification');
-                    el.textContent = msg;
-                    el.className = isError ? "text-xs font-bold text-red-600 h-4" : "text-xs font-bold text-black h-4";
-                    setTimeout(() => { el.textContent = ""; }, 3000);
-                },
+                if (infoBox && data[algo]) {
+                    infoBox.classList.remove('hidden');
+                    descEl.textContent = data[algo].desc;
+                    prosEl.innerHTML = data[algo].pros.map(p => `<li>${p}</li>`).join('');
+                    consEl.innerHTML = data[algo].cons.map(c => `<li>${c}</li>`).join('');
+                }
+            },
 
-                add() {
-                    if (this.isRunning) return this.notify("RESET SYSTEM FIRST", true);
-                    if (this.jobQueue.length + this.readyQueue.length >= 8) return this.notify("MAX PROCESS LIMIT (8)", true);
+            notify(msg, isError = true) {
+                const el = document.getElementById('sched-notification');
+                el.textContent = msg;
+                el.className = isError ? "text-xs font-bold text-red-600 h-4" : "text-xs font-bold text-black h-4";
+                setTimeout(() => { el.textContent = ""; }, 3000);
+            },
 
-                    const burst = parseInt(document.getElementById('burst-in').value) || 5;
-                    const arrival = parseInt(document.getElementById('arrival-in').value) || 0;
+            add() {
+                if (this.isRunning) return this.notify("RESET SYSTEM FIRST", true);
+                if (this.jobQueue.length + this.readyQueue.length >= 8) return this.notify("MAX PROCESS LIMIT (8)", true);
 
-                    // Priority specific
-                    let priority = 1;
-                    const algo = document.getElementById('algo-select').value;
-                    if (algo === 'PRIORITY') {
-                        priority = parseInt(document.getElementById('priority-in').value) || 1;
-                    }
+                const burst = parseInt(document.getElementById('burst-in').value) || 5;
+                const arrival = parseInt(document.getElementById('arrival-in').value) || 0;
 
-                    const p = {
-                        id: 'P' + this.pidCounter++,
-                        burst: burst,
-                        remaining: burst,
-                        priority: priority,
-                        arrivalTime: arrival,
-                        color: this.colors[(this.pidCounter - 2) % this.colors.length],
-                        startTime: -1,
-                        finishTime: -1,
-                        ct: 0, tat: 0, wt: 0
-                    };
+                // Priority specific
+                let priority = 1;
+                const algo = document.getElementById('algo-select').value;
+                if (algo === 'PRIORITY') {
+                    priority = parseInt(document.getElementById('priority-in').value) || 1;
+                }
 
-                    this.jobQueue.push(p);
-                    // Sort Job Queue by Arrival Time immediately to keep it ordered
-                    this.jobQueue.sort((a, b) => a.arrivalTime - b.arrivalTime);
+                const p = {
+                    id: 'P' + this.pidCounter++,
+                    burst: burst,
+                    remaining: burst,
+                    priority: priority,
+                    arrivalTime: arrival,
+                    color: this.colors[(this.pidCounter - 2) % this.colors.length],
+                    startTime: -1,
+                    finishTime: -1,
+                    ct: 0, tat: 0, wt: 0
+                };
 
-                    this.log(`JOB ADDED: ${p.id} [Bur:${burst} Arr:${arrival}]`);
-                    this.updateUI();
-                },
+                this.jobQueue.push(p);
+                // Sort Job Queue by Arrival Time immediately to keep it ordered
+                this.jobQueue.sort((a, b) => a.arrivalTime - b.arrivalTime);
 
-                start() {
-                    if (this.isRunning) return;
+                this.log(`JOB ADDED: ${p.id} [Bur:${burst} Arr:${arrival}]`);
+                this.updateUI();
+            },
 
-                    // Allow starting even if no jobs, but maybe warn? 
-                    if (this.jobQueue.length === 0 && this.readyQueue.length === 0) {
-                        this.notify("NO JOBS TO SCHEDULE", true);
+            start() {
+                if (this.isRunning) return;
+
+                // Allow starting even if no jobs, but maybe warn? 
+                if (this.jobQueue.length === 0 && this.readyQueue.length === 0) {
+                    this.notify("NO JOBS TO SCHEDULE", true);
+                    return;
+                }
+
+                this.algorithm = document.getElementById('algo-select').value;
+
+                // Round Robin Quantum
+                if (this.algorithm === 'RR') {
+                    this.quantum = parseInt(document.getElementById('quantum-in').value) || 2;
+                }
+
+                this.isRunning = true;
+                document.getElementById('sys-status-display').textContent = "RUNNING";
+                document.getElementById('sys-status-display').classList.add('text-green-600');
+
+                this.log(`EXECUTION STARTED [ALGO: ${this.algorithm}]`);
+
+                // 1 second tick
+                this.intervalId = setInterval(() => this.tick(), 1000);
+            },
+
+            stop() {
+                this.isRunning = false;
+                if (this.intervalId) clearInterval(this.intervalId);
+                this.intervalId = null;
+
+                // Flush last block
+                if (this.currentBlock) {
+                    this.ganttData.push(this.currentBlock);
+                    this.currentBlock = null;
+                    this.updateGantt();
+                }
+
+                document.getElementById('sys-status-display').textContent = "STOPPED";
+                document.getElementById('sys-status-display').classList.remove('text-green-600');
+            },
+
+            reset() {
+                this.stop();
+                this.jobQueue = [];
+                this.readyQueue = [];
+                this.runningProcess = null;
+                this.completed = [];
+                this.ganttData = [];
+                this.timer = 0;
+                this.pidCounter = 1;
+                this.quantumCounter = 0;
+                this.currentBlock = null;
+
+                document.getElementById('sys-status-display').textContent = "READY";
+                document.getElementById('sys-timer-display').textContent = "0";
+                document.getElementById('sched-log').innerHTML = "";
+                document.getElementById('gantt-container').innerHTML = "";
+                document.getElementById('metrics-table-body').innerHTML = '<tr><td colspan="6" class="p-2 text-center text-gray-400 italic">No data available</td></tr>';
+
+                this.log("System Reset.");
+                this.updateUI();
+            },
+
+            tick() {
+                // 1. Move Jobs from JobQueue to ReadyQueue (Arrivals)
+                // Use while loop to shift all eligible jobs in order (preserves arrival sequence)
+                let arrivalCount = 0;
+                while (this.jobQueue.length > 0 && this.jobQueue[0].arrivalTime <= this.timer) {
+                    const job = this.jobQueue.shift();
+                    this.readyQueue.push(job);
+                    arrivalCount++;
+                    this.log(`ARRIVED: ${job.id}`);
+                }
+
+                // Note: We DO NOT sort readyQueue here arbitrarily. 
+                // RR and FCFS rely on the FIFO order established by arrival + preemption.
+                // SJF/SRTF/Priority will search the queue for the best candidate regardless of order.
+
+                // 2. Logic Check (Preemption, Finishing)
+                this.handleGantt(); // Record history for [T, T+1)
+
+                // Advance Time
+                const prevTime = this.timer;
+                // document.getElementById('gantt-end-time').textContent = this.timer;
+                this.timer++;
+                document.getElementById('sys-timer-display').textContent = this.timer;
+
+                // PROCESS EXECUTION
+                if (this.runningProcess) {
+                    if (this.runningProcess.startTime === -1) this.runningProcess.startTime = prevTime;
+                    this.runningProcess.remaining--;
+                    this.quantumCounter++;
+                }
+
+                // SCHEDULER DECISIONS
+                this.schedulerLogic();
+
+                // UI UPDATE
+                this.updateUI();
+                this.updateGantt();
+
+                // STOP CONDITION
+                if (!this.runningProcess && this.readyQueue.length === 0 && this.jobQueue.length === 0) {
+                    this.log("ALL JOBS COMPLETED.");
+                    this.stop();
+                }
+            },
+
+            handleGantt() {
+                let status = 'IDLE';
+                let color = '#f3f4f6';
+
+                if (this.runningProcess) {
+                    status = this.runningProcess.id;
+                    color = this.runningProcess.color;
+                } else {
+                    // Start/Continue Idle Block
+                    // Only record idle if not finished
+                    if (this.jobQueue.length === 0 && this.readyQueue.length === 0 && this.completed.length > 0) {
                         return;
                     }
+                }
 
-                    this.algorithm = document.getElementById('algo-select').value;
+                if (this.currentBlock && this.currentBlock.id === status) {
+                    this.currentBlock.duration++;
+                } else {
+                    if (this.currentBlock) this.ganttData.push(this.currentBlock);
+                    this.currentBlock = {
+                        id: status,
+                        start: this.timer,
+                        duration: 1,
+                        color: color
+                    };
+                }
+            },
 
-                    // Round Robin Quantum
-                    if (this.algorithm === 'RR') {
-                        this.quantum = parseInt(document.getElementById('quantum-in').value) || 2;
-                    }
+            schedulerLogic() {
+                // 1. Check if running process finished
+                if (this.runningProcess && this.runningProcess.remaining <= 0) {
+                    const p = this.runningProcess;
+                    p.finishTime = this.timer;
+                    p.ct = p.finishTime;
+                    p.tat = p.ct - p.arrivalTime;
+                    p.wt = p.tat - p.burst;
 
-                    this.isRunning = true;
-                    document.getElementById('sys-status-display').textContent = "RUNNING";
-                    document.getElementById('sys-status-display').classList.add('text-green-600');
-
-                    this.log(`EXECUTION STARTED [ALGO: ${this.algorithm}]`);
-
-                    // 1 second tick
-                    this.intervalId = setInterval(() => this.tick(), 1000);
-                },
-
-                stop() {
-                    this.isRunning = false;
-                    if (this.intervalId) clearInterval(this.intervalId);
-                    this.intervalId = null;
-
-                    // Flush last block
-                    if (this.currentBlock) {
-                        this.ganttData.push(this.currentBlock);
-                        this.currentBlock = null;
-                        this.updateGantt();
-                    }
-
-                    document.getElementById('sys-status-display').textContent = "STOPPED";
-                    document.getElementById('sys-status-display').classList.remove('text-green-600');
-                },
-
-                reset() {
-                    this.stop();
-                    this.jobQueue = [];
-                    this.readyQueue = [];
+                    this.completed.push(p);
+                    this.log(`FINISHED: ${p.id} (TAT:${p.tat}, WT:${p.wt})`);
                     this.runningProcess = null;
-                    this.completed = [];
-                    this.ganttData = [];
-                    this.timer = 0;
-                    this.pidCounter = 1;
                     this.quantumCounter = 0;
-                    this.currentBlock = null;
+                }
 
-                    document.getElementById('sys-status-display').textContent = "READY";
-                    document.getElementById('sys-timer-display').textContent = "0";
-                    document.getElementById('sched-log').innerHTML = "";
-                    document.getElementById('gantt-container').innerHTML = "";
-                    document.getElementById('metrics-table-body').innerHTML = '<tr><td colspan="6" class="p-2 text-center text-gray-400 italic">No data available</td></tr>';
-
-                    this.log("System Reset.");
-                    this.updateUI();
-                },
-
-                tick() {
-                    // 1. Move Jobs from JobQueue to ReadyQueue (Arrivals)
-                    // Use while loop to shift all eligible jobs in order (preserves arrival sequence)
-                    let arrivalCount = 0;
-                    while (this.jobQueue.length > 0 && this.jobQueue[0].arrivalTime <= this.timer) {
-                        const job = this.jobQueue.shift();
-                        this.readyQueue.push(job);
-                        arrivalCount++;
-                        this.log(`ARRIVED: ${job.id}`);
-                    }
-
-                    // Note: We DO NOT sort readyQueue here arbitrarily. 
-                    // RR and FCFS rely on the FIFO order established by arrival + preemption.
-                    // SJF/SRTF/Priority will search the queue for the best candidate regardless of order.
-
-                    // 2. Logic Check (Preemption, Finishing)
-                    this.handleGantt(); // Record history for [T, T+1)
-
-                    // Advance Time
-                    const prevTime = this.timer;
-                    // document.getElementById('gantt-end-time').textContent = this.timer;
-                    this.timer++;
-                    document.getElementById('sys-timer-display').textContent = this.timer;
-
-                    // PROCESS EXECUTION
-                    if (this.runningProcess) {
-                        if (this.runningProcess.startTime === -1) this.runningProcess.startTime = prevTime;
-                        this.runningProcess.remaining--;
-                        this.quantumCounter++;
-                    }
-
-                    // SCHEDULER DECISIONS
-                    this.schedulerLogic();
-
-                    // UI UPDATE
-                    this.updateUI();
-                    this.updateGantt();
-
-                    // STOP CONDITION
-                    if (!this.runningProcess && this.readyQueue.length === 0 && this.jobQueue.length === 0) {
-                        this.log("ALL JOBS COMPLETED.");
-                        this.stop();
-                    }
-                },
-
-                handleGantt() {
-                    let status = 'IDLE';
-                    let color = '#f3f4f6';
-
-                    if (this.runningProcess) {
-                        status = this.runningProcess.id;
-                        color = this.runningProcess.color;
-                    } else {
-                        // Start/Continue Idle Block
-                        // Only record idle if not finished
-                        if (this.jobQueue.length === 0 && this.readyQueue.length === 0 && this.completed.length > 0) {
-                            return;
-                        }
-                    }
-
-                    if (this.currentBlock && this.currentBlock.id === status) {
-                        this.currentBlock.duration++;
-                    } else {
-                        if (this.currentBlock) this.ganttData.push(this.currentBlock);
-                        this.currentBlock = {
-                            id: status,
-                            start: this.timer,
-                            duration: 1,
-                            color: color
-                        };
-                    }
-                },
-
-                schedulerLogic() {
-                    // 1. Check if running process finished
-                    if (this.runningProcess && this.runningProcess.remaining <= 0) {
-                        const p = this.runningProcess;
-                        p.finishTime = this.timer;
-                        p.ct = p.finishTime;
-                        p.tat = p.ct - p.arrivalTime;
-                        p.wt = p.tat - p.burst;
-
-                        this.completed.push(p);
-                        this.log(`FINISHED: ${p.id} (TAT:${p.tat}, WT:${p.wt})`);
+                // 2. Preemption / Quantum checks
+                if (this.runningProcess) {
+                    if (this.algorithm === 'RR' && this.quantumCounter >= this.quantum) {
+                        this.log(`TIME QUANTUM EXPIRED: ${this.runningProcess.id}`);
+                        this.readyQueue.push(this.runningProcess); // Push to back
                         this.runningProcess = null;
                         this.quantumCounter = 0;
                     }
-
-                    // 2. Preemption / Quantum checks
-                    if (this.runningProcess) {
-                        if (this.algorithm === 'RR' && this.quantumCounter >= this.quantum) {
-                            this.log(`TIME QUANTUM EXPIRED: ${this.runningProcess.id}`);
-                            this.readyQueue.push(this.runningProcess); // Push to back
+                    else if (this.algorithm === 'SRTF') {
+                        // Check if better candidate exists in Ready Queue
+                        const best = this.getBestCandidate(this.readyQueue);
+                        // Strict inequality: only switch if strictly shorter remaining time
+                        if (best && best.remaining < this.runningProcess.remaining) {
+                            this.log(`PREEMPTION: ${best.id} replaces ${this.runningProcess.id}`);
+                            this.readyQueue.push(this.runningProcess); // Back to pool
                             this.runningProcess = null;
                             this.quantumCounter = 0;
                         }
-                        else if (this.algorithm === 'SRTF') {
-                            // Check if better candidate exists in Ready Queue
-                            const best = this.getBestCandidate(this.readyQueue);
-                            // Strict inequality: only switch if strictly shorter remaining time
-                            if (best && best.remaining < this.runningProcess.remaining) {
-                                this.log(`PREEMPTION: ${best.id} replaces ${this.runningProcess.id}`);
-                                this.readyQueue.push(this.runningProcess); // Back to pool
-                                this.runningProcess = null;
-                                this.quantumCounter = 0;
-                            }
-                        }
-                        // PRIORITY is Non-Preemptive here (Standard). 
-                        // To make it Preemptive, add 'else if (this.algorithm === 'PRIORITY') { check priorities }'
                     }
+                    // PRIORITY is Non-Preemptive here (Standard). 
+                    // To make it Preemptive, add 'else if (this.algorithm === 'PRIORITY') { check priorities }'
+                }
 
-                    // 3. Selection (If CPU is free)
-                    if (!this.runningProcess && this.readyQueue.length > 0) {
-                        if (this.algorithm === 'FCFS' || this.algorithm === 'RR') {
-                            // Pick first in queue (FIFO)
-                            this.runningProcess = this.readyQueue.shift();
-                        } else {
-                            // Search for best candidate based on strategy
-                            const idx = this.getBestCandidateIndex(this.readyQueue);
-                            this.runningProcess = this.readyQueue.splice(idx, 1)[0];
-                        }
-                        this.log(`CONTEXT SWITCH -> ${this.runningProcess.id}`);
-                        this.quantumCounter = 0;
-                    }
-                },
-
-                getBestCandidate(queue) {
-                    if (queue.length === 0) return null;
-                    return queue[this.getBestCandidateIndex(queue)];
-                },
-
-                getBestCandidateIndex(queue) {
-                    if (queue.length === 0) return -1;
-                    let bestIdx = 0;
-                    for (let i = 1; i < queue.length; i++) {
-                        const curr = queue[i];
-                        const best = queue[bestIdx];
-
-                        if (this.algorithm === 'SJF') {
-                            // Non-Preemptive SJF usually based on BURST time, but since remaining == burst at start,
-                            // and it never preempts, using 'remaining' is equivalent and handles 'generic' cases if we added preemption later.
-                            // However, strictly SJF uses burst. Let's use remaining as proxy since they are same before start.
-                            if (curr.remaining < best.remaining) bestIdx = i;
-                            // Tie-breaking: FCFS (implied by < vs <=)
-                        }
-                        else if (this.algorithm === 'SRTF') {
-                            if (curr.remaining < best.remaining) bestIdx = i;
-                        }
-                        else if (this.algorithm === 'PRIORITY') {
-                            // Lower number = Higher Priority
-                            if (curr.priority < best.priority) bestIdx = i;
-                        }
-                    }
-                    return bestIdx;
-                },
-
-                log(msg) {
-                    const box = document.getElementById('sched-log');
-                    const div = document.createElement('div');
-                    div.textContent = `[${this.timer}s] ${msg}`;
-                    box.appendChild(div);
-                    box.scrollTop = box.scrollHeight;
-                },
-
-                updateUI() {
-                    // 1. Ready Queue
-                    const rqBox = document.getElementById('ready-queue');
-                    rqBox.innerHTML = '';
-                    if (this.readyQueue.length === 0) {
-                        rqBox.innerHTML = '<span class="text-xs text-gray-300 italic w-full text-center">Empty</span>';
+                // 3. Selection (If CPU is free)
+                if (!this.runningProcess && this.readyQueue.length > 0) {
+                    if (this.algorithm === 'FCFS' || this.algorithm === 'RR') {
+                        // Pick first in queue (FIFO)
+                        this.runningProcess = this.readyQueue.shift();
                     } else {
-                        this.readyQueue.forEach(p => {
-                            const el = document.createElement('div');
-                            el.className = "flex-shrink-0 w-8 h-full bg-white border border-black flex flex-col items-center justify-between py-1 relative";
-                            // Progress bar inside?
-                            const pct = ((p.burst - p.remaining) / p.burst) * 100;
-                            el.innerHTML = `
+                        // Search for best candidate based on strategy
+                        const idx = this.getBestCandidateIndex(this.readyQueue);
+                        this.runningProcess = this.readyQueue.splice(idx, 1)[0];
+                    }
+                    this.log(`CONTEXT SWITCH -> ${this.runningProcess.id}`);
+                    this.quantumCounter = 0;
+                }
+            },
+
+            getBestCandidate(queue) {
+                if (queue.length === 0) return null;
+                return queue[this.getBestCandidateIndex(queue)];
+            },
+
+            getBestCandidateIndex(queue) {
+                if (queue.length === 0) return -1;
+                let bestIdx = 0;
+                for (let i = 1; i < queue.length; i++) {
+                    const curr = queue[i];
+                    const best = queue[bestIdx];
+
+                    if (this.algorithm === 'SJF') {
+                        // Non-Preemptive SJF usually based on BURST time, but since remaining == burst at start,
+                        // and it never preempts, using 'remaining' is equivalent and handles 'generic' cases if we added preemption later.
+                        // However, strictly SJF uses burst. Let's use remaining as proxy since they are same before start.
+                        if (curr.remaining < best.remaining) bestIdx = i;
+                        // Tie-breaking: FCFS (implied by < vs <=)
+                    }
+                    else if (this.algorithm === 'SRTF') {
+                        if (curr.remaining < best.remaining) bestIdx = i;
+                    }
+                    else if (this.algorithm === 'PRIORITY') {
+                        // Lower number = Higher Priority
+                        if (curr.priority < best.priority) bestIdx = i;
+                    }
+                }
+                return bestIdx;
+            },
+
+            log(msg) {
+                const box = document.getElementById('sched-log');
+                const div = document.createElement('div');
+                div.textContent = `[${this.timer}s] ${msg}`;
+                box.appendChild(div);
+                box.scrollTop = box.scrollHeight;
+            },
+
+            updateUI() {
+                // 1. Ready Queue
+                const rqBox = document.getElementById('ready-queue');
+                rqBox.innerHTML = '';
+                if (this.readyQueue.length === 0) {
+                    rqBox.innerHTML = '<span class="text-xs text-gray-300 italic w-full text-center">Empty</span>';
+                } else {
+                    this.readyQueue.forEach(p => {
+                        const el = document.createElement('div');
+                        el.className = "flex-shrink-0 w-8 h-full bg-white border border-black flex flex-col items-center justify-between py-1 relative";
+                        // Progress bar inside?
+                        const pct = ((p.burst - p.remaining) / p.burst) * 100;
+                        el.innerHTML = `
                              <div class="absolute bottom-0 left-0 w-full bg-gray-200 z-0" style="height:${pct}%"></div>
                              <span class="z-10 font-bold text-[10px]">${p.id}</span>
                              <span class="z-10 text-[9px] font-bold text-gray-500">${p.remaining}</span>
                         `;
-                            el.style.borderBottom = `4px solid ${p.color}`;
-                            rqBox.appendChild(el);
-                        });
-                    }
+                        el.style.borderBottom = `4px solid ${p.color}`;
+                        rqBox.appendChild(el);
+                    });
+                }
 
-                    // 2. Job Queue (Restored)
-                    const jqBox = document.getElementById('job-queue');
-                    jqBox.innerHTML = '';
-                    if (this.jobQueue.length === 0) {
-                        jqBox.innerHTML = '<span class="text-[10px] text-gray-400 italic">No pending jobs</span>';
-                    } else {
-                        this.jobQueue.forEach(p => {
-                            const el = document.createElement('div');
-                            el.className = "flex-shrink-0 px-2 py-1 border border-black bg-white text-[10px] font-mono shadow-none";
-                            el.innerHTML = `<b>${p.id}</b> <span class="text-gray-500">@${p.arrivalTime}</span>`;
-                            // Visual indicator if it's the next to arrive?
-                            jqBox.appendChild(el);
-                        });
-                    }
+                // 2. Job Queue (Restored)
+                const jqBox = document.getElementById('job-queue');
+                jqBox.innerHTML = '';
+                if (this.jobQueue.length === 0) {
+                    jqBox.innerHTML = '<span class="text-[10px] text-gray-400 italic">No pending jobs</span>';
+                } else {
+                    this.jobQueue.forEach(p => {
+                        const el = document.createElement('div');
+                        el.className = "flex-shrink-0 px-2 py-1 border border-black bg-white text-[10px] font-mono shadow-none";
+                        el.innerHTML = `<b>${p.id}</b> <span class="text-gray-500">@${p.arrivalTime}</span>`;
+                        // Visual indicator if it's the next to arrive?
+                        jqBox.appendChild(el);
+                    });
+                }
 
-                    // 3. CPU
-                    const cpuStatus = document.getElementById('cpu-status-text');
-                    const cpuBox = document.getElementById('cpu-active-process');
-                    const cpuDisp = cpuBox.querySelector('span');
-                    const cpuBar = document.getElementById('cpu-progress-bar');
+                // 3. CPU
+                const cpuStatus = document.getElementById('cpu-status-text');
+                const cpuBox = document.getElementById('cpu-active-process');
+                const cpuDisp = cpuBox.querySelector('span');
+                const cpuBar = document.getElementById('cpu-progress-bar');
 
-                    if (this.runningProcess) {
-                        cpuStatus.textContent = "BUSY";
-                        cpuStatus.className = "text-green-400 font-bold";
+                if (this.runningProcess) {
+                    cpuStatus.textContent = "BUSY";
+                    cpuStatus.className = "text-green-400 font-bold";
 
-                        cpuBox.className = "w-20 h-20 border-2 border-black bg-black flex flex-col items-center justify-center mb-2 z-10 text-white shadow-none transition-none";
-                        cpuBox.style.backgroundColor = this.runningProcess.color;
+                    cpuBox.className = "w-20 h-20 border-2 border-black bg-black flex flex-col items-center justify-center mb-2 z-10 text-white shadow-none transition-none";
+                    cpuBox.style.backgroundColor = this.runningProcess.color;
 
-                        cpuDisp.textContent = this.runningProcess.id;
-                        cpuDisp.className = "text-2xl font-bold text-white";
+                    cpuDisp.textContent = this.runningProcess.id;
+                    cpuDisp.className = "text-2xl font-bold text-white";
 
-                        // Total progress based on Burst
-                        const pct = ((this.runningProcess.burst - this.runningProcess.remaining) / this.runningProcess.burst) * 100;
-                        cpuBar.style.width = `${pct}%`;
-                        cpuBar.parentElement.classList.remove('opacity-0');
+                    // Total progress based on Burst
+                    const pct = ((this.runningProcess.burst - this.runningProcess.remaining) / this.runningProcess.burst) * 100;
+                    cpuBar.style.width = `${pct}%`;
+                    cpuBar.parentElement.classList.remove('opacity-0');
 
-                    } else {
-                        cpuStatus.textContent = "IDLE";
-                        cpuStatus.className = "text-gray-400";
+                } else {
+                    cpuStatus.textContent = "IDLE";
+                    cpuStatus.className = "text-gray-400";
 
-                        cpuBox.className = "w-20 h-20 border-2 border-dashed border-gray-300 flex flex-col items-center justify-center mb-2 z-10 bg-transparent";
-                        cpuBox.style.backgroundColor = '';
+                    cpuBox.className = "w-20 h-20 border-2 border-dashed border-gray-300 flex flex-col items-center justify-center mb-2 z-10 bg-transparent";
+                    cpuBox.style.backgroundColor = '';
 
-                        cpuDisp.textContent = "-";
-                        cpuDisp.className = "text-2xl font-bold text-gray-200";
+                    cpuDisp.textContent = "-";
+                    cpuDisp.className = "text-2xl font-bold text-gray-200";
 
-                        cpuBar.style.width = '0%';
-                    }
+                    cpuBar.style.width = '0%';
+                }
 
-                    // 4. Metrics Table
-                    const tbody = document.getElementById('metrics-table-body');
-                    tbody.innerHTML = '';
-                    if (this.completed.length === 0) {
-                        tbody.innerHTML = '<tr><td colspan="6" class="p-2 text-center text-gray-400 italic text-[10px]">No completed processes yet</td></tr>';
-                    } else {
-                        document.getElementById('completed-count').textContent = this.completed.length;
-                        this.completed.forEach(p => {
-                            const tr = document.createElement('tr');
-                            tr.className = "hover:bg-gray-50 text-[10px] font-mono";
-                            tr.innerHTML = `
+                // 4. Metrics Table
+                const tbody = document.getElementById('metrics-table-body');
+                tbody.innerHTML = '';
+                if (this.completed.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="6" class="p-2 text-center text-gray-400 italic text-[10px]">No completed processes yet</td></tr>';
+                } else {
+                    document.getElementById('completed-count').textContent = this.completed.length;
+                    this.completed.forEach(p => {
+                        const tr = document.createElement('tr');
+                        tr.className = "hover:bg-gray-50 text-[10px] font-mono";
+                        tr.innerHTML = `
                             <td class="p-2 border-r border-gray-100 font-bold" style="color:${p.color}">${p.id}</td>
                             <td class="p-2 border-r border-gray-100">${p.arrivalTime}</td>
                             <td class="p-2 border-r border-gray-100">${p.burst}</td>
@@ -2255,310 +2257,310 @@
                             <td class="p-2 border-r border-gray-100">${p.tat}</td>
                             <td class="p-2">${p.wt}</td>
                         `;
-                            tbody.appendChild(tr);
-                        });
-                    }
-                },
-
-                updateGantt() {
-                    const container = document.getElementById('gantt-container');
-                    container.innerHTML = '';
-
-                    // Combine historical data + current pending block
-                    let dataToRender = [...this.ganttData];
-                    if (this.currentBlock) {
-                        dataToRender.push(this.currentBlock);
-                    }
-
-                    const PIXELS_PER_UNIT = 20;
-
-                    dataToRender.forEach(block => {
-                        const w = block.duration * PIXELS_PER_UNIT;
-
-                        // Main Unit Wrapper
-                        const el = document.createElement('div');
-                        el.className = "flex-shrink-0 flex flex-col items-start justify-start relative group transition-none";
-                        el.style.width = `${w}px`;
-                        el.style.height = "100%"; // Container height (should be around 4rem/16)
-
-                        // 1. The Colored Bar (Top)
-                        const bar = document.createElement('div');
-                        bar.className = "h-8 w-full flex items-center justify-center text-[9px] font-bold text-white border-r border-white/20";
-
-                        if (block.id === 'IDLE') {
-                            bar.style.backgroundColor = '#f3f4f6';
-                            bar.style.backgroundImage = 'repeating-linear-gradient(45deg, #e5e7eb, #e5e7eb 5px, #f3f4f6 5px, #f3f4f6 10px)';
-                            bar.innerHTML = '<span class="text-gray-400 rotate-90 transform text-[8px]">IDLE</span>';
-                        } else {
-                            bar.style.backgroundColor = block.color;
-                            bar.innerHTML = `<span>${block.id}</span>`;
-                            // Tooltip on hover still useful
-                            bar.title = `${block.id} (${block.start} - ${block.start + block.duration})`;
-                        }
-
-                        // 2. The Time Label (Bottom)
-                        // We place the label at the START of the block.
-                        const labelContainer = document.createElement('div');
-                        labelContainer.className = "h-6 w-full relative border-l border-gray-300"; // Border L acts as tick mark
-
-                        const label = document.createElement('span');
-                        label.className = "absolute top-0 -left-1 text-[9px] font-mono text-gray-500 bg-white px-0.5";
-                        label.textContent = block.start;
-
-                        labelContainer.appendChild(label);
-
-                        el.appendChild(bar);
-                        el.appendChild(labelContainer);
-                        container.appendChild(el);
+                        tbody.appendChild(tr);
                     });
+                }
+            },
 
-                    // Add a final 'closing' time marker?
-                    // It's tricky with flexbox, but we can append a tiny 0-width div with just the label at the end.
-                    const endMarker = document.createElement('div');
-                    endMarker.className = "flex-shrink-0 w-0 h-full relative flex flex-col";
-                    endMarker.innerHTML = `
+            updateGantt() {
+                const container = document.getElementById('gantt-container');
+                container.innerHTML = '';
+
+                // Combine historical data + current pending block
+                let dataToRender = [...this.ganttData];
+                if (this.currentBlock) {
+                    dataToRender.push(this.currentBlock);
+                }
+
+                const PIXELS_PER_UNIT = 20;
+
+                dataToRender.forEach(block => {
+                    const w = block.duration * PIXELS_PER_UNIT;
+
+                    // Main Unit Wrapper
+                    const el = document.createElement('div');
+                    el.className = "flex-shrink-0 flex flex-col items-start justify-start relative group transition-none";
+                    el.style.width = `${w}px`;
+                    el.style.height = "100%"; // Container height (should be around 4rem/16)
+
+                    // 1. The Colored Bar (Top)
+                    const bar = document.createElement('div');
+                    bar.className = "h-8 w-full flex items-center justify-center text-[9px] font-bold text-white border-r border-white/20";
+
+                    if (block.id === 'IDLE') {
+                        bar.style.backgroundColor = '#f3f4f6';
+                        bar.style.backgroundImage = 'repeating-linear-gradient(45deg, #e5e7eb, #e5e7eb 5px, #f3f4f6 5px, #f3f4f6 10px)';
+                        bar.innerHTML = '<span class="text-gray-400 rotate-90 transform text-[8px]">IDLE</span>';
+                    } else {
+                        bar.style.backgroundColor = block.color;
+                        bar.innerHTML = `<span>${block.id}</span>`;
+                        // Tooltip on hover still useful
+                        bar.title = `${block.id} (${block.start} - ${block.start + block.duration})`;
+                    }
+
+                    // 2. The Time Label (Bottom)
+                    // We place the label at the START of the block.
+                    const labelContainer = document.createElement('div');
+                    labelContainer.className = "h-6 w-full relative border-l border-gray-300"; // Border L acts as tick mark
+
+                    const label = document.createElement('span');
+                    label.className = "absolute top-0 -left-1 text-[9px] font-mono text-gray-500 bg-white px-0.5";
+                    label.textContent = block.start;
+
+                    labelContainer.appendChild(label);
+
+                    el.appendChild(bar);
+                    el.appendChild(labelContainer);
+                    container.appendChild(el);
+                });
+
+                // Add a final 'closing' time marker?
+                // It's tricky with flexbox, but we can append a tiny 0-width div with just the label at the end.
+                const endMarker = document.createElement('div');
+                endMarker.className = "flex-shrink-0 w-0 h-full relative flex flex-col";
+                endMarker.innerHTML = `
                     <div class="h-8 w-px bg-transparent"></div>
                     <div class="h-6 w-0 relative border-l border-gray-300">
                         <span class="absolute top-0 -left-1 text-[9px] font-mono text-gray-500 bg-white px-0.5">${this.timer}</span>
                     </div>
                 `;
-                    container.appendChild(endMarker);
+                container.appendChild(endMarker);
 
-                    // Auto Scroll
-                    if (this.isRunning) {
-                        container.scrollLeft = container.scrollWidth;
-                    }
+                // Auto Scroll
+                if (this.isRunning) {
+                    container.scrollLeft = container.scrollWidth;
                 }
-            };
+            }
+        };
 
-            // Initialize
-            scheduler.init();
+        // Initialize
+        scheduler.init();
     </script>
     <script>
-            const syncDemo = {
-                lock: false,
-                owner: null,
-                waitingProcess: null,
+        const syncDemo = {
+            lock: false,
+            owner: null,
+            waitingProcess: null,
 
-                enter: function (id) {
-                    const msgEl = document.getElementById('sync-msg');
-                    const statusEl = document.getElementById(`p${id}-status`);
-                    const boxEl = document.getElementById(`p${id}-box`);
-                    const indEl = document.getElementById(`p${id}-indicator`);
+            enter: function (id) {
+                const msgEl = document.getElementById('sync-msg');
+                const statusEl = document.getElementById(`p${id}-status`);
+                const boxEl = document.getElementById(`p${id}-box`);
+                const indEl = document.getElementById(`p${id}-indicator`);
 
-                    // Reset previous messages
-                    msgEl.textContent = "";
+                // Reset previous messages
+                msgEl.textContent = "";
 
-                    // Check if locked by other
-                    if (this.lock && this.owner !== id) {
-                        this.waitingProcess = id; // Register as waiting
+                // Check if locked by other
+                if (this.lock && this.owner !== id) {
+                    this.waitingProcess = id; // Register as waiting
 
-                        statusEl.textContent = "Waiting for Lock...";
-                        statusEl.className = "text-[10px] font-mono text-yellow-600 font-bold";
-                        // msgEl.classList.remove('hidden');
+                    statusEl.textContent = "Waiting for Lock...";
+                    statusEl.className = "text-[10px] font-mono text-yellow-600 font-bold";
+                    // msgEl.classList.remove('hidden');
 
-                        boxEl.classList.remove('bg-white');
-                        boxEl.classList.add('bg-yellow-50');
-                        indEl.className = "absolute top-1 right-1 w-2 h-2 rounded-full bg-yellow-400 animate-pulse";
+                    boxEl.classList.remove('bg-white');
+                    boxEl.classList.add('bg-yellow-50');
+                    indEl.className = "absolute top-1 right-1 w-2 h-2 rounded-full bg-yellow-400 animate-pulse";
 
-                        this.showMessage(`P${id} is waiting for P${this.owner} to release...`);
-                        return;
-                    }
+                    this.showMessage(`P${id} is waiting for P${this.owner} to release...`);
+                    return;
+                }
 
-                    // Check if already locked by self
-                    if (this.lock && this.owner === id) {
-                        this.showMessage(`P${id} is already in Critical Section.`);
-                        return;
-                    }
+                // Check if already locked by self
+                if (this.lock && this.owner === id) {
+                    this.showMessage(`P${id} is already in Critical Section.`);
+                    return;
+                }
 
-                    // Acquire Lock
-                    this.lock = true;
-                    this.owner = id;
-                    this.waitingProcess = null; // Clear if we were waiting
+                // Acquire Lock
+                this.lock = true;
+                this.owner = id;
+                this.waitingProcess = null; // Clear if we were waiting
 
-                    // Update Process Visuals
-                    statusEl.textContent = "IN CRITICAL SECTION";
-                    statusEl.className = "text-[10px] font-mono text-green-700 font-bold";
+                // Update Process Visuals
+                statusEl.textContent = "IN CRITICAL SECTION";
+                statusEl.className = "text-[10px] font-mono text-green-700 font-bold";
 
-                    boxEl.className = "w-20 h-20 border-2 border-green-600 bg-green-50 flex items-center justify-center transition-all duration-300 relative shadow-lg transform scale-105";
-                    indEl.className = "absolute top-1 right-1 w-2 h-2 rounded-full bg-green-500";
+                boxEl.className = "w-20 h-20 border-2 border-green-600 bg-green-50 flex items-center justify-center transition-all duration-300 relative shadow-lg transform scale-105";
+                indEl.className = "absolute top-1 right-1 w-2 h-2 rounded-full bg-green-500";
 
-                    // Update Resource Visuals
-                    const resEl = document.getElementById('sync-resource');
-                    resEl.className = "w-24 h-24 border-2 border-red-500 bg-red-50 flex items-center justify-center rounded-full transition-all duration-300 shadow-inner";
-                    resEl.innerHTML = `
+                // Update Resource Visuals
+                const resEl = document.getElementById('sync-resource');
+                resEl.className = "w-24 h-24 border-2 border-red-500 bg-red-50 flex items-center justify-center rounded-full transition-all duration-300 shadow-inner";
+                resEl.innerHTML = `
                     <div class="text-center">
                         <div class="text-red-500 text-2xl mb-1">🔒</div>
                         <div class="text-[10px] font-bold text-red-600 uppercase">Locked by P${id}</div>
                     </div>
                 `;
 
-                    this.showMessage(`P${id} has acquired the lock.`);
-                },
+                this.showMessage(`P${id} has acquired the lock.`);
+            },
 
-                exit: function (id) {
-                    if (!this.lock || this.owner !== id) {
-                        this.showMessage(`P${id} cannot release a lock it doesn't hold!`);
-                        return;
-                    }
+            exit: function (id) {
+                if (!this.lock || this.owner !== id) {
+                    this.showMessage(`P${id} cannot release a lock it doesn't hold!`);
+                    return;
+                }
 
-                    this.lock = false;
-                    this.owner = null;
+                this.lock = false;
+                this.owner = null;
 
-                    // Reset Process Visuals
-                    const statusEl = document.getElementById(`p${id}-status`);
-                    statusEl.textContent = "Non-Critical";
-                    statusEl.className = "text-[10px] font-mono text-gray-500";
+                // Reset Process Visuals
+                const statusEl = document.getElementById(`p${id}-status`);
+                statusEl.textContent = "Non-Critical";
+                statusEl.className = "text-[10px] font-mono text-gray-500";
 
-                    const boxEl = document.getElementById(`p${id}-box`);
-                    boxEl.className = "w-20 h-20 border border-black bg-white flex items-center justify-center transition-all duration-300 relative";
+                const boxEl = document.getElementById(`p${id}-box`);
+                boxEl.className = "w-20 h-20 border border-black bg-white flex items-center justify-center transition-all duration-300 relative";
 
-                    const indEl = document.getElementById(`p${id}-indicator`);
-                    indEl.className = "absolute top-1 right-1 w-2 h-2 rounded-full bg-gray-200";
+                const indEl = document.getElementById(`p${id}-indicator`);
+                indEl.className = "absolute top-1 right-1 w-2 h-2 rounded-full bg-gray-200";
 
-                    // Reset Resource Visuals
-                    const resEl = document.getElementById('sync-resource');
-                    resEl.className = "w-24 h-24 border-2 border-dashed border-gray-300 bg-white flex items-center justify-center rounded-full transition-all duration-300";
-                    resEl.innerHTML = `
+                // Reset Resource Visuals
+                const resEl = document.getElementById('sync-resource');
+                resEl.className = "w-24 h-24 border-2 border-dashed border-gray-300 bg-white flex items-center justify-center rounded-full transition-all duration-300";
+                resEl.innerHTML = `
                     <div class="text-center">
                         <div class="text-gray-300 text-xl mb-1">🔓</div>
                         <div class="text-[10px] font-bold text-gray-400 uppercase">Unlocked</div>
                     </div>
                 `;
 
-                    this.showMessage(`P${id} released the lock.`);
+                this.showMessage(`P${id} released the lock.`);
 
-                    // Handoff: Check if someone is waiting
-                    if (this.waitingProcess !== null) {
-                        const nextPid = this.waitingProcess;
-                        setTimeout(() => {
-                            this.enter(nextPid);
-                        }, 800); // Short delay for visual clarity
-                    }
-                },
-
-                showMessage: function (text) {
-                    const el = document.getElementById('sync-msg');
-                    if (text) {
-                        el.textContent = text;
-                        el.classList.remove('hidden');
-                    } else {
-                        el.classList.add('hidden');
-                    }
+                // Handoff: Check if someone is waiting
+                if (this.waitingProcess !== null) {
+                    const nextPid = this.waitingProcess;
+                    setTimeout(() => {
+                        this.enter(nextPid);
+                    }, 800); // Short delay for visual clarity
                 }
-            };
+            },
 
-            // --- Page Replacement Simulator ---
-            function runPageReplacement() {
-                const refStrRaw = document.getElementById('pr-string').value.trim();
-                const frameCount = parseInt(document.getElementById('pr-frames').value);
-                const algo = document.getElementById('pr-algo').value;
-
-                if (!refStrRaw || isNaN(frameCount) || frameCount < 1) {
-                    document.getElementById('pr-error-msg').classList.remove('hidden');
-                    return;
+            showMessage: function (text) {
+                const el = document.getElementById('sync-msg');
+                if (text) {
+                    el.textContent = text;
+                    el.classList.remove('hidden');
+                } else {
+                    el.classList.add('hidden');
                 }
+            }
+        };
 
-                // Hide error if valid
-                document.getElementById('pr-error-msg').classList.add('hidden');
+        // --- Page Replacement Simulator ---
+        function runPageReplacement() {
+            const refStrRaw = document.getElementById('pr-string').value.trim();
+            const frameCount = parseInt(document.getElementById('pr-frames').value);
+            const algo = document.getElementById('pr-algo').value;
 
-                const refs = refStrRaw.split(/\s+/).map(n => parseInt(n)).filter(n => !isNaN(n));
-                const container = document.getElementById('pr-steps');
-                container.innerHTML = '';
-                document.getElementById('pr-output').classList.remove('hidden');
-                document.getElementById('pr-metrics').classList.remove('hidden');
+            if (!refStrRaw || isNaN(frameCount) || frameCount < 1) {
+                document.getElementById('pr-error-msg').classList.remove('hidden');
+                return;
+            }
 
-                let frames = new Array(frameCount).fill(null);
-                // FIFO Ptr
-                let fifoPtr = 0;
-                // LRU Tracker (Map: Page -> LastIndex)
-                let lastAccess = new Map();
+            // Hide error if valid
+            document.getElementById('pr-error-msg').classList.add('hidden');
 
-                let faults = 0;
-                let hits = 0;
+            const refs = refStrRaw.split(/\s+/).map(n => parseInt(n)).filter(n => !isNaN(n));
+            const container = document.getElementById('pr-steps');
+            container.innerHTML = '';
+            document.getElementById('pr-output').classList.remove('hidden');
+            document.getElementById('pr-metrics').classList.remove('hidden');
 
-                // Store steps data for animation
-                const stepsData = [];
+            let frames = new Array(frameCount).fill(null);
+            // FIFO Ptr
+            let fifoPtr = 0;
+            // LRU Tracker (Map: Page -> LastIndex)
+            let lastAccess = new Map();
 
-                refs.forEach((page, currentIdx) => {
-                    let status = ''; // HIT or FAULT
-                    let isHit = false;
+            let faults = 0;
+            let hits = 0;
 
-                    // 1. Check if in Frames
-                    const existingIdx = frames.indexOf(page);
+            // Store steps data for animation
+            const stepsData = [];
 
-                    if (existingIdx !== -1) {
-                        isHit = true;
-                        hits++;
-                        status = 'HIT';
-                        // Update LRU tracking on Hit
-                        lastAccess.set(page, currentIdx);
-                    } else {
-                        faults++;
-                        status = 'FAULT';
+            refs.forEach((page, currentIdx) => {
+                let status = ''; // HIT or FAULT
+                let isHit = false;
 
-                        // Find victim
-                        let replaceIdx = -1;
+                // 1. Check if in Frames
+                const existingIdx = frames.indexOf(page);
 
-                        // Empty slot?
-                        const emptyIdx = frames.indexOf(null);
-                        if (emptyIdx !== -1) {
-                            replaceIdx = emptyIdx;
-                        } else {
-                            // Replacement Algo
-                            if (algo === 'FIFO') {
-                                replaceIdx = fifoPtr;
-                                fifoPtr = (fifoPtr + 1) % frameCount;
-                            } else if (algo === 'LRU') {
-                                // Find frame holding page with oldest access
-                                let minTime = Infinity;
-                                let minFrameIdx = 0;
-
-                                frames.forEach((p, fIdx) => {
-                                    const lastSeen = lastAccess.get(p);
-                                    if (lastSeen < minTime) {
-                                        minTime = lastSeen;
-                                        minFrameIdx = fIdx;
-                                    }
-                                });
-                                replaceIdx = minFrameIdx;
-                            } else if (algo === 'OPTIMAL') {
-                                // Look ahead
-                                let maxDist = -1;
-                                let maxFrameIdx = 0;
-
-                                frames.forEach((p, fIdx) => {
-                                    const nextRef = refs.slice(currentIdx + 1).indexOf(p);
-                                    if (nextRef === -1) {
-                                        maxDist = Infinity;
-                                        maxFrameIdx = fIdx;
-                                    } else {
-                                        if (nextRef > maxDist && maxDist !== Infinity) {
-                                            maxDist = nextRef;
-                                            maxFrameIdx = fIdx;
-                                        }
-                                    }
-                                });
-                                replaceIdx = maxFrameIdx;
-                            }
-                        }
-                        frames[replaceIdx] = page;
-                    }
-
-                    // Record Hit/Access time
+                if (existingIdx !== -1) {
+                    isHit = true;
+                    hits++;
+                    status = 'HIT';
+                    // Update LRU tracking on Hit
                     lastAccess.set(page, currentIdx);
+                } else {
+                    faults++;
+                    status = 'FAULT';
 
-                    // Render Step Data
-                    const cellClass = isHit ? "bg-green-100 border-green-500 text-green-700" : "bg-red-100 border-red-500 text-red-700";
+                    // Find victim
+                    let replaceIdx = -1;
 
-                    let framesHtml = frames.map(f => {
-                        if (f === null) return `<div class="w-6 h-6 border border-gray-200 bg-gray-50"></div>`;
-                        const isFocus = (f === page);
-                        return `<div class="w-6 h-6 flex items-center justify-center border ${isFocus ? 'border-black bg-white font-bold' : 'border-gray-300 text-gray-500'} text-[9px] transition-all duration-300 transform ${isFocus ? 'scale-110' : ''}">${f}</div>`;
-                    }).join('');
+                    // Empty slot?
+                    const emptyIdx = frames.indexOf(null);
+                    if (emptyIdx !== -1) {
+                        replaceIdx = emptyIdx;
+                    } else {
+                        // Replacement Algo
+                        if (algo === 'FIFO') {
+                            replaceIdx = fifoPtr;
+                            fifoPtr = (fifoPtr + 1) % frameCount;
+                        } else if (algo === 'LRU') {
+                            // Find frame holding page with oldest access
+                            let minTime = Infinity;
+                            let minFrameIdx = 0;
 
-                    stepsData.push({
-                        html: `
+                            frames.forEach((p, fIdx) => {
+                                const lastSeen = lastAccess.get(p);
+                                if (lastSeen < minTime) {
+                                    minTime = lastSeen;
+                                    minFrameIdx = fIdx;
+                                }
+                            });
+                            replaceIdx = minFrameIdx;
+                        } else if (algo === 'OPTIMAL') {
+                            // Look ahead
+                            let maxDist = -1;
+                            let maxFrameIdx = 0;
+
+                            frames.forEach((p, fIdx) => {
+                                const nextRef = refs.slice(currentIdx + 1).indexOf(p);
+                                if (nextRef === -1) {
+                                    maxDist = Infinity;
+                                    maxFrameIdx = fIdx;
+                                } else {
+                                    if (nextRef > maxDist && maxDist !== Infinity) {
+                                        maxDist = nextRef;
+                                        maxFrameIdx = fIdx;
+                                    }
+                                }
+                            });
+                            replaceIdx = maxFrameIdx;
+                        }
+                    }
+                    frames[replaceIdx] = page;
+                }
+
+                // Record Hit/Access time
+                lastAccess.set(page, currentIdx);
+
+                // Render Step Data
+                const cellClass = isHit ? "bg-green-100 border-green-500 text-green-700" : "bg-red-100 border-red-500 text-red-700";
+
+                let framesHtml = frames.map(f => {
+                    if (f === null) return `<div class="w-6 h-6 border border-gray-200 bg-gray-50"></div>`;
+                    const isFocus = (f === page);
+                    return `<div class="w-6 h-6 flex items-center justify-center border ${isFocus ? 'border-black bg-white font-bold' : 'border-gray-300 text-gray-500'} text-[9px] transition-all duration-300 transform ${isFocus ? 'scale-110' : ''}">${f}</div>`;
+                }).join('');
+
+                stepsData.push({
+                    html: `
                         <div class="flex flex-col items-center opacity-0 transform translate-y-4 transition-all duration-500 ease-out" id="step-${currentIdx}">
                             <div class="mb-1 text-[10px] font-bold text-gray-700">${page}</div>
                             <div class="flex flex-col gap-1 p-1 bg-gray-100 rounded-sm mb-1 shadow-sm">
@@ -2567,293 +2569,293 @@
                             <div class="text-[8px] font-bold px-1 rounded ${cellClass}">${status}</div>
                         </div>
                     `,
-                        hits: hits,
-                        faults: faults
-                    });
+                    hits: hits,
+                    faults: faults
+                });
+            });
+
+            // Animation Loop
+            let stepIndex = 0;
+            const speed = 200; // ms per step
+
+            function playStep() {
+                if (stepIndex >= stepsData.length) return;
+
+                const step = stepsData[stepIndex];
+
+                // Append hidden element
+                const tempDiv = document.createElement('div');
+                tempDiv.innerHTML = step.html;
+                const newEl = tempDiv.firstElementChild;
+                container.appendChild(newEl);
+
+                // Trigger reflow/anim
+                requestAnimationFrame(() => {
+                    newEl.classList.remove('opacity-0', 'translate-y-4');
                 });
 
-                // Animation Loop
-                let stepIndex = 0;
-                const speed = 200; // ms per step
+                // Update Metrics Live
+                document.getElementById('pr-total').textContent = stepIndex + 1;
+                document.getElementById('pr-faults').textContent = step.faults;
+                document.getElementById('pr-hits').textContent = step.hits;
+                document.getElementById('pr-ratio').textContent = Math.round((step.hits / (stepIndex + 1)) * 100) + "%";
 
-                function playStep() {
-                    if (stepIndex >= stepsData.length) return;
-
-                    const step = stepsData[stepIndex];
-
-                    // Append hidden element
-                    const tempDiv = document.createElement('div');
-                    tempDiv.innerHTML = step.html;
-                    const newEl = tempDiv.firstElementChild;
-                    container.appendChild(newEl);
-
-                    // Trigger reflow/anim
-                    requestAnimationFrame(() => {
-                        newEl.classList.remove('opacity-0', 'translate-y-4');
-                    });
-
-                    // Update Metrics Live
-                    document.getElementById('pr-total').textContent = stepIndex + 1;
-                    document.getElementById('pr-faults').textContent = step.faults;
-                    document.getElementById('pr-hits').textContent = step.hits;
-                    document.getElementById('pr-ratio').textContent = Math.round((step.hits / (stepIndex + 1)) * 100) + "%";
-
-                    stepIndex++;
-                    setTimeout(playStep, speed);
-                }
-
-                playStep();
+                stepIndex++;
+                setTimeout(playStep, speed);
             }
 
-            function resetPageReplacement() {
-                // Reset Inputs to Defaults
-                document.getElementById('pr-string').value = "7 0 1 2 0 3 0 4 2 3 0 3 2 1 2 0 1 7 0 1";
-                document.getElementById('pr-frames').value = "3";
-                document.getElementById('pr-algo').value = "FIFO";
+            playStep();
+        }
 
-                // Hide Outputs
-                document.getElementById('pr-output').classList.add('hidden');
-                document.getElementById('pr-metrics').classList.add('hidden');
-                document.getElementById('pr-steps').innerHTML = '';
+        function resetPageReplacement() {
+            // Reset Inputs to Defaults
+            document.getElementById('pr-string').value = "7 0 1 2 0 3 0 4 2 3 0 3 2 1 2 0 1 7 0 1";
+            document.getElementById('pr-frames').value = "3";
+            document.getElementById('pr-algo').value = "FIFO";
 
-                // hide error if open
-                document.getElementById('pr-error-msg').classList.add('hidden');
-            }
+            // Hide Outputs
+            document.getElementById('pr-output').classList.add('hidden');
+            document.getElementById('pr-metrics').classList.add('hidden');
+            document.getElementById('pr-steps').innerHTML = '';
+
+            // hide error if open
+            document.getElementById('pr-error-msg').classList.add('hidden');
+        }
     </script>
     <script src="js/script.js"></script>
     <script>
-            // --- Virtual Memory Translator Logic ---
-            const pageTableData = [
-                { page: 0, frame: 5 },
-                { page: 1, frame: 2 },
-                { page: 2, frame: 8 },
-                { page: 3, frame: 1 },
-            ];
+        // --- Virtual Memory Translator Logic ---
+        const pageTableData = [
+            { page: 0, frame: 5 },
+            { page: 1, frame: 2 },
+            { page: 2, frame: 8 },
+            { page: 3, frame: 1 },
+        ];
 
-            function renderPageTable() {
-                const container = document.getElementById('page-table-display');
-                if (!container) return;
-                container.innerHTML = pageTableData.map(item => `
+        function renderPageTable() {
+            const container = document.getElementById('page-table-display');
+            if (!container) return;
+            container.innerHTML = pageTableData.map(item => `
                 <div class="flex justify-between border-b border-gray-100 last:border-0 p-1">
                     <span>Page ${item.page}</span>
                     <span class="font-bold">&rarr; Frame ${item.frame}</span>
                 </div>
             `).join('');
+        }
+
+        function translateAddr() {
+            const vPageInput = document.getElementById('v-page');
+            const vOffsetInput = document.getElementById('v-offset');
+            const resDisplay = document.getElementById('phys-addr-res');
+
+            const pageNum = parseInt(vPageInput.value);
+            const offset = parseInt(vOffsetInput.value);
+
+            if (isNaN(pageNum)) {
+                resDisplay.textContent = "Enter Page #";
+                resDisplay.className = "p-3 bg-yellow-100 rounded font-bold text-yellow-700";
+                return;
             }
 
-            function translateAddr() {
-                const vPageInput = document.getElementById('v-page');
-                const vOffsetInput = document.getElementById('v-offset');
-                const resDisplay = document.getElementById('phys-addr-res');
+            const entry = pageTableData.find(e => e.page === pageNum);
 
-                const pageNum = parseInt(vPageInput.value);
-                const offset = parseInt(vOffsetInput.value);
-
-                if (isNaN(pageNum)) {
-                    resDisplay.textContent = "Enter Page #";
-                    resDisplay.className = "p-3 bg-yellow-100 rounded font-bold text-yellow-700";
-                    return;
-                }
-
-                const entry = pageTableData.find(e => e.page === pageNum);
-
-                if (entry) {
-                    resDisplay.innerHTML = `Frame <span class="text-black">${entry.frame}</span> | Offset <span class="text-black">${offset}</span>`;
-                    resDisplay.className = "p-3 bg-green-100 rounded font-bold text-green-700";
-                } else {
-                    resDisplay.textContent = "Page Fault (Invalid Page)";
-                    resDisplay.className = "p-3 bg-red-100 rounded font-bold text-red-600";
-                }
+            if (entry) {
+                resDisplay.innerHTML = `Frame <span class="text-black">${entry.frame}</span> | Offset <span class="text-black">${offset}</span>`;
+                resDisplay.className = "p-3 bg-green-100 rounded font-bold text-green-700";
+            } else {
+                resDisplay.textContent = "Page Fault (Invalid Page)";
+                resDisplay.className = "p-3 bg-red-100 rounded font-bold text-red-600";
             }
+        }
 
-            // --- Knowledge Checks Initialization ---
-            document.addEventListener('DOMContentLoaded', () => {
-                // Init Page Table
-                renderPageTable();
+        // --- Knowledge Checks Initialization ---
+        document.addEventListener('DOMContentLoaded', () => {
+            // Init Page Table
+            renderPageTable();
 
 
-                // 1. Kernel QC
-                new InlineQuiz('qc-kernel', {
-                    question: "Which execution mode has unrestricted access to system hardware?",
-                    options: [
-                        "User Mode",
-                        "Kernel Mode",
-                        "Safe Mode",
-                        "Gamer Mode"
-                    ],
-                    answer: 1,
-                    explanation: "<strong>Kernel Mode</strong> (Privileged Mode) executes with full access to hardware resources. User Mode is restricted to protect the system."
-                });
-
-                // 2. Scheduling QC
-                new InlineQuiz('qc-scheduling', {
-                    question: "Which scheduling algorithm is best for minimizing average waiting time?",
-                    options: [
-                        "First-Come, First-Served (FCFS)",
-                        "Round Robin (RR)",
-                        "Shortest Job First (SJF)",
-                        "Priority Scheduling"
-                    ],
-                    answer: 2,
-                    explanation: "<strong>SJF (Shortest Job First)</strong> is provably optimal for minimizing average waiting time for a given set of processes."
-                });
-
-                // 3. Sync QC
-                new InlineQuiz('qc-sync', {
-                    question: "What is a 'Race Condition'?",
-                    options: [
-                        "When two processes try to write to same file",
-                        "When processes compete for CPU time",
-                        "When program output depends on the timing/ordering of events",
-                        "When a process runs faster than expected"
-                    ],
-                    answer: 2,
-                    explanation: "A <strong>Race Condition</strong> occurs when multiple threads/processes access shared data concurrently, and the outcome depends on the particular order of execution."
-                });
-
-                // 4. Deadlock QC
-                new InlineQuiz('qc-deadlock', {
-                    question: "Which condition for Deadlock implies that resources cannot be forcibly taken from a process?",
-                    options: [
-                        "Mutual Exclusion",
-                        "Hold and Wait",
-                        "No Preemption",
-                        "Circular Wait"
-                    ],
-                    answer: 2,
-                    explanation: "<strong>No Preemption</strong> means a resource can be released only voluntarily by the process holding it."
-                });
-
-                // 5. VM QC
-                new InlineQuiz('qc-vm', {
-                    question: "Thrashing occurs when the system spends more time ______ than executing processes.",
-                    options: [
-                        "Computing",
-                        "Paging (Swapping pages in/out)",
-                        "Waiting for user input",
-                        "Booting up"
-                    ],
-                    answer: 1,
-                    explanation: "<strong>Thrashing</strong> happens when the OS is constantly swapping pages between RAM and Disk because memory is overcommitted, leaving little CPU time for actual work."
-                });
-
-                // 6. Final Knowledge Check
-                const finalQuestions = [
-                    {
-                        question: "What is the main function of the Process Control Block (PCB)?",
-                        options: ["To store the code of the program", "To store metadata about the process (PID, State, Registers)", "To manage disk storage", "To compile the code"],
-                        answer: 1
-                    },
-                    {
-                        question: "Context Switching is considered overhead because:",
-                        options: ["It uses too much memory", "The system must reboot", "The CPU does no useful application work during the switch", "It deletes process data"],
-                        answer: 2
-                    },
-                    {
-                        question: "Which algorithm suffers from the 'Convoy Effect'?",
-                        options: ["Round Robin", "SJF", "FCFS", "SRTF"],
-                        answer: 2
-                    },
-                    {
-                        question: "In Round Robin, if the Time Quantum is very large, the algorithm behaves like:",
-                        options: ["SJF", "FCFS", "LIFO", "Priority"],
-                        answer: 1
-                    },
-                    {
-                        question: "A Semaphore is primarily used for:",
-                        options: ["Memory Management", "Process Synchronization", "File Storage", "Network Routing"],
-                        answer: 1
-                    },
-                    {
-                        question: "The 'Banker's Algorithm' is used for:",
-                        options: ["Deadlock Prevention", "Deadlock Avoidance", "Deadlock Detection", "Deadlock Recovery"],
-                        answer: 1
-                    },
-                    {
-                        question: "Internal Fragmentation is a common issue in:",
-                        options: ["Fixed Partitioning", "Dynamic Partitioning", "Segmentation", "Linked Allocation"],
-                        answer: 0
-                    },
-                    {
-                        question: "What is the solution to External Fragmentation?",
-                        options: ["Context Switching", "Compaction / Defragmentation", "Increasing Quantum", "Disabling Interrupts"],
-                        answer: 1
-                    },
-                    {
-                        question: "Virtual Memory allows the execution of processes that are:",
-                        options: ["Smaller than RAM", "Not completely in memory", "Written in Java", "Running on the GPU"],
-                        answer: 1
-                    },
-                    {
-                        question: "What hardware device maps Virtual Addresses to Physical Addresses?",
-                        options: ["ALU", "MMU (Memory Management Unit)", "GPU", "SSD Controller"],
-                        answer: 1
-                    }
-                ];
-
-                // Global instance to allow access from buttons
-                window.cert = null;
-
-                new QuizManager('quiz-container', finalQuestions, () => {
-                    // On Success
-                    const certSection = document.getElementById('certificate');
-                    certSection.classList.remove('hidden');
-
-                    // Initialize Generator
-                    window.cert = new CertificateGenerator('cert-canvas', 'Operating Systems');
-
-                    // Scroll to cert area
-                    setTimeout(() => {
-                        certSection.scrollIntoView({ behavior: 'smooth' });
-                    }, 100);
-                });
+            // 1. Kernel QC
+            new InlineQuiz('qc-kernel', {
+                question: "Which execution mode has unrestricted access to system hardware?",
+                options: [
+                    "User Mode",
+                    "Kernel Mode",
+                    "Safe Mode",
+                    "Gamer Mode"
+                ],
+                answer: 1,
+                explanation: "<strong>Kernel Mode</strong> (Privileged Mode) executes with full access to hardware resources. User Mode is restricted to protect the system."
             });
 
-            // Certificate Functions
-            function generateCert() {
-                const nameInput = document.getElementById('cert-name');
-                const errorMsg = document.getElementById('cert-error');
-                const name = nameInput.value.trim();
-                const nameRegex = /^[a-zA-Z\s\-\.'’]+$/;
+            // 2. Scheduling QC
+            new InlineQuiz('qc-scheduling', {
+                question: "Which scheduling algorithm is best for minimizing average waiting time?",
+                options: [
+                    "First-Come, First-Served (FCFS)",
+                    "Round Robin (RR)",
+                    "Shortest Job First (SJF)",
+                    "Priority Scheduling"
+                ],
+                answer: 2,
+                explanation: "<strong>SJF (Shortest Job First)</strong> is provably optimal for minimizing average waiting time for a given set of processes."
+            });
 
-                // Reset error state
-                errorMsg.classList.add('hidden');
-                nameInput.classList.remove('border-red-500');
+            // 3. Sync QC
+            new InlineQuiz('qc-sync', {
+                question: "What is a 'Race Condition'?",
+                options: [
+                    "When two processes try to write to same file",
+                    "When processes compete for CPU time",
+                    "When program output depends on the timing/ordering of events",
+                    "When a process runs faster than expected"
+                ],
+                answer: 2,
+                explanation: "A <strong>Race Condition</strong> occurs when multiple threads/processes access shared data concurrently, and the outcome depends on the particular order of execution."
+            });
 
-                if (!name) {
-                    errorMsg.textContent = "Please enter your name.";
-                    errorMsg.classList.remove('hidden');
-                    nameInput.classList.add('border-red-500');
-                    return;
+            // 4. Deadlock QC
+            new InlineQuiz('qc-deadlock', {
+                question: "Which condition for Deadlock implies that resources cannot be forcibly taken from a process?",
+                options: [
+                    "Mutual Exclusion",
+                    "Hold and Wait",
+                    "No Preemption",
+                    "Circular Wait"
+                ],
+                answer: 2,
+                explanation: "<strong>No Preemption</strong> means a resource can be released only voluntarily by the process holding it."
+            });
+
+            // 5. VM QC
+            new InlineQuiz('qc-vm', {
+                question: "Thrashing occurs when the system spends more time ______ than executing processes.",
+                options: [
+                    "Computing",
+                    "Paging (Swapping pages in/out)",
+                    "Waiting for user input",
+                    "Booting up"
+                ],
+                answer: 1,
+                explanation: "<strong>Thrashing</strong> happens when the OS is constantly swapping pages between RAM and Disk because memory is overcommitted, leaving little CPU time for actual work."
+            });
+
+            // 6. Final Knowledge Check
+            const finalQuestions = [
+                {
+                    question: "What is the main function of the Process Control Block (PCB)?",
+                    options: ["To store the code of the program", "To store metadata about the process (PID, State, Registers)", "To manage disk storage", "To compile the code"],
+                    answer: 1
+                },
+                {
+                    question: "Context Switching is considered overhead because:",
+                    options: ["It uses too much memory", "The system must reboot", "The CPU does no useful application work during the switch", "It deletes process data"],
+                    answer: 2
+                },
+                {
+                    question: "Which algorithm suffers from the 'Convoy Effect'?",
+                    options: ["Round Robin", "SJF", "FCFS", "SRTF"],
+                    answer: 2
+                },
+                {
+                    question: "In Round Robin, if the Time Quantum is very large, the algorithm behaves like:",
+                    options: ["SJF", "FCFS", "LIFO", "Priority"],
+                    answer: 1
+                },
+                {
+                    question: "A Semaphore is primarily used for:",
+                    options: ["Memory Management", "Process Synchronization", "File Storage", "Network Routing"],
+                    answer: 1
+                },
+                {
+                    question: "The 'Banker's Algorithm' is used for:",
+                    options: ["Deadlock Prevention", "Deadlock Avoidance", "Deadlock Detection", "Deadlock Recovery"],
+                    answer: 1
+                },
+                {
+                    question: "Internal Fragmentation is a common issue in:",
+                    options: ["Fixed Partitioning", "Dynamic Partitioning", "Segmentation", "Linked Allocation"],
+                    answer: 0
+                },
+                {
+                    question: "What is the solution to External Fragmentation?",
+                    options: ["Context Switching", "Compaction / Defragmentation", "Increasing Quantum", "Disabling Interrupts"],
+                    answer: 1
+                },
+                {
+                    question: "Virtual Memory allows the execution of processes that are:",
+                    options: ["Smaller than RAM", "Not completely in memory", "Written in Java", "Running on the GPU"],
+                    answer: 1
+                },
+                {
+                    question: "What hardware device maps Virtual Addresses to Physical Addresses?",
+                    options: ["ALU", "MMU (Memory Management Unit)", "GPU", "SSD Controller"],
+                    answer: 1
                 }
+            ];
 
-                if (name.length < 3 || name.length > 35) {
-                    errorMsg.textContent = "Name must be between 3 and 35 characters.";
-                    errorMsg.classList.remove('hidden');
-                    nameInput.classList.add('border-red-500');
-                    return;
-                }
+            // Global instance to allow access from buttons
+            window.cert = null;
 
-                if (!nameRegex.test(name)) {
-                    errorMsg.textContent = "Name cannot contain numbers or special characters.";
-                    errorMsg.classList.remove('hidden');
-                    nameInput.classList.add('border-red-500');
-                    return;
-                }
+            new QuizManager('quiz-container', finalQuestions, () => {
+                // On Success
+                const certSection = document.getElementById('certificate');
+                certSection.classList.remove('hidden');
 
-                if (window.cert) {
-                    window.cert.generate(name);
-                    document.getElementById('btn-download').classList.remove('hidden');
-                }
+                // Initialize Generator
+                window.cert = new CertificateGenerator('cert-canvas', 'Operating Systems');
+
+                // Scroll to cert area
+                setTimeout(() => {
+                    certSection.scrollIntoView({ behavior: 'smooth' });
+                }, 100);
+            });
+        });
+
+        // Certificate Functions
+        function generateCert() {
+            const nameInput = document.getElementById('cert-name');
+            const errorMsg = document.getElementById('cert-error');
+            const name = nameInput.value.trim();
+            const nameRegex = /^[a-zA-Z\s\-\.'’]+$/;
+
+            // Reset error state
+            errorMsg.classList.add('hidden');
+            nameInput.classList.remove('border-red-500');
+
+            if (!name) {
+                errorMsg.textContent = "Please enter your name.";
+                errorMsg.classList.remove('hidden');
+                nameInput.classList.add('border-red-500');
+                return;
             }
 
-            function downloadCert() {
-                if (window.cert) {
-                    // Use the name for the filename if available
-                    const name = document.getElementById('cert-name').value.trim() || 'Student';
-                    window.cert.download(`Undrstanding_OS_${name.replace(/\s+/g, '_')}.png`);
-                }
+            if (name.length < 3 || name.length > 35) {
+                errorMsg.textContent = "Name must be between 3 and 35 characters.";
+                errorMsg.classList.remove('hidden');
+                nameInput.classList.add('border-red-500');
+                return;
             }
+
+            if (!nameRegex.test(name)) {
+                errorMsg.textContent = "Name cannot contain numbers or special characters.";
+                errorMsg.classList.remove('hidden');
+                nameInput.classList.add('border-red-500');
+                return;
+            }
+
+            if (window.cert) {
+                window.cert.generate(name);
+                document.getElementById('btn-download').classList.remove('hidden');
+            }
+        }
+
+        function downloadCert() {
+            if (window.cert) {
+                // Use the name for the filename if available
+                const name = document.getElementById('cert-name').value.trim() || 'Student';
+                window.cert.download(`Undrstanding_OS_${name.replace(/\s+/g, '_')}.png`);
+            }
+        }
     </script>
 </body>
 
