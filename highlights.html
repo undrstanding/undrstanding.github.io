@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Highlights | Undrstanding</title>
+    <meta name="description" content="Access your saved insights and key learnings from Undrstanding. A curated collection to master your understanding of complex technical topics.">
+    <meta name="keywords" content="undrstanding highlights, technical notes, complex topics understanding, bookmarks, learning repository">
+    <link rel="icon" type="image/svg+xml" href="assests/undrlogo.svg">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Outfit:wght@300;400;500;600;700&display=swap');
+
+        :root {
+            --bg: #f7f7f7;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg);
+            background-image:
+                linear-gradient(to right, #e5e5e5 1px, transparent 1px),
+                linear-gradient(to bottom, #e5e5e5 1px, transparent 1px);
+            background-size: 60px 60px;
+            -webkit-font-smoothing: antialiased;
+            overflow: hidden;
+            height: 100vh;
+            width: 100vw;
+            display: flex;
+            flex-direction: column;
+        }
+
+
+        .outfit {
+            font-family: 'Outfit', sans-serif;
+        }
+
+        .mono {
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 64px;
+            background: #ffffff;
+            border-bottom: 2px solid #000;
+            z-index: 1000;
+            padding: 0 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .search-area {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .header-search {
+            background: white;
+            border: 2px solid #000;
+            padding: 0.5rem 2.5rem 0.5rem 1rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            font-weight: 800;
+            border-radius: 99px;
+            outline: none;
+            width: 200px;
+            transition: width 0.3s;
+        }
+
+        .header-search:focus {
+            width: 240px;
+        }
+
+        .search-icon-fixed {
+            position: absolute;
+            right: 0.75rem;
+            pointer-events: none;
+            color: #000;
+        }
+
+        @media (max-width: 640px) {
+            .header-search {
+                width: 120px;
+                padding: 0.4rem 2rem 0.4rem 0.75rem;
+                font-size: 0.6rem;
+            }
+
+            .header-search:focus {
+                width: 140px;
+            }
+        }
+
+        /* --- Minimal Horizontal List --- */
+        #highlights-container {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            padding-bottom: 8rem;
+        }
+
+        /* --- Enhanced Horizontal Archive --- */
+        .hl-card {
+            background: white;
+            border: 1px solid rgba(0, 0, 0, 0.08);
+            border-radius: 0.5rem;
+            display: flex;
+            align-items: flex-start;
+            padding: 1rem;
+            margin-bottom: 0.75rem;
+            gap: 1rem;
+            transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+            position: relative;
+        }
+
+        .hl-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.04);
+            border-color: rgba(0, 0, 0, 0.1);
+        }
+
+        .hl-badge {
+            width: 32px;
+            height: 32px;
+            flex-shrink: 0;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 8px;
+            font-weight: 800;
+            text-transform: uppercase;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            margin-top: 2px;
+        }
+
+        .hl-content {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .hl-text {
+            font-size: 1.05rem;
+            line-height: 1.6;
+            color: #000;
+            font-weight: 500;
+            word-wrap: break-word;
+        }
+
+        @media (max-width: 640px) {
+            .hl-text {
+                font-size: 0.95rem;
+            }
+
+            .hl-card {
+                padding: 1rem;
+                gap: 0.75rem;
+            }
+
+            .hl-badge {
+                width: 28px;
+                height: 28px;
+                font-size: 7px;
+            }
+        }
+
+        .hl-meta-row {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .hl-meta-tag {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.6rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: #ccc;
+        }
+
+        .hl-actions {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .hl-jump {
+            text-decoration: none;
+            color: #000;
+            transition: transform 0.2s;
+        }
+
+        .hl-jump:hover {
+            transform: translateX(3px);
+        }
+
+        .remove-trigger {
+            color: #ff4444;
+            opacity: 0.2;
+            cursor: pointer;
+            transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+            width: 38px;
+            height: 38px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        .remove-trigger:hover {
+            opacity: 1;
+            background: rgba(255, 68, 68, 0.08);
+        }
+
+        #filter-bar {
+            position: sticky;
+            top: 60px;
+            background: var(--bg);
+            z-index: 90;
+            padding: 0.75rem 1.5rem;
+            display: flex;
+            gap: 1.5rem;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.03);
+            overflow-x: auto;
+            scrollbar-width: none;
+        }
+
+        #filter-bar::-webkit-scrollbar {
+            display: none;
+        }
+
+        .filter-item {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.6rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            color: #bbb;
+            cursor: pointer;
+            transition: color 0.2s;
+            white-space: nowrap;
+        }
+
+        .filter-item.active {
+            color: #000;
+            text-decoration: underline;
+            text-underline-offset: 4px;
+        }
+
+        main {
+            flex: 1;
+            overflow-y: auto;
+            width: 100%;
+            padding-top: 130px;
+            /* Header + Filter bar */
+            scrollbar-width: none;
+            /* Firefox */
+            -ms-overflow-style: none;
+            /* IE/Edge */
+        }
+
+        main::-webkit-scrollbar {
+            display: none;
+            /* Chrome, Safari, Opera */
+        }
+
+        @keyframes slideUpToast {
+            from {
+                transform: translateY(100%) translateX(-50%);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateY(0) translateX(-50%);
+                opacity: 1;
+            }
+        }
+
+        .animate-toast {
+            animation: slideUpToast 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        #undo-toast {
+            position: fixed;
+            bottom: 2rem;
+            left: 50%;
+            z-index: 4000;
+        }
+
+        #back-to-top {
+            position: fixed;
+            bottom: 2.5rem;
+            left: 50%;
+            transform: translateX(-50%) translateY(20px);
+            z-index: 3000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        #back-to-top.visible {
+            opacity: 1;
+            visibility: visible;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        #back-to-top.visible.at-footer {
+            opacity: 1;
+            visibility: visible;
+            transform: translateX(-50%) translateY(-110px);
+        }
+
+        #back-to-top.visible.at-footer:hover {
+            transform: translateX(-50%) translateY(-115px);
+        }
+
+        .top-btn {
+            background: #000;
+            color: #fff;
+            padding: 0.75rem 1.75rem;
+            border-radius: 99px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.65rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .top-btn:hover {
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.25);
+            background: #111;
+        }
+
+        .top-btn:active {
+            transform: translateY(0) scale(0.98);
+        }
+
+        #empty-state.visible {
+            display: flex !important;
+            flex: 1;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding-bottom: 130px;
+            /* Offset the main's padding-top to center in viewport */
+        }
+    </style>
+</head>
+
+<body class="selection:bg-black selection:text-white">
+
+    <header>
+        <a href="/" class="flex items-center gap-2 group shrink-0">
+            <div class="w-3.5 h-3.5 bg-black group-hover:scale-75 transition-all"></div>
+            <span
+                class="mono text-[10px] sm:text-xs font-bold uppercase tracking-widest text-[#666] group-hover:text-black transition-colors"
+                id="header-brand-text">Undrstanding</span>
+        </a>
+
+        <div class="search-area">
+            <input type="text" id="search-input" placeholder="SEARCH..." class="header-search"
+                oninput="handleSearch(this.value)">
+            <div class="search-icon-fixed">
+                <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
+                    <path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" stroke-linecap="round"
+                        stroke-linejoin="round" />
+                </svg>
+            </div>
+        </div>
+    </header>
+
+    <div id="filter-bar">
+        <!-- populated by JS -->
+    </div>
+
+    <main class="custom-scrollbar">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 flex flex-col min-h-full">
+            <div id="highlights-container">
+                <!-- cards -->
+            </div>
+
+            <div id="empty-state" class="hidden text-center">
+                <p class="outfit text-2xl font-bold text-black mb-2">Your collection is empty.</p>
+                <p class="mono text-[8px] uppercase tracking-[0.2em] text-[#bbb] font-bold mb-10">Start saving insights
+                    from our repository</p>
+                <a href="/" class="top-btn no-underline">
+                    Back to Undrstanding
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M5 12h14M12 5l7 7-7 7" />
+                    </svg>
+                </a>
+            </div>
+
+            <footer class="w-full mt-12 mb-12">
+                <div class="border-t border-black pt-8 flex justify-between items-center px-4 md:px-0">
+                    <span class="text-[9px] mono uppercase text-black tracking-[0.2em] font-bold">Undrstanding</span>
+                    <span class="text-[9px] mono uppercase text-black tracking-[0.2em] font-bold">For Humans, From
+                        Humans</span>
+                </div>
+            </footer>
+        </div>
+    </main>
+
+    <!-- Back to Top Button -->
+    <div id="back-to-top">
+        <button onclick="scrollToTop()" class="top-btn">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4"
+                stroke-linecap="round" stroke-linejoin="round">
+                <path d="M18 15l-6-6-6 6" />
+            </svg>
+            Back to Top
+        </button>
+    </div>
+
+    <!-- Undo Toast -->
+    <div id="undo-toast" class="hidden">
+        <div
+            class="bg-white text-black p-1.5 pl-5 rounded-xl shadow-2xl flex items-center gap-6 animate-toast border border-black/5">
+            <span class="mono text-[9px] uppercase tracking-widest font-bold text-black/20">Deleted</span>
+            <button onclick="undoDelete()"
+                class="mono text-[9px] uppercase tracking-[0.2em] font-black bg-[#ED2939] text-white px-5 py-2.5 rounded-lg hover:bg-black hover:scale-105 active:scale-95 transition-all">Undo
+                Delete</button>
+        </div>
+    </div>
+
+    <script src="content/js/script.js"></script>
+
+    <script>
+        const PAGE_CONFIG = {
+            'content/algo': { color: '#db2777', short: 'ALGO' },
+            'content/android': { color: '#3DDC84', short: 'AND' },
+            'content/ai': { color: '#4f46e5', short: 'AI' },
+            'content/bigdata': { color: '#85193C', short: 'DATA' },
+            'content/networks': { color: '#0e7490', short: 'NET' },
+            'content/crypto': { color: '#5DD3B6', short: 'SEC' },
+            'content/dbms': { color: '#525252', short: 'DBMS' },
+            'content/ds': { color: '#15803d', short: 'DS' },
+            'content/html': { color: '#E34C26', short: 'HTML' },
+            'content/js': { color: '#b45309', short: 'JS' },
+            'content/linux': { color: '#ca8a04', short: 'LINX' },
+            'content/oops': { color: '#dc2626', short: 'OOPS' },
+            'content/os': { color: '#7c8c74', short: 'OS' },
+            'content/pigeon': { color: '#2563eb', short: 'MATH' },
+            'content/design': { color: '#52525b', short: 'SYS' },
+            'content/quanta': { color: '#ea580c', short: 'QNTM' },
+            'content/react': { color: '#0ea5e9', short: 'RCT' },
+            'content/software': { color: '#E6B800', short: 'SOFT' },
+            'content/system': { color: '#92400e', short: 'SD' },
+            'content/computation': { color: '#6d28d9', short: 'THRY' },
+            'content/uiux': { color: '#6594B1', short: 'UX' },
+            'content/git': { color: '#c2410c', short: 'GIT' },
+            'content/css': { color: '#2563eb', short: 'CSS' },
+            'content/python': { color: '#3776ab', short: 'PY' },
+            'content/sql': { color: '#00758f', short: 'SQL' }
+        };
+
+        const container = document.getElementById('highlights-container');
+        const filterBar = document.getElementById('filter-bar');
+        const emptyState = document.getElementById('empty-state');
+
+        let activeCategory = 'all';
+        let searchQuery = '';
+
+        window.handleSearch = function (val) {
+            searchQuery = val;
+            render(val);
+        }
+
+        const getPathId = (url) => {
+            if (!url) return 'other';
+            const contentMatch = url.match(/content\/([^\/]+)(\.html)?/);
+            if (contentMatch) return `content/${contentMatch[1]}`;
+            const parts = url.split('/');
+            return parts[parts.length - 1].toLowerCase().replace(/\.html$/, '');
+        };
+
+        function initFilters() {
+            const list = JSON.parse(localStorage.getItem('undrlib_highlights') || '[]');
+            const cats = ['all', ...new Set(list.map(h => h.pageUrl))];
+
+            filterBar.innerHTML = '';
+            cats.forEach(cat => {
+                const item = document.createElement('div');
+                item.className = `filter-item ${activeCategory === cat ? 'active' : ''}`;
+
+                const pathId = getPathId(cat);
+                const label = cat === 'all'
+                    ? 'All'
+                    : (PAGE_CONFIG[pathId]?.short || pathId.replace('.html', '').toUpperCase());
+
+                item.textContent = label;
+                item.onclick = () => {
+                    activeCategory = cat;
+                    render(searchQuery);
+                    initFilters();
+                };
+                filterBar.appendChild(item);
+            });
+        }
+
+        function render(query = '') {
+            const list = JSON.parse(localStorage.getItem('undrlib_highlights') || '[]');
+            let filtered = list.filter(h =>
+                h.text.toLowerCase().includes(query.toLowerCase()) ||
+                h.pageName.toLowerCase().includes(query.toLowerCase())
+            );
+
+            if (activeCategory !== 'all') {
+                const activeId = getPathId(activeCategory);
+                filtered = filtered.filter(h => getPathId(h.pageUrl) === activeId);
+            }
+
+            container.innerHTML = '';
+
+            if (filtered.length === 0) {
+                emptyState.classList.add('visible');
+                emptyState.classList.remove('hidden');
+                return;
+            }
+            emptyState.classList.remove('visible');
+            emptyState.classList.add('hidden');
+
+            filtered.forEach(h => {
+                const pathId = getPathId(h.pageUrl);
+                const config = PAGE_CONFIG[pathId] || { color: '#404040', short: 'HL' };
+
+                const row = document.createElement('div');
+                row.className = 'hl-card';
+                row.innerHTML = `
+                    <a href="${h.pageUrl}#highlight-${h.id}" class="flex-1 flex gap-4 no-underline group/card">
+                        <div class="hl-badge" style="background-color: ${config.color}">
+                            ${config.short}
+                        </div>
+                        
+                        <div class="hl-content">
+                            <div class="hl-meta-row">
+                                <span class="hl-meta-tag" style="color: ${config.color}">${h.pageName || 'Collection'}</span>
+                                <span class="w-[1px] h-2 bg-black/5"></span>
+                                <span class="hl-meta-tag" style="color: #bbb">${h.sectionName || 'Insight'}</span>
+                            </div>
+                            <p class="hl-text outfit">${h.text}</p>
+                        </div>
+                    </a>
+
+                    <div class="hl-actions">
+                        <div class="remove-trigger" onclick="event.stopPropagation(); removeH('${h.id}')">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(row);
+
+            });
+        }
+
+        let lastDeleted = null;
+        let undoTimer = null;
+
+        window.removeH = function (id) {
+            const list = JSON.parse(localStorage.getItem('undrlib_highlights') || '[]');
+            const item = list.find(h => h.id === id);
+            if (!item) return;
+
+            lastDeleted = item;
+            const newList = list.filter(h => h.id !== id);
+            localStorage.setItem('undrlib_highlights', JSON.stringify(newList));
+
+            // Sync across tabs
+            window.dispatchEvent(new Event('storage'));
+
+            render(searchQuery);
+            initFilters();
+
+            // Show Undo Toast
+            const toast = document.getElementById('undo-toast');
+            toast.classList.remove('hidden');
+
+            if (undoTimer) clearTimeout(undoTimer);
+            undoTimer = setTimeout(() => {
+                toast.classList.add('hidden');
+                lastDeleted = null;
+            }, 7000);
+        };
+
+        window.undoDelete = function () {
+            if (!lastDeleted) return;
+            const list = JSON.parse(localStorage.getItem('undrlib_highlights') || '[]');
+            list.push(lastDeleted);
+            localStorage.setItem('undrlib_highlights', JSON.stringify(list));
+
+            // Sync across tabs
+            window.dispatchEvent(new Event('storage'));
+
+            lastDeleted = null;
+            if (undoTimer) clearTimeout(undoTimer);
+            document.getElementById('undo-toast').classList.add('hidden');
+
+            render(searchQuery);
+            initFilters();
+        };
+
+        initFilters();
+        render();
+
+        // Scroll to Top Logic
+        const mainEl = document.querySelector('main');
+        const bttBtn = document.getElementById('back-to-top');
+
+        mainEl.addEventListener('scroll', () => {
+            const isScrollable = mainEl.scrollHeight > mainEl.clientHeight;
+            const threshold = 400;
+
+            if (isScrollable && mainEl.scrollTop > threshold) {
+                bttBtn.classList.add('visible');
+            } else {
+                bttBtn.classList.remove('visible');
+            }
+        });
+
+        window.scrollToTop = function () {
+            mainEl.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        };
+
+        // Hide at footer logic
+        const footer = document.querySelector('footer');
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    bttBtn.classList.add('at-footer');
+                } else {
+                    bttBtn.classList.remove('at-footer');
+                }
+            });
+        }, {
+            root: mainEl,
+            threshold: 0.1
+        });
+        if (footer) observer.observe(footer);
+
+        // Listen for external changes (multi-tab support)
+        window.addEventListener('storage', (e) => {
+            if (!e.key || e.key === 'undrlib_highlights') {
+                render(searchQuery);
+                initFilters();
+            }
+        });
+    </script>
+    <script src="content/js/script.js"></script>
+</body>
+
+</html>

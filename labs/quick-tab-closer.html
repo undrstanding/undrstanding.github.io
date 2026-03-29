@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quick Tab Closer Lab | Undrstanding</title>
+    <meta name="description"
+        content="Master your understanding of Chrome Extension development and the Tabs API with the Quick Tab Closer Lab by Undrstanding. Learn by building for humans.">
+    <meta name="keywords" content="undrstanding, quick tab closer lab, chrome extension, javascript, browser API, coding lab">
+    <link rel="canonical" href="https://undrstanding.github.io/labs/quick-tab-closer">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&family=Outfit:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="icon" type="image/svg+xml" href="../assests/undrlogo.svg">
+    <style>
+        :root {
+            --surface: #ffffff;
+            --border: #e5e7eb;
+            --text-main: #000000;
+            --text-muted: #666666;
+            --accent: #F7DF1E;
+            /* JavaScript Series Yellow */
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        ::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #fafafa;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #e5e7eb;
+            border-radius: 10px;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: #fafafa;
+            color: var(--text-main);
+            overflow-x: hidden;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        .mono {
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .lab-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 2rem;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .mockup-container {
+            background: #fff;
+            border: 1px solid #eee;
+            border-radius: 12px;
+            padding: 2rem;
+            margin: 2rem 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+        }
+
+        .code-window {
+            background: #1e1e1e;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            margin: 2rem 0;
+            border: 1px solid #333;
+        }
+
+        .code-header {
+            background: #2d2d2d;
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border-bottom: 1px solid #3d3d3d;
+        }
+
+        .dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+
+        .dot-red {
+            background: #ff5f56;
+        }
+
+        .dot-yellow {
+            background: #ffbd2e;
+        }
+
+        .dot-green {
+            background: #27c93f;
+        }
+
+        .file-name {
+            color: #888;
+            font-size: 0.75rem;
+            font-family: 'JetBrains Mono';
+            margin-left: 8px;
+        }
+
+        pre {
+            padding: 1.5rem;
+            color: #dcdcdc;
+            font-family: 'JetBrains Mono';
+            overflow-x: auto;
+            font-size: 0.85rem;
+            line-height: 1.6;
+            user-select: none;
+        }
+
+        .keyword {
+            color: #569cd6;
+        }
+
+        .type {
+            color: #4ec9b0;
+        }
+
+        .string {
+            color: #ce9178;
+        }
+
+        .comment {
+            color: #6a9955;
+        }
+
+        .number {
+            color: #b5cea8;
+        }
+
+        .step-content {
+            display: none;
+            animation: slideUp 0.4s ease-out forwards;
+        }
+
+        .step-content.active {
+            display: block;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(15px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .progress-bar {
+            height: 6px;
+            background: #f3f4f6;
+            border-radius: 99px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--accent);
+            transition: width 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .why-box {
+            background: #fffef2;
+            border-left: 4px solid var(--accent);
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .why-title {
+            font-weight: 700;
+            color: #854d0e;
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            font-size: 0.7rem;
+            letter-spacing: 0.08em;
+            font-family: 'JetBrains Mono';
+        }
+
+        .nav-btn {
+            padding: 0.75rem 2rem;
+            font-family: 'Outfit';
+            font-weight: 600;
+            border-radius: 999px;
+            transition: all 0.2s;
+            font-size: 0.9rem;
+        }
+
+        .nav-btn-prev {
+            color: #666;
+            background: transparent;
+        }
+
+        .nav-btn-prev:hover:not(:disabled) {
+            color: #000;
+            background: #f3f4f6;
+        }
+
+        .nav-btn-next {
+            background: #000;
+            color: #fff;
+        }
+
+        .nav-btn-next:hover:not(:disabled) {
+            background: #333;
+            transform: translateY(-1px);
+        }
+
+        .nav-btn:disabled {
+            opacity: 0.2;
+            cursor: not-allowed;
+        }
+
+        .step-indicator {
+            font-family: 'JetBrains Mono';
+            font-weight: 600;
+            color: #cbd5e1;
+            font-size: 0.7rem;
+        }
+
+        /* Mobile Guidance Modal */
+        #mobile-guidance-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.4);
+            z-index: 2000;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            padding: 1.5rem;
+            backdrop-filter: blur(12px);
+        }
+
+        .modal-content {
+            background: #fff;
+            padding: 3rem 2rem;
+            border-radius: 20px;
+            text-align: center;
+            max-width: 360px;
+            border: 1px solid #eee;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.1);
+            animation: modalPop 0.5s cubic-bezier(0.19, 1, 0.22, 1);
+        }
+
+        @keyframes modalPop {
+            from {
+                transform: scale(0.95) translateY(10px);
+                opacity: 0;
+            }
+
+            to {
+                transform: scale(1) translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .modal-icon-box {
+            width: 56px;
+            height: 56px;
+            background: #fbfbfb;
+            border: 1px solid #eee;
+            color: #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem;
+            border-radius: 12px;
+        }
+
+        .modal-title {
+            font-family: 'JetBrains Mono';
+            font-size: 0.65rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.3em;
+            color: #aaa;
+            margin-bottom: 0.75rem;
+            display: block;
+        }
+
+        .modal-text {
+            font-size: 1.15rem;
+            font-weight: 600;
+            line-height: 1.4;
+            color: #000;
+            margin-bottom: 2.5rem;
+            letter-spacing: -0.02em;
+        }
+
+        .modal-btn {
+            background: var(--accent);
+            color: #000;
+            padding: 1rem 2rem;
+            border-radius: 99px;
+            font-weight: 600;
+            font-family: 'Outfit';
+            font-size: 0.9rem;
+            transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+            width: 100%;
+            border: none;
+            cursor: pointer;
+        }
+
+        .modal-btn:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(247, 223, 30, 0.2);
+        }
+
+        @media (max-width: 768px) {
+            .lab-container {
+                padding: 1.25rem;
+                max-width: 100%;
+            }
+
+            h1 {
+                font-size: 2rem !important;
+                line-height: 1.1;
+            }
+
+            .mockup-container {
+                padding: 1rem;
+                border-radius: 1.5rem;
+                margin: 1.5rem 0;
+            }
+
+            .nav-btn {
+                padding: 0.75rem 1.25rem;
+                font-size: 0.8rem;
+            }
+
+            #mobile-guidance-modal.active {
+                display: flex;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="lab-container">
+        <!-- Header Nav -->
+        <nav class="flex justify-between items-center mb-12">
+            <a href="../"
+                class="mono text-xs font-bold tracking-widest hover:text-yellow-600 transition-colors uppercase">&larr;
+                Repository</a>
+            <div class="step-indicator uppercase tracking-widest">PHASE <span id="current-step-num">1</span> / 6</div>
+        </nav>
+
+        <div class="mb-4">
+            <div class="progress-bar mb-12">
+            <div id="progress-fill" class="progress-fill" style="width: 16.67%;"></div>
+        </div>
+        </div>
+
+        <main class="flex-grow">
+            <!-- ABOUT THE LAB (PHASE 1) -->
+            <div class="step-content active" id="step-1">
+                <h1 class="text-6xl font-black tracking-tighter mb-6 leading-none">About the<br>Lab.</h1>
+                <p class="text-xl text-gray-600 font-light mb-8 max-w-2xl">
+                    Welcome to the <strong>Chrome Extension Lab</strong>. In this session, we'll dive deep into browser extensions and learn how to "hack" the web environment with JavaScript.
+                </p>
+
+                <div class="mockup-container bg-[#fafafa] py-20">
+                    <div class="text-center w-full max-w-xs">
+                        <p class="text-sm font-bold mono text-gray-300 uppercase tracking-widest mb-8">Extension UI</p>
+                        <div class="relative w-full bg-white rounded-3xl border border-gray-100 p-8 overflow-hidden text-left">
+                            <div class="flex items-center justify-between mb-10">
+                                <div class="flex gap-1">
+                                    <div class="w-2.5 h-2.5 rounded-full bg-red-400"></div>
+                                    <div class="w-2.5 h-2.5 rounded-full bg-yellow-400"></div>
+                                    <div class="w-2.5 h-2.5 rounded-full bg-green-400"></div>
+                                </div>
+                                <div class="text-[8px] font-black text-gray-200 uppercase tracking-[0.2em] mono">Manifest V3</div>
+                            </div>
+
+                            <div class="space-y-6">
+                                <div>
+                                    <h3 class="text-xs font-black uppercase tracking-widest mb-1 text-gray-400">Active Session</h3>
+                                    <div class="text-2xl font-black tracking-tighter">14 Tabs Open</div>
+                                </div>
+
+                                <div class="space-y-2">
+                                    <button class="w-full py-4 bg-black text-white rounded-2xl font-bold text-[10px] uppercase tracking-widest hover:bg-gray-800 transition-all">
+                                        Close Tabs to the Right
+                                    </button>
+                                    <button class="w-full py-4 bg-gray-50 text-gray-400 rounded-2xl font-bold text-[10px] uppercase tracking-widest border border-gray-100">
+                                        Tab Filter
+                                    </button>
+                                </div>
+
+                                <div class="pt-6 border-t border-gray-50 flex items-center justify-between">
+                                    <div class="flex items-center gap-2">
+                                        <div class="w-2 h-2 rounded-full bg-yellow-400"></div>
+                                        <span class="text-[9px] font-bold text-gray-300 uppercase tracking-widest">Extension Active</span>
+                                    </div>
+                                    <div class="w-6 h-2 bg-gray-100 rounded-full"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="why-box">
+                    <div class="why-title">What we are building</div>
+                    <p class="text-sm">We'll be constructing a <strong>Quick Tab Closer</strong> from scratch, covering Manifest V3, the Chrome Tabs API, popup interfaces, and asynchronous background logic. By the end of this lab, you'll have a fully functional browser extension ready for deployment.</p>
+                </div>
+
+                <div class="mt-12 space-y-6">
+                    <h3 class="mono text-xs font-black uppercase tracking-[0.3em] text-gray-400">Lab Objectives</h3>
+                    <ul class="space-y-4 text-gray-600 font-light text-lg">
+                        <li class="flex gap-4">
+                            <div class="w-8 h-8 rounded-full bg-yellow-50 text-yellow-600 flex items-center justify-center text-xs font-bold shrink-0">1</div>
+                            <span>Understand the Chrome Extension ecosystem.</span>
+                        </li>
+                        <li class="flex gap-4">
+                            <div class="w-8 h-8 rounded-full bg-yellow-50 text-yellow-600 flex items-center justify-center text-xs font-bold shrink-0">2</div>
+                            <span>Implement Manifest V3 for optimal performance.</span>
+                        </li>
+                        <li class="flex gap-4">
+                            <div class="w-8 h-8 rounded-full bg-yellow-50 text-yellow-600 flex items-center justify-center text-xs font-bold shrink-0">3</div>
+                            <span>Master the Tabs API to manipulate browser state.</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- STEP 2: CONTEXT -->
+            <div class="step-content" id="step-2">
+                <h1 class="text-5xl font-bold tracking-tighter mb-6">Project Foundation</h1>
+                <p class="text-xl text-gray-600 font-light mb-8 max-w-2xl">
+                    Every great tool starts with a simple manifest. We're building a Chrome Extension to clear digital
+                    clutter.
+                </p>
+
+                <div class="mockup-container bg-[#fcfcfc]">
+                    <!-- Concept Illustration: Visualizing tabs being closed to the right -->
+                    <div class="flex gap-2">
+                        <div
+                            class="w-16 h-10 bg-white border border-gray-200 rounded-md shadow-sm flex items-center justify-center text-[8px] mono text-gray-400">
+                            Current</div>
+                        <div
+                            class="w-16 h-10 bg-red-50 border border-red-100 rounded-md shadow-sm flex items-center justify-center text-[8px] mono text-red-300 relative">
+                            <span class="absolute -top-1 -right-1 text-red-500">×</span>
+                        </div>
+                        <div
+                            class="w-16 h-10 bg-red-50 border border-red-100 rounded-md shadow-sm flex items-center justify-center text-[8px] mono text-red-300 relative opacity-50">
+                            <span class="absolute -top-1 -right-1 text-red-500">×</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="why-box">
+                    <div class="why-title">Why this Lab?</div>
+                    <p class="text-sm">Browser extensions are the ultimate playground for JavaScript. They allow you to
+                        "hack" your own environment, injecting logic directly into the tool you use most: the browser.
+                    </p>
+                </div>
+            </div>
+
+            <!-- STEP 3: MANIFEST -->
+            <div class="step-content" id="step-3">
+                <h1 class="text-5xl font-bold tracking-tighter mb-6">The Soul: Manifest V3</h1>
+                <p class="text-xl text-gray-600 font-light mb-8 max-w-2xl">Defining permissions and metadata.</p>
+
+                <div class="code-window">
+                    <div class="code-header">
+                        <div class="dot dot-red"></div>
+                        <div class="dot dot-yellow"></div>
+                        <div class="dot dot-green"></div>
+                        <span class="file-name">manifest.json</span>
+                    </div>
+                    <pre><code>{
+  <span class="string">"manifest_version"</span>: <span class="number">3</span>,
+  <span class="string">"name"</span>: <span class="string">"Quick Tab Closer"</span>,
+  <span class="string">"version"</span>: <span class="string">"1.0"</span>,
+  <span class="string">"permissions"</span>: [<span class="string">"tabs"</span>],
+  <span class="string">"action"</span>: {
+    <span class="string">"default_popup"</span>: <span class="string">"popup.html"</span>
+  }
+}</code></pre>
+                </div>
+
+                <div class="why-box">
+                    <div class="why-title">Why Permissions?</div>
+                    <p class="text-sm">By default, extensions are boxed in for safety. To touch other tabs, you must
+                        explicitly ask for the <strong>"tabs"</strong> permission. Chrome shows this to the user for
+                        transparency.</p>
+                </div>
+            </div>
+
+            <!-- STEP 4: UI -->
+            <div class="step-content" id="step-4">
+                <h1 class="text-5xl font-bold tracking-tighter mb-6">The Interface</h1>
+                <p class="text-xl text-gray-600 font-light mb-8 max-w-2xl">A minimal trigger for our action.</p>
+
+                <div class="code-window">
+                    <div class="code-header">
+                        <div class="dot dot-red"></div>
+                        <div class="dot dot-yellow"></div>
+                        <div class="dot dot-green"></div>
+                        <span class="file-name">popup.html</span>
+                    </div>
+                    <pre><code><span class="comment">&lt;!-- Just a button to trigger the magic --&gt;</span>
+&lt;<span class="keyword">button</span> id=<span class="string">"closeRight"</span>&gt;
+  Close Tabs to the Right
+&lt;/<span class="keyword">button</span>&gt;
+&lt;<span class="keyword">script</span> src=<span class="string">"popup.js"</span>&gt;&lt;/<span class="keyword">script</span>&gt;</code></pre>
+                </div>
+
+                <div class="why-box">
+                    <div class="why-title">Why separate JS?</div>
+                    <p class="text-sm">Chrome Extensions strictly forbid "Inline JavaScript" for security. You cannot
+                        put script tags with code inside your HTML; you must link an external <code>.js</code> file.</p>
+                </div>
+            </div>
+
+            <!-- STEP 5: LOGIC -->
+            <div class="step-content" id="step-5">
+                <h1 class="text-5xl font-bold tracking-tighter mb-6">The Engine</h1>
+                <p class="text-xl text-gray-600 font-light mb-8 max-w-2xl">Querying and removing tabs.</p>
+
+                <div class="code-window">
+                    <div class="code-header">
+                        <div class="dot dot-red"></div>
+                        <div class="dot dot-yellow"></div>
+                        <div class="dot dot-green"></div>
+                        <span class="file-name">popup.js</span>
+                    </div>
+                    <pre><code>document.getElementById(<span class="string">'closeRight'</span>).onclick = <span class="keyword">async</span> () => {
+  <span class="keyword">const</span> [currentTab] = <span class="keyword">await</span> chrome.tabs.query({ 
+    active: <span class="keyword">true</span>, currentWindow: <span class="keyword">true</span> 
+  });
+  
+  <span class="keyword">const</span> tabs = <span class="keyword">await</span> chrome.tabs.query({ 
+    currentWindow: <span class="keyword">true</span> 
+  });
+
+  <span class="keyword">const</span> tabsToClose = tabs
+    .filter(t => t.index > currentTab.index)
+    .map(t => t.id);
+
+  chrome.tabs.remove(tabsToClose);
+};</code></pre>
+                </div>
+
+                <div class="why-box">
+                    <div class="why-title">Why Querying?</div>
+                    <p class="text-sm"><code>chrome.tabs.query</code> returns an array. We use
+                        <strong>async/await</strong> because the browser needs time to communicate with its internal
+                        processes before giving us the list.</p>
+                </div>
+            </div>
+
+            <!-- STEP 6: DEPLOY -->
+            <div class="step-content" id="step-6">
+                <h1 class="text-5xl font-bold tracking-tighter mb-6">Deployment</h1>
+                <p class="text-xl text-gray-600 font-light mb-8 max-w-2xl">Testing in your own browser.</p>
+
+                <div class="mt-8 space-y-6">
+                    <div class="flex gap-6 items-start">
+                        <div
+                            class="w-10 h-10 rounded-full bg-black text-white flex items-center justify-center font-bold shrink-0">
+                            1</div>
+                        <p class="text-lg text-gray-600">Open Chrome and navigate to <code>chrome://extensions</code>
+                        </p>
+                    </div>
+                    <div class="flex gap-6 items-start">
+                        <div
+                            class="w-10 h-10 rounded-full bg-black text-white flex items-center justify-center font-bold shrink-0">
+                            2</div>
+                        <p class="text-lg text-gray-600">Enable <strong>"Developer mode"</strong> in the top-right
+                            corner.</p>
+                    </div>
+                    <div class="flex gap-6 items-start">
+                        <div
+                            class="w-10 h-10 rounded-full bg-black text-white flex items-center justify-center font-bold shrink-0">
+                            3</div>
+                        <p class="text-lg text-gray-600">Click <strong>"Load unpacked"</strong> and select your project
+                            folder.</p>
+                    </div>
+                </div>
+
+                <div class="why-box">
+                    <div class="why-title">Why Unpacked?</div>
+                    <p class="text-sm">"Unpacked" means the extension runs directly from your files. This allows you to
+                        make changes to your code and simply refresh the extension to see updates instantly.</p>
+                </div>
+            </div>
+        </main>
+
+        <!-- Navigation -->
+        <footer class="flex justify-between items-center py-12 border-t border-gray-100">
+            <button id="prevBtn" class="nav-btn nav-btn-prev" disabled onclick="changeStep(-1)">Previous</button>
+            <button id="nextBtn" class="nav-btn nav-btn-next" onclick="changeStep(1)">Next Phase</button>
+        </footer>
+    </div>
+
+    <!-- Modals -->
+    <!-- Modal UI -->
+    <div id="mobile-guidance-modal">
+        <div class="modal-content">
+            <div class="modal-icon-box">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+                    <line x1="8" y1="21" x2="16" y2="21"></line>
+                    <line x1="12" y1="17" x2="12" y2="21"></line>
+                </svg>
+            </div>
+            <span class="modal-title">Desktop Recommended</span>
+            <p class="modal-text">Interactive labs are designed for desktop. You can still keep this open on your mobile
+                to follow
+                along while you build on your workstation.</p>
+            <button class="modal-btn" onclick="closeMobileModal()">Undrstood</button>
+        </div>
+    </div>
+
+    <div id="completion-modal"
+        class="fixed inset-0 z-[3000] hidden flex items-center justify-center p-4 backdrop-blur-xl bg-black/40">
+        <div class="bg-white rounded-[2rem] p-8 max-w-[400px] w-full text-center shadow-3xl scale-95 opacity-0 transition-all duration-500"
+            id="completion-content">
+            <div class="mb-4 flex justify-center">
+                <canvas id="badge-canvas" class="rounded-3xl border border-gray-100"></canvas>
+            </div>
+            <h2 class="text-2xl font-bold mb-1">Congratulations!</h2>
+            <p class="text-gray-600 text-sm mb-6">You've mastered the <strong>Quick Tab Closer</strong> extension lab.
+            </p>
+            <div class="flex flex-col gap-2">
+                <button onclick="downloadBadge()"
+                    class="w-full py-3 bg-black text-white rounded-xl font-bold hover:bg-gray-800 transition-all text-sm">Download
+                    Badge</button>
+                <button onclick="window.location.href='../'"
+                    class="w-full py-2 text-gray-400 font-semibold hover:text-black transition-all text-xs">Return to
+                    Repository</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="../content/js/mrstuck.js"></script>
+    <script src="../content/js/script.js"></script>
+    <script>
+        let currentStep = 1;
+        const totalSteps = 6;
+
+        function changeStep(delta) {
+            const nextStep = currentStep + delta;
+            if (nextStep < 1 || nextStep > totalSteps) return;
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+
+            setTimeout(() => {
+                document.getElementById(`step-${currentStep}`).classList.remove('active');
+                currentStep = nextStep;
+                document.getElementById(`step-${currentStep}`).classList.add('active');
+                updateUI();
+            }, 50);
+        }
+
+        function updateUI() {
+            document.getElementById('current-step-num').innerText = currentStep;
+            document.getElementById('progress-fill').style.width = `${(currentStep / totalSteps) * 100}%`;
+            document.getElementById('prevBtn').disabled = currentStep === 1;
+
+            const nextBtn = document.getElementById('nextBtn');
+            if (currentStep === totalSteps) {
+                nextBtn.innerText = "Complete Lab";
+                nextBtn.onclick = () => showCompletionModal();
+            } else {
+                nextBtn.innerText = "Next Phase";
+                nextBtn.onclick = () => changeStep(1);
+            }
+        }
+
+        let badgeGen = null;
+        function showCompletionModal() {
+            const modal = document.getElementById('completion-modal');
+            const content = document.getElementById('completion-content');
+            modal.classList.remove('hidden');
+            if (!badgeGen) {
+                badgeGen = new BadgeGenerator('badge-canvas', 'JavaScript Series', 'Chrome Extension');
+            }
+            setTimeout(() => {
+                content.classList.remove('scale-95', 'opacity-0');
+                content.classList.add('scale-100', 'opacity-100');
+            }, 10);
+        }
+
+        function downloadBadge() {
+            if (badgeGen) badgeGen.download('chrome-extension-badge.png');
+        }
+
+        function closeMobileModal() {
+            document.getElementById('mobile-guidance-modal').classList.remove('active');
+        }
+
+        // Initialize UI
+        updateUI();
+
+        window.addEventListener('DOMContentLoaded', () => {
+            if (window.innerWidth <= 768) {
+                document.getElementById('mobile-guidance-modal').classList.add('active');
+            }
+            updateUI(); // Ensure UI is correct on load
+        });
+    </script>
+</body>
+
+</html>

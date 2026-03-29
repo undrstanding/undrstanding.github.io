@@ -1,0 +1,1159 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wumpus World | Undrstanding</title>
+    <link rel="icon" type="image/svg+xml" href="../assests/undrlogo.svg">
+    
+    <!-- SEO Metadata -->
+    <meta name="description" content="Build your understanding of logical inference with Wumpus World by Undrstanding. A strategic roguelike puzzle where you hunt the monster and capture the gold.">
+    <meta name="keywords" content="undrstanding, understanding wumpus world, archers quest, roguelike, logical inference, ai strategy game, computer science game">
+    <meta name="author" content="Undrstanding">
+    <link rel="canonical" href="https://undrstanding.github.io/games/wumpus">
+    
+    <!-- Open Graph / Meta -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Wumpus World | Archer's Quest">
+    <meta property="og:description" content="Master the art of logical inference and survive the dark pits to slay the Wumpus in this strategic dungeon puzzle.">
+    <meta property="og:image" content="https://antigravity-platform.com/assets/wumpus-preview.png"> <!-- Placeholder URL -->
+    
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:title" content="Wumpus World | Archer's Quest">
+    <meta property="twitter:description" content="Can you navigate the dark pits and slay the Wumpus? A strategic roguelike built for the Antigravity platform.">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&family=Fira+Code:wght@700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <style>
+        :root {
+            --neo-bg: #E4FF30;
+            --neo-accent: #ff0066;
+            --neo-green: #00ffa3;
+            --neo-yellow: #fff000;
+            --neo-blue: #3b82f6;
+            --neo-border: #000000;
+            --stone-top: #cbd5e1;
+            --stone-side: #475569;
+            --wumpus-color: #E3651D;
+            --fire-orange: #ff4500;
+            --fire-yellow: #ffd700;
+            --brick-main: #8a221a;
+            --mortar: #2a1412;
+            --stone-dark: #1e293b;
+            --stone-light: #f1f5f9;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: var(--neo-bg);
+            color: var(--neo-border);
+            overflow: hidden;
+            touch-action: none;
+            width: 100%;
+            height: 100vh;
+            height: 100dvh;
+            user-select: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+        }
+
+        .bg-pattern {
+            position: fixed;
+            inset: 0;
+            z-index: -1;
+            background-image: url("data:image/svg+xml,%3Csvg width='80' height='80' viewBox='0 0 80 80' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' stroke='%23000' stroke-width='2.5' stroke-opacity='0.05' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M45 15 C 45 10, 55 10, 55 15 S 65 15, 65 20'/%3E%3Cpath d='M10 70 C 10 65, 20 65, 20 70 S 30 70, 30 75'/%3E%3C/g%3E%3C/svg%3E");
+        }
+
+        .neo-border {
+            border: 4px solid var(--neo-border);
+        }
+
+        /* --- Stone Grid --- */
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: clamp(6px, 1.2vw, 12px);
+            width: 95%;
+            max-width: min(480px, 80vw, 60vh);
+            aspect-ratio: 1/1;
+            position: relative;
+            background: #1e293b;
+            padding: clamp(10px, 1.5vw, 16px);
+            border-radius: 2rem;
+            border: 6px solid black;
+            box-shadow: 0 12px 0 black;
+        }
+
+        /* Responsive UI Utils */
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+        .grid-cell {
+            aspect-ratio: 1/1;
+            border-radius: 0.75rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            position: relative;
+            background: var(--stone-top);
+            border: 4px solid black;
+            box-shadow: 0 6px 0 black;
+            z-index: 1;
+            overflow: visible;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.1'/%3E%3C/svg%3E");
+        }
+
+        .cell-hidden {
+            background: #334155;
+            border-color: #0f172a;
+            box-shadow: 0 6px 0 #020617;
+            transform: scale(0.95);
+            filter: brightness(0.8);
+        }
+
+        .cell-current {
+            background: white;
+            border: 4px solid black;
+            transform: translateY(-8px);
+            box-shadow: 0 14px 0 black;
+            z-index: 50;
+        }
+
+        .cell-effects-mask {
+            position: absolute;
+            inset: 0;
+            overflow: hidden;
+            border-radius: 0.5rem;
+            pointer-events: none;
+            z-index: 2;
+        }
+
+        /* --- Animations --- */
+
+        @keyframes black-hole-suck {
+            0% {
+                transform: scale(1) rotate(0deg);
+                filter: blur(0px);
+            }
+
+            100% {
+                transform: scale(0) rotate(1440deg);
+                filter: blur(12px);
+                opacity: 0;
+            }
+        }
+
+        .animate-black-hole {
+            animation: black-hole-suck 1.2s forwards;
+        }
+
+        @keyframes hero-munch {
+            0% {
+                transform: scale(1) rotate(0deg);
+            }
+
+            20% {
+                transform: scale(1.1) rotate(15deg);
+            }
+
+            100% {
+                transform: scale(0) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        .animate-munch {
+            animation: hero-munch 0.8s forwards;
+        }
+
+        @keyframes monster-lunge {
+            0% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.6) translateY(-15px);
+            }
+
+            100% {
+                transform: scale(1.4) translateY(-10px);
+            }
+        }
+
+        .animate-lunge {
+            animation: monster-lunge 0.8s forwards;
+        }
+
+        @keyframes gold-pulse {
+
+            0%,
+            100% {
+                transform: scale(1);
+                filter: drop-shadow(0 0 8px gold);
+            }
+
+            50% {
+                transform: scale(1.1);
+                filter: drop-shadow(0 0 18px gold);
+            }
+        }
+
+        .gold-icon {
+            animation: gold-pulse 2s infinite ease-in-out;
+        }
+
+        @keyframes shimmer {
+            0% {
+                transform: translateX(-150%) rotate(45deg);
+            }
+
+            100% {
+                transform: translateX(150%) rotate(45deg);
+            }
+        }
+
+        .shimmer-overlay {
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.6), transparent);
+            animation: shimmer 2s infinite linear;
+        }
+
+        @keyframes chest-grab {
+            0% {
+                transform: scale(1) translateY(0);
+                opacity: 1;
+            }
+
+            50% {
+                transform: scale(1.6) translateY(-30px);
+                opacity: 1;
+                filter: brightness(1.5);
+            }
+
+            100% {
+                transform: scale(0) translateY(-60px);
+                opacity: 0;
+            }
+        }
+
+        .gold-grabbed {
+            animation: chest-grab 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards !important;
+        }
+
+        @keyframes arrow-streak {
+            0% {
+                transform: translate(-50%, -50%) scale(0.7) rotate(var(--rot));
+                opacity: 0;
+            }
+
+            15% {
+                opacity: 1;
+            }
+
+            85% {
+                opacity: 1;
+            }
+
+            100% {
+                transform: translate(var(--tx), var(--ty)) scale(1.1) rotate(var(--rot));
+                opacity: 0;
+            }
+        }
+
+        .arrow-projectile {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 40px;
+            height: 14px;
+            z-index: 300;
+            pointer-events: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Environmental */
+        @keyframes stench-swirl {
+            0% {
+                transform: translate(0, 0) scale(1) rotate(0deg);
+                opacity: 0;
+            }
+
+            30% {
+                opacity: 0.7;
+            }
+
+            70% {
+                opacity: 0.7;
+            }
+
+            100% {
+                transform: translate(var(--x), var(--y)) scale(1.8) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        .stench-cloud {
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            background: radial-gradient(circle, var(--neo-green) 0%, transparent 70%);
+            filter: blur(8px);
+            animation: stench-swirl 2s infinite ease-in-out;
+            pointer-events: none;
+            z-index: 5;
+        }
+
+        @keyframes breeze-slice {
+            0% {
+                transform: translateX(-100%) scaleX(0.1);
+                opacity: 0;
+            }
+
+            20% {
+                opacity: 0.6;
+                transform: translateX(-50%) scaleX(2);
+            }
+
+            80% {
+                opacity: 0.6;
+                transform: translateX(50%) scaleX(2);
+            }
+
+            100% {
+                transform: translateX(100%) scaleX(0.1);
+                opacity: 0;
+            }
+        }
+
+        .breeze-line {
+            position: absolute;
+            width: 60px;
+            height: 2.5px;
+            background: linear-gradient(90deg, transparent, var(--neo-blue), transparent);
+            animation: breeze-slice 0.8s infinite linear;
+            pointer-events: none;
+            z-index: 5;
+        }
+
+        /* Right Side: UI Brick Wall */
+        #ui-side {
+            background-color: var(--mortar);
+            background-image: url("data:image/svg+xml,%3Csvg width='100' height='50' viewBox='0 0 100 50' xmlns='http://www.w3.org/2000/svg'%3E%3Crect width='100' height='50' fill='%232a1412'/%3E%3Crect x='2' y='2' width='46' height='21' rx='1' fill='%238a221a'/%3E%3Cpath d='M2 2h46v2H2z' fill='%23a83229' opacity='0.3'/%3E%3Cpath d='M2 21h46v2H2z' fill='%23631712' opacity='0.5'/%3E%3Crect x='52' y='2' width='46' height='21' rx='1' fill='%238a221a'/%3E%3Cpath d='M52 2h46v2H52z' fill='%23a83229' opacity='0.3'/%3E%3Cpath d='M52 21h46v2H52z' fill='%23631712' opacity='0.5'/%3E%3Crect x='-23' y='27' width='46' height='21' rx='1' fill='%238a221a'/%3E%3Crect x='27' y='27' width='46' height='21' rx='1' fill='%238a221a'/%3E%3Cpath d='M27 27h46v2H27z' fill='%23a83229' opacity='0.3'/%3E%3Cpath d='M27 46h46v2H27z' fill='%23631712' opacity='0.5'/%3E%3Crect x='77' y='27' width='46' height='21' rx='1' fill='%238a221a'/%3E%3Cpath d='M77 27h46v2H77z' fill='%23a83229' opacity='0.3'/%3E%3Cpath d='M77 46h46v2H77z' fill='%23631712' opacity='0.5'/%3E%3C/svg%3E");
+            border-left: 6px solid black;
+        }
+
+        /* Border between sides on mobile */
+        @media (max-width: 1023px) {
+            #ui-side { border-left: none; border-top: 6px solid black; }
+        }
+
+        .direction-indicator {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            z-index: 60;
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            pointer-events: none;
+        }
+
+        .hud-pill {
+            background: white;
+            border: 3px solid black;
+            border-radius: 1.2rem;
+            padding: 8px 14px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 4px 0 black;
+        }
+
+        .sense-pill {
+            border: 2px solid black;
+            border-radius: 0.8rem;
+            padding: 6px 14px;
+            font-size: 0.75rem;
+            font-weight: 800;
+            background: white;
+            text-transform: uppercase;
+            opacity: 0.2;
+            transition: all 0.3s;
+            box-shadow: 0 4px 0 black;
+        }
+
+        .sense-active {
+            opacity: 1;
+            transform: translateY(-4px);
+            box-shadow: 0 6px 0 black;
+        }
+
+        .sense-stench.sense-active {
+            background: var(--neo-green);
+        }
+
+        .sense-breeze.sense-active {
+            background: var(--neo-blue);
+            color: white;
+        }
+
+        .sense-glitter.sense-active {
+            background: var(--neo-yellow);
+        }
+
+        .control-btn {
+            width: 64px;
+            height: 64px;
+            border-radius: 9999px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 4px solid black;
+            background: white;
+            transition: all 0.1s;
+            cursor: pointer;
+            box-shadow: 0 6px 0 black;
+        }
+
+        .control-btn:active,
+        .control-btn.active {
+            transform: scale(0.95) translateY(4px);
+            box-shadow: 0 2px 0 black;
+        }
+
+        .btn-action {
+            width: auto;
+            padding: 0 16px;
+            font-weight: 900;
+            text-transform: uppercase;
+            font-size: 0.8rem;
+            border-radius: 1.2rem;
+        }
+
+        .btn-pink {
+            background: var(--neo-accent);
+            color: white;
+        }
+
+        .btn-green {
+            background: var(--neo-green);
+            color: black;
+        }
+
+        .btn-disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+            filter: grayscale(1);
+            box-shadow: none;
+            transform: none;
+        }
+
+        .floating {
+            animation: player-bounce 2s ease-in-out infinite;
+        }
+
+        @keyframes player-bounce {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-5px);
+            }
+        }
+
+        .icon-svg {
+            width: 56px;
+            height: 56px;
+            display: block;
+            overflow: visible;
+        }
+
+        .gold-icon {
+            position: absolute;
+            bottom: 8px;
+            right: 8px;
+            width: 34px;
+            height: 34px;
+            z-index: 5;
+        }
+
+        .pit-icon {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2;
+            pointer-events: none;
+        }
+
+        .player-icon-container {
+            position: relative;
+            z-index: 20;
+            pointer-events: none;
+        }
+
+        .wumpus-icon-container {
+            position: absolute;
+            z-index: 15;
+            pointer-events: none;
+        }
+
+        @keyframes shake {
+
+            10%,
+            90% {
+                transform: translate3d(-2px, 0, 0);
+            }
+
+            30%,
+            50%,
+            70% {
+                transform: translate3d(-4px, 0, 0);
+            }
+
+            40%,
+            60% {
+                transform: translate3d(4px, 0, 0);
+            }
+        }
+
+        .shake-ui {
+            animation: shake 0.4s both;
+        }
+
+        /* Camouflaged "How to Play" Text in Garden */
+        .camo-help {
+            position: absolute;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.65rem;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 0.3em;
+            color: rgba(0, 0, 0, 0.1);
+            /* Very low opacity to camouflage */
+            cursor: pointer;
+            transition: all 0.3s;
+            user-select: none;
+            padding: 10px;
+            text-shadow: 1px 1px 0px rgba(255, 255, 255, 0.2);
+        }
+
+        .camo-help:hover {
+            color: rgba(0, 0, 0, 0.4);
+            transform: translateX(-50%) translateY(-2px);
+        }
+
+        .help-modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.9);
+            backdrop-filter: blur(12px);
+            z-index: 6000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+        }
+
+        .help-content, .over-modal-content {
+            background-color: var(--stone-dark);
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.15'/%3E%3C/svg%3E");
+            border: 6px solid black;
+            border-radius: 2rem;
+            padding: 1.5rem;
+            max-width: 320px;
+            width: 100%;
+            box-shadow: 12px 12px 0 black;
+            position: relative;
+            color: white;
+            transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .modal-header {
+            font-size: 1.2rem;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            color: white;
+            border-bottom: 3px solid rgba(255,255,255,0.1);
+            padding-bottom: 0.4rem;
+            margin-bottom: 1.2rem;
+            text-align: center;
+        }
+
+        .btn-marble {
+            background: var(--stone-light) !important;
+            color: black !important;
+            border: 4px solid black !important;
+            border-radius: 1.2rem !important;
+            font-weight: 900 !important;
+            text-transform: uppercase !important;
+            box-shadow: 0 8px 0 black !important;
+            transition: all 0.1s !important;
+        }
+
+        .btn-marble:active {
+            transform: translateY(4px) !important;
+            box-shadow: 0 4px 0 black !important;
+        }
+
+        .marble-sub {
+            background: rgba(255,255,255,0.05);
+            border: 2px solid rgba(255,255,255,0.1);
+        }
+
+        /* --- Mobile Web Optimization Protocol --- */
+        @media (max-width: 1023px) {
+            body, .game-main {
+                height: 100dvh !important;
+                min-height: 100dvh !important;
+                overflow: hidden !important;
+                font-size: 14px;
+            }
+
+            .game-nav {
+                padding: 0.4rem 0.8rem !important;
+                border-bottom: 3px solid black !important;
+                background: white;
+            }
+            .game-nav a { transform: scale(0.7); transform-origin: left center; margin-right: -20px; }
+            .nav-title { 
+                font-size: 9px !important; 
+                opacity: 0.5;
+                font-weight: 800;
+                letter-spacing: 0.05em;
+                text-align: right;
+                max-width: 150px;
+                line-height: 1.1;
+            }
+
+            .game-main {
+                display: flex;
+                flex-direction: column;
+                padding: 10px !important;
+                gap: 4px !important;
+                justify-content: center !important;
+                background: 
+                    url("data:image/svg+xml,%3Csvg width='80' height='80' viewBox='0 0 80 80' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' stroke='%23000' stroke-width='2.5' stroke-opacity='0.05' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M45 15 C 45 10, 55 10, 55 15 S 65 15, 65 20'/%3E%3Cpath d='M10 70 C 10 65, 20 65, 20 70 S 30 70, 30 75'/%3E%3C/g%3E%3C/svg%3E"),
+                    radial-gradient(circle at center, transparent 30%, rgba(0,0,0,0.05) 100%);
+            }
+
+            #game-side, #ui-side, .game-ui-inner {
+                display: contents !important;
+            }
+
+            /* Global Sequencing Order & Zoom Out Scaling */
+            .hud-container { order: 1; transform: scale(0.68); margin: -31px 0 -14px 0 !important; }
+            .game-instincts-box { order: 2; transform: scale(0.68); margin: -9px 0 9px 0 !important; }
+            .grid-container { order: 3; transform: scale(0.68); margin: -64px 0 -56px 0 !important; width: 100% !important; max-width: none !important; }
+            .camo-help { order: 4; transform: scale(0.6); opacity: 0.05; margin: -15px 0 !important; }
+            
+            .game-control-box { order: 5; transform: scale(0.68); margin: -10px 0 !important; }
+            #game-side, #ui-side { padding: 0 !important; }
+        }
+
+    </style>
+</head>
+
+<body class="flex flex-col w-full" style="height:100dvh; overflow:hidden;">
+    <nav class="game-nav w-full flex flex-row justify-between items-center bg-white px-6 py-3 sm:px-8 sm:py-4 border-b-[3px] border-black z-[5000] shrink-0">
+        <a href="../" class="relative inline-block group cursor-pointer hover:no-underline">
+            <span class="font-['Fira_Code'] text-sm font-bold uppercase tracking-widest bg-black text-white px-4 py-1.5 relative z-0 group-hover:bg-[#1a1a1a] transition-colors">Undrstanding</span>
+            <div class="absolute -bottom-2 -right-4 bg-purple-600 text-white text-[9px] font-['Fira_Code'] font-bold px-2 py-0.5 transform -rotate-3 shadow-[2px_2px_0_black] border border-black z-10 select-none group-hover:scale-110 transition-transform">GAMES</div>
+        </a>
+        <div class="nav-title font-['Plus_Jakarta_Sans'] text-[11px] md:text-sm font-black uppercase tracking-widest text-black opacity-80">Wumpus World : Archer's Quest</div>
+    </nav>
+
+    <main class="game-main flex-1 flex flex-col lg:flex-row w-full overflow-hidden">
+        <!-- LEFT SIDE: GRID -->
+        <div id="game-side" class="lg:w-1/2 w-full flex-1 lg:h-full flex flex-col items-center justify-center p-4 lg:p-12 relative overflow-hidden bg-pattern">
+            <div id="grid-container" class="grid-container"></div>
+            <!-- 4. Camouflaged Archer's Guide -->
+            <div class="camo-help lg:hidden text-[0.45rem] font-black uppercase tracking-[0.4em] opacity-10 mt-2 cursor-pointer hover:opacity-40 transition-opacity" onclick="toggleHelp(true)">
+                Archer's Instruction Manual
+            </div>
+        </div>
+
+        <!-- RIGHT SIDE: UI -->
+        <div id="ui-side" class="lg:w-1/2 w-full flex-1 lg:h-full flex flex-col justify-center items-center p-2 lg:p-6 relative overflow-hidden">
+        <div class="game-ui-inner w-full max-w-[380px] space-y-2 lg:space-y-4 relative z-10 px-2 lg:px-0">
+            <div class="hud-container flex justify-between items-stretch gap-2 lg:gap-4">
+                <div class="hud-pill flex-1">
+                    <i class="bi bi-bullseye text-pink-600 text-lg lg:text-xl"></i>
+                    <div class="flex flex-col">
+                        <span class="text-[0.5rem] lg:text-[0.6rem] font-bold opacity-40 uppercase leading-none">Arrows</span>
+                        <span id="arrows" class="text-lg lg:text-xl font-black">1</span>
+                    </div>
+                </div>
+                <div class="flex-[1.5] text-center bg-white neo-border py-1.5 px-3 rounded-[1.5rem] shadow-[0_4px_0_black]">
+                    <p class="text-[0.55rem] lg:text-[0.6rem] font-bold uppercase opacity-40 tracking-widest leading-none mb-0.5">Total Bounty</p>
+                    <p id="score" class="text-2xl lg:text-3xl font-black tabular-nums leading-none">0</p>
+                </div>
+                <div class="hud-pill flex-1">
+                    <div class="flex flex-col items-end">
+                        <span class="text-[0.6rem] font-bold opacity-40 uppercase leading-none">Moves</span>
+                        <span id="moves" class="text-2xl font-black">0</span>
+                    </div>
+                    <i class="bi bi-activity text-blue-600 text-2xl"></i>
+                </div>
+            </div>
+
+            <div class="game-instincts-box bg-white/95 neo-border p-3 rounded-[1.2rem] shadow-[0_4px_0_black]">
+                <div class="flex justify-between items-center px-1 mb-2">
+                    <p class="text-[0.55rem] font-black uppercase opacity-40 tracking-[0.2em]">Archer's Instincts</p>
+                    <button onclick="toggleHelp(true)" class="text-[0.5rem] font-black uppercase border font-bold border-black/10 px-2 py-0.5 rounded-full hover:bg-slate-100 transition-colors">Guide</button>
+                </div>
+                <div class="flex justify-center gap-1.5">
+                    <div id="sense-stench" class="sense-pill sense-stench">Stench</div>
+                    <div id="sense-breeze" class="sense-pill sense-breeze">Breeze</div>
+                    <div id="sense-glitter" class="sense-pill sense-glitter">Glitter</div>
+                </div>
+            </div>
+
+            <div class="game-control-box bg-white/90 p-3 lg:p-6 rounded-[1.5rem] border-4 border-black flex flex-col gap-2 shadow-[0_5px_0_black]">
+                <div class="flex flex-row justify-between items-center gap-3 lg:gap-6">
+                    <div class="grid grid-cols-3 gap-1 lg:gap-3 shrink-0">
+                        <div></div>
+                        <button id="btn-up" onclick="move('up')" class="control-btn w-10 h-10 lg:w-16 lg:h-16"><i class="bi bi-caret-up-fill text-lg lg:text-2xl"></i></button>
+                        <div></div>
+                        <button id="btn-left" onclick="move('left')" class="control-btn w-10 h-10 lg:w-16 lg:h-16"><i class="bi bi-caret-left-fill text-lg lg:text-2xl"></i></button>
+                        <button id="btn-down" onclick="move('down')" class="control-btn w-10 h-10 lg:w-16 lg:h-16"><i class="bi bi-caret-down-fill text-lg lg:text-2xl"></i></button>
+                        <button id="btn-right" onclick="move('right')" class="control-btn w-10 h-10 lg:w-16 lg:h-16"><i class="bi bi-caret-right-fill text-lg lg:text-2xl"></i></button>
+                    </div>
+                    <div class="flex flex-col gap-2 shrink-0">
+                        <button id="shoot-btn" onclick="shoot()" class="control-btn btn-action btn-pink w-14 h-14 lg:w-20 lg:h-16 p-0 flex items-center justify-center text-[0.6rem] font-black tracking-tighter">
+                            SHOOT
+                        </button>
+                        <button id="grab-btn" onclick="grab()" class="control-btn btn-action btn-green w-14 h-14 lg:w-20 lg:h-16 p-0 flex items-center justify-center text-[0.6rem] font-black tracking-tighter">
+                            GRAB
+                        </button>
+                    </div>
+                </div>
+                <div class="text-center opacity-20 mt-3">
+                    <p class="text-[0.45rem] font-bold uppercase tracking-widest leading-none">WASD / SPACE / G</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Instructions Modal -->
+    <div id="help-modal" class="help-modal" onclick="toggleHelp(false)">
+        <div class="help-content" onclick="event.stopPropagation()">
+            <button class="absolute top-4 right-4 text-white/40 hover:text-white" onclick="toggleHelp(false)"><i class="bi bi-x-lg text-lg"></i></button>
+            <h2 class="modal-header">Archer's Guide</h2>
+            <div class="space-y-3 font-bold text-[0.7rem] leading-relaxed text-white/80">
+                <p>Find the <span class="text-yellow-400">Sun Relic (Gold)</span> and return to start.</p>
+                <div class="grid grid-cols-2 gap-2">
+                    <div class="p-2 marble-sub rounded-lg">
+                        <span class="block text-green-400 uppercase text-[0.55rem] font-black mb-0.5">Stench</span>
+                        Wumpus near.
+                    </div>
+                    <div class="p-2 marble-sub rounded-lg">
+                        <span class="block text-blue-400 uppercase text-[0.55rem] font-black mb-0.5">Breeze</span>
+                        Pit near.
+                    </div>
+                    <div class="p-2 marble-sub rounded-lg col-span-2 text-center">
+                        <span class="block text-white uppercase text-[0.55rem] font-black mb-0.5">Arsenal</span>
+                        Single arrow to kill.
+                    </div>
+                </div>
+                <div class="pt-3 border-t-2 border-white/10 text-[0.65rem]">
+                    <p class="text-[0. 55rem] uppercase opacity-40 mb-1">Controls</p>
+                    <p>WASD: Move • Space: Shoot • G: Grab</p>
+                </div>
+            </div>
+            <button onclick="toggleHelp(false)" class="control-btn btn-marble w-full h-12 mt-4 text-xs uppercase">Got It!</button>
+        </div>
+    </div>
+
+    <div id="game-over" class="fixed inset-0 bg-black/80 backdrop-blur-xl z-[6000] flex-col items-center justify-center hidden p-6">
+        <div class="over-modal-content text-center">
+            <div id="over-icon-box" class="flex justify-center mb-4 transform scale-75"></div>
+            <h1 id="over-title" class="modal-header border-none mb-0 pb-0">Quest Result</h1>
+            <p id="over-msg" class="mb-4 font-black text-white/40 text-[0.55rem] uppercase tracking-[0.2em]">Stone Echoes</p>
+            <div class="mb-6 p-3 marble-sub rounded-xl">
+                <p class="text-[0.55rem] font-black opacity-30 uppercase mb-0.5">Bounty</p>
+                <p id="final-score" class="text-4xl font-black text-white tabular-nums">0</p>
+            </div>
+            <button onclick="initGame()" class="control-btn btn-marble w-full h-14 text-sm tracking-widest">Play Again</button>
+        </div>
+    </div>
+
+    <script>
+        // Disable copy and paste
+        document.addEventListener('copy', (e) => e.preventDefault());
+        document.addEventListener('paste', (e) => e.preventDefault());
+        document.addEventListener('contextmenu', (e) => e.preventDefault());
+
+        const SIZE = 4;
+        let grid = [];
+        let player = { x: 0, y: 3, facing: 'right' };
+        let score = 0, arrows = 1, hasGold = false, wumpusAlive = true, moves = 0, isGameOver = false;
+
+        const ICONS = {
+            PLAYER: `
+                <svg class="icon-svg floating" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <rect x="25" y="40" width="10" height="25" rx="2" transform="rotate(-20 25 40)" fill="#5c3c1a" stroke="black" stroke-width="2"/>
+                    <path d="M22 37 L26 30 M26 39 L30 32" stroke="black" stroke-width="2" stroke-linecap="round"/>
+                    <path d="M25 85 L40 85 L40 94 L22 94 Q20 94 20 92 L20 88 Q20 85 25 85 Z" fill="#3a2510" stroke="black" stroke-width="2"/>
+                    <path d="M60 85 L75 85 Q80 85 80 88 L80 92 Q80 94 78 94 L60 94 L60 85 Z" fill="#3a2510" stroke="black" stroke-width="2"/>
+                    <path d="M30 60 L70 60 L75 85 L25 85 Z" fill="#2d5a27" stroke="black" stroke-width="3"/>
+                    <path d="M30 72 L70 72" stroke="#1a1a1a" stroke-width="4" opacity="0.6"/>
+                    <path d="M25 40 Q50 2 75 40 L75 60 Q50 50 25 60 Z" fill="#3d7a36" stroke="black" stroke-width="3"/>
+                    <path d="M35 60 Q50 52 65 60" fill="none" stroke="black" stroke-width="2" opacity="0.4"/> 
+                    <rect x="42" y="48" width="16" height="10" fill="#fbd38d"/>
+                    <circle cx="46" cy="53" r="1.5" fill="black"/> 
+                    <circle cx="54" cy="53" r="1.5" fill="black"/>
+                    <path d="M78 35 Q95 60 78 85" stroke="#5c3c1a" stroke-width="4" stroke-linecap="round" fill="none"/>
+                    <path d="M78 35 L78 85" stroke="white" stroke-width="1" opacity="0.6"/> 
+                    <rect x="25" y="65" width="9" height="14" rx="2" fill="#5c3c1a" stroke="black" stroke-width="1.5"/>
+                    <rect x="66" y="65" width="9" height="14" rx="2" fill="#5c3c1a" stroke="black" stroke-width="1.5"/>
+                </svg>`,
+            ARROW_HEAD: `<svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M20 80 L 50 20 L 80 80 L 50 65 Z" fill="var(--neo-accent)" stroke="black" stroke-width="5" stroke-linejoin="round"/></svg>`,
+            ARROW: `<svg viewBox="0 0 100 40" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="10" y="17" width="80" height="6" fill="black" rx="2"/><path d="M5 10 L25 20 L5 30" fill="black" opacity="0.4"/><path d="M0 12 L20 20 L0 28" fill="black" opacity="0.3"/><path d="M85 10 L100 20 L85 30 Z" fill="black" stroke="black" stroke-width="2"/></svg>`,
+            GOLD: `<svg class="icon-svg" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg"><defs><clipPath id="chestClip"><rect x="15" y="15" width="70" height="70" rx="6"/></clipPath></defs><rect x="15" y="45" width="70" height="40" rx="6" fill="#5c3c1a" stroke="black" stroke-width="4"/><path d="M15 45 Q 50 15 85 45 Z" fill="#8b5a2b" stroke="black" stroke-width="4"/><rect x="45" y="40" width="10" height="15" fill="#ffd700" stroke="black" stroke-width="2"/><g clip-path="url(#chestClip)"><rect class="shimmer-overlay" width="200" height="200" fill="white" opacity="0.6"/></g></svg>`,
+            PIT: `<svg class="icon-svg" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg"><ellipse cx="50" cy="55" rx="42" ry="38" fill="rgba(0,0,0,0.3)"/><ellipse cx="50" cy="50" rx="42" ry="36" fill="#1e293b" stroke="black" stroke-width="4"/><ellipse cx="50" cy="50" rx="36" ry="30" fill="black"/></svg>`,
+            WUMPUS: `<svg class="icon-svg" viewBox="0 0 100 100" fill="none" id="wumpus-svg" xmlns="http://www.w3.org/2000/svg"><path d="M15 80 C 15 20 85 20 85 80 C 85 90 75 85 75 80 C 75 75 65 75 65 80 C 65 85 55 85 55 80 C 55 75 45 75 45 80 C 45 85 35 85 35 80 C 35 75 25 75 25 80 C 25 85 15 85 15 80 Z" fill="var(--wumpus-color)" stroke="black" stroke-width="4"/><circle cx="35" cy="48" r="12" fill="white" stroke="black" stroke-width="3"/><circle cx="65" cy="48" r="12" fill="white" stroke="black" stroke-width="3"/><g id="wumpus-mouth" opacity="0" transform="translate(0, 5)"><path d="M30 65 Q 50 95 70 65 Z" fill="#cc0000" stroke="black" stroke-width="2"/><path d="M35 65 L 40 75 L 45 65 M 55 65 L 60 75 L 65 65" fill="#fef3c7" stroke="black" stroke-width="1.5" stroke-linecap="round"/></g></svg>`,
+            WIN: `
+                <svg class="icon-svg" style="width:140px; height:140px" viewBox="0 0 100 100">
+                    <defs>
+                        <radialGradient id="relicGlow" cx="50%" cy="50%" r="50%">
+                            <stop offset="0%" style="stop-color:#ffd700;stop-opacity:1" />
+                            <stop offset="100%" style="stop-color:#b8860b;stop-opacity:0" />
+                        </radialGradient>
+                    </defs>
+                    <circle cx="50" cy="50" r="45" fill="black" />
+                    <circle cx="50" cy="50" r="40" fill="#ffd700" stroke="#b8860b" stroke-width="2" />
+                    <!-- Ancient Sun Engravings -->
+                    <g stroke="rgba(0,0,0,0.2)" stroke-width="1.5">
+                        <line x1="50" y1="15" x2="50" y2="85" />
+                        <line x1="15" y1="50" x2="85" y2="50" />
+                        <circle cx="50" cy="50" r="28" fill="none" />
+                        <path d="M50 25 L55 35 L65 30 L60 40 L70 45 L60 50 L70 55 L60 60 L65 70 L55 65 L50 75 L45 65 L35 70 L40 60 L30 55 L40 50 L30 45 L40 40 L35 30 L45 35 Z" fill="none" />
+                    </g>
+                    <!-- Emerald Core -->
+                    <path d="M50 35 L65 50 L50 65 L35 50 Z" fill="#00ffa3" stroke="black" stroke-width="2">
+                        <animate attributeName="opacity" values="1;0.7;1" dur="2s" repeatCount="indefinite" />
+                    </path>
+                    <path d="M50 35 L58 50 L50 42 L42 50 Z" fill="white" opacity="0.4" />
+                </svg>`,
+            LOSE: `
+                <svg class="icon-svg" style="width:140px; height:140px" viewBox="0 0 100 100">
+                    <!-- Shattered Obsidian Tablet -->
+                    <path d="M20 15 L85 18 L75 85 L15 90 Z" fill="#0f172a" stroke="black" stroke-width="3" />
+                    <path d="M45 15 L52 40 L30 35 Z" fill="#1e293b" opacity="0.5" />
+                    <path d="M85 18 L60 50 L85 60 Z" fill="#1e293b" opacity="0.5" />
+                    <!-- Cracks -->
+                    <path d="M45 15 L50 45 L35 90 M60 18 L55 40 L75 85" fill="none" stroke="black" stroke-width="2" />
+                    <!-- Skul Engraving -->
+                    <g transform="translate(50, 55) scale(0.6)" fill="white" opacity="0.2">
+                        <circle cx="0" cy="-10" r="20" />
+                        <rect x="-15" y="5" width="30" height="15" rx="5" />
+                        <circle cx="-8" cy="-8" r="4" fill="black" />
+                        <circle cx="8" cy="-8" r="4" fill="black" />
+                        <rect x="-10" y="10" width="20" height="4" fill="black" />
+                    </g>
+                </svg>`
+        };
+
+        function toggleHelp(show) {
+            document.getElementById('help-modal').style.display = show ? 'flex' : 'none';
+        }
+
+        function initGame() {
+            grid = Array(SIZE).fill().map(() => Array(SIZE).fill().map(() => ({
+                pit: false, wumpus: false, gold: false, visited: false, stench: false, breeze: false
+            })));
+            const place = (item) => {
+                let x, y;
+                do { x = Math.floor(Math.random() * SIZE); y = Math.floor(Math.random() * SIZE); }
+                while ((x === 0 && y === 3) || grid[y][x].pit || grid[y][x].wumpus || grid[y][x].gold);
+                grid[y][x][item] = true;
+            };
+            for (let y = 0; y < SIZE; y++) {
+                for (let x = 0; x < SIZE; x++) {
+                    if (x === 0 && y === 3) continue;
+                    if (Math.random() < 0.18) grid[y][x].pit = true;
+                }
+            }
+            place('wumpus'); place('gold');
+            for (let y = 0; y < SIZE; y++) {
+                for (let x = 0; x < SIZE; x++) {
+                    [[0, 1], [0, -1], [1, 0], [-1, 0]].forEach(([dx, dy]) => {
+                        const nx = x + dx, ny = y + dy;
+                        if (nx >= 0 && nx < SIZE && ny >= 0 && ny < SIZE) {
+                            if (grid[ny][nx].wumpus) grid[y][x].stench = true;
+                            if (grid[ny][nx].pit) grid[y][x].breeze = true;
+                        }
+                    });
+                }
+            }
+            player = { x: 0, y: 3, facing: 'right' };
+            grid[player.y][player.x].visited = true;
+            score = 0; arrows = 1; hasGold = false; wumpusAlive = true; moves = 0; isGameOver = false;
+            document.getElementById('game-over').classList.add('hidden');
+            const sBtn = document.getElementById('shoot-btn');
+            if (sBtn) sBtn.classList.remove('btn-disabled');
+            updateUI(); updateSenses();
+        }
+
+        function createParticles(cell, type) {
+            const count = type === 'stench' ? 6 : 5;
+            for (let i = 0; i < count; i++) {
+                const p = document.createElement('div');
+                p.className = type === 'stench' ? 'stench-cloud' : 'breeze-line';
+                if (type === 'stench') {
+                    p.style.setProperty('--x', (Math.random() * 50 - 25) + 'px');
+                    p.style.setProperty('--y', (Math.random() * -80 - 30) + 'px');
+                    p.style.left = (Math.random() * 60 + 20) + '%';
+                    p.style.top = (Math.random() * 60 + 20) + '%';
+                    p.style.animationDelay = (Math.random() * 2) + 's';
+                } else {
+                    p.style.left = '0'; p.style.top = (Math.random() * 80 + 10) + '%';
+                    p.style.animationDuration = (0.4 + Math.random() * 0.4) + 's';
+                    p.style.animationDelay = (Math.random() * 1) + 's';
+                }
+                cell.appendChild(p);
+            }
+        }
+
+        function updateSenses() {
+            const cell = grid[player.y][player.x];
+            const sStench = document.getElementById('sense-stench');
+            const sBreeze = document.getElementById('sense-breeze');
+            const sGlitter = document.getElementById('sense-glitter');
+            if (sStench) sStench.className = `sense-pill sense-stench ${cell.stench && wumpusAlive ? 'sense-active' : ''}`;
+            if (sBreeze) sBreeze.className = `sense-pill sense-breeze ${cell.breeze ? 'sense-active' : ''}`;
+            if (sGlitter) sGlitter.className = `sense-pill sense-glitter ${cell.gold && !hasGold ? 'sense-active' : ''}`;
+        }
+
+        function updateUI() {
+            const container = document.getElementById('grid-container');
+            if (!container) return;
+            container.innerHTML = '';
+            for (let y = 0; y < SIZE; y++) {
+                for (let x = 0; x < SIZE; x++) {
+                    const cell = document.createElement('div');
+                    const isPlayer = player.x === x && player.y === y;
+                    const isVisited = grid[y][x].visited;
+                    cell.className = `grid-cell ${isPlayer ? 'cell-current' : isVisited ? 'cell-visible' : 'cell-hidden'}`;
+
+                    if (isVisited || isPlayer) {
+                        const mask = document.createElement('div');
+                        mask.className = 'cell-effects-mask';
+                        cell.appendChild(mask);
+
+                        if (grid[y][x].stench && wumpusAlive) createParticles(mask, 'stench');
+                        if (grid[y][x].breeze) createParticles(mask, 'breeze');
+
+                        if (grid[y][x].pit) {
+                            const pit = document.createElement('div');
+                            pit.className = 'pit-icon';
+                            pit.innerHTML = ICONS.PIT;
+                            mask.appendChild(pit);
+                        }
+                        if (grid[y][x].gold && !hasGold) {
+                            const g = document.createElement('div');
+                            g.className = 'gold-icon';
+                            g.id = 'treasure-box';
+                            g.innerHTML = ICONS.GOLD;
+                            mask.appendChild(g);
+                        }
+                        if (grid[y][x].wumpus && (!wumpusAlive || (isPlayer && wumpusAlive))) {
+                            const w = document.createElement('div');
+                            w.className = 'wumpus-icon-container';
+                            w.innerHTML = wumpusAlive ? ICONS.WUMPUS : `<i class="bi bi-x-lg text-slate-400 text-2xl"></i>`;
+                            if (isPlayer && wumpusAlive) w.id = 'killing-wumpus';
+                            if (isPlayer && wumpusAlive) mask.appendChild(w);
+                            else cell.appendChild(w);
+                        }
+                        if (isPlayer) {
+                            const p = document.createElement('div');
+                            p.className = 'player-icon-container';
+                            p.innerHTML = ICONS.PLAYER;
+                            p.id = 'player-icon';
+                            cell.appendChild(p);
+                            if (!isGameOver) {
+                                const ind = document.createElement('div');
+                                ind.className = 'direction-indicator';
+                                ind.innerHTML = ICONS.ARROW_HEAD;
+                                let rotate = 0, tx = 0, ty = 0;
+                                switch (player.facing) {
+                                    case 'up': rotate = 0; ty = -35; break;
+                                    case 'down': rotate = 180; ty = 35; break;
+                                    case 'left': rotate = -90; tx = -35; break;
+                                    case 'right': rotate = 90; tx = 35; break;
+                                }
+                                ind.style.transform = `translate(${tx}px, ${ty}px) rotate(${rotate}deg)`;
+                                cell.appendChild(ind);
+                            }
+                        }
+                    }
+                    container.appendChild(cell);
+                }
+            }
+            document.getElementById('arrows').innerText = arrows;
+            document.getElementById('score').innerText = score;
+            document.getElementById('moves').innerText = moves;
+        }
+
+        function move(dir) {
+            if (isGameOver) return;
+            let nx = player.x, ny = player.y;
+            player.facing = dir;
+            if (dir === 'up') ny--; if (dir === 'down') ny++; if (dir === 'left') nx--; if (dir === 'right') nx++;
+            if (nx >= 0 && nx < SIZE && ny >= 0 && ny < SIZE) {
+                player.x = nx; player.y = ny;
+                grid[ny][nx].visited = true; moves++; score -= 1;
+                updateUI(); updateSenses(); checkCollisions(); checkWin();
+            } else {
+                updateUI();
+                const side = document.getElementById('game-side');
+                if (side) { side.classList.add('shake-ui'); setTimeout(() => side.classList.remove('shake-ui'), 400); }
+            }
+        }
+
+        function checkCollisions() {
+            const cell = grid[player.y][player.x];
+            if (cell.pit) {
+                isGameOver = true;
+                updateUI();
+                const pIcon = document.getElementById('player-icon');
+                if (pIcon) pIcon.classList.add('animate-black-hole');
+                setTimeout(() => endGame("FELL INTO THE VOID.", ICONS.LOSE), 1200);
+            } else if (cell.wumpus && wumpusAlive) {
+                isGameOver = true;
+                updateUI();
+                const pIcon = document.getElementById('player-icon');
+                const wIcon = document.getElementById('killing-wumpus');
+                if (wIcon) {
+                    wIcon.style.opacity = "1";
+                    const mouth = wIcon.querySelector('#wumpus-mouth');
+                    if (mouth) mouth.style.opacity = "1";
+                    wIcon.classList.add('animate-lunge');
+                }
+                if (pIcon) pIcon.classList.add('animate-munch');
+                setTimeout(() => endGame("THE BEAST HAS FED.", ICONS.LOSE), 1200);
+            }
+        }
+
+        function playScream() {
+            const ctx = new (window.AudioContext || window.webkitAudioContext)();
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.type = 'sawtooth'; // harsh
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.start();
+            // chaotic pitch movement
+            osc.frequency.setValueAtTime(300, ctx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(1500, ctx.currentTime + 0.3);
+            osc.frequency.exponentialRampToValueAtTime(200, ctx.currentTime + 1);
+            gain.gain.setValueAtTime(0.001, ctx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(1, ctx.currentTime + 0.1);
+            gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 1);
+            osc.stop(ctx.currentTime + 1);
+        }
+
+        async function shoot() {
+            if (isGameOver || arrows <= 0) return;
+            arrows--; score -= 10;
+            const shootBtn = document.getElementById('shoot-btn');
+            if (shootBtn) shootBtn.classList.add('btn-disabled');
+            const currentTile = document.querySelector('.cell-current');
+            if (!currentTile) return;
+
+            let rot = 0, tx = 0, ty = 0, dx = 0, dy = 0;
+            // Travel distance = approx one tile width (70px)
+            const dist = 70;
+            switch (player.facing) {
+                case 'up':    rot = -90; ty = -dist; dy = -1; break;
+                case 'down':  rot = 90;  ty = dist;  dy = 1;  break;
+                case 'left':  rot = 180; tx = -dist; dx = -1; break;
+                case 'right': rot = 0;   tx = dist;  dx = 1;  break;
+            }
+
+            const arrowEl = document.createElement('div');
+            arrowEl.className = 'arrow-projectile';
+            arrowEl.innerHTML = ICONS.ARROW;
+            arrowEl.style.setProperty('--rot', `${rot}deg`);
+            arrowEl.style.setProperty('--tx', `${tx}px`);
+            arrowEl.style.setProperty('--ty', `${ty}px`);
+            arrowEl.style.animation = 'arrow-streak 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards';
+            currentTile.appendChild(arrowEl);
+            setTimeout(() => arrowEl.remove(), 400);
+
+            // Only check the immediately adjacent tile
+            const checkX = player.x + dx;
+            const checkY = player.y + dy;
+            if (checkX >= 0 && checkX < SIZE && checkY >= 0 && checkY < SIZE) {
+                if (grid[checkY][checkX].wumpus && wumpusAlive) {
+                    wumpusAlive = false;
+                    setTimeout(() => playScream(), 200);
+                }
+            }
+
+            setTimeout(() => { updateUI(); updateSenses(); }, 400);
+        }
+
+        function grab() {
+            if (isGameOver) return;
+            if (grid[player.y][player.x].gold) {
+                const chest = document.getElementById('treasure-box');
+                if (chest) {
+                    chest.classList.add('gold-grabbed');
+                    setTimeout(() => {
+                        hasGold = true; grid[player.y][player.x].gold = false; score += 1000;
+                        updateUI(); updateSenses();
+                    }, 500);
+                }
+            }
+        }
+
+        function checkWin() {
+            if (hasGold && player.x === 0 && player.y === 3) endGame("TREASURE SECURED!", ICONS.WIN, true);
+        }
+
+        function endGame(msg, iconSvg, win = false) {
+            isGameOver = true; updateUI();
+            const modal = document.getElementById('game-over');
+            const iconBox = document.getElementById('over-icon-box');
+            if (iconBox) iconBox.innerHTML = iconSvg;
+            if (modal) modal.classList.replace('hidden', 'flex');
+            document.getElementById('over-title').innerText = win ? "Quest Clear" : "Quest Failed";
+            document.getElementById('over-msg').innerText = msg;
+            document.getElementById('final-score').innerText = score;
+        }
+
+        window.addEventListener('keydown', (e) => {
+            if (isGameOver) { if (e.key.toLowerCase() === 'r') initGame(); return; }
+            const key = e.key.toLowerCase();
+            if (key === 'arrowup' || key === 'w') move('up');
+            else if (key === 'arrowdown' || key === 's') move('down');
+            else if (key === 'arrowleft' || key === 'a') move('left');
+            else if (key === 'arrowright' || key === 'd') move('right');
+            else if (key === ' ' || key === 'f') { e.preventDefault(); shoot(); }
+            else if (key === 'g' || key === 'e') grab();
+        });
+
+        window.onload = initGame;
+    </script>
+</body>
+
+</html>

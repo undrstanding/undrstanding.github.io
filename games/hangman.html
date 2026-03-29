@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hangman Quiz | Undrstanding</title>
+    <meta name="description" content="Build your understanding of tech terminology with the Undrstanding Hangman Quiz. A minimalist word game challenging your knowledge of computer science concepts.">
+    <meta name="keywords" content="undrstanding, understanding tech, tech hangman, cs terms, programming quiz, educational word game, computer science concepts">
+    <meta name="author" content="Undrstanding">
+    <link rel="canonical" href="https://undrstanding.github.io/games/hangman">
+    <link rel="icon" type="image/svg+xml" href="../assests/undrlogo.svg">
+    
+    <!-- Open Graph Tags -->
+    <meta property="og:title" content="Hangman: The Tech Quiz | Undrstanding">
+    <meta property="og:description" content="Test your understanding of tech concepts with our immersive hangman experience.">
+    <meta property="og:url" content="https://undrstanding.github.io/games/hangman">
+    <meta property="og:type" content="website">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Outfit:wght@400;600;800&display=swap');
+
+        /* Immersive UI: Hide Scrollbar */
+        *::-webkit-scrollbar {
+            display: none;
+        }
+
+        * {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        :root {
+            --bg-color: #f7f7f7;
+            --surface: #ffffff;
+            --text-main: #0a0a0a;
+            --text-muted: #666666;
+            --border: #e0e0e0;
+            --purple: #6d28d9;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            background-image:
+                linear-gradient(to right, #e5e5e5 1px, transparent 1px),
+                linear-gradient(to bottom, #e5e5e5 1px, transparent 1px);
+            background-size: 40px 40px;
+            /* Disable selection */
+            user-select: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+        }
+
+        .outfit {
+            font-family: 'Outfit', sans-serif;
+        }
+
+        .mono {
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .game-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            position: relative;
+            /* Stitched internal element */
+            outline: 1.5px dashed var(--border);
+            outline-offset: -8px;
+            border-radius: 0;
+        }
+
+        .game-card::after {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            right: 2px;
+            bottom: 2px;
+            border: 1px solid #0000000a;
+            pointer-events: none;
+        }
+
+        .overlay-card {
+            background: white;
+            border: 1px solid black;
+            padding: 3rem;
+            outline: 1.5px dashed #000;
+            outline-offset: -12px;
+            border-radius: 0;
+        }
+
+        .letter-btn {
+            background: white;
+            border: 1px solid var(--border);
+            transition: all 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            font-weight: 600;
+            border-radius: 0;
+        }
+
+        .letter-btn:hover:not(:disabled) {
+            border-color: black;
+            transform: scale(1.05);
+            z-index: 10;
+        }
+
+        .letter-btn:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+
+        .letter-btn.correct {
+            background: #dcfce7;
+            border-color: #22c55e;
+            color: #15803d;
+        }
+
+        .letter-btn.wrong {
+            background: #fee2e2;
+            border-color: #ef4444;
+            color: #b91c1c;
+        }
+
+        .hangman-stage {
+            height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .hangman-part {
+            stroke: black;
+            stroke-width: 3;
+            fill: none;
+            stroke-linecap: round;
+        }
+
+        .word-display {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.4rem;
+            justify-content: center;
+            width: 100%;
+        }
+
+        .word-char {
+            width: 2.2rem;
+            height: 3rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-bottom: 3px solid black;
+            font-size: 1.75rem;
+            font-weight: 900;
+            transition: all 0.2s ease;
+        }
+
+        .word-char.empty {
+            border-bottom-color: #e5e7eb;
+            color: #ccc;
+        }
+
+        @media (max-width: 640px) {
+            .word-char {
+                width: 1.4rem;
+                height: 2.2rem;
+                font-size: 1.1rem;
+                border-bottom-width: 2px;
+            }
+        }
+
+        @keyframes shake {
+
+            0%,
+            100% {
+                transform: translateX(0);
+            }
+
+            25% {
+                transform: translateX(-5px);
+            }
+
+            75% {
+                transform: translateX(5px);
+            }
+        }
+
+        .shake {
+            animation: shake 0.2s ease-in-out 0s 2;
+        }
+    </style>
+</head>
+
+<body class="p-6 md:p-12">
+    <!-- Navbar -->
+    <nav
+        class="max-w-4xl mx-auto w-full mb-8 md:mb-12 flex flex-col sm:flex-row justify-between items-start sm:items-center bg-white p-4 border border-black shadow-[4px_4px_0_black] gap-4">
+        <a href="../" class="relative inline-block group cursor-pointer hover:no-underline">
+            <span
+                class="mono text-xs font-bold uppercase tracking-widest bg-black text-white px-3 py-1 relative z-0 group-hover:bg-[#1a1a1a] transition-colors">Undrstanding</span>
+            <div
+                class="absolute -bottom-2.5 -right-3 bg-purple-600 text-white text-[8px] mono font-bold px-2 py-0.5 transform -rotate-3 shadow-[2px_2px_0_black] border border-black z-10 select-none group-hover:scale-110 transition-transform">
+                GAMES</div>
+        </a>
+        <div class="mono text-[10px] md:text-xs font-bold uppercase tracking-widest text-black/40 sm:text-black">
+            Hangman: The Tech Quiz</div>
+    </nav>
+
+    <main class="max-w-4xl mx-auto w-full grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
+        <!-- Hangman Visualization -->
+        <div
+            class="md:col-span-1 game-card p-4 md:p-8 flex flex-col items-center justify-center min-h-[200px] md:min-h-[300px] order-2 md:order-1">
+            <svg id="hangman-svg" viewBox="0 0 100 120" class="w-full h-full max-h-[180px] md:max-h-none">
+                <!-- Gallows -->
+                <line x1="10" y1="110" x2="90" y2="110" class="hangman-part" />
+                <line x1="30" y1="110" x2="30" y2="10" class="hangman-part" />
+                <line x1="30" y1="10" x2="70" y2="10" class="hangman-part" />
+                <line x1="70" y1="10" x2="70" y2="25" class="hangman-part" />
+
+                <!-- Hangman Parts (Hidden Initially) -->
+                <g id="part-head" class="hidden">
+                    <circle cx="70" cy="35" r="10" class="hangman-part" />
+                    <!-- Minimalist Black Dot Pupils -->
+                    <circle id="eye-l" cx="66.5" cy="33" r="1.5" fill="black" class="stuck-eye" />
+                    <circle id="eye-r" cx="73.5" cy="33" r="1.5" fill="black" class="stuck-eye" />
+                </g>
+                <line id="part-body" x1="70" y1="45" x2="70" y2="75" class="hangman-part hidden" />
+                <line id="part-arm-l" x1="70" y1="55" x2="55" y2="45" class="hangman-part hidden" />
+                <line id="part-arm-r" x1="70" y1="55" x2="85" y2="45" class="hangman-part hidden" />
+                <line id="part-leg-l" x1="70" y1="75" x2="55" y2="95" class="hangman-part hidden" />
+                <line id="part-leg-r" x1="70" y1="75" x2="85" y2="95" class="hangman-part hidden" />
+            </svg>
+
+            <!-- Dynamic Feedback Messages -->
+            <div id="game-feedback"
+                class="mt-6 text-[10px] mono font-bold uppercase tracking-widest text-[#6d28d9] opacity-40 transition-all duration-300 min-h-[1em]">
+                System Ready...
+            </div>
+        </div>
+
+        <!-- Word and Input -->
+        <div class="md:col-span-2 flex flex-col gap-4 md:gap-6 order-1 md:order-2">
+            <!-- Question Card -->
+            <div id="question-container"
+                class="game-card p-6 md:p-8 bg-white/50 backdrop-blur-sm relative overflow-hidden">
+                <div class="absolute top-0 left-0 w-2 h-full bg-purple-600"></div>
+                <div class="mono text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-3">Challenge Question
+                </div>
+                <h2 id="question-text" class="text-lg md:text-2xl font-bold outfit leading-tight md:leading-relaxed">
+                    Loading your challenge...
+                </h2>
+            </div>
+
+            <!-- Word Display -->
+            <div class="game-card p-4 md:p-6 flex items-center justify-center bg-white min-h-[80px] md:min-h-[100px]">
+                <div id="word-display" class="word-display outfit font-black text-black"></div>
+            </div>
+
+            <!-- Keyboard -->
+            <div id="keyboard" class="grid grid-cols-6 sm:grid-cols-9 gap-1.5 md:gap-2">
+                <!-- Dynamically Generated -->
+            </div>
+
+            <!-- Stats/Controls -->
+            <div class="flex items-center justify-between px-1">
+                <div class="mono text-[10px] md:text-xs">
+                    <span id="mistakes-count" class="font-bold text-red-500">0</span> / 6 Mistakes
+                </div>
+                <button onclick="initGame()"
+                    class="mono text-[10px] md:text-xs font-bold uppercase tracking-widest border border-black px-3 py-2 md:px-4 md:py-2 hover:bg-black hover:text-white transition-all transform hover:-translate-y-1 active:translate-y-0">
+                    New Game
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <!-- Success/Failure Overlay -->
+    <div id="game-overlay"
+        class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center hidden opacity-0 transition-opacity duration-300">
+        <div class="overlay-card text-center max-w-sm w-full mx-6">
+            <div id="overlay-icon" class="mb-6 text-5xl">🎉</div>
+            <h2 id="overlay-title" class="text-3xl font-black outfit mb-4 uppercase">Victory!</h2>
+            <p id="overlay-message" class="text-gray-500 mb-8 font-light italic">Solution: DIJKSTRA</p>
+            
+            <!-- Dynamic Stats Logic (New) -->
+            <div id="overlay-stats" class="mb-8 grid grid-cols-2 gap-2 opacity-0 transition-opacity duration-500">
+                <div class="bg-zinc-50 p-3 border border-black/5">
+                    <span class="block mono text-[8px] uppercase tracking-widest text-gray-400 mb-1">Mistakes</span>
+                    <span id="overlay-mistakes" class="mono font-bold text-red-500">0 / 6</span>
+                </div>
+                <div class="bg-zinc-50 p-3 border border-black/5">
+                    <span class="block mono text-[8px] uppercase tracking-widest text-gray-400 mb-1">Time Taken</span>
+                    <span id="overlay-time" class="mono font-bold text-black">0s</span>
+                </div>
+            </div>
+
+            <button onclick="initGame()"
+                class="w-full bg-black text-white py-4 font-bold rounded-none uppercase tracking-widest hover:bg-purple-600 transition-colors">
+                Play Next
+            </button>
+        </div>
+    </div>
+
+    <script>
+        const QUESTIONS = [
+            // Algorithms & logic
+            { a: "DIJKSTRA", q: "The shortest-path algorithm for weighted graphs named after a Dutch pioneer." },
+            { a: "RECURSION", q: "A programming technique where a function calls itself until a base case is met." },
+            { a: "BACKTRACKING", q: "The 'trial and error' algorithmic approach used to solve the N-Queens problem." },
+            { a: "BREADTH", q: "The type of traversal (BFS) that explores nodes level-by-level using a queue." },
+            { a: "DEPTH", q: "The type of traversal (DFS) that explores as far as possible along each branch before backtracking." },
+            { a: "HEURISTIC", q: "A 'rule of thumb' strategy used in A* search to estimate the remaining distance to the goal." },
+            { a: "DYNAMIC", q: "The type of programming that solves complex problems by breaking them into overlapping subproblems." },
+
+            // Data Structures
+            { a: "STACK", q: "The 'Last-In, First-Out' (LIFO) data structure used for undo operations." },
+            { a: "QUEUE", q: "The 'First-In, First-Out' (FIFO) data structure used for process scheduling." },
+            { a: "POINTER", q: "A variable that stores the memory address of another value." },
+            { a: "LINKED", q: "The type of list where each element contains a reference to the next node." },
+            { a: "BINARY", q: "A tree structure where each node has at most two children." },
+            { a: "HASHMAP", q: "A structure that maps keys to values using a special mathematical function." },
+
+            // AI & Machine Learning
+            { a: "NEURAL", q: "The type of networks that mimic the human brain's architecture in Deep Learning." },
+            { a: "TRANSFORMER", q: "The neural network architecture that revolutionized NLP with self-attention." },
+            { a: "GRADIENT", q: "The mathematical vector used to minimize loss during neural network training." },
+            { a: "INFERENCE", q: "The process of using a trained model to make predictions on new data." },
+            { a: "OVERFITTING", q: "When a model learns training data too well but fails on new, unseen data." },
+
+            // Networking & Systems
+            { a: "PROTOCOL", q: "A set of rules governing how data is exchanged across a computer network." },
+            { a: "LATENCY", q: "The term for the delay between sending a data packet and receiving it." },
+            { a: "KERNEL", q: "The core part of any operating system that manages hardware and memory." },
+            { a: "TCP", q: "The reliable, connection-oriented protocol used for web browsing and file transfer." },
+            { a: "DNS", q: "The system that translates human-readable domain names into IP addresses." },
+            { a: "FIREWALL", q: "The security system that monitors and controls incoming and outgoing network traffic." },
+
+            // Databases
+            { a: "INDEXING", q: "The process of creating B-Tree structures to speed up database search queries." },
+            { a: "REDUNDANCY", q: "The database concept of repeating data that Normalization aims to minimize." },
+            { a: "SCHEMA", q: "The formal blueprint that defines how a database is structured and organized." },
+            { a: "NORMALIZATION", q: "The process of organizing data to reduce redundancy and improve data integrity." },
+            { a: "ATOMICITY", q: "The 'A' in ACID, ensuring a database transaction either completes fully or fails entirely." },
+
+            // Web Development (JS / CSS)
+            { a: "CLOSURE", q: "A JavaScript feature where an inner function has access to an outer function's scope." },
+            { a: "PROMISE", q: "An object representing the eventual completion or failure of an asynchronous operation." },
+            { a: "CALLBACK", q: "A function passed into another function as an argument, to be executed later." },
+            { a: "CASCADE", q: "The 'C' in CSS, determining which styling rules take precedence." },
+            { a: "SPECIFICITY", q: "The rule used by browsers to decide which CSS property values are most relevant to an element." },
+
+            // Operating Systems & Hardware
+            { a: "THREAD", q: "The smallest unit of execution within a process that can be scheduled by the OS." },
+            { a: "VIRTUAL", q: "The type of memory that allows for a larger address space than physical RAM." },
+            { a: "MUTEX", q: "A synchronization primitive used to prevent multiple threads from accessing a shared resource." },
+            { a: "CACHE", q: "A small, high-speed storage layer that holds frequently accessed data." },
+
+            // Security & Crypto
+            { a: "HASHING", q: "The process of converting data into a fixed-size string of characters for verification." },
+            { a: "ENCRYPTION", q: "The method of scrambling data so it can only be read with a secret key." },
+            { a: "PHISHING", q: "A social engineering attack used to steal user data or login credentials via fake emails." },
+
+            // Software & Tools
+            { a: "COMPONENT", q: "The reusable UI building block that forms the core architecture of React." },
+            { a: "COMMIT", q: "The Git command used to save a snapshot of your changes to the project history." },
+            { a: "REPOSITORY", q: "The central location where all project files and their version history are stored." }
+        ];
+
+        let selectedAnswer = '';
+        let guessedLetters = [];
+        let mistakes = 0;
+        let startTime = 0;
+        const maxMistakes = 6;
+        const parts = ['head', 'body', 'arm-l', 'arm-r', 'leg-l', 'leg-r'];
+
+        const wordDisplay = document.getElementById('word-display');
+        const keyboard = document.getElementById('keyboard');
+        const mistakesCount = document.getElementById('mistakes-count');
+        const questionText = document.getElementById('question-text');
+        const overlay = document.getElementById('game-overlay');
+
+        const feedbackEl = document.getElementById('game-feedback');
+
+        const FEEDBACK = {
+            correct: ["Brain cells detected.", "Pure Luck?", "Correct.I'm... mildly suprised"],
+            wrong: ["Tension rising.", "Wrong. Very wrong.", "Incorrect.Predectable.", "Even I saw that coming"]
+        };
+
+        function showFeedback(type) {
+            const pool = FEEDBACK[type];
+            const msg = pool[Math.floor(Math.random() * pool.length)];
+            feedbackEl.innerText = msg;
+            feedbackEl.classList.remove('opacity-40');
+            feedbackEl.classList.add('opacity-100');
+            setTimeout(() => {
+                feedbackEl.classList.add('opacity-40');
+                feedbackEl.classList.remove('opacity-100');
+            }, 1000);
+        }
+
+        function initGame() {
+            // Hide overlay
+            overlay.classList.add('hidden');
+            overlay.style.opacity = '0';
+            const stats = document.getElementById('overlay-stats');
+            if (stats) stats.classList.add('opacity-0');
+            
+            feedbackEl.innerText = "System Ready...";
+            startTime = Date.now();
+
+            const game = QUESTIONS[Math.floor(Math.random() * QUESTIONS.length)];
+            selectedAnswer = game.a;
+            questionText.innerText = game.q;
+            guessedLetters = [];
+            mistakes = 0;
+            mistakesCount.innerText = "0";
+
+            // Reset SVG
+            parts.forEach(p => {
+                const el = document.getElementById(`part-${p}`);
+                if (el) el.classList.add('hidden');
+            });
+
+            renderWord();
+            renderKeyboard();
+        }
+
+        function renderWord() {
+            wordDisplay.innerHTML = "";
+            let complete = true;
+            for (let char of selectedAnswer) {
+                const span = document.createElement("span");
+                span.classList.add("word-char");
+                
+                if (guessedLetters.includes(char)) {
+                    span.innerText = char;
+                } else {
+                    span.innerText = "";
+                    span.classList.add("empty");
+                    complete = false;
+                }
+                wordDisplay.appendChild(span);
+            }
+
+            if (complete) handleGameEnd(true);
+        }
+
+        function renderKeyboard() {
+            keyboard.innerHTML = "";
+            "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("").forEach(char => {
+                const btn = document.createElement("button");
+                btn.innerText = char;
+                btn.classList.add("letter-btn", "p-3", "rounded-md", "text-sm", "mono");
+
+                if (guessedLetters.includes(char)) {
+                    btn.disabled = true;
+                    if (selectedAnswer.includes(char)) btn.classList.add("correct");
+                    else btn.classList.add("wrong");
+                }
+
+                btn.onclick = () => handleGuess(char);
+                keyboard.appendChild(btn);
+            });
+        }
+
+        function handleGuess(char) {
+            if (guessedLetters.includes(char) || mistakes >= maxMistakes) return;
+
+            guessedLetters.push(char);
+
+            if (selectedAnswer.includes(char)) {
+                showFeedback('correct');
+            } else {
+                showFeedback('wrong');
+                mistakes++;
+                mistakesCount.innerText = mistakes;
+                const part = document.getElementById(`part-${parts[mistakes - 1]}`);
+                if (part) part.classList.remove('hidden');
+
+                // Shake word on mistake
+                wordDisplay.classList.add('shake');
+                setTimeout(() => wordDisplay.classList.remove('shake'), 400);
+
+                if (mistakes >= maxMistakes) handleGameEnd(false);
+            }
+
+            renderWord();
+            renderKeyboard();
+        }
+
+        function handleGameEnd(isWin) {
+            const timeTaken = Math.floor((Date.now() - startTime) / 1000);
+            
+            overlay.classList.remove('hidden');
+            setTimeout(() => overlay.style.opacity = '1', 10);
+
+            const title = document.getElementById('overlay-title');
+            const message = document.getElementById('overlay-message');
+            const icon = document.getElementById('overlay-icon');
+            const overlayStats = document.getElementById('overlay-stats');
+            
+            // Set Stats
+            document.getElementById('overlay-mistakes').innerText = `${mistakes} / 6`;
+            document.getElementById('overlay-time').innerText = `${timeTaken}s`;
+            overlayStats.classList.remove('opacity-0');
+
+            if (isWin) {
+                title.innerText = "Challenge Solved!";
+                icon.innerText = "🎖️";
+                message.innerText = `You correctly identified: ${selectedAnswer}`;
+            } else {
+                title.innerText = "System Failure";
+                icon.innerText = "🔌";
+                message.innerText = `The missing link was: ${selectedAnswer}`;
+            }
+        }
+
+        // Initialize on load
+        window.onload = initGame;
+
+        // Security: Disable Copy-Paste and Context Menu
+        window.addEventListener('contextmenu', e => e.preventDefault());
+        window.addEventListener('copy', e => e.preventDefault());
+        window.addEventListener('paste', e => e.preventDefault());
+        window.addEventListener('keydown', e => {
+            if (e.ctrlKey && (e.key === 'c' || e.key === 'v' || e.key === 'u' || e.key === 's')) {
+                e.preventDefault();
+            }
+        });
+
+        // Moving Eyes Logic (Mr. Stuck Style)
+        document.addEventListener('mousemove', (e) => {
+            const eyes = document.querySelectorAll('.stuck-eye');
+            eyes.forEach(eye => {
+                const rect = eye.getBoundingClientRect();
+                const x = rect.left + rect.width / 2;
+                const y = rect.top + rect.height / 2;
+                const dx = e.clientX - x;
+                const dy = e.clientY - y;
+                const angle = Math.atan2(dy, dx);
+                // Subtle range for pupil movement
+                const distance = Math.min(1.2, Math.sqrt(dx * dx + dy * dy) / 100);
+                const tx = Math.cos(angle) * distance;
+                const ty = Math.sin(angle) * distance;
+                eye.style.transform = `translate(${tx}px, ${ty}px)`;
+            });
+        });
+    </script>
+</body>
+
+</html>

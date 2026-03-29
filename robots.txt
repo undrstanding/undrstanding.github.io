@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://undrstanding.github.io/sitemap.xml
+
+google-site-verification=YckjV2BPahxLMEv0kHiZqR72wnftTbjYMDb5fYRFysY

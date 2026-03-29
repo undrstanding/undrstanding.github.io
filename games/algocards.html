@@ -1,0 +1,1641 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Algo Cards | Undrstanding</title>
+    <meta name="description"
+        content="Master your understanding of computer science with Algo Cards by Undrstanding. A high-stakes tactical card duel where you optimize algorithms to claim system dominance.">
+    <meta name="author" content="Undrstanding">
+    <link rel="canonical" href="https://undrstanding.github.io/games/algocards">
+
+    <!-- PLATFORM FAVICON -->
+    <link rel="icon" type="image/svg+xml" href="../assests/undrlogo.svg">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;700;900&family=JetBrains+Mono:wght@400;700&display=swap');
+
+        :root {
+            --p1-main: #15F5BA;
+            /* MINT / CYAN */
+            --p2-main: #836FFF;
+            /* PURPLE / LAVENDER */
+            --p1-bg: #80F6DA;
+            /* PROMINENT LIGHT MINT (FOR PICKING) */
+            --p2-bg: #BDAFFF;
+            /* PROMINENT LIGHT PURPLE (FOR PICKING) */
+            --battle-arena-bg: #CDB885;
+            /* SAND / GOLD (FOR BATTLE) */
+            --timer-yellow: #F8DE22;
+            /* BRIGHT YELLOW TIMER RING */
+            --picking-pink: #FF0087;
+            /* HOT PINK */
+            --optimal-gold: #FFD700;
+            /* GOLD FOR BEST CHOICE */
+            --default-bg: #f8fafc;
+            --black: #000000;
+        }
+
+        body {
+            background-color: var(--default-bg);
+            color: var(--black);
+            font-family: 'Outfit', sans-serif;
+            margin: 0;
+            overflow: hidden;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            user-select: none;
+            transition: background-color 0.4s;
+        }
+
+        .mono {
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        /* Unified Card Style & Cards Back in Intro */
+        .card {
+            width: 85px;
+            height: 125px;
+            background: #fff;
+            border: 2px solid #000;
+            border-radius: 6px;
+            display: flex;
+            flex-direction: column;
+            padding: 8px;
+            position: absolute;
+            transition: all 0.6s cubic-bezier(0.19, 1, 0.22, 1);
+            cursor: pointer;
+            z-index: 10;
+        }
+
+        /* CARD BACK DESIGN (EXACT AS IN GAME) */
+        .card.face-down {
+            background: var(--p2-main);
+            border: 2px solid #000;
+            position: relative;
+            box-shadow: inset 0 0 0 4px #FFFFFF;
+        }
+
+        .card.face-down::after {
+            content: "";
+            position: absolute;
+            inset: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            background-image: radial-gradient(rgba(255, 255, 255, 0.2) 1.5px, transparent 1.5px);
+            background-size: 8px 8px;
+            border-radius: 4px;
+        }
+
+        .card.face-down.p1-side {
+            background: var(--p1-main);
+        }
+
+        .card.face-down.special-side {
+            background: var(--picking-pink);
+        }
+
+        /* INTRO START SCREEN */
+        .intro-screen {
+            position: fixed;
+            inset: 0;
+            background: #FFFFFF;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 6000;
+            text-align: center;
+            overflow: hidden;
+            padding-top: 80px;
+            /* SPACE FOR HEADER */
+        }
+
+        .intro-screen h1 {
+            font-size: 100px;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: -0.05em;
+            margin-bottom: 40px;
+            z-index: 100;
+            line-height: 0.9;
+        }
+
+        .mode-btn {
+            background: #fff;
+            border: 2px solid #000;
+            padding: 25px 45px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 900;
+            text-transform: uppercase;
+            transition: all 0.2s;
+            z-index: 100;
+            font-size: 18px;
+        }
+
+        .mode-btn:hover {
+            background: #000;
+            color: #fff;
+            border-color: #000;
+            transform: translateY(-3px);
+        }
+
+        .how-to-btn {
+            background: transparent;
+            border: 1.5px solid rgba(0, 0, 0, 0.2);
+            color: rgba(0, 0, 0, 0.5);
+            padding: 8px 20px;
+            font-weight: 700;
+            font-size: 10px;
+            text-transform: uppercase;
+            border-radius: 99px;
+            margin-top: 60px;
+            z-index: 100;
+            transition: all 0.2s;
+        }
+
+        .how-to-btn:hover {
+            border-color: #000;
+            color: #000;
+        }
+
+        .intro-card-frame {
+            pointer-events: none;
+            opacity: 1 !important;
+            z-index: 10;
+        }
+
+        /* PICKING PHASE STYLE */
+        .card.choosing-phase {
+            position: absolute;
+            opacity: 1;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: var(--picking-pink);
+            box-shadow: inset 0 0 0 6px #fff, 4px 4px 0 rgba(0, 0, 0, 0.2);
+        }
+
+        .card.choosing-phase::after {
+            content: "";
+            position: absolute;
+            inset: 8px;
+            background-image: radial-gradient(rgba(255, 255, 255, 0.4) 1.5px, transparent 1.5px);
+            background-size: 8px 8px;
+        }
+
+        /* REVEALED CARD (DURING CLASH) */
+        .card.revealed {
+            position: static !important;
+            opacity: 1 !important;
+            transform: none !important;
+            pointer-events: none;
+        }
+
+        .p1-card {
+            background: #fff !important;
+            border-color: var(--p1-main) !important;
+            color: var(--black);
+        }
+
+        .p2-card {
+            background: #fff !important;
+            border-color: var(--p2-main) !important;
+            color: var(--black);
+        }
+
+        .card-inner {
+            pointer-events: none;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* HUD DASHBOARD */
+        .hud-top {
+            background: #fff;
+            /* Solid and opaque to block everything below */
+            border-bottom: 2px solid #000;
+            display: grid;
+            grid-template-columns: 1fr 1.5fr 1fr;
+            align-items: center;
+            padding: 12px 30px;
+            z-index: 9000;
+            /* Definitively on top of strips/cards */
+            position: sticky;
+            top: 0;
+        }
+
+        .stat-node {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .score-bar {
+            height: 6px;
+            width: 120px;
+            background: rgba(0, 0, 0, 0.1);
+            border: 1.5px solid #000;
+            overflow: hidden;
+            display: flex;
+        }
+
+        .score-fill {
+            height: 100%;
+            transition: width 0.4s;
+        }
+
+        /* ANALOG TIMER */
+        .timer-hud {
+            position: absolute;
+            top: calc(100% + 15px);
+            left: 50%;
+            transform: translateX(-50%);
+            width: 85px;
+            height: 85px;
+            background: var(--timer-yellow);
+            border: 2px solid #000;
+            border-radius: 9999px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            box-shadow: none;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .chrono-face {
+            width: 70px;
+            height: 70px;
+            background: #FFFFFF;
+            border: 2px solid #000;
+            border-radius: 50%;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .tick {
+            position: absolute;
+            background: #000;
+            z-index: 10;
+        }
+
+        .tick-v {
+            width: 2px;
+            height: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .tick-h {
+            width: 10px;
+            height: 2px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        .tick-top {
+            top: 0;
+        }
+
+        .tick-bot {
+            bottom: 0;
+        }
+
+        .tick-left {
+            left: 0;
+        }
+
+        .tick-right {
+            right: 0;
+        }
+
+        .chrono-hand-wrap {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            justify-content: center;
+        }
+
+        .chrono-hand {
+            width: 6px;
+            height: 28px;
+            background: #FF0000;
+            border: 2px solid #000;
+            transform-origin: bottom center;
+            position: absolute;
+            bottom: 50%;
+            border-radius: 4px;
+            z-index: 20;
+        }
+
+        .chrono-center-cap {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 10px;
+            height: 10px;
+            background: #000;
+            border: 2px solid #fff;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 30;
+        }
+
+        /* SHUFFLE ANIMATIONS */
+        @keyframes shuffle-stack-p1 {
+
+            0%,
+            100% {
+                transform: translate(-50%, -50%) rotate(0deg);
+            }
+
+            50% {
+                transform: translate(-80%, -50%) rotate(-5deg);
+            }
+        }
+
+        @keyframes shuffle-stack-p2 {
+
+            0%,
+            100% {
+                transform: translate(-50%, -50%) rotate(0deg);
+            }
+
+            50% {
+                transform: translate(-20%, -50%) rotate(5deg);
+            }
+        }
+
+        .card-shuffle-p1 {
+            animation: shuffle-stack-p1 0.4s ease-in-out infinite;
+            opacity: 1 !important;
+            z-index: 150 !important;
+        }
+
+        .card-shuffle-p2 {
+            animation: shuffle-stack-p2 0.4s ease-in-out infinite;
+            opacity: 1 !important;
+            z-index: 140 !important;
+        }
+
+        .picking-main {
+            flex-grow: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px 40px;
+            min-height: 0;
+            width: 100%;
+            position: relative;
+        }
+
+        .grid-box {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .battle-arena {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            padding-top: 50px;
+        }
+
+        .player-platform {
+            width: 190px;
+            height: 260px;
+            background: var(--battle-arena-bg);
+            border: 3px solid rgba(0, 0, 0, 0.1);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            box-shadow: inset 4px 4px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        .arena-card-slot {
+            transform: scale(1.3);
+            position: static;
+            width: 85px;
+            height: 125px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: visible;
+        }
+
+        .p1-platform-glow {
+            border-color: var(--p1-main) !important;
+            box-shadow: inset 0 0 15px rgba(21, 245, 186, 0.2);
+        }
+
+        .p2-platform-glow {
+            border-color: var(--p2-main) !important;
+            box-shadow: inset 0 0 15px rgba(131, 111, 255, 0.2);
+        }
+
+        .platform-label {
+            position: absolute;
+            bottom: -22px;
+            font-size: 8px;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: rgba(0, 0, 0, 0.4);
+        }
+
+        .hand-shelf {
+            height: 180px;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+            padding-bottom: 25px;
+            overflow: visible;
+        }
+
+        .card-wrapper {
+            position: relative;
+            margin: 0 -15px;
+            height: 125px;
+            display: flex;
+            align-items: flex-end;
+            transition: all 0.3s;
+        }
+
+        .card-wrapper:hover {
+            z-index: 1000;
+            margin: 0 40px;
+        }
+
+        .card-wrapper .card {
+            position: relative;
+            top: auto;
+            left: auto;
+            transform: none;
+            opacity: 1;
+            transform-origin: bottom center;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            pointer-events: all;
+        }
+
+        .card-wrapper:hover .card {
+            transform: translateY(-70px) scale(1.4) rotate(0deg) !important;
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.2);
+        }
+
+        .turn-intermission {
+            position: fixed;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(8px);
+            z-index: 4000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.4s;
+        }
+
+        .turn-intermission.active {
+            opacity: 1;
+        }
+
+        @keyframes clash-p1 {
+            0% {
+                transform: translateY(-700px) scale(1.3) rotate(-30deg);
+                opacity: 0;
+            }
+
+            45% {
+                transform: translateY(0) scale(1.3) rotate(-6deg);
+                opacity: 1;
+            }
+
+            100% {
+                transform: translateY(0) scale(1.3) rotate(-6deg);
+            }
+        }
+
+        @keyframes clash-p2 {
+            0% {
+                transform: translateY(-700px) scale(1.3) rotate(30deg);
+                opacity: 0;
+            }
+
+            45% {
+                transform: translateY(0) scale(1.3) rotate(6deg);
+                opacity: 1;
+            }
+
+            100% {
+                transform: translateY(0) scale(1.3) rotate(6deg);
+            }
+        }
+
+        .anim-reveal-p1 {
+            animation: clash-p1 0.7s cubic-bezier(0.3, 1.5, 0.6, 1) forwards !important;
+        }
+
+        .anim-reveal-p2 {
+            animation: clash-p2 0.7s cubic-bezier(0.3, 1.5, 0.6, 1) forwards !important;
+        }
+
+        @keyframes shake {
+
+            0%,
+            100% {
+                transform: translateX(0);
+            }
+
+            25% {
+                transform: translateX(-4px) translateY(4px);
+            }
+
+            50% {
+                transform: translateX(4px) translateY(-4px);
+            }
+
+            75% {
+                transform: translateX(-4px);
+            }
+        }
+
+        .shake-arena {
+            animation: shake 0.3s ease-out;
+        }
+
+        .modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(8px);
+            z-index: 10000;
+            /* Above HUD and Timer */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: 0.3s;
+        }
+
+        .modal.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .modal-card {
+            background: #fff;
+            padding: 45px;
+            border: 4px solid #000;
+            width: 95%;
+            max-width: 680px;
+            /* INCREASED WIDTH TO SPREAD CONTENT */
+            max-height: 95vh;
+            overflow-y: auto;
+            /* INVISIBLE SCROLLBAR PROTOCOL */
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+
+        .modal-card::-webkit-scrollbar {
+            display: none;
+        }
+
+        .btn {
+            background: #000;
+            color: #fff;
+            padding: 12px 25px;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            transition: all 0.2s;
+            border: none;
+        }
+
+        .btn:hover {
+            background: #000;
+            transform: translateY(-2px);
+        }
+
+        .fullscreen-overlay {
+            position: fixed;
+            inset: 0;
+            background: #fff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+            /* Above HUD and Timer */
+        }
+
+        /* AUTO PICK BUTTON STYLING */
+        .auto-dist-btn {
+            background: #000;
+            color: #fff;
+            border: 2px solid #000;
+            padding: 8px 18px;
+            font-weight: 900;
+            font-size: 10px;
+            text-transform: uppercase;
+            transition: all 0.2s;
+            margin-top: 10px;
+            letter-spacing: 1px;
+        }
+
+        .auto-dist-btn:hover {
+            background: #fff;
+            color: #000;
+            transform: scale(1.05);
+        }
+
+        /* LANDSCAPE ORIENTATION PROTOCOL */
+        .orientation-overlay {
+            position: fixed;
+            inset: 0;
+            background: #000;
+            color: #fff;
+            z-index: 9999;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 40px;
+        }
+
+        @media screen and (orientation: portrait) and (max-width: 1024px) {
+            .orientation-overlay {
+                display: flex;
+            }
+        }
+
+        .phone-icon {
+            width: 60px;
+            height: 100px;
+            border: 3px solid #fff;
+            border-radius: 6px;
+            position: relative;
+            margin-bottom: 30px;
+            animation: rotatePhone 2s ease-in-out infinite;
+        }
+
+        .phone-icon::after {
+            content: "";
+            position: absolute;
+            bottom: 6px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 8px;
+            height: 8px;
+            background: #fff;
+            border-radius: 50%;
+        }
+
+        @keyframes rotatePhone {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            50% {
+                transform: rotate(90deg);
+            }
+
+            100% {
+                transform: rotate(90deg);
+            }
+        }
+
+        @media screen and (max-height: 550px) {
+            body {
+                overflow-y: auto !important;
+                height: auto !important;
+                min-height: 100vh;
+                scroll-behavior: smooth;
+            }
+
+            #intro-screen,
+            #pick-screen,
+            #battle-screen {
+                height: auto !important;
+                min-height: 100vh;
+                position: relative !important;
+                inset: auto !important;
+                overflow-x: hidden;
+            }
+
+            /* SUPER COMPACT INTRO */
+            .intro-screen {
+                padding-top: 80px;
+                padding-bottom: 20px;
+            }
+
+            .intro-screen h1 {
+                font-size: 45px !important;
+                margin-bottom: 10px !important;
+            }
+
+            .mode-btn {
+                padding: 10px 20px !important;
+                font-size: 11px !important;
+                gap: 8px !important;
+            }
+
+            .mode-btn svg {
+                width: 16px;
+                height: 16px;
+            }
+
+            .how-to-btn {
+                margin-top: 15px !important;
+                padding: 5px 12px !important;
+                font-size: 8px !important;
+            }
+
+            /* SUPER COMPACT CARDS & HUD */
+            .card {
+                width: 68px !important;
+                height: 100px !important;
+                border-width: 1.5px !important;
+                border-radius: 4px !important;
+            }
+
+            .card-inner .text-\[8px\] {
+                font-size: 6px !important;
+                margin-bottom: 2px !important;
+            }
+
+            .card-inner .text-\[10px\] {
+                font-size: 8px !important;
+                line-height: 1 !important;
+                margin-bottom: 2px !important;
+            }
+
+            .card-inner .mono {
+                font-size: 6px !important;
+                padding-top: 4px !important;
+            }
+
+            .hud-top {
+                padding: 4px 15px !important;
+                grid-template-columns: 1fr 1.5fr 1fr !important;
+                z-index: 9000 !important;
+                background: #fff !important;
+                box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            }
+
+            .stat-node span.text-3xl {
+                font-size: 1.1rem !important;
+            }
+
+            .stat-node .text-\[9px\] {
+                font-size: 7px !important;
+            }
+
+            .score-bar {
+                width: 60px !important;
+                height: 4px !important;
+            }
+
+            .quest-hud h3 {
+                font-size: 0.8rem !important;
+            }
+
+            .quest-hud span {
+                font-size: 0.85rem !important;
+            }
+
+            /* Pick Title */
+            #auto-dist-btn {
+                padding: 4px 10px !important;
+                font-size: 8px !important;
+                margin-top: 5px !important;
+            }
+
+            .timer-hud {
+                width: 45px !important;
+                height: 45px !important;
+                top: calc(100% + 2px) !important;
+            }
+
+            .chrono-face {
+                width: 35px !important;
+                height: 35px !important;
+            }
+
+            .chrono-hand {
+                height: 13px !important;
+                border-width: 1.5px !important;
+            }
+
+            /* SUPER COMPACT ARENA */
+            .battle-arena {
+                padding-top: 5px !important;
+                min-height: 0 !important;
+                flex-grow: 1 !important; /* Take remaining space and push shelf down */
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+            }
+
+            .player-platform {
+                width: 110px !important;
+                height: 150px !important;
+                border-radius: 8px !important;
+            }
+
+            .arena-card-slot {
+                transform: scale(0.9) !important;
+            }
+
+            .platform-label {
+                bottom: -12px !important;
+                font-size: 6px !important;
+            }
+
+            #turn-ind {
+                margin-top: 5px !important;
+                font-size: 7px !important;
+                letter-spacing: 0.2em !important;
+            }
+
+            #battle-screen {
+                overflow: hidden !important;
+            }
+
+            .hand-shelf {
+                padding-bottom: 70px !important; /* Raised significantly for clear visibility */
+                height: 150px !important; 
+            }
+
+            #pick-screen {
+                overflow-x: auto !important;
+            }
+
+            .picking-main {
+                padding: 15px 10px !important;
+                min-height: 250px !important;
+            }
+
+            /* Modal adjustments for landscape */
+            .modal-card {
+                padding: 20px;
+                max-height: 90vh;
+            }
+
+            .modal-card h2 {
+                font-size: 2rem;
+                margin-bottom: 15px;
+            }
+
+            .modal-card .grid {
+                gap: 10px;
+            }
+
+            .modal-card p {
+                font-size: 10px !important;
+            }
+
+            .modal-card .btn {
+                font-size: 14px !important;
+                padding: 10px !important;
+            }
+        }
+
+        /* EXIT SIDE STRIPS */
+        .exit-side-strip {
+            position: fixed;
+            top: 0;
+            height: 100vh;
+            width: 40px;
+            z-index: 8000;
+            background: transparent;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding-top: 60px;
+            /* Pushes text down to center it in the visible field below header */
+            writing-mode: vertical-rl;
+            text-orientation: upright;
+            /* Characters remain upright in a column */
+            color: rgba(0, 0, 0, 0.1);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 8px;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            /* Reduced spacing for upright readability */
+            transition: all 0.5s cubic-bezier(0.19, 1, 0.22, 1);
+        }
+
+        .exit-strip-left {
+            left: 0;
+            border-right: 2px solid rgba(0, 0, 0, 0.05);
+            /* Noticeable Border */
+        }
+
+        .exit-strip-right {
+            right: 0;
+            border-left: 2px solid rgba(0, 0, 0, 0.05);
+            /* Noticeable Border */
+        }
+
+        .exit-side-strip:hover {
+            background: rgba(0, 0, 0, 0.02);
+            color: #FF0087;
+            border-color: rgba(255, 0, 135, 0.3);
+            width: 50px;
+        }
+
+        .exit-strip-left:hover {
+            border-right-width: 2px;
+            border-right-style: solid;
+        }
+
+        .exit-strip-right:hover {
+            border-left-width: 2px;
+            border-left-style: solid;
+        }
+
+        @media screen and (max-height: 550px) {
+            .exit-side-strip {
+                width: 30px;
+                font-size: 7px;
+                padding-top: 40px;
+                /* Slightly less padding for compact mobile header */
+            }
+
+            .exit-side-strip:hover {
+                width: 40px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- GLOBAL UI -->
+    <div id="exit-left" onclick="quitGame()" class="hidden exit-side-strip exit-strip-left">EXIT</div>
+    <div id="exit-right" onclick="quitGame()" class="hidden exit-side-strip exit-strip-right">EXIT</div>
+
+    <!-- EXIT CONFIRMATION MODAL -->
+    <div id="exit-modal" class="modal">
+        <div class="modal-card text-center">
+            <h2 class="text-4xl font-black uppercase mb-6 outfit">BACK TO MENU</h2>
+            <div class="mb-10 p-6 border-4 border-black border-dashed" style="background-color: #FFF9E0;">
+                <p class="font-black uppercase text-[12px] leading-tight">QUIT CURRENT GAME AND RETURN TO MENU?</p>
+            </div>
+            <div class="flex gap-4">
+                <button onclick="toggleExitModal(false)"
+                    class="btn grow bg-white text-black border-2 border-black hover:bg-gray-50">CANCEL</button>
+                <button onclick="confirmExit()"
+                    class="btn grow bg-black text-white border-2 border-black hover:bg-[#FF0087] hover:border-[#FF0087]">CONFIRM</button>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- ORIENTATION ENFORCEMENT -->
+    <div class="orientation-overlay">
+        <div class="phone-icon"></div>
+        <h2 class="text-2xl font-black uppercase mb-4 outfit">Rotate Your Device</h2>
+        <p class="mono text-[10px] uppercase opacity-60 tracking-[0.3em]">Landscape Protocol Required for Gameplay</p>
+    </div>
+
+    <div id="turn-gap" class="turn-intermission">
+        <h2 id="turn-gap-msg" class="text-4xl md:text-5xl font-black uppercase tracking-tighter"
+            style="color: var(--p2-main);">GET READY...</h2>
+    </div>
+
+    <!-- START SCREEN: ALGO CARDS REDESIGN -->
+    <div id="intro-screen" class="intro-screen">
+        <!-- FULL-WIDTH PLATFORM HEADER -->
+        <nav
+            class="absolute top-0 left-0 right-0 w-full flex flex-col sm:flex-row justify-between items-start sm:items-center bg-white px-8 py-5 border-b-2 border-black z-[5000]">
+            <a href="../" class="relative inline-block group cursor-pointer hover:no-underline">
+                <span
+                    class="mono text-sm font-bold uppercase tracking-widest bg-black text-white px-4 py-1.5 relative z-0 group-hover:bg-[#1a1a1a] transition-colors">Undrstanding</span>
+                <div
+                    class="absolute -bottom-2 -right-4 bg-purple-600 text-white text-[9px] mono font-bold px-2 py-0.5 transform -rotate-3 shadow-[2px_2px_0_black] border border-black z-10 select-none group-hover:scale-110 transition-transform">
+                    GAMES</div>
+            </a>
+            <div class="mono text-[11px] md:text-sm font-bold uppercase tracking-widest text-black mt-2 sm:mt-0">
+                Algo Cards: Tactical Duel</div>
+        </nav>
+
+        <div id="scatter-box" class="absolute inset-0 overflow-hidden pointer-events-none"></div>
+
+        <div class="z-100 flex flex-col items-center">
+            <h1 class="mono">ALGO<br>CARDS</h1>
+
+            <div class="flex gap-4 mb-4">
+                <button onclick="setMode('single')" id="mode-1" class="mode-btn">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"
+                        stroke-linecap="round" stroke-linejoin="round" class="mr-3">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="12" cy="7" r="4"></circle>
+                    </svg>
+                    SINGLE PLAYER
+                </button>
+                <button onclick="setMode('multi')" id="mode-2" class="mode-btn">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"
+                        stroke-linecap="round" stroke-linejoin="round" class="mr-3">
+                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="9" cy="7" r="4"></circle>
+                        <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                        <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                    </svg>
+                    TWO PLAYER
+                </button>
+            </div>
+
+            <button onclick="toggleHelp(true)" class="how-to-btn">HOW TO PLAY</button>
+        </div>
+    </div>
+
+    <!-- HOW TO PLAY MODAL (EXPANSIVE LAYOUT) -->
+    <div id="help-modal" class="modal">
+        <div class="modal-card">
+            <h2 class="text-4xl font-black uppercase mb-10 border-b-4 border-black pb-4 text-center">HOW TO PLAY
+            </h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-10 text-left mb-12">
+                <div class="flex items-start gap-5">
+                    <span
+                        class="bg-black text-white w-10 h-10 rounded-full flex items-center justify-center font-black shrink-0 text-lg">1</span>
+                    <div class="pt-1">
+                        <span class="block font-black text-[11px] uppercase text-gray-400 mb-1">DEPLOYMENT</span>
+                        <p class="font-bold uppercase text-[12px] leading-tight">Pick 6 Cards from the shared deck. Each
+                            card represents a unique algorithm (SORT, PATH, or SEARCH).</p>
+                    </div>
+                </div>
+                <div class="flex items-start gap-5">
+                    <span
+                        class="bg-black text-white w-10 h-10 rounded-full flex items-center justify-center font-black shrink-0 text-lg">2</span>
+                    <div class="pt-1">
+                        <span class="block font-black text-[11px] uppercase text-gray-400 mb-1">PROTOCOLS</span>
+                        <p class="font-bold uppercase text-[12px] leading-tight">Match your card's TYPE to the BATTLE
+                            GOAL for maximum performance.</p>
+                    </div>
+                </div>
+                <div class="flex items-start gap-5">
+                    <span
+                        class="bg-black text-white w-10 h-10 rounded-full flex items-center justify-center font-black shrink-0 text-lg">3</span>
+                    <div class="pt-1">
+                        <span class="block font-black text-[11px] uppercase text-gray-400 mb-1">COMPLEXITY</span>
+                        <p class="font-bold uppercase text-[12px] leading-tight">Efficiency wins! Higher VALUE protocols
+                            beat lower ones. First player to win 6 rounds claims the system.</p>
+                    </div>
+                </div>
+                <div class="flex items-start gap-5">
+                    <span
+                        class="bg-black text-white w-10 h-10 rounded-full flex items-center justify-center font-black shrink-0 text-lg">4</span>
+                    <div class="pt-1">
+                        <span class="block font-black text-[11px] uppercase text-gray-400 mb-1">OVERLINK</span>
+                        <p class="font-bold uppercase text-[12px] leading-tight">You have 7 seconds per turn! If the
+                            timer runs out, the system will auto-pick a card.</p>
+                    </div>
+                </div>
+            </div>
+            <button onclick="toggleHelp(false)" class="btn w-full text-xl py-4">ACKNOWLEDGE</button>
+        </div>
+    </div>
+
+    <!-- PICK STAGE -->
+    <div id="pick-screen" class="hidden h-full flex flex-col">
+        <div class="hud-top">
+            <div class="stat-node">
+                <span id="p1-hand-label" class="text-[9px] font-black uppercase" style="color: var(--p1-main);">PLAYER 1
+                    HAND</span>
+                <span id="p1-hand-info" class="text-3xl font-black">0 / 6</span>
+            </div>
+            <div class="quest-hud text-center">
+                <span id="pick-title" class="text-2xl font-black uppercase tracking-tighter">PLAYER 1 PICKING</span>
+                <p id="pick-subtitle" class="text-[9px] font-black text-gray-400 uppercase tracking-widest mt-0.5">PICK
+                    YOUR CARDS</p>
+                <button id="auto-dist-btn" onclick="autoDistribute()" class="auto-dist-btn">AUTO DISTRIBUTE</button>
+            </div>
+            <div id="p2-hand-node" class="stat-node items-end text-right">
+                <div id="p2-hand-content" class="flex flex-col items-end">
+                    <span id="p2-hand-label" class="text-[9px] font-black uppercase" style="color: var(--p2-main);">P2
+                        HAND</span>
+                    <span id="p2-hand-info" class="text-3xl font-black">0 / 6</span>
+                </div>
+            </div>
+        </div>
+        <div class="picking-main">
+            <div id="grid-box" class="grid-box"></div>
+        </div>
+    </div>
+
+    <!-- BATTLE STAGE -->
+    <div id="battle-screen" class="hidden h-full flex flex-col">
+        <div class="hud-top">
+            <div class="stat-node">
+                <span class="text-[9px] font-black uppercase" style="color: var(--black); opacity: 0.6;">P1 SCORE</span>
+                <span id="s1-display" class="font-black text-3xl">0</span>
+                <div class="score-bar">
+                    <div id="s1-bar" class="score-fill w-0" style="background-color: var(--p1-main);"></div>
+                </div>
+            </div>
+
+            <div class="quest-hud text-center">
+                <span class="block mono text-[8px] text-gray-400 uppercase font-black mb-0.5">BATTLE GOAL:</span>
+                <h3 id="quest-hud-label" class="text-xl md:text-2xl font-black uppercase tracking-tight">...</h3>
+            </div>
+
+            <div class="stat-node items-end text-right">
+                <span class="text-[9px] font-black uppercase" style="color: var(--black); opacity: 0.6;">P2 SCORE</span>
+                <span id="s2-display" class="font-black text-3xl">0</span>
+                <div class="score-bar">
+                    <div id="s2-bar" class="score-fill w-0" style="background-color: var(--p2-main);"></div>
+                </div>
+            </div>
+
+            <div id="timer-hud" class="timer-hud hidden">
+                <div class="chrono-face">
+                    <div class="tick tick-v tick-top"></div>
+                    <div class="tick tick-v tick-bot"></div>
+                    <div class="tick tick-h tick-left"></div>
+                    <div class="tick tick-h tick-right"></div>
+                    <div class="chrono-hand-wrap">
+                        <div id="timer-analog-hand" class="chrono-hand"></div>
+                    </div>
+                    <div class="chrono-center-cap"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="battle-arena" id="arena-surface">
+            <div class="flex gap-16 items-center">
+                <div id="platform-1" class="player-platform p1-platform-glow">
+                    <div id="p1-battle-slot" class="arena-card-slot"></div>
+                    <span class="platform-label">PLAYER 1</span>
+                </div>
+                <div class="text-3xl font-black text-gray-200">VS</div>
+                <div id="platform-2" class="player-platform p2-platform-glow">
+                    <div id="p2-battle-slot" class="arena-card-slot"></div>
+                    <span class="platform-label">PLAYER 2</span>
+                </div>
+            </div>
+            <div id="turn-ind" class="mt-12 text-[9px] font-black uppercase tracking-[0.5em]">PICK A CARD...</div>
+        </div>
+        <div id="hand-fan" class="hand-shelf"></div>
+    </div>
+
+    <!-- RESULT MODAL -->
+    <div id="result-modal" class="modal">
+        <div class="modal-card text-center">
+            <h2 id="modal-outcome" class="text-5xl font-black uppercase mb-10">ROUND OVER</h2>
+            <div class="grid grid-cols-2 gap-8 mb-8">
+                <div class="p-6 border-4 text-left"
+                    style="background-color: rgba(0, 0, 0, 0.02); border-color: var(--p1-main);">
+                    <span class="block text-[10px] font-black mb-2 uppercase tracking-widest"
+                        style="color: #000; opacity: 0.6;">P1 PROTOCOL</span>
+                    <div id="modal-p1-info" class="text-[14px] font-black uppercase leading-tight">...</div>
+                </div>
+                <div class="p-6 border-4 text-right"
+                    style="background-color: rgba(0, 0, 0, 0.02); border-color: var(--p2-main);">
+                    <span class="block text-[10px] font-black mb-2 uppercase tracking-widest"
+                        style="color: #000; opacity: 0.6;">P2 PROTOCOL</span>
+                    <div id="modal-p2-info" class="text-[14px] font-black uppercase leading-tight">...</div>
+                </div>
+            </div>
+            <div class="mb-10 p-6 border-4 border-black border-dashed flex items-center justify-between"
+                style="background-color: #FFF9E0;">
+                <div class="text-left">
+                    <span class="block text-[10px] font-black uppercase tracking-widest text-[#B49E2C] mb-1">OPTIMAL
+                        INTELLIGENCE</span>
+                    <div id="modal-best-name" class="text-lg font-black uppercase">...</div>
+                </div>
+                <div class="text-right">
+                    <div id="modal-best-comp" class="mono text-sm font-black text-[#B49E2C]">...</div>
+                </div>
+            </div>
+            <button onclick="closeModalAndProceed()" class="btn w-full font-black text-xl py-4">EXECUTE NEXT ROUND
+                &rarr;</button>
+        </div>
+    </div>
+
+    <!-- OVER -->
+    <div id="game-over-screen" class="fullscreen-overlay hidden">
+        <h1 id="game-title-final" class="text-8xl font-black uppercase mb-10 text-center">GAME OVER</h1>
+        <button onclick="quitGame(true)" class="btn px-20">REBOOT SYSTEM &rarr;</button>
+    </div>
+
+    <script>
+        const ALGOS = [
+            { n: 'Bubble Sort', t: 'SORT', c: 'O(N²)', v: 10 },
+            { n: 'Selection Sort', t: 'SORT', c: 'O(N²)', v: 15 },
+            { n: 'Insertion Sort', t: 'SORT', c: 'O(N²)', v: 20 },
+            { n: 'Quick Sort', t: 'SORT', c: 'O(NlogN)', v: 90 },
+            { n: 'Merge Sort', t: 'SORT', c: 'O(NlogN)', v: 100 },
+            { n: 'Heap Sort', t: 'SORT', c: 'O(NlogN)', v: 85 },
+            { n: 'DFS Search', t: 'PATH', c: 'O(V+E)', v: 40 },
+            { n: 'BFS Travel', t: 'PATH', c: 'O(V+E)', v: 60 },
+            { n: 'Dijkstra', t: 'PATH', c: 'O(ElogV)', v: 95 },
+            { n: 'A-Star Path', t: 'PATH', c: 'O(E)', v: 100 },
+            { n: 'Linear Scan', t: 'SEARCH', c: 'O(N)', v: 20 },
+            { n: 'Binary Cut', t: 'SEARCH', c: 'O(logN)', v: 100 }
+        ];
+        const QUESTS = [
+            { q: "SORT 1M RECORDS", t: "SORT" },
+            { q: "ORGANIZE PIXELS BY BRIGHTNESS", t: "SORT" },
+            { q: "RANK SEARCH RESULTS", t: "SORT" },
+            { q: "ALPHABETIZE GLOBAL DICTIONARY", t: "SORT" },
+            { q: "FIND EXIT IN MAZE", t: "PATH" },
+            { q: "NAVIGATE GPS NAV SYSTEM", t: "PATH" },
+            { q: "GLOBAL TRANSPORT NODES", t: "PATH" },
+            { q: "LOOKUP USER INDEX", t: "SEARCH" },
+            { q: "FIND TARGET ID IN DATABASE", t: "SEARCH" },
+            { q: "SCAN FOR ANOMALY IN DATASET", t: "SEARCH" }
+        ];
+
+        let mode = 'single', deck = [], p1H = [], p2H = [], s1 = 0, s2 = 0, picker = 1, p1S = null, p2S = null, lastW = 0;
+        let turnTimer = null, timeLeft = 7, activePlayer = 0, currentQuest = null;
+
+        /**
+         * BALANCED VISUAL PROTOCOL - EXPANDED
+         */
+        (function renderIntroFrame() {
+            const box = document.getElementById('scatter-box');
+            // Increased density: 7 rows of cards instead of 5
+            const heights = [14, 28, 42, 56, 70, 84, 98];
+            const rotations = [18, -12, 24, -8, 15, -20, 10];
+
+            heights.forEach((y, i) => {
+                // LEFT SIDE (P1 MINT + SPECIAL PINK)
+                const cL = document.createElement('div');
+                // Alternate between P1 MINT and PINK for left side
+                const colorL = (i % 3 === 0) ? 'special-side' : 'p1-side';
+                cL.className = `card face-down intro-card-frame ${colorL}`;
+                cL.style.left = (i % 2 === 0 ? '6%' : '10%'); // Slight horizontal variation
+                cL.style.top = y + '%';
+                cL.style.transform = `translate(-50%, -50%) rotate(${rotations[i]}deg) scale(1.1)`;
+                box.appendChild(cL);
+
+                // RIGHT SIDE (P2 PURPLE + SPECIAL PINK)
+                const cR = document.createElement('div');
+                // Alternate between P2 PURPLE and PINK for right side
+                const colorR = (i % 3 === 1) ? 'special-side' : '';
+                cR.className = `card face-down intro-card-frame ${colorR}`;
+                cR.style.left = (i % 2 === 0 ? '94%' : '90%'); // Slight horizontal variation
+                cR.style.top = y + '%';
+                cR.style.transform = `translate(-50%, -50%) rotate(${-rotations[i]}deg) scale(1.1)`;
+                box.appendChild(cR);
+            });
+        })();
+
+        function setMode(m) {
+            mode = m;
+            document.getElementById('p2-hand-label').innerText = (m === 'single' ? 'COMPUTER HAND' : 'P2 HAND');
+            // INTERCEPT BACK BUTTON: Push state so browser 'back' stays on page
+            history.pushState({ stage: 'game' }, '');
+            document.getElementById('exit-left').classList.remove('hidden');
+            document.getElementById('exit-right').classList.remove('hidden');
+            startPick();
+        }
+
+        // --- NAVIGATION LOGIC ---
+        function quitGame(force = false) {
+            if (force) return confirmExit();
+            toggleExitModal(true);
+        }
+
+        function toggleExitModal(show) {
+            document.getElementById('exit-modal').classList.toggle('active', show);
+        }
+
+        function confirmExit() {
+            toggleExitModal(false);
+            if (history.state && history.state.stage === 'game') {
+                history.back(); // Triggers onpopstate -> goToMainMenu()
+            } else {
+                goToMainMenu();
+            }
+        }
+
+        function goToMainMenu() {
+            if (turnTimer) clearInterval(turnTimer);
+            s1 = 0; s2 = 0; p1H = []; p2H = []; p1S = null; p2S = null; picker = 1;
+
+            // Clean UI
+            document.getElementById('intro-screen').classList.remove('hidden');
+            document.getElementById('pick-screen').classList.add('hidden');
+            document.getElementById('battle-screen').classList.add('hidden');
+            document.getElementById('game-over-screen').classList.add('hidden');
+            document.getElementById('result-modal').classList.remove('active');
+            document.getElementById('help-modal').classList.remove('active');
+            document.getElementById('exit-left').classList.add('hidden');
+            document.getElementById('exit-right').classList.add('hidden');
+
+            // Reset HUD
+            const autoDistBtn = document.getElementById('auto-dist-btn');
+            autoDistBtn.style.opacity = '1';
+            autoDistBtn.style.pointerEvents = 'all';
+            document.getElementById('pick-title').innerText = "PLAYER 1 PICKING";
+            
+            document.getElementById('p1-hand-info').innerText = "0 / 6";
+            document.getElementById('p2-hand-info').innerText = "0 / 6";
+            document.getElementById('s1-display').innerText = "0";
+            document.getElementById('s2-display').innerText = "0";
+            document.getElementById('s1-bar').style.width = "0%";
+            document.getElementById('s2-bar').style.width = "0%";
+            document.body.style.backgroundColor = '#fff';
+        }
+
+        window.onpopstate = function (event) {
+            // If the user navigates back to a null/non-game state while in-game, reboot to menu
+            goToMainMenu();
+        };
+
+        function toggleHelp(show) {
+            document.getElementById('help-modal').classList.toggle('active', show);
+        }
+
+        function startPick() {
+            deck = [...ALGOS].sort(() => Math.random() - 0.5);
+            document.getElementById('intro-screen').classList.add('hidden');
+            document.getElementById('pick-screen').classList.remove('hidden');
+            document.body.style.backgroundColor = 'var(--p1-bg)';
+            renderGrid();
+        }
+
+        function renderGrid() {
+            const box = document.getElementById('grid-box'); box.innerHTML = '';
+            const elements = deck.map((c, i) => {
+                const el = document.createElement('div'); el.className = 'card choosing-phase';
+                el.style.zIndex = 100 + i; box.appendChild(el); return el;
+            });
+            setTimeout(() => { elements.forEach((el, i) => el.classList.add(i % 2 === 0 ? 'card-shuffle-p1' : 'card-shuffle-p2')); }, 300);
+            setTimeout(() => {
+                elements.forEach(el => el.classList.remove('card-shuffle-p1', 'card-shuffle-p2'));
+                setTimeout(() => {
+                    // CLASSSIC 6x2 GRID DISTRIBUTION
+                    const isMobile = window.innerHeight < 550;
+                    const cols = 6;
+                    const rows = 2;
+                    const gap = isMobile ? 10 : 20;
+
+                    // GET ACTUAL CSS DIMENSIONS
+                    const temp = document.createElement('div');
+                    temp.className = 'card choosing-phase';
+                    temp.style.visibility = 'hidden';
+                    document.body.appendChild(temp);
+                    const cW = temp.offsetWidth; const cH = temp.offsetHeight;
+                    document.body.removeChild(temp);
+
+                    elements.forEach((el, i) => {
+                        const row = Math.floor(i / cols); const col = i % cols;
+                        const targetX = (col - (cols - 1) / 2) * (cW + gap);
+                        const targetY = (row - (rows - 1) / 2) * (cH + gap);
+                        setTimeout(() => {
+                            el.style.zIndex = i + 10;
+                            el.style.transform = `translate(calc(-50% + ${targetX}px), calc(-50% + ${targetY}px)) scale(1)`;
+                            el.style.pointerEvents = 'all'; el.onclick = () => pickCard(i, el);
+                        }, i * 100);
+                    });
+                }, 200);
+            }, 2000);
+        }
+
+        function pickCard(idx, el) {
+            if (el.classList.contains('picked')) return;
+            const grid = document.getElementById('grid-box');
+            grid.style.pointerEvents = 'none';
+            el.classList.add('picked'); el.style.opacity = '0';
+            if (mode === 'single') {
+                p1H.push(deck[idx]);
+                document.getElementById('p1-hand-info').innerText = p1H.length + " / 6";
+                document.getElementById('pick-title').innerText = "COMPUTER IS THINKING...";
+                document.body.style.backgroundColor = 'var(--p2-bg)';
+                setTimeout(() => {
+                    const cards = document.querySelectorAll('#grid-box .card');
+                    const av = deck.map((c, i) => i).filter(i => !cards[i].classList.contains('picked'));
+                    if (av.length > 0) {
+                        const cpuI = av[Math.floor(Math.random() * av.length)];
+                        p2H.push(deck[cpuI]);
+                        cards[cpuI].classList.add('picked'); cards[cpuI].style.opacity = '0';
+                        document.getElementById('p2-hand-info').innerText = p2H.length + " / 6";
+                    }
+                    document.getElementById('pick-title').innerText = "PLAYER 1 PICKING";
+                    document.body.style.backgroundColor = 'var(--p1-bg)';
+                    grid.style.pointerEvents = 'all';
+                    if (p1H.length === 6 && p2H.length === 6) setTimeout(startGame, 800);
+                }, 800);
+            } else {
+                if (picker === 1) {
+                    p1H.push(deck[idx]);
+                    picker = 2; document.getElementById('pick-title').innerText = "PLAYER 2 PICKING";
+                    document.body.style.backgroundColor = 'var(--p2-bg)';
+                } else {
+                    p2H.push(deck[idx]);
+                    picker = 1; document.getElementById('pick-title').innerText = "PLAYER 1 PICKING";
+                    document.body.style.backgroundColor = 'var(--p1-bg)';
+                }
+                document.getElementById('p1-hand-info').innerText = p1H.length + " / 6";
+                document.getElementById('p2-hand-info').innerText = p2H.length + " / 6";
+                grid.style.pointerEvents = 'all';
+                if (p1H.length === 6 && p2H.length === 6) setTimeout(startGame, 800);
+            }
+        }
+
+        /**
+         * AUTONOMOUS PROTOCOL ALLOCATION
+         * Randomly distributes the remaining cards to both players.
+         */
+        function autoDistribute() {
+            const cards = document.querySelectorAll('#grid-box .card');
+            const unpicked = [];
+            cards.forEach((el, i) => {
+                if (!el.classList.contains('picked')) unpicked.push(i);
+            });
+
+            // Shuffle the unpicked indices
+            const shuffled = unpicked.sort(() => Math.random() - 0.5);
+
+            while (p1H.length < 6 || p2H.length < 6) {
+                if (p1H.length < 6 && shuffled.length > 0) {
+                    const idx = shuffled.pop();
+                    p1H.push(deck[idx]);
+                    cards[idx].classList.add('picked');
+                    cards[idx].style.opacity = '0';
+                }
+                if (p2H.length < 6 && shuffled.length > 0) {
+                    const idx = shuffled.pop();
+                    p2H.push(deck[idx]);
+                    cards[idx].classList.add('picked');
+                    cards[idx].style.opacity = '0';
+                }
+            }
+
+            document.getElementById('p1-hand-info').innerText = "6 / 6";
+            document.getElementById('p2-hand-info').innerText = "6 / 6";
+            document.getElementById('pick-title').innerText = "SYSTEM ALLOCATED";
+            document.getElementById('auto-dist-btn').style.opacity = '0.3';
+            document.getElementById('auto-dist-btn').style.pointerEvents = 'none';
+
+            setTimeout(startGame, 1000);
+        }
+
+        function startGame() {
+            document.getElementById('pick-screen').classList.add('hidden');
+            document.getElementById('battle-screen').classList.remove('hidden');
+            document.body.style.backgroundColor = 'var(--battle-arena-bg)';
+            initRound();
+        }
+
+        function initRound() {
+            if (p1H.length === 0) return endGame();
+            p1S = null; p2S = null;
+            document.getElementById('p1-battle-slot').classList.remove('anim-reveal-p1');
+            document.getElementById('p2-battle-slot').classList.remove('anim-reveal-p2');
+            currentQuest = QUESTS[Math.floor(Math.random() * QUESTS.length)];
+            document.getElementById('quest-hud-label').innerText = currentQuest.q;
+            document.getElementById('p1-battle-slot').innerHTML = '';
+            document.getElementById('p2-battle-slot').innerHTML = '';
+            document.body.style.backgroundColor = 'var(--battle-arena-bg)';
+            startPlayerTurn(picker);
+        }
+
+        function startPlayerTurn(num) {
+            activePlayer = num; timeLeft = 7;
+            const tBox = document.getElementById('timer-hud');
+            const tHand = document.getElementById('timer-analog-hand');
+            tHand.style.transition = 'none'; tHand.style.transform = `rotate(0deg)`;
+            tBox.classList.remove('hidden'); tHand.offsetHeight;
+            tHand.style.transition = 'transform 7s linear'; tHand.style.transform = `rotate(360deg)`;
+            document.getElementById('turn-ind').innerText = "PLAYER " + num + " TURN";
+            document.getElementById('turn-ind').style.color = (num === 1 ? 'var(--p1-main)' : 'var(--p2-main)');
+            renderHand(num);
+            clearInterval(turnTimer);
+            turnTimer = setInterval(() => {
+                timeLeft--;
+                if (timeLeft <= 0) { clearInterval(turnTimer); autoCommit(); }
+            }, 1000);
+        }
+
+        function renderHand(num) {
+            const shelf = document.getElementById('hand-fan'); shelf.innerHTML = '';
+            const hand = (num === 1) ? p1H : p2H;
+            const total = hand.length;
+            hand.forEach((c, i) => {
+                const wrap = document.createElement('div'); wrap.className = 'card-wrapper';
+                const cardEl = document.createElement('div');
+                cardEl.className = 'card ' + (num === 1 ? 'p1-card' : 'p2-card');
+                cardEl.style.position = 'relative'; cardEl.style.top = 'auto'; cardEl.style.left = 'auto';
+                cardEl.style.opacity = '1';
+                const angle = (i - (total - 1) / 2) * (35 / Math.max(1, total - 1));
+                cardEl.style.transform = `translateY(${Math.abs(angle) * 1.5}px) rotate(${angle}deg)`;
+                cardEl.innerHTML = `<div class="card-inner"><div class="text-[8px] font-black opacity-30 mb-2 uppercase">${c.t}</div><div class="text-[10px] font-black uppercase leading-tight mb-2">${c.n}</div><div class="mt-auto mono text-[8px] border-t border-black/10 pt-2">${c.c}</div></div>`;
+                cardEl.onclick = () => selectCard(i, num);
+                wrap.appendChild(cardEl); shelf.appendChild(wrap);
+            });
+        }
+
+        function selectCard(idx, num) {
+            clearInterval(turnTimer);
+            document.getElementById('timer-hud').classList.add('hidden');
+            if (num === 1) {
+                p1S = p1H.splice(idx, 1)[0];
+                document.getElementById('p1-battle-slot').innerHTML = '<div class="card face-down p1-side"></div>';
+                if (mode === 'single') {
+                    p2S = p2H.splice(Math.floor(Math.random() * p2H.length), 1)[0];
+                    document.getElementById('p2-battle-slot').innerHTML = '<div class="card face-down"></div>';
+                    clashSeq();
+                } else {
+                    document.getElementById('hand-fan').innerHTML = '';
+                    const gap = document.getElementById('turn-gap'); gap.classList.add('active');
+                    document.getElementById('turn-gap-msg').innerText = "PLAYER 2 TURN...";
+                    setTimeout(() => { gap.classList.remove('active'); startPlayerTurn(2); }, 3000);
+                }
+            } else {
+                p2S = p2H.splice(idx, 1)[0];
+                document.getElementById('p2-battle-slot').innerHTML = '<div class="card face-down"></div>';
+                clashSeq();
+            }
+        }
+
+        function autoCommit() {
+            document.getElementById('turn-ind').innerText = "NO CARD CHOSEN - AUTO-PICKING...";
+            document.getElementById('turn-ind').style.color = "#FF0000";
+            const shelf = document.getElementById('hand-fan');
+            shelf.style.pointerEvents = 'none';
+            setTimeout(() => { selectCard(0, activePlayer); }, 800);
+        }
+
+        function clashSeq() {
+            document.getElementById('hand-fan').innerHTML = '';
+            document.getElementById('turn-ind').innerText = "BATTLE!";
+            document.getElementById('turn-ind').style.color = "var(--black)";
+            setTimeout(() => {
+                document.getElementById('arena-surface').classList.add('shake-arena');
+                document.getElementById('p1-battle-slot').innerHTML = createUI(p1S, 'p1-card revealed');
+                document.getElementById('p2-battle-slot').innerHTML = createUI(p2S, 'p2-card revealed');
+                document.getElementById('p1-battle-slot').classList.add('anim-reveal-p1');
+                document.getElementById('p2-battle-slot').classList.add('anim-reveal-p2');
+                setTimeout(() => {
+                    document.getElementById('arena-surface').classList.remove('shake-arena');
+                    showRes(currentQuest);
+                }, 1200);
+            }, 800);
+        }
+
+        function showRes(q) {
+            const v1 = (p1S.t === q.t) ? p1S.v : 10;
+            const v2 = (p2S.t === q.t) ? p2S.v : 10;
+            const best = ALGOS.filter(a => a.t === q.t).reduce((prev, curr) => (prev.v > curr.v) ? prev : curr);
+            document.getElementById('modal-best-name').innerText = best.n;
+            document.getElementById('modal-best-comp').innerText = best.c;
+            let res = "IT'S A DRAW!";
+            if (v1 > v2) { res = "PLAYER 1 WINS!"; lastW = 1; }
+            else if (v2 > v1) { res = (mode === 'single' ? "COMPUTER WINS!" : "PLAYER 2 WINS!"); lastW = 2; }
+            document.getElementById('modal-outcome').innerText = res;
+            document.getElementById('modal-p1-info').innerText = `${p1S.n} : ${p1S.c}`;
+            document.getElementById('modal-p2-info').innerText = `${p2S.n} : ${p2S.c}`;
+            document.getElementById('result-modal').classList.add('active');
+        }
+
+        function closeModalAndProceed() {
+            document.getElementById('result-modal').classList.remove('active');
+            if (lastW === 1) s1++; if (lastW === 2) s2++;
+            document.getElementById('s1-display').innerText = s1;
+            document.getElementById('s2-display').innerText = s2;
+            document.getElementById('s1-bar').style.width = (s1 * 16.66) + '%';
+            document.getElementById('s2-bar').style.width = (s2 * 16.66) + '%';
+            initRound();
+        }
+
+        function createUI(c, cls) {
+            return `<div class="card ${cls}"><div class="card-inner"><div class="text-[8px] font-black opacity-30 mb-2 uppercase">${c.t}</div><div class="text-[10px] font-black uppercase leading-tight mb-2">${c.n}</div><div class="mt-auto mono text-[8px] border-t border-black/10 pt-2">${c.c}</div></div></div>`;
+        }
+
+        function endGame() {
+            document.getElementById('battle-screen').classList.add('hidden');
+            document.getElementById('game-over-screen').classList.remove('hidden');
+            const r = document.getElementById('game-title-final');
+            if (s1 > s2) r.innerText = "PLAYER 1 WINS!"; else if (s2 > s1) r.innerText = "GAME OVER"; else r.innerText = "DRAW!";
+        }
+    </script>
+</body>
+
+</html>
