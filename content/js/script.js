@@ -1288,37 +1288,157 @@ document.addEventListener('DOMContentLoaded', () => {
         opacity: 0;
     `;
     tooltip.innerHTML = `
-        <button id="highlight-btn" style="
-            display: flex; align-items: center; gap: 8px;
-            background: #000000;
-            color: #ffffff;
-            border: 1px solid rgba(255,255,255,0.1);
-            padding: 8px 18px 8px 14px;
-            border-radius: 99px;
-            font-size: 0.65rem; font-weight: 800;
-            font-family: 'JetBrains Mono', monospace;
-            text-transform: uppercase; letter-spacing: 0.15em;
-            cursor: pointer; white-space: nowrap;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-            transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        <div id="highlight-pill" style="
+            display: flex; align-items: center; 
+            background: #000000; 
+            border: 1px solid rgba(255,255,255,0.15); 
+            border-radius: 99px; 
+            padding: 4px; 
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+            gap: 2px;
         ">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#facc15" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/>
-            </svg>
-            Highlight
-        </button>
+            <button id="highlight-btn" class="hl-tooltip-btn" style="
+                display: flex; align-items: center; justify-content: center;
+                background: transparent;
+                color: #ffffff;
+                border: none;
+                width: 32px; height: 32px;
+                border-radius: 50%;
+                cursor: pointer;
+                transition: all 0.2s;
+            " title="Highlight Selection">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#facc15" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/>
+                </svg>
+            </button>
+            <div id="hl-divider" style="width: 1px; height: 16px; background: rgba(255,255,255,0.15);"></div>
+            <button id="note-toggle-btn" class="hl-tooltip-btn" style="
+                display: flex; align-items: center; justify-content: center;
+                background: transparent;
+                color: #ffffff;
+                border: none;
+                width: 32px; height: 32px;
+                border-radius: 50%;
+                cursor: pointer;
+                transition: all 0.2s;
+            " title="Add Note">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#60a5fa" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                </svg>
+            </button>
+            <div id="hl-divider-2" style="width: 1px; height: 16px; background: rgba(255,255,255,0.15);"></div>
+            <button id="delete-hl-btn" class="hl-tooltip-btn" style="
+                display: flex; align-items: center; justify-content: center;
+                background: transparent;
+                color: #ff4d4d;
+                border: none;
+                width: 32px; height: 32px;
+                border-radius: 50%;
+                cursor: pointer;
+                transition: all 0.2s;
+            " title="Delete Highlight">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                </svg>
+            </button>
+        </div>
+        <style>
+            .hl-tooltip-btn:hover {
+                background: rgba(255,255,255,0.1) !important;
+            }
+            .hl-tooltip-btn:active {
+                transform: scale(0.95);
+            }
+        </style>
+        <div id="note-panel" class="hl-note-panel" style="
+            display: none;
+            flex-direction: column;
+            background: #000000;
+            border: 1px solid rgba(255,255,255,0.15);
+            padding: 12px;
+            border-radius: 16px;
+            width: 200px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+            margin-top: 8px;
+            overflow: hidden;
+            transition: all 0.5s cubic-bezier(0.19, 1, 0.22, 1);
+            opacity: 0;
+            transform: translateY(-24px) scale(0.92);
+            transform-origin: top center;
+            max-height: 0;
+        ">
+            <textarea id="note-input" placeholder="Write a quick note..." style="
+                background: transparent;
+                border: none;
+                color: white;
+                font-family: 'Inter', sans-serif;
+                font-size: 0.75rem;
+                resize: none;
+                width: 100%;
+                height: 60px;
+                outline: none;
+                margin-bottom: 4px;
+            "></textarea>
+            <div id="word-count" style="font-size: 0.6rem; color: rgba(255,255,255,0.4); margin-bottom: 8px; font-family: 'JetBrains Mono', monospace;">0/50 words</div>
+            <button id="save-with-note-btn" style="
+                background: #ffffff;
+                color: #000000;
+                border: none;
+                padding: 6px 12px;
+                border-radius: 8px;
+                font-size: 0.6rem;
+                font-weight: 900;
+                text-transform: uppercase;
+                letter-spacing: 0.1em;
+                cursor: pointer;
+                font-family: 'JetBrains Mono', monospace;
+                transition: opacity 0.2s;
+            ">Save Highlight & Note</button>
+        </div>
+        <style>
+            .hl-note-panel.open {
+                opacity: 1 !important;
+                transform: translateY(0) scale(1) !important;
+                max-height: 240px !important;
+                margin-top: 14px !important;
+            }
+        </style>
     `;
     document.body.appendChild(tooltip);
 
     let savedRange = null;
     let hideTimer = null; // tracks pending hide timeout so mouseup can cancel it
 
-    function showTooltip(rect) {
+    function showTooltip(rect, isDeleteMode = false, hid = null) {
         // Cancel any pending hide from a prior mousedown
         if (hideTimer) { clearTimeout(hideTimer); hideTimer = null; }
 
         const scrollY = window.scrollY || document.documentElement.scrollTop;
         const scrollX = window.scrollX || document.documentElement.scrollLeft;
+
+        // Toggle visibility based on mode
+        const highlightBtn = document.getElementById('highlight-btn');
+        const noteBtn = document.getElementById('note-toggle-btn');
+        const deleteBtn = document.getElementById('delete-hl-btn');
+
+        const setBtnState = (btn, enabled, dataHid = null) => {
+            btn.disabled = !enabled;
+            btn.style.opacity = enabled ? '1' : '0.25';
+            btn.style.filter = enabled ? 'none' : 'grayscale(100%)';
+            btn.style.pointerEvents = enabled ? 'auto' : 'none';
+            btn.style.cursor = enabled ? 'pointer' : 'default';
+            if (dataHid) btn.dataset.hid = dataHid;
+        };
+
+        if (isDeleteMode) {
+            setBtnState(highlightBtn, false);
+            setBtnState(noteBtn, false);
+            setBtnState(deleteBtn, true, hid);
+        } else {
+            setBtnState(highlightBtn, true);
+            setBtnState(noteBtn, true);
+            setBtnState(deleteBtn, false);
+        }
 
         // Reset to invisible-but-placed state first
         tooltip.style.transition = 'none';
@@ -1343,13 +1463,33 @@ document.addEventListener('DOMContentLoaded', () => {
             tooltip.style.opacity = '0';
             tooltip.style.transform = 'translateX(-50%) translateY(6px)';
             hideTimer = setTimeout(() => {
-                tooltip.style.display = 'none';
+                // If tooltip is still opacity 0 (wasn't cancelled), hide it
+                if (tooltip.style.opacity === '0') {
+                    tooltip.style.display = 'none';
+                    // Reset panel state only when fully hiding
+                    const panel = document.getElementById('note-panel');
+                    panel.classList.remove('open');
+                    panel.style.display = 'none';
+                    document.getElementById('note-input').value = '';
+                    document.getElementById('word-count').textContent = '0/50 words';
+                    document.getElementById('word-count').style.color = 'rgba(255,255,255,0.4)';
+                    document.getElementById('save-with-note-btn').disabled = false;
+                    document.getElementById('save-with-note-btn').style.opacity = '1';
+                }
                 hideTimer = null;
             }, 180);
         } else {
             if (hideTimer) { clearTimeout(hideTimer); hideTimer = null; }
             tooltip.style.display = 'none';
             tooltip.style.opacity = '0';
+            const panel = document.getElementById('note-panel');
+            panel.classList.remove('open');
+            panel.style.display = 'none';
+            document.getElementById('note-input').value = '';
+            document.getElementById('word-count').textContent = '0/50 words';
+            document.getElementById('word-count').style.color = 'rgba(255,255,255,0.4)';
+            document.getElementById('save-with-note-btn').disabled = false;
+            document.getElementById('save-with-note-btn').style.opacity = '1';
         }
     }
 
@@ -1366,12 +1506,20 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    document.addEventListener('mouseup', () => {
+    document.addEventListener('mouseup', (e) => {
         if (window.__DISABLE_HIGHLIGHT_TOOLTIP) return;
+        if (tooltip.contains(e.target)) return; // Don't reset if clicking inside tooltip
+
         setTimeout(() => {
             const sel = window.getSelection();
             const text = sel?.toString().trim();
-            if (!text || text.length < 3) { hideTooltip(false); return; }
+            if (!text || text.length < 3) { 
+                // If valid text selection is gone and we're not inside tooltip, hide
+                if (!tooltip.contains(document.activeElement)) {
+                    hideTooltip(false); 
+                }
+                return; 
+            }
             if (tooltip.contains(sel.anchorNode)) return;
             savedRange = sel.getRangeAt(0).cloneRange();
             showTooltip(savedRange.getBoundingClientRect());
@@ -1385,7 +1533,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    document.getElementById('highlight-btn').addEventListener('click', () => {
+    function saveHighlightWithPossibleNote(noteText = '') {
         const sel = window.getSelection();
         const textToSave = (sel?.toString().trim()) || (savedRange ? savedRange.toString().trim() : '');
         if (!textToSave || !savedRange) return;
@@ -1397,6 +1545,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const highlight = {
             id: Date.now().toString(),
             text: textToSave.substring(0, 400),
+            note: noteText.trim(),
             pageName,
             pageUrl,
             sectionName: section.name,
@@ -1405,18 +1554,101 @@ document.addEventListener('DOMContentLoaded', () => {
         };
 
         const highlights = getHighlights();
-        // Assign a pastel color index (cycles 0–5) for visual variety
         const colorIndex = highlights.length % 6;
         highlights.unshift({ ...highlight, colorIndex });
-        saveHighlights(highlights.slice(0, 60)); // cap at 60
+        saveHighlights(highlights.slice(0, 60));
 
-        // Visually mark the selection with its assigned color
         applyHighlightMark(savedRange, highlight.id, colorIndex);
 
-        tooltip.style.display = 'none'; // immediate hide (no animation needed)
+        tooltip.style.display = 'none';
         hideTooltip(false);
         sel.removeAllRanges();
-        // Toast removed — the yellow highlight mark is the only indicator
+    }
+
+    document.getElementById('highlight-btn').addEventListener('click', () => {
+        saveHighlightWithPossibleNote();
+    });
+
+    document.getElementById('note-toggle-btn').addEventListener('click', () => {
+        const panel = document.getElementById('note-panel');
+        const isOpening = !panel.classList.contains('open');
+        
+        if (isOpening) {
+            panel.style.display = 'flex';
+            // Force reflow
+            panel.offsetHeight;
+            panel.classList.add('open');
+            setTimeout(() => document.getElementById('note-input').focus(), 100);
+        } else {
+            panel.classList.remove('open');
+            setTimeout(() => {
+                if (!panel.classList.contains('open')) {
+                    panel.style.display = 'none';
+                }
+            }, 400); // Wait for transition
+        }
+    });
+
+    document.getElementById('save-with-note-btn').addEventListener('click', () => {
+        const noteInput = document.getElementById('note-input');
+        const noteText = noteInput.value.trim();
+        const words = noteText ? noteText.split(/\s+/).length : 0;
+        
+        if (words > 50) return; // Shouldn't happen as we'll disable button but for safety
+        saveHighlightWithPossibleNote(noteText);
+    });
+
+    document.getElementById('note-input').addEventListener('input', (e) => {
+        const text = e.target.value.trim();
+        const words = text ? text.split(/\s+/).length : 0;
+        const countDisplay = document.getElementById('word-count');
+        const saveBtn = document.getElementById('save-with-note-btn');
+        
+        countDisplay.textContent = `${words}/50 words`;
+        
+        if (words > 50) {
+            countDisplay.style.color = '#ff4d4d';
+            saveBtn.disabled = true;
+            saveBtn.style.opacity = '0.3';
+            saveBtn.style.cursor = 'not-allowed';
+        } else {
+            countDisplay.style.color = 'rgba(255,255,255,0.4)';
+            saveBtn.disabled = false;
+            saveBtn.style.opacity = '1';
+            saveBtn.style.cursor = 'pointer';
+        }
+    });
+
+    document.getElementById('delete-hl-btn').addEventListener('click', (e) => {
+        const hid = e.currentTarget.dataset.hid;
+        if (!hid) return;
+
+        const highlights = getHighlights();
+        const newList = highlights.filter(h => h.id !== hid);
+        saveHighlights(newList);
+
+        // Remove from UI
+        const marks = document.querySelectorAll(`.undr-highlight[data-hid="${hid}"]`);
+        marks.forEach(m => {
+            const parent = m.parentNode;
+            parent.replaceChild(document.createTextNode(m.textContent), m);
+            parent.normalize();
+        });
+
+        hideTooltip(false);
+    });
+
+    // Detect click on existing highlight
+    document.addEventListener('click', (e) => {
+        const mark = e.target.closest('.undr-highlight');
+        if (mark) {
+            const hid = mark.dataset.hid;
+            const rect = mark.getBoundingClientRect();
+            // Wait slightly for any click handling / selection to resolve
+            setTimeout(() => {
+                showTooltip(rect, true, hid);
+            }, 50);
+        }
     });
 
     // Pastel palette — updated to remove bright yellow, using premium soft tones
