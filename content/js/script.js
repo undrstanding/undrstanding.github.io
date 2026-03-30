@@ -1258,7 +1258,9 @@ document.addEventListener('DOMContentLoaded', () => {
     // Get the nearest section heading above the selection
     function getSectionAbove(range) {
         const rect = range.getBoundingClientRect();
-        const headings = Array.from(document.querySelectorAll('h1, h2, h3, h4, section[id], div[id]'));
+        // Filter out the tooltip itself and its children from being detected as a "Section"
+        const headings = Array.from(document.querySelectorAll('h1, h2, h3, h4, section[id], div[id]'))
+            .filter(el => !el.closest('#highlight-tooltip'));
         let best = null, bestDist = Infinity;
         headings.forEach(h => {
             const hRect = h.getBoundingClientRect();
@@ -1342,14 +1344,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 </svg>
             </button>
         </div>
-        <style>
-            .hl-tooltip-btn:hover {
-                background: rgba(255,255,255,0.1) !important;
-            }
-            .hl-tooltip-btn:active {
-                transform: scale(0.95);
-            }
-        </style>
         <div id="note-panel" class="hl-note-panel" style="
             display: none;
             flex-direction: column;
@@ -1395,16 +1389,26 @@ document.addEventListener('DOMContentLoaded', () => {
                 transition: opacity 0.2s;
             ">Save Highlight & Note</button>
         </div>
-        <style>
-            .hl-note-panel.open {
-                opacity: 1 !important;
-                transform: translateY(0) scale(1) !important;
-                max-height: 240px !important;
-                margin-top: 14px !important;
-            }
-        </style>
     `;
     document.body.appendChild(tooltip);
+
+    // Inject Tooltip-specific styles once
+    const tooltipStyle = document.createElement('style');
+    tooltipStyle.textContent = `
+        .hl-tooltip-btn:hover {
+            background: rgba(255,255,255,0.1) !important;
+        }
+        .hl-tooltip-btn:active {
+            transform: scale(0.95);
+        }
+        .hl-note-panel.open {
+            opacity: 1 !important;
+            transform: translateY(0) scale(1) !important;
+            max-height: 240px !important;
+            margin-top: 14px !important;
+        }
+    `;
+    document.head.appendChild(tooltipStyle);
 
     let savedRange = null;
     let hideTimer = null; // tracks pending hide timeout so mouseup can cancel it
@@ -1596,6 +1600,18 @@ document.addEventListener('DOMContentLoaded', () => {
         
         if (words > 50) return; // Shouldn't happen as we'll disable button but for safety
         saveHighlightWithPossibleNote(noteText);
+    });
+
+    document.getElementById('note-input').addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            const noteInput = document.getElementById('note-input');
+            const noteText = noteInput.value.trim();
+            const words = noteText ? noteText.split(/\s+/).length : 0;
+            if (words > 0 && words <= 50) {
+                saveHighlightWithPossibleNote(noteText);
+            }
+        }
     });
 
     document.getElementById('note-input').addEventListener('input', (e) => {
