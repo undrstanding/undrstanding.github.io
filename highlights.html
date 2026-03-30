@@ -5,8 +5,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Highlights | Undrstanding</title>
-    <meta name="description" content="Access your saved insights and key learnings from Undrstanding. A curated collection to master your understanding of complex technical topics.">
-    <meta name="keywords" content="undrstanding highlights, technical notes, complex topics understanding, bookmarks, learning repository">
+    <meta name="description"
+        content="Access your saved insights and key learnings from Undrstanding. A curated collection to master your understanding of complex technical topics.">
+    <meta name="keywords"
+        content="undrstanding highlights, technical notes, complex topics understanding, bookmarks, learning repository">
     <link rel="icon" type="image/svg+xml" href="assests/undrlogo.svg">
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
@@ -155,6 +157,19 @@
             color: #000;
             font-weight: 500;
             word-wrap: break-word;
+        }
+
+        .hl-note-box {
+            position: relative;
+            background: rgba(0, 0, 0, 0.025);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            border-radius: 12px;
+            transition: all 0.3s;
+        }
+
+        .hl-card:hover .hl-note-box {
+            border-color: rgba(0, 0, 0, 0.1);
+            background: rgba(0, 0, 0, 0.035);
         }
 
         @media (max-width: 640px) {
@@ -401,7 +416,7 @@
             <div id="empty-state" class="hidden text-center">
                 <p class="outfit text-2xl font-bold text-black mb-2">Your collection is empty.</p>
                 <p class="mono text-[8px] uppercase tracking-[0.2em] text-[#bbb] font-bold mb-10">Start saving insights
-                    from our repository</p>
+                    from the repository</p>
                 <a href="/" class="top-btn no-underline">
                     Back to Undrstanding
                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4"
@@ -522,7 +537,8 @@
             const list = JSON.parse(localStorage.getItem('undrlib_highlights') || '[]');
             let filtered = list.filter(h =>
                 h.text.toLowerCase().includes(query.toLowerCase()) ||
-                h.pageName.toLowerCase().includes(query.toLowerCase())
+                h.pageName.toLowerCase().includes(query.toLowerCase()) ||
+                (h.note && h.note.toLowerCase().includes(query.toLowerCase()))
             );
 
             if (activeCategory !== 'all') {
@@ -559,6 +575,15 @@
                                 <span class="hl-meta-tag" style="color: #bbb">${h.sectionName || 'Insight'}</span>
                             </div>
                             <p class="hl-text outfit">${h.text}</p>
+                            ${h.note ? `
+                            <div class="hl-note-box mt-4 p-4">
+                                <div class="flex items-center gap-1.5 mb-2 opacity-40">
+                                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+                                    <p class="mono text-[7px] uppercase tracking-[0.2em] font-bold">Personal Note</p>
+                                </div>
+                                <p class="text-[13px] text-gray-700 font-medium leading-relaxed">${h.note}</p>
+                            </div>
+                            ` : ''}
                         </div>
                     </a>
 
