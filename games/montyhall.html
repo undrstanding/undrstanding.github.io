@@ -1,0 +1,959 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Monty Hall Problem | Undrstanding Games</title>
+    <meta name="description"
+        content="Explore the counter-intuitive Monty Hall Problem with this interactive simulation. Learn why switching doors doubles your chances of winning.">
+    <meta name="keywords" content="Monty Hall, Probability, Statistics, Game, Paradox, Interactive, Education">
+    <meta name="author" content="Undrstanding">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="The Monty Hall Problem | Undrstanding Games">
+    <meta property="og:description"
+        content="Master the math behind the doors. An interactive deep dive into one of probability's most famous puzzles.">
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:title" content="The Monty Hall Problem | Interactive Simulation">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="../assests/undrlogo.svg">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;600;800&display=swap');
+
+        :root {
+            --bg: #72BAA9;
+            --border: #18181b;
+            --door-idle: #fef3c7;
+            --door-selected: #fde047;
+            --door-open: #f4f4f5;
+            --accent: #8b5cf6;
+        }
+
+        /* Hide scrollbars globally */
+        * {
+            scrollbar-width: none;
+            /* Firefox */
+            -ms-overflow-style: none;
+            /* IE and Edge */
+        }
+
+        *::-webkit-scrollbar {
+            display: none;
+            /* Chrome, Safari, Opera */
+        }
+
+        body {
+            font-family: 'Public Sans', sans-serif;
+            font-weight: 600;
+            background-color: var(--bg);
+            color: var(--border);
+            user-select: none;
+            /* Disable text selection */
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+        }
+
+        .neo-card {
+            background: white;
+            border: 2px solid var(--border);
+            border-radius: 12px;
+        }
+
+        /* Enhanced 3D Door Mechanics */
+        .door-perspective {
+            perspective: 1200px;
+            position: relative;
+            background: #18181b;
+            /* Dark frame background */
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            height: 240px;
+            overflow: hidden;
+        }
+
+        /* Inner Shadow for Depth */
+        .door-perspective::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at center, transparent 40%, rgba(0, 0, 0, 0.2) 100%);
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .door {
+            position: absolute;
+            inset: 0;
+            transform-style: preserve-3d;
+            transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            z-index: 5;
+            transform-origin: left;
+        }
+
+        .door.open {
+            transform: rotateY(-115deg);
+        }
+
+        .door-front {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            background: var(--door-idle);
+            border-right: 2px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+
+        /* Door Handle */
+        .door-front::after {
+            content: '';
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            width: 12px;
+            height: 12px;
+            background: white;
+            border: 2px solid var(--border);
+            border-radius: 50%;
+            transform: translateY(-50%);
+        }
+
+        .door:hover .door-front {
+            background: #fef9c3;
+        }
+
+        .door.selected-door .door-front {
+            background: var(--door-selected);
+            box-shadow: inset 0 0 0 2px var(--border);
+        }
+
+        .prize-container {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: flex-end;
+            /* Attach to floor */
+            justify-content: center;
+            z-index: 2;
+            background: #f1f5f9;
+            /* Light stage background */
+            padding-bottom: 8px;
+        }
+
+        .door-label {
+            font-weight: 800;
+            font-size: 3.5rem;
+            user-select: none;
+        }
+
+        .btn-neo {
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            transition: all 0.1s ease;
+            font-weight: 600;
+        }
+
+        .btn-neo:active {
+            transform: scale(0.97);
+        }
+
+        .stat-box {
+            border-left: 2px solid var(--border);
+            padding-left: 1rem;
+        }
+
+        @keyframes pop {
+            0% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.05);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        .animate-pop {
+            animation: pop 0.3s ease-out;
+        }
+
+        /* Subtle character breath animation */
+        .character-idle {
+            animation: breath 4s ease-in-out infinite;
+            transform-origin: bottom center;
+        }
+
+        @keyframes breath {
+
+            0%,
+            100% {
+                transform: scaleY(1);
+            }
+
+            50% {
+                transform: scaleY(1.025);
+            }
+        }
+
+        @keyframes sparkle {
+
+            0%,
+            100% {
+                opacity: 0;
+                transform: scale(0);
+            }
+
+            50% {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .sparkle {
+            animation: sparkle 1.5s ease-in-out infinite;
+        }
+
+        /* Information Overlay styles */
+        .info-panel {
+            position: absolute;
+            inset: 0;
+            background: white;
+            z-index: 50;
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            padding: 2rem;
+            overflow-y: auto;
+        }
+
+        .info-close {
+            position: absolute;
+            top: 1.5rem;
+            right: 1.5rem;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid var(--border);
+            border-radius: 6px;
+            cursor: pointer;
+            background: white;
+            font-weight: 800;
+        }
+
+        .info-close:hover {
+            background: #f4f4f5;
+        }
+
+        /* Confetti Animation */
+        .confetti-piece {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            border-radius: 2px;
+            z-index: 10;
+        }
+
+        @keyframes confetti-fall {
+            0% {
+                transform: translateY(0) rotate(0deg);
+                opacity: 1;
+            }
+
+            100% {
+                transform: translateY(200px) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        /* Baa Bubble Animation */
+        .baa-bubble {
+            animation: baa-pop 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+            z-index: 20;
+        }
+
+        @keyframes baa-pop {
+            0% {
+                transform: translate(-50%, 20px) scale(0);
+                opacity: 0;
+            }
+
+            100% {
+                transform: translate(-50%, -10px) scale(1);
+                opacity: 1;
+            }
+        }
+
+        .baa-shake {
+            animation: baa-shake 0.3s ease-in-out infinite;
+            transform-origin: bottom center;
+        }
+
+        @keyframes baa-shake {
+
+            0%,
+            100% {
+                transform: rotate(0deg) scale(1);
+            }
+
+            25% {
+                transform: rotate(-1deg) scale(1.01);
+            }
+
+            75% {
+                transform: rotate(1deg) scale(1.01);
+            }
+        }
+
+        /* Chewing Animation */
+        .goat-active .goat-jaw {
+            animation: goat-chew 0.3s ease-in-out infinite;
+        }
+
+        .goat-active .goat-grass {
+            display: block !important;
+            animation: goat-chew 0.3s ease-in-out infinite reverse;
+        }
+
+        @keyframes goat-chew {
+
+            0%,
+            100% {
+                transform: translateX(0);
+            }
+
+            50% {
+                transform: translateX(1.5px);
+            }
+        }
+
+        /* Car Headlight Glow */
+        .car-active .car-headlight {
+            animation: headlight-glow 1s ease-in-out infinite;
+        }
+
+        @keyframes headlight-glow {
+
+            0%,
+            100% {
+                fill: white;
+                filter: drop-shadow(0 0 0 transparent);
+            }
+
+            50% {
+                fill: #fef08a;
+                filter: drop-shadow(0 0 6px #fef9c3);
+            }
+        }
+
+        /* LANDSCAPE ORIENTATION PROTOCOL */
+        .orientation-overlay {
+            position: fixed;
+            inset: 0;
+            background: #000;
+            color: #fff;
+            z-index: 9999;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 40px;
+        }
+
+        @media screen and (orientation: portrait) and (max-width: 1024px) {
+            .orientation-overlay {
+                display: flex;
+            }
+        }
+
+        .phone-icon {
+            width: 60px;
+            height: 100px;
+            border: 3px solid #fff;
+            border-radius: 6px;
+            position: relative;
+            margin-bottom: 30px;
+            animation: rotatePhone 2s ease-in-out infinite;
+        }
+
+        .phone-icon::after {
+            content: "";
+            position: absolute;
+            bottom: 6px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 8px;
+            height: 8px;
+            background: #fff;
+            border-radius: 50%;
+        }
+
+        @keyframes rotatePhone {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            50% {
+                transform: rotate(90deg);
+            }
+
+            100% {
+                transform: rotate(90deg);
+            }
+        }
+    </style>
+</head>
+
+<body class="h-screen w-screen overflow-hidden flex items-center justify-center bg-[var(--bg)]">
+
+    <!-- FULL-WIDTH PLATFORM HEADER -->
+    <nav
+        class="absolute top-0 left-0 right-0 w-full flex flex-col sm:flex-row justify-between items-start sm:items-center bg-white px-8 py-5 border-b-2 border-zinc-900 z-[5000]">
+        <a href="../" class="relative inline-block group cursor-pointer hover:no-underline">
+            <span
+                class="font-mono text-sm font-black uppercase tracking-widest bg-zinc-900 text-white px-4 py-1.5 relative z-0 group-hover:bg-zinc-800 transition-colors">Undrstanding</span>
+            <div
+                class="absolute -bottom-2 -right-4 bg-violet-600 text-white text-[9px] font-mono font-black px-2 py-0.5 transform -rotate-3 shadow-[2px_2px_0_#18181b] border border-zinc-900 z-10 select-none group-hover:scale-110 transition-transform">
+                GAMES</div>
+        </a>
+        <div class="font-mono text-[11px] sm:text-sm font-black uppercase tracking-widest text-zinc-900 mt-2 sm:mt-0">
+            The Monty Hall Simulation</div>
+    </nav>
+
+    <!-- ORIENTATION ENFORCEMENT -->
+    <div class="orientation-overlay">
+        <div class="phone-icon"></div>
+        <h2 class="text-2xl font-black uppercase mb-4 font-mono">Rotate Your Device</h2>
+        <p class="font-mono text-[10px] uppercase opacity-60 tracking-[0.3em]">Landscape Protocol Required for Gameplay
+        </p>
+    </div>
+
+    <div id="scene-container" class="w-full max-w-4xl p-6 opacity-0 invisible" style="transform-origin: center center;">
+        <!-- Header -->
+        <header class="flex flex-col sm:flex-row justify-between items-start sm:items-end mb-8 gap-6">
+            <div>
+                <h1 class="text-3xl font-800 mt-2">The Monty Hall</h1>
+            </div>
+
+            <div class="flex gap-6 sm:gap-12">
+                <div class="stat-box">
+                    <div class="text-[10px] font-800 uppercase text-zinc-500">Stay Efficiency</div>
+                    <div id="stay-percent" class="text-2xl font-800">0%</div>
+                </div>
+                <div class="stat-box">
+                    <div class="text-[10px] font-800 uppercase text-zinc-500">Switch Efficiency</div>
+                    <div id="switch-percent" class="text-2xl font-800">0%</div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Display -->
+        <main class="neo-card p-6 sm:p-8 mb-6 bg-white relative">
+            <!-- Info Toggle Button -->
+            <button onclick="toggleInfo(true)"
+                class="absolute top-4 right-4 w-8 h-8 flex items-center justify-center border-2 border-zinc-900 rounded-md font-800 hover:bg-zinc-100 transition-colors z-10"
+                title="About the Monty Hall Problem">
+                ?
+            </button>
+
+            <!-- Info Panel (Hidden by default) -->
+            <div id="about-panel" class="info-panel hidden">
+                <button onclick="toggleInfo(false)" class="info-close">×</button>
+                <div class="max-w-2xl mx-auto py-4">
+                    <h2 class="text-3xl font-800 mb-6 text-violet-600">The Monty Hall Paradox</h2>
+                    <div class="space-y-4 text-zinc-600 leading-relaxed">
+                        <p>
+                            The Monty Hall problem is a counter-intuitive probability puzzle based on the American
+                            television game show <span class="italic">Let's Make a Deal</span>.
+                        </p>
+                        <div class="neo-card p-4 bg-zinc-50 border-zinc-200">
+                            <h4 class="font-800 text-zinc-900 mb-2">The Setup:</h4>
+                            <ol class="list-decimal pl-5 space-y-1">
+                                <li>You pick one of three doors. Behind one is a <span
+                                        class="font-600 text-red-600">Car</span>, behind the others are <span
+                                        class="font-600">Goats</span>.</li>
+                                <li>Monty Hall (who knows what's behind the doors) opens another door, always revealing
+                                    a goat.</li>
+                                <li>He then asks: "Do you want to stick with your original choice, or switch to the
+                                    remaining door?"</li>
+                            </ol>
+                        </div>
+                        <p class="font-800 text-zinc-900 text-xl pt-4">Should you switch?</p>
+                        <p>
+                            <span class="bg-yellow-200 px-1 font-600">Yes. Always.</span> Most people think it's a 50/50
+                            chance once one door is removed, but the math says otherwise.
+                        </p>
+                        <p>
+                            When you first pick, you have a <span class="font-800 text-zinc-900">1/3</span> chance of
+                            being right. The other doors collectively have a <span
+                                class="font-800 text-zinc-900">2/3</span> chance. By opening a door he knows is empty,
+                            Monty "concentrates" that 2/3 probability into the one door you didn't pick.
+                        </p>
+                        <p class="pt-2 italic">
+                            Keep playing the simulation to see your "Switch Efficiency" climb toward the theoretical
+                            limit of 66.7%.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div id="game-view" class="min-h-[400px] sm:min-h-[550px]">
+                <div id="instruction-container" class="mb-6 text-center sm:text-left">
+                    <p id="msg-step" class="text-xs font-800 uppercase text-violet-600 mb-1">Pick a Door</p>
+                    <h2 id="msg-main" class="text-2xl font-600">Choose one door to find the hidden car.</h2>
+                </div>
+
+
+
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-8 mb-8">
+                    <!-- Door 0 -->
+                    <div class="flex flex-col gap-3">
+                        <div id="label-door-0"
+                            class="h-10 flex items-center justify-center invisible opacity-0 transition-all duration-300 transform translate-y-2">
+                            <div id="badge-door-0"
+                                class="px-4 py-1.5 rounded border-2 border-zinc-900 text-[10px] font-800 uppercase tracking-tighter">
+                                Selection
+                            </div>
+                        </div>
+                        <div class="door-perspective">
+                            <div class="prize-container" id="prize-0"></div>
+                            <div id="door-0" class="door" onclick="handleDoorClick(0)">
+                                <div id="front-0" class="door-front">
+                                    <span class="door-label">1</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Door 1 -->
+                    <div class="flex flex-col gap-3">
+                        <div id="label-door-1"
+                            class="h-10 flex items-center justify-center invisible opacity-0 transition-all duration-300 transform translate-y-2">
+                            <div id="badge-door-1"
+                                class="px-4 py-1.5 rounded border-2 border-zinc-900 text-[10px] font-800 uppercase tracking-tighter">
+                                Selection
+                            </div>
+                        </div>
+                        <div class="door-perspective">
+                            <div class="prize-container" id="prize-1"></div>
+                            <div id="door-1" class="door" onclick="handleDoorClick(1)">
+                                <div id="front-1" class="door-front">
+                                    <span class="door-label">2</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Door 2 -->
+                    <div class="flex flex-col gap-3">
+                        <div id="label-door-2"
+                            class="h-10 flex items-center justify-center invisible opacity-0 transition-all duration-300 transform translate-y-2">
+                            <div id="badge-door-2"
+                                class="px-4 py-1.5 rounded border-2 border-zinc-900 text-[10px] font-800 uppercase tracking-tighter">
+                                Selection
+                            </div>
+                        </div>
+                        <div class="door-perspective">
+                            <div class="prize-container" id="prize-2"></div>
+                            <div id="door-2" class="door" onclick="handleDoorClick(2)">
+                                <div id="front-2" class="door-front">
+                                    <span class="door-label">3</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Interaction Layer -->
+                <div id="controls"
+                    class="hidden flex flex-col sm:flex-row justify-center gap-4 opacity-0 transition-opacity">
+                    <button onclick="finalizeChoice(false)"
+                        class="btn-neo px-8 py-4 bg-zinc-100 hover:bg-zinc-200 text-zinc-900">
+                        Stay with Choice
+                    </button>
+                    <button onclick="finalizeChoice(true)"
+                        class="btn-neo px-8 py-4 bg-violet-600 hover:bg-violet-700 text-white">
+                        Switch My Selection
+                    </button>
+                </div>
+
+                <div id="reset-area" class="hidden flex justify-center">
+                    <button id="reset-btn" onclick="initGame()"
+                        class="btn-neo px-10 py-4 text-white flex items-center justify-center min-w-[200px]">
+                        <span id="reset-text">Play Next Round</span>
+                    </button>
+                </div>
+            </div>
+        </main>
+
+        <!-- Data Footer -->
+        <footer class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+            <div class="neo-card p-4 text-center">
+                <div class="text-[10px] font-800 uppercase text-zinc-400">Total Games</div>
+                <div id="stat-total" class="text-xl font-800">0</div>
+            </div>
+            <div class="neo-card p-4 text-center">
+                <div class="text-[10px] font-800 uppercase text-zinc-400">Stay Wins</div>
+                <div id="stat-stay" class="text-xl font-800">0</div>
+            </div>
+            <div class="neo-card p-4 text-center">
+                <div class="text-[10px] font-800 uppercase text-zinc-400">Switch Wins</div>
+                <div id="stat-switch" class="text-xl font-800">0</div>
+            </div>
+            <div class="neo-card p-4 text-center bg-zinc-900 border-none">
+                <div class="text-[10px] font-800 uppercase text-zinc-500">Theoretical Prob.</div>
+                <div class="text-xl font-800 text-white">66.7%</div>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        // Disable copy, paste, and right-click
+        document.addEventListener('contextmenu', event => event.preventDefault());
+        document.addEventListener('copy', event => event.preventDefault());
+        document.addEventListener('paste', event => event.preventDefault());
+        document.addEventListener('keydown', event => {
+            if ((event.ctrlKey || event.metaKey) && (event.key === 'c' || event.key === 'v' || event.key === 'u')) {
+                event.preventDefault();
+            }
+        });
+
+        let state = {
+            winningDoor: null,
+            userSelected: null,
+            revealedGoat: null,
+            phase: 'PICK',
+            stats: {
+                total: 0,
+                stayWins: 0,
+                switchWins: 0,
+                stayAttempts: 0,
+                switchAttempts: 0
+            }
+        };
+
+        const svgs = {
+            car: `
+                <div class="character-idle relative">
+                <!-- Sparkles -->
+                <svg class="absolute -top-6 -right-6 sparkle" width="24" height="24" viewBox="0 0 24 24"><path d="M12 0l3 9 9 3-9 3-3 9-3-9-9-3 9-3z" fill="#fde047" stroke="#18181b" stroke-width="0.8"/></svg>
+                <svg class="absolute top-4 -left-4 sparkle" style="animation-delay: 0.5s" width="14" height="14" viewBox="0 0 24 24"><path d="M12 0l3 9 9 3-9 3-3 9-3-9-9-3 9-3z" fill="#fde047" stroke="#18181b" stroke-width="0.8"/></svg>
+                
+                <svg width="190" height="140" viewBox="0 0 40 32" fill="none" stroke="#18181b" stroke-width="0.6" stroke-linecap="round" stroke-linejoin="round">
+                    <ellipse cx="20" cy="29" rx="16" ry="3" fill="rgba(0,0,0,0.1)" stroke="none" />
+                    
+                    <rect x="4" y="23" width="8" height="7" rx="1.5" fill="#09090b" stroke-width="1"/>
+                    <rect x="28" y="23" width="8" height="7" rx="1.5" fill="#09090b" stroke-width="1"/>
+                    <circle cx="8" cy="26.5" r="2" fill="#d1d5db" stroke="#3f3f46" stroke-width="0.4" />
+                    <circle cx="32" cy="26.5" r="2" fill="#d1d5db" stroke="#3f3f46" stroke-width="0.4" />
+
+                    <path d="M2 13c0-1.5 1.5-2.5 4-2.5h28c2.5 0 4 1 4 2.5v11a3 3 0 0 1-3 3H5a3 3 0 0 1-3-3V13z" fill="#b91c1c" stroke-width="0.8" />
+                    
+                    <path d="M3 14h34" stroke="#ef4444" stroke-width="0.4" opacity="0.4" />
+                    <path d="M4 11.5l2-1h28l2 1" stroke="#f87171" stroke-width="0.4" opacity="0.6" />
+
+                    <path d="M7 11.5c0-5.5 4-8.5 13-8.5s13 3 13 8.5" fill="#dc2626" stroke-width="0.8" />
+                    
+                    <path d="M9 11.5c0-4.5 2-6.5 11-6.5s11 2 11 6.5H9z" fill="#93c5fd" />
+                    <path d="M12 6.5c3-1 6-1 9 0" stroke="white" stroke-width="0.8" opacity="0.8" />
+                    <rect x="18" y="7" width="4" height="2" fill="#1e40af" opacity="0.2" rx="0.5" />
+
+                    <g>
+                        <circle cx="7.5" cy="17.5" r="4.5" fill="#fef2f2" stroke="#dc2626" stroke-width="0.6" />
+                        <circle cx="7.5" cy="17.5" r="2.5" fill="white" class="car-headlight" />
+                        <path d="M5 16s1-1.5 2.5-1.5S10 16 10 16" stroke="#93c5fd" stroke-width="0.6" opacity="0.7" />
+                        
+                        <circle cx="32.5" cy="17.5" r="4.5" fill="#fef2f2" stroke="#dc2626" stroke-width="0.6" />
+                        <circle cx="32.5" cy="17.5" r="2.5" fill="white" class="car-headlight" />
+                        <path d="M30 16s1-1.5 2.5-1.5S35 16 35 16" stroke="#93c5fd" stroke-width="0.6" opacity="0.7" />
+                    </g>
+
+                    <rect x="13" y="17" width="14" height="7" rx="1.5" fill="#09090b" />
+                    <path d="M15 19h10M14 21h12M15 23h10" stroke="#27272a" stroke-width="0.4" />
+                    
+                    <path d="M6 25h28" stroke="#09090b" stroke-width="1" />
+                    
+                    <g>
+                        <path d="M2.5 12.5h-1c-.3 0-.5-.2-.5-.5v-1c0-.3.2-.5.5-.5h1" stroke-width="0.4" fill="#991b1b" />
+                        <path d="M-0.5 10c0-.6.4-1 1-1h1c.6 0 1 .4 1 1v1c0 .6-.4 1-1 1h-1c-.6 0-1-.4-1-1v-1z" fill="#dc2626" />
+                        <path d="M0 10c0-.3.2-.5.5-.5h1c.3 0 .5.2.5.5v0.5c0 .3-.2.5-.5.5h-1c-.3 0-.5-.2-.5-.5v-0.5z" fill="#bae6fd" opacity="0.5" />
+                        
+                        <path d="M37.5 12.5h1c.3 0 .5-.2.5-.5v-1c0-.3-.2-.5-.5-.5h-1" stroke-width="0.4" fill="#991b1b" />
+                        <path d="M37.5 10c0-.6.4-1 1-1h1c.6 0 1 .4 1 1v1c0 .6-.4 1-1 1h-1c-.6 0-1-.4-1-1v-1z" fill="#dc2626" />
+                        <path d="M38.5 10c0-.3.2-.5.5-.5h1c.3 0 .5.2.5.5v0.5c0 .3-.2.5-.5.5h-1c-.3 0-.5-.2-.5-.5v-0.5z" fill="#bae6fd" opacity="0.5" />
+                    </g>
+                </svg>
+                </div>
+            `,
+            goat: `
+                <div class="character-idle">
+                <svg width="180" height="180" viewBox="0 0 40 40" fill="none" stroke="#18181b" stroke-width="0.7" stroke-linecap="round" stroke-linejoin="round">
+                    <ellipse cx="20" cy="38" rx="12" ry="2" fill="rgba(0,0,0,0.08)" stroke="none" />
+                    
+                    <path d="M11 20c-1 5 1 12 4 15h10c3-3 5-10 4-15H11z" fill="#fefaf0" />
+                    
+                    <path d="M14 30c-1 3-1 6-1 8h3c0-3 1-6 1-8M26 30c1 3 1 6 1 8h-3c0-3-1-6-1-8" fill="#eaddca" stroke="#18181b" stroke-width="0.7" />
+                    <path d="M13 38h3v1.5h-3zM24 38h3v1.5h-3z" fill="#18181b" stroke="none" />
+
+                    <path d="M14.5 22c2 1 9.5 1 11 0" stroke="#8b5cf6" stroke-width="2" />
+                    <circle cx="20" cy="24.5" r="3.2" fill="#fbbf24" stroke="#18181b" stroke-width="0.7" />
+                    <circle cx="20" cy="24.5" r="0.8" fill="#18181b" stroke="none" />
+
+                    <path d="M12.5 11l1.5-4c2.5-1.5 11-1.5 13.5 3l1.5 6c0 3.5-1.5 7.5-3.5 9.5l-5.5 2.5-5.5-2.5c-2-2-3.5-6-3.5-9.5l1.5-5z" fill="#fefaf0" />
+                    
+                    <g class="goat-jaw">
+                        <path d="M17.5 22.5c0 1.5 1 2.5 2.5 2.5s2.5-1 2.5-2.5z" fill="#f3e5d8" stroke="#18181b" stroke-width="0.6" />
+                        <path d="M20 23v1.5M19 23h2" stroke="#8b4513" stroke-width="0.8" stroke-linecap="round" />
+                        <!-- Grass -->
+                        <path class="goat-grass" d="M22 24l4 1M22 24l3-2" stroke="#22c55e" stroke-width="0.8" style="display: none;" />
+                    </g>
+
+                    <path d="M16 8c-1-1-3-5-9-4-1 0-1.5.5-1 1 2.5 1.5 7 4 8.5 5.5l1.5-2.5z" fill="#5c4033" stroke="#18181b" stroke-width="0.8" stroke-linejoin="round" />
+                    <path d="M24 8c1-1 3-5 9-4 1 0 1.5.5 1 1-2.5 1.5-7 4-8.5 5.5l-1.5-2.5z" fill="#5c4033" stroke="#18181b" stroke-width="0.8" stroke-linejoin="round" />
+                    <path d="M14 6c-1-.5-2-.5-3 0M26 6c1-.5 2-.5 3 0" stroke="#18181b" stroke-width="0.4" opacity="0.6" />
+
+                    <path d="M12.5 12.5c-4.5 0-6.5 4.5-5.5 8s3.5 3.5 5.5 .5z" fill="#f3e5d8" stroke="#18181b" stroke-width="0.8" />
+                    <path d="M27.5 12.5c4.5 0 6.5 4.5 5.5 8s-3.5 3.5-5.5 .5z" fill="#f3e5d8" stroke="#18181b" stroke-width="0.8" />
+
+                    <circle cx="16.5" cy="15.5" r="2.8" fill="white" stroke="#18181b" stroke-width="0.7" />
+                    <rect x="15.6" y="15.1" width="1.8" height="0.8" rx="0.3" fill="#18181b" />
+                    
+                    <circle cx="23.5" cy="15.5" r="2.8" fill="white" stroke="#18181b" stroke-width="0.7" />
+                    <rect x="22.6" y="15.1" width="1.8" height="0.8" rx="0.3" fill="#18181b" />
+                    
+                    <path d="M14.5 13s1-1.5 2.5-0.5M25.5 13s-1-1.5-2.5-0.5" stroke="#18181b" stroke-width="0.7" />
+
+                    <path d="M18.5 7.5l1.5-2.5 1.5 2.5" fill="#fefaf0" stroke="#18181b" stroke-width="0.7" />
+                    <path d="M18 28.5l2 4.5 2-4.5z" fill="#f3e5d8" stroke="#18181b" stroke-width="0.7" />
+                    <path d="M19 29.5l1 2M21 29.5l-1 2" stroke="#d2b48c" stroke-width="0.5" />
+                </svg>
+                </div>
+            `
+        };
+
+        function toggleInfo(show) {
+            const panel = document.getElementById('about-panel');
+            if (show) {
+                panel.classList.remove('hidden');
+            } else {
+                panel.classList.add('hidden');
+            }
+        }
+
+        function updateUI(step, main) {
+            document.getElementById('msg-step').textContent = step;
+            document.getElementById('msg-main').textContent = main;
+        }
+
+        function initGame() {
+            state.winningDoor = Math.floor(Math.random() * 3);
+            state.userSelected = null;
+            state.revealedGoat = null;
+            state.phase = 'PICK';
+
+            for (let i = 0; i < 3; i++) {
+                const door = document.getElementById(`door-${i}`);
+                door.classList.remove('open', 'selected-door');
+                document.getElementById(`prize-${i}`).innerHTML = "";
+            }
+
+            updateUI("Pick a Door", "Choose one door to find the hidden car.");
+            document.getElementById('controls').classList.add('hidden', 'opacity-0');
+            document.getElementById('reset-area').classList.add('hidden');
+
+            // Reset All Labels
+            for (let i = 0; i < 3; i++) {
+                const layer = document.getElementById(`label-door-${i}`);
+                layer.classList.add('invisible', 'opacity-0', 'translate-y-2');
+            }
+        }
+
+        function handleDoorClick(idx) {
+            if (state.phase !== 'PICK') return;
+
+            state.userSelected = idx;
+            state.phase = 'DECIDE';
+            document.getElementById(`door-${idx}`).classList.add('selected-door');
+
+            let options = [0, 1, 2].filter(d => d !== state.winningDoor && d !== state.userSelected);
+            state.revealedGoat = options[Math.floor(Math.random() * options.length)];
+
+            setTimeout(() => {
+                document.getElementById(`prize-${state.revealedGoat}`).innerHTML = svgs.goat;
+                document.getElementById(`door-${state.revealedGoat}`).classList.add('open');
+
+                updateUI("A Goat Revealed!", `Door ${state.revealedGoat + 1} has a goat. Will you stick or switch?`);
+
+                // Update Status Labels
+                showStatusLabel(state.userSelected, "Selection", "bg-zinc-100 text-zinc-900 border-zinc-900");
+                showStatusLabel(state.revealedGoat, "Monty Reveal", "bg-violet-600 text-white border-violet-900");
+
+                const ctrl = document.getElementById('controls');
+                ctrl.classList.remove('hidden');
+                setTimeout(() => {
+                    ctrl.classList.remove('opacity-0');
+                }, 10);
+            }, 600);
+        }
+
+        function finalizeChoice(didSwitch) {
+            if (state.phase !== 'DECIDE') return;
+
+            const oldChoice = state.userSelected;
+            const newChoice = [0, 1, 2].find(d => d !== state.userSelected && d !== state.revealedGoat);
+
+            if (didSwitch) {
+                hideStatusLabel(oldChoice);
+                state.userSelected = newChoice;
+                state.stats.switchAttempts++;
+                document.getElementById(`door-${oldChoice}`).classList.remove('selected-door');
+                document.getElementById(`door-${newChoice}`).classList.add('selected-door');
+                showStatusLabel(state.userSelected, "Selection", "bg-zinc-100 text-zinc-900 border-zinc-900");
+            } else {
+                state.stats.stayAttempts++;
+            }
+
+            state.phase = 'REVEAL';
+            state.stats.total++;
+
+            const win = state.userSelected === state.winningDoor;
+            if (win) {
+                if (didSwitch) state.stats.switchWins++;
+                else state.stats.stayWins++;
+            }
+
+            for (let i = 0; i < 3; i++) {
+                const prizeCont = document.getElementById(`prize-${i}`);
+                const isWinner = i === state.winningDoor;
+                prizeCont.innerHTML = isWinner ? `<div class="${(win && isWinner) ? 'car-active' : ''}">${svgs.car}</div>` : `<div class="${(!win && i === state.userSelected) ? 'baa-shake goat-active' : ''}">${svgs.goat}</div>`;
+
+                // Add Win/Loss Visuals
+                if (win && isWinner) {
+                    const confetti = document.createElement('div');
+                    confetti.className = "absolute inset-0 pointer-events-none";
+                    for (let j = 0; j < 12; j++) {
+                        const p = document.createElement('div');
+                        p.className = "confetti-piece";
+                        p.style.left = Math.random() * 100 + "%";
+                        p.style.top = "-10%";
+                        p.style.backgroundColor = ['#f87171', '#fbbf24', '#34d399', '#60a5fa', '#a78bfa'][Math.floor(Math.random() * 5)];
+                        p.style.animation = `confetti-fall ${1 + Math.random() * 2}s linear infinite`;
+                        p.style.animationDelay = Math.random() * 2 + "s";
+                        confetti.appendChild(p);
+                    }
+                    prizeCont.appendChild(confetti);
+                } else if (!win && i === state.userSelected) {
+                    // Update the label instead of adding a clipped bubble
+                    showStatusLabel(i, "Baa!", "bg-white text-zinc-900 border-zinc-900 animate-pop font-800 scale-125");
+                } else if (!win && i === state.winningDoor) {
+                    // Show "LOST" over the car if selection was wrong
+                    showStatusLabel(i, "LOST", "bg-rose-600 text-white border-rose-900 animate-pop font-800");
+                }
+
+                document.getElementById(`door-${i}`).classList.add('open');
+            }
+
+            updateUI("The Moment of Truth", win ? "Amazing! You found the car!" : "Oh no! It's a goat this time.");
+            document.getElementById('controls').classList.add('hidden');
+
+            const rArea = document.getElementById('reset-area');
+            const rBtn = document.getElementById('reset-btn');
+            const rTxt = document.getElementById('reset-text');
+
+            rArea.classList.remove('hidden');
+            rTxt.textContent = win ? "Win Another" : "Try Again";
+
+            // Apply outcome colors
+            rBtn.className = `btn-neo px-10 py-4 text-white flex items-center justify-center min-w-[200px] transition-colors ${win ? 'bg-emerald-600 hover:bg-emerald-700' : 'bg-rose-600 hover:bg-rose-700'}`;
+
+            refreshStats();
+        }
+
+        function refreshStats() {
+            document.getElementById('stat-total').textContent = state.stats.total;
+            document.getElementById('stat-stay').textContent = state.stats.stayWins;
+            document.getElementById('stat-switch').textContent = state.stats.switchWins;
+
+            const stayRate = state.stats.stayAttempts ? Math.round((state.stats.stayWins / state.stats.stayAttempts) * 100) : 0;
+            const switchRate = state.stats.switchAttempts ? Math.round((state.stats.switchWins / state.stats.switchAttempts) * 100) : 0;
+
+            document.getElementById('stay-percent').textContent = `${stayRate}%`;
+            document.getElementById('switch-percent').textContent = `${switchRate}%`;
+
+            const s1 = document.getElementById('stay-percent');
+            const s2 = document.getElementById('switch-percent');
+            s1.classList.add('animate-pop');
+            s2.classList.add('animate-pop');
+            setTimeout(() => {
+                s1.classList.remove('animate-pop');
+                s2.classList.remove('animate-pop');
+            }, 300);
+        }
+
+        function showStatusLabel(idx, text, colors) {
+            const layer = document.getElementById(`label-door-${idx}`);
+            const badge = document.getElementById(`badge-door-${idx}`);
+
+            badge.textContent = text;
+            badge.className = `px-4 py-1.5 rounded border-2 text-[10px] font-800 uppercase tracking-tighter ${colors}`;
+
+            layer.classList.remove('invisible', 'opacity-0', 'translate-y-2');
+        }
+
+        function hideStatusLabel(idx) {
+            const layer = document.getElementById(`label-door-${idx}`);
+            layer.classList.add('invisible', 'opacity-0', 'translate-y-2');
+        }
+
+        function adjustScale() {
+            const container = document.getElementById('scene-container');
+            if (!container) return;
+
+            const viewportWidth = window.innerWidth;
+            const viewportHeight = window.innerHeight;
+
+            // Get the natural layout dimensions (offsetWidth/Height are pre-transform)
+            const contentWidth = container.offsetWidth;
+            const contentHeight = container.offsetHeight;
+
+            const margin = 40;
+            const scaleX = (viewportWidth - margin) / contentWidth;
+            const scaleY = (viewportHeight - margin) / contentHeight;
+
+            const finalScale = Math.min(1, scaleX, scaleY);
+
+            container.style.transform = `scale(${finalScale})`;
+
+            // Show the container once it's scaled correctly
+            if (container.classList.contains('opacity-0')) {
+                container.classList.remove('opacity-0', 'invisible');
+            }
+        }
+
+        window.onload = () => {
+            initGame();
+            adjustScale();
+            // Small delay to ensure everything is rendered before final scale
+            setTimeout(adjustScale, 100);
+        };
+        window.addEventListener('resize', adjustScale);
+    </script>
+</body>
+
+</html>
