@@ -445,13 +445,13 @@
     </div>
 
     <!-- MAIN ISOLATED SCALING WRAPPER -->
-    <div id="game-wrapper" class="flex-1 w-full flex items-center justify-center relative overflow-hidden">
-        <div id="scene-container" class="w-full max-w-sm sm:max-w-4xl p-2 sm:p-6 opacity-0 invisible mx-auto" style="transform-origin: center center;">
+    <div id="game-wrapper" class="flex-1 w-full relative overflow-hidden">
+        <div id="scene-container" class="absolute top-1/2 left-1/2 w-full max-w-sm sm:max-w-4xl p-2 sm:p-6 opacity-0 invisible" style="transform: translate(-50%, -50%); transform-origin: center center;">
             <!-- Main Display -->
             <main class="neo-card p-6 sm:p-8 mb-6 bg-white relative">
                 <!-- Info Toggle Button -->
                 <button onclick="toggleInfo(true)"
-                    class="absolute top-4 right-4 w-8 h-8 flex items-center justify-center border-2 border-zinc-900 rounded-md font-800 hover:bg-zinc-100 transition-colors z-10"
+                    class="absolute top-3 right-3 sm:top-4 sm:right-4 w-6 h-6 sm:w-8 sm:h-8 flex items-center justify-center border-2 border-zinc-900 rounded-md font-900 text-sm sm:text-base hover:bg-zinc-100 transition-colors z-10 bg-white"
                     title="About the Monty Hall Problem">
                     ?
                 </button>
@@ -913,7 +913,8 @@
             // Re-established 1.0 ceiling natively standardizing layout to other Undrstanding pages
             const finalScale = Math.min(1, scaleX, scaleY);
 
-            container.style.transform = `scale(${finalScale})`;
+            // Execute scale through the absolute geometry positioning bypass
+            container.style.transform = `translate(-50%, -50%) scale(${finalScale})`;
 
             // Show the container once it's scaled correctly
             if (container.classList.contains('opacity-0')) {
