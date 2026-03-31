@@ -1,0 +1,794 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HTML Blog Lab | Undrstanding</title>
+    <meta name="description"
+        content="Master semantic HTML5 by building a professional blog article. Learn to use header, article, aside, tables, and footer in this interactive lab.">
+    <meta name="keywords" content="undrstanding, html lab, semantic html, blog article, web development, learning, educational">
+    <link rel="canonical" href="https://undrstanding.github.io/labs/html-blog-article">
+    <meta property="og:title" content="HTML Blog Lab | Undrstanding">
+    <meta property="og:description"
+        content="Learn to build a semantic blog article with Undrstanding - Interactive explorations for humans.">
+    <meta property="og:url" content="https://undrstanding.github.io/labs/html-blog-article">
+    <meta property="og:type" content="article">
+    <meta name="twitter:card" content="summary">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&family=Outfit:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="icon" type="image/svg+xml" href="../assests/undrlogo.svg">
+    <style>
+        :root {
+            --surface: #ffffff;
+            --border: #e5e7eb;
+            --text-main: #000000;
+            --text-muted: #666666;
+            --accent: #ff6b6b;
+            /* Blog Coral */
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        ::-webkit-scrollbar {
+            width: 2px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #fafafa;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #e5e7eb;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: #fafafa;
+            color: var(--text-main);
+            overflow-x: hidden;
+            user-select: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+        }
+
+        .mono {
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .lab-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 2rem;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .code-window {
+            background: #1e1e1e;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            margin: 2rem 0;
+            border: 1px solid #333;
+        }
+
+        .code-header {
+            background: #2d2d2d;
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border-bottom: 1px solid #3d3d3d;
+        }
+
+        .dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+
+        .dot-red { background: #ff5f56; }
+        .dot-yellow { background: #ffbd2e; }
+        .dot-green { background: #27c93f; }
+
+        .file-name {
+            color: #888;
+            font-size: 0.75rem;
+            font-family: 'JetBrains Mono';
+            margin-left: 8px;
+        }
+
+        pre {
+            padding: 1.5rem;
+            color: #dcdcdc;
+            font-family: 'JetBrains Mono';
+            overflow-x: auto;
+            font-size: 0.85rem;
+            line-height: 1.6;
+        }
+
+        pre::-webkit-scrollbar {
+            height: 1px;
+        }
+
+        pre::-webkit-scrollbar-track { background: #1e1e1e; }
+        pre::-webkit-scrollbar-thumb { background: #333; }
+
+        .keyword { color: #569cd6; }
+        .string { color: #ce9178; }
+        .comment { color: #6a9955; }
+        .tag { color: #e06c75; }
+        .attr { color: #d19a66; }
+
+        .step-content {
+            display: none;
+            animation: slideUp 0.4s ease-out forwards;
+        }
+
+        .step-content.active {
+            display: block;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(15px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .progress-bar {
+            height: 6px;
+            background: #f3f4f6;
+            border-radius: 99px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--accent);
+            transition: width 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .why-box {
+            background: #fff5f5;
+            border-left: 4px solid var(--accent);
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .why-title {
+            font-weight: 700;
+            color: #c53030;
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            font-size: 0.7rem;
+            letter-spacing: 0.08em;
+            font-family: 'JetBrains Mono';
+        }
+
+        .nav-btn {
+            padding: 0.75rem 2rem;
+            font-family: 'Outfit';
+            font-weight: 600;
+            border-radius: 999px;
+            transition: all 0.2s;
+            font-size: 0.9rem;
+        }
+
+        .nav-btn-prev {
+            color: #666;
+            background: transparent;
+        }
+
+        .nav-btn-prev:hover:not(:disabled) {
+            color: #000;
+            background: #f3f4f6;
+        }
+
+        .nav-btn-next {
+            background: #000;
+            color: #fff;
+        }
+
+        .nav-btn-next:hover:not(:disabled) {
+            background: #333;
+            transform: translateY(-1px);
+        }
+
+        .nav-btn:disabled {
+            opacity: 0.2;
+            cursor: not-allowed;
+        }
+
+        #mobile-guidance-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.4);
+            z-index: 2000;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            padding: 1.5rem;
+            backdrop-filter: blur(12px);
+        }
+
+        .modal-content {
+            background: #fff;
+            padding: 3rem 2rem;
+            border-radius: 20px;
+            text-align: center;
+            max-width: 360px;
+            border: 1px solid #eee;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.1);
+            animation: modalPop 0.5s cubic-bezier(0.19, 1, 0.22, 1);
+        }
+
+        @keyframes modalPop {
+            from {
+                transform: scale(0.95) translateY(10px);
+                opacity: 0;
+            }
+            to {
+                transform: scale(1) translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .modal-icon-box {
+            width: 56px;
+            height: 56px;
+            background: #fbfbfb;
+            border: 1px solid #eee;
+            color: #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem;
+            border-radius: 12px;
+        }
+
+        .modal-title {
+            font-family: 'JetBrains Mono';
+            font-size: 0.65rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.3em;
+            color: #aaa;
+            margin-bottom: 0.75rem;
+            display: block;
+        }
+
+        .modal-text {
+            font-size: 1.15rem;
+            font-weight: 600;
+            line-height: 1.4;
+            color: #000;
+            margin-bottom: 2.5rem;
+            letter-spacing: -0.02em;
+        }
+
+        .modal-btn {
+            background: var(--accent);
+            color: #fff;
+            padding: 1rem 2rem;
+            border-radius: 99px;
+            font-weight: 600;
+            font-family: 'Outfit';
+            font-size: 0.9rem;
+            transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+            width: 100%;
+            border: none;
+            cursor: pointer;
+        }
+
+        .mockup-container {
+            border-radius: 2rem;
+            border: 1px solid #eee;
+            margin: 2rem 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
+            overflow: hidden;
+        }
+
+        .demo-blog { width: 100%; max-width: 600px; background: white; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); padding: 24px; text-align: left; display: grid; grid-template-columns: 1fr 180px; gap: 20px; }
+        .demo-marquee { grid-column: 1 / -1; }
+        .demo-header { grid-column: 1 / -1; font-weight: 900; border-bottom: 2px solid #111; padding-bottom: 12px; color: #111; }
+        .demo-nav { display: flex; gap: 15px; font-size: 10px; color: #888; text-transform: uppercase; margin-bottom: 10px; font-weight: 700; }
+        .demo-main { grid-column: 1 / 2; }
+        .demo-article h2 { font-size: 20px; font-weight: 800; margin-bottom: 12px; color: #111; }
+        .demo-article p { font-size: 13px; color: #555; line-height: 1.6; margin-bottom: 15px; }
+        .demo-table { width: 100%; border-collapse: collapse; font-size: 12px; margin: 15px 0; }
+        .demo-table th, .demo-table td { border: 1px solid #eee; padding: 8px; text-align: left; }
+        .demo-table th { background: #fafafa; color: #111; }
+        .demo-aside { grid-column: 2 / 3; background: #fffcfc; padding: 15px; border: 1px dashed var(--accent); border-radius: 8px; height: 100%; }
+        .demo-aside h3 { font-size: 13px; font-weight: 700; margin-bottom: 5px; color: var(--accent); }
+        .demo-aside p { font-size: 11px; color: #777; margin: 0; }
+        .demo-footer { grid-column: 1 / -1; border-top: 1px solid #eee; margin-top: 10px; padding-top: 12px; font-size: 10px; color: #aaa; text-align: center; }
+
+        @media (max-width: 768px) {
+            .lab-container { padding: 1.25rem; }
+            h1 { font-size: 2.5rem !important; }
+            .nav-btn { padding: 0.75rem 1.25rem; font-size: 0.8rem; }
+            #mobile-guidance-modal.active { display: flex; }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="lab-container">
+        <!-- Header -->
+        <nav class="flex justify-between items-center mb-12">
+            <a href="../"
+                class="mono text-xs font-bold tracking-widest hover:text-coral-500 transition-colors uppercase">&larr;
+                Repository</a>
+            <div class="mono text-[10px] font-bold uppercase tracking-widest text-gray-300">Phase <span
+                    id="current-step-num">1</span> / 10</div>
+        </nav>
+
+        <div class="progress-bar mb-12">
+            <div id="progress-fill" class="progress-fill" style="width: 10%;"></div>
+        </div>
+
+        <main class="flex-grow">
+            <!-- STEP 1: ABOUT THE LAB -->
+            <div class="step-content active" id="step-1">
+                <h1 class="text-6xl font-black tracking-tighter mb-6 leading-none">The Moving<br>Article.</h1>
+                <p class="text-xl text-gray-600 font-light mb-8 max-w-2xl">
+                    Welcome to the <strong>Dynamic HTML Lab</strong>. In this session, we’ll build a professional blog article using semantic tags and even experiment with legacy motion effects.
+                </p>
+
+                <div class="mockup-container bg-[#fafafa] py-16">
+                    <div class="demo-blog">
+                        <marquee class="demo-marquee text-[10px] font-bold text-coral-500 uppercase tracking-widest mb-2" scrollamount="5">BREAKING: HTML Mastery Lab 05 has just been released! Don't miss out on the latest updates.</marquee>
+                        <header class="demo-header">
+                            <nav class="demo-nav"><span>Home</span> &middot; <span>Articles</span></nav>
+                            The UNDR Journal
+                        </header>
+                        <main class="demo-main">
+                            <article class="demo-article">
+                                <h2>Mastering Grid Layouts</h2>
+                                <p>CSS Grid has changed how we think about space. With just a few lines of code, you can create complex layouts...</p>
+                                <table class="demo-table text-[10px]">
+                                    <thead>
+                                        <tr><th>Metric</th><th>Value</th></tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr><td>Reading Time</td><td>5 Minutes</td></tr>
+                                        <tr><td>Category</td><td>Web Design</td></tr>
+                                    </tbody>
+                                </table>
+                            </article>
+                        </main>
+                        <aside class="demo-aside">
+                            <h3>About the Author</h3>
+                            <p>Alex is a front-end engineer obsessed with clean HTML and accessible interfaces.</p>
+                        </aside>
+                        <footer class="demo-footer">&copy; 2026 The UNDR Journal. Built with Semantic HTML.</footer>
+                    </div>
+                </div>
+
+                <div class="why-box">
+                    <div class="why-title">Why Semantic HTML?</div>
+                    <p class="text-sm">Semantic tags like <code>&lt;article&gt;</code> and <code>&lt;header&gt;</code> aren't just for looks. They tell browsers and assistive technologies (like screen readers) <strong>exactly</strong> what each part of your page represents, boosting SEO and accessibility.</p>
+                </div>
+
+                <div class="mt-12 space-y-6">
+                    <h3 class="mono text-xs font-black uppercase tracking-[0.3em] text-gray-400">Lab Objectives</h3>
+                    <ul class="space-y-4 text-gray-600 font-light text-lg">
+                        <li class="flex gap-4">
+                            <div class="w-8 h-8 rounded-full bg-coral-50 text-coral-500 flex items-center justify-center text-xs font-bold shrink-0">1</div>
+                            <span>Structure content using <code>header</code>, <code>article</code>, and <code>footer</code>.</span>
+                        </li>
+                        <li class="flex gap-4">
+                            <div class="w-8 h-8 rounded-full bg-coral-50 text-coral-500 flex items-center justify-center text-xs font-bold shrink-0">2</div>
+                            <span>Implement sidebars with <code>aside</code> and dynamic text with <code>marquee</code>.</span>
+                        </li>
+                        <li class="flex gap-4">
+                            <div class="w-8 h-8 rounded-full bg-coral-50 text-coral-500 flex items-center justify-center text-xs font-bold shrink-0">3</div>
+                            <span>Display metadata using clean, accessible <code>table</code> elements.</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- STEP 2: DOCTYPE -->
+            <div class="step-content" id="step-2">
+                <h1 class="text-5xl font-bold tracking-tighter mb-6">The Foundation</h1>
+                <p class="text-xl text-gray-600 font-light mb-8 max-w-2xl">
+                    Every great article starts with a valid document skeleton.
+                </p>
+                <div class="code-window">
+                    <div class="code-header">
+                        <div class="dot dot-red"></div>
+                        <div class="dot dot-yellow"></div>
+                        <div class="dot dot-green"></div>
+                        <span class="file-name">index.html</span>
+                    </div>
+                    <pre><code><span class="keyword">&lt;!DOCTYPE html&gt;</span>
+<span class="tag">&lt;html</span> <span class="attr">lang</span>=<span class="string">"en"</span><span class="tag">&gt;</span>
+<span class="tag">&lt;head&gt;</span>
+  <span class="tag">&lt;meta</span> <span class="attr">charset</span>=<span class="string">"UTF-8"</span><span class="tag">&gt;</span>
+  <span class="tag">&lt;title&gt;</span>My Blog Article<span class="tag">&lt;/title&gt;</span>
+<span class="tag">&lt;/head&gt;</span>
+<span class="tag">&lt;body&gt;</span>
+  <span class="comment">&lt;!-- Content goes here --&gt;</span>
+<span class="tag">&lt;/body&gt;</span>
+<span class="tag">&lt;/html&gt;</span></code></pre>
+                </div>
+                <div class="why-box">
+                    <div class="why-title">Standardization</div>
+                    <p class="text-sm">The <code>&lt;!DOCTYPE html&gt;</code> declaration ensures that the browser uses "Standards Mode" rather than "Quirks Mode," giving you consistent rendering across Chrome, Safari, and Firefox.</p>
+                </div>
+            </div>
+
+            <!-- STEP 3: SEMANTIC HEADER -->
+            <div class="step-content" id="step-3">
+                <h1 class="text-5xl font-bold tracking-tighter mb-6">The Header</h1>
+                <p class="text-xl text-gray-600 font-light mb-8 max-w-2xl">
+                    The <code>&lt;header&gt;</code> contains introductory content or navigation links.
+                </p>
+                <div class="code-window">
+                    <div class="code-header">
+                        <div class="dot dot-red"></div>
+                        <div class="dot dot-yellow"></div>
+                        <div class="dot dot-green"></div>
+                        <span class="file-name">index.html</span>
+                    </div>
+                    <pre><code><span class="tag">&lt;body&gt;</span>
+  <span class="tag">&lt;header&gt;</span>
+    <span class="tag">&lt;nav&gt;</span>
+      <span class="tag">&lt;a</span> <span class="attr">href</span>=<span class="string">"#"</span><span class="tag">&gt;</span>Home<span class="tag">&lt;/a&gt;</span>
+      <span class="tag">&lt;a</span> <span class="attr">href</span>=<span class="string">"#"</span><span class="tag">&gt;</span>Articles<span class="tag">&lt;/a&gt;</span>
+    <span class="tag">&lt;/nav&gt;</span>
+    <span class="tag">&lt;h1&gt;</span>The UNDR Journal<span class="tag">&lt;/h1&gt;</span>
+  <span class="tag">&lt;/header&gt;</span>
+  <span class="comment">&lt;!-- Remaining body content --&gt;</span>
+<span class="tag">&lt;/body&gt;</span></code></pre>
+                </div>
+                <div class="why-box">
+                    <div class="why-title">Identity</div>
+                    <p class="text-sm">By using <code>&lt;header&gt;</code>, you signal to screen readers that this is the site-wide branding area. You can have multiple headers on a page (e.g., inside an <code>&lt;article&gt;</code>), but there's usually one primary one at the top.</p>
+                </div>
+            </div>
+
+            <!-- STEP 4: DYNAMIC MARQUEE (NEW) -->
+            <div class="step-content" id="step-4">
+                <h1 class="text-5xl font-bold tracking-tighter mb-6">Breaking News</h1>
+                <p class="text-xl text-gray-600 font-light mb-8 max-w-2xl">
+                    Add a sense of urgency with the <code>&lt;marquee&gt;</code> tag for scrolling highlights.
+                </p>
+                <div class="code-window">
+                    <div class="code-header">
+                        <div class="dot dot-red"></div>
+                        <div class="dot dot-yellow"></div>
+                        <div class="dot dot-green"></div>
+                        <span class="file-name">index.html</span>
+                    </div>
+                    <pre><code><span class="comment">&lt;!-- Below the header --&gt;</span>
+<span class="tag">&lt;marquee</span> <span class="attr">behavior</span>=<span class="string">"scroll"</span> <span class="attr">direction</span>=<span class="string">"left"</span><span class="tag">&gt;</span>
+  BREAKING: HTML Mastery Lab 05 has just been released! 
+  Don't miss out on the latest updates.
+<span class="tag">&lt;/marquee&gt;</span></code></pre>
+                </div>
+                <div class="why-box">
+                    <div class="why-title">Fun Fact</div>
+                    <p class="text-sm">The <code>&lt;marquee&gt;</code> tag is a "legacy" element from the early days of the web. While technically deprecated in modern standards, it's still fun to use for simple, retro scrolling effects!</p>
+                </div>
+            </div>
+
+            <!-- STEP 5: THE ARTICLE -->
+            <div class="step-content" id="step-5">
+                <h1 class="text-5xl font-bold tracking-tighter mb-6">The Article</h1>
+                <p class="text-xl text-gray-600 font-light mb-8 max-w-2xl">
+                    The <code>&lt;article&gt;</code> tag represents a self-contained composition that makes sense on its own.
+                </p>
+                <div class="code-window">
+                    <div class="code-header">
+                        <div class="dot dot-red"></div>
+                        <div class="dot dot-yellow"></div>
+                        <div class="dot dot-green"></div>
+                        <span class="file-name">index.html</span>
+                    </div>
+                    <pre><code><span class="tag">&lt;main&gt;</span>
+  <span class="tag">&lt;article&gt;</span>
+    <span class="tag">&lt;h2&gt;</span>Mastering Grid Layouts<span class="tag">&lt;/h2&gt;</span>
+    <span class="tag">&lt;p&gt;</span>CSS Grid has changed how we think about space...<span class="tag">&lt;/p&gt;</span>
+    <span class="tag">&lt;p&gt;</span>With just a few lines of code, you can create complex, 
+       responsive designs that were once impossible.<span class="tag">&lt;/p&gt;</span>
+    <span class="comment">&lt;!-- Table will go here later --&gt;</span>
+  <span class="tag">&lt;/article&gt;</span>
+<span class="tag">&lt;/main&gt;</span></code></pre>
+                </div>
+                <div class="why-box">
+                    <div class="why-title">Portability</div>
+                    <p class="text-sm">The <code>&lt;article&gt;</code> tag is perfect for content that could be distributed in an RSS feed or shared as a standalone piece. It should contain its own headings and internal structure.</p>
+                </div>
+            </div>
+
+            <!-- STEP 6: THE ASIDE -->
+            <div class="step-content" id="step-6">
+                <h1 class="text-5xl font-bold tracking-tighter mb-6">Side Content</h1>
+                <p class="text-xl text-gray-600 font-light mb-8 max-w-2xl">
+                    The <code>&lt;aside&gt;</code> tag is used for content "to the side"—related but not part of the primary flow.
+                </p>
+                <div class="code-window">
+                    <div class="code-header">
+                        <div class="dot dot-red"></div>
+                        <div class="dot dot-yellow"></div>
+                        <div class="dot dot-green"></div>
+                        <span class="file-name">index.html</span>
+                    </div>
+                    <pre><code><span class="comment">&lt;!-- After the &lt;main&gt; element --&gt;</span>
+<span class="tag">&lt;aside&gt;</span>
+  <span class="tag">&lt;h3&gt;</span>About the Author<span class="tag">&lt;/h3&gt;</span>
+  <span class="tag">&lt;p&gt;</span>Alex is a front-end engineer obsessed with clean HTML 
+     and accessible interfaces.<span class="tag">&lt;/p&gt;</span>
+<span class="tag">&lt;/aside&gt;</span></code></pre>
+                </div>
+                <div class="why-box">
+                    <div class="why-title">Context</div>
+                    <p class="text-sm">Asides are great for author bios, related links, terminology definitions, or advertisements. They are typically styled as sidebars on larger screens.</p>
+                </div>
+            </div>
+
+            <!-- STEP 7: DATA TABLES -->
+            <div class="step-content" id="step-7">
+                <h1 class="text-5xl font-bold tracking-tighter mb-6">Structured Data</h1>
+                <p class="text-xl text-gray-600 font-light mb-8 max-w-2xl">
+                    Use <code>&lt;table&gt;</code> to display categorical information about your post.
+                </p>
+                <div class="code-window">
+                    <div class="code-header">
+                        <div class="dot dot-red"></div>
+                        <div class="dot dot-yellow"></div>
+                        <div class="dot dot-green"></div>
+                        <span class="file-name">index.html</span>
+                    </div>
+                    <pre><code><span class="tag">&lt;article&gt;</span>
+  <span class="comment">&lt;!-- Previous paragraphs... --&gt;</span>
+  <span class="tag">&lt;table&gt;</span>
+    <span class="tag">&lt;tr&gt;</span><span class="tag">&lt;th&gt;</span>Metric<span class="tag">&lt;/th&gt;</span><span class="tag">&lt;th&gt;</span>Value<span class="tag">&lt;/th&gt;</span><span class="tag">&lt;/tr&gt;</span>
+    <span class="tag">&lt;tr&gt;</span><span class="tag">&lt;td&gt;</span>Reading Time<span class="tag">&lt;/td&gt;</span><span class="tag">&lt;td&gt;</span>5 Minutes<span class="tag">&lt;/td&gt;</span><span class="tag">&lt;/tr&gt;</span>
+    <span class="tag">&lt;tr&gt;</span><span class="tag">&lt;td&gt;</span>Category<span class="tag">&lt;/td&gt;</span><span class="tag">&lt;td&gt;</span>Web Design<span class="tag">&lt;/td&gt;</span><span class="tag">&lt;/tr&gt;</span>
+  <span class="tag">&lt;/table&gt;</span>
+<span class="tag">&lt;/article&gt;</span></code></pre>
+                </div>
+                <div class="why-box">
+                    <div class="why-title">Tabular Logic</div>
+                    <p class="text-sm">Only use <code>&lt;table&gt;</code> for data that has a logical relationship. Never use tables for layout; use CSS Flexbox or Grid for that!</p>
+                </div>
+            </div>
+
+            <!-- STEP 8: THE FOOTER -->
+            <div class="step-content" id="step-8">
+                <h1 class="text-5xl font-bold tracking-tighter mb-6">The Footer</h1>
+                <p class="text-xl text-gray-600 font-light mb-8 max-w-2xl">
+                    Finish your document with copyright, contact info, and legal links.
+                </p>
+                <div class="code-window">
+                    <div class="code-header">
+                        <div class="dot dot-red"></div>
+                        <div class="dot dot-yellow"></div>
+                        <div class="dot dot-green"></div>
+                        <span class="file-name">index.html</span>
+                    </div>
+                    <pre><code><span class="tag">&lt;footer&gt;</span>
+  <span class="tag">&lt;p&gt;</span>&copy; 2026 The UNDR Journal. Built with Semantic HTML.<span class="tag">&lt;/p&gt;</span>
+  <span class="tag">&lt;nav&gt;</span>
+    <span class="tag">&lt;a</span> <span class="attr">href</span>=<span class="string">"#"</span><span class="tag">&gt;</span>Twitter<span class="tag">&lt;/a&gt;</span> | <span class="tag">&lt;a</span> <span class="attr">href</span>=<span class="string">"#"</span><span class="tag">&gt;</span>Newsletter<span class="tag">&lt;/a&gt;</span>
+  <span class="tag">&lt;/nav&gt;</span>
+<span class="tag">&lt;/footer&gt;</span></code></pre>
+                </div>
+            </div>
+
+            <!-- STEP 9: INTERNAL STYLING -->
+            <div class="step-content" id="step-9">
+                <h1 class="text-5xl font-bold tracking-tighter mb-6">Internal CSS</h1>
+                <p class="text-xl text-gray-600 font-light mb-8 max-w-2xl">
+                    Add a <code>&lt;style&gt;</code> block in the <code>&lt;head&gt;</code> to polish your blog's appearance.
+                </p>
+                <div class="code-window">
+                    <div class="code-header">
+                        <div class="dot dot-red"></div>
+                        <div class="dot dot-yellow"></div>
+                        <div class="dot dot-green"></div>
+                        <span class="file-name">index.html</span>
+                    </div>
+                    <pre><code><span class="tag">&lt;style&gt;</span>
+  <span class="keyword">body</span> { 
+    <span class="attr">font-family</span>: sans-serif; 
+    <span class="attr">max-width</span>: 800px; 
+    <span class="attr">margin</span>: 0 auto; 
+    <span class="attr">padding</span>: 20px; 
+  }
+  <span class="keyword">header</span> { <span class="attr">border-bottom</span>: 2px solid #333; }
+  <span class="keyword">article</span> { <span class="attr">margin-top</span>: 30px; }
+  <span class="keyword">table</span> { <span class="attr">width</span>: 100%; <span class="attr">border-collapse</span>: collapse; }
+  <span class="keyword">td</span>, <span class="keyword">th</span> { <span class="attr">border</span>: 1px solid #ddd; <span class="attr">padding</span>: 8px; }
+<span class="tag">&lt;/style&gt;</span></code></pre>
+                </div>
+            </div>
+
+            <!-- STEP 10: FINAL RESULT -->
+            <div class="step-content" id="step-10">
+                <p class="text-xl text-gray-600 font-light mb-8 max-w-2xl">
+                    You've built a fully semantic, styled blog article. Review the final code and preview below.
+                </p>
+
+                <div class="code-window">
+                  <div class="code-header">
+                      <div class="dot dot-red"></div>
+                      <div class="dot dot-yellow"></div>
+                      <div class="dot dot-green"></div>
+                      <span class="file-name">final-blog.html</span>
+                  </div>
+                  <pre><code><span class="keyword">&lt;!DOCTYPE html&gt;</span>
+<span class="tag">&lt;html&gt;</span>
+<span class="tag">&lt;head&gt;</span>
+  <span class="tag">&lt;style&gt;</span>
+    <span class="keyword">body</span> { <span class="attr">max-width</span>: 800px; <span class="attr">margin</span>: 0 auto; <span class="attr">display</span>: grid; <span class="attr">grid-template-columns</span>: 1fr 200px; }
+    <span class="keyword">header</span>, <span class="keyword">marquee</span>, <span class="keyword">footer</span> { <span class="attr">grid-column</span>: 1 / -1; }
+    <span class="keyword">table</span> { <span class="attr">border</span>: 1px solid #ddd; <span class="attr">width</span>: 100%; <span class="attr">border-collapse</span>: collapse; }
+    <span class="keyword">td</span>, <span class="keyword">th</span> { <span class="attr">border</span>: 1px solid #ddd; <span class="attr">padding</span>: 8px; }
+  <span class="tag">&lt;/style&gt;</span>
+<span class="tag">&lt;/head&gt;</span>
+<span class="tag">&lt;body&gt;</span>
+  <span class="tag">&lt;header&gt;</span><span class="tag">&lt;h1&gt;</span>The UNDR Journal<span class="tag">&lt;/h1&gt;</span><span class="tag">&lt;/header&gt;</span>
+  <span class="tag">&lt;marquee&gt;</span>BREAKING: HTML Mastery released!<span class="tag">&lt;/marquee&gt;</span>
+  <span class="tag">&lt;main&gt;</span>
+    <span class="tag">&lt;article&gt;</span>
+      <span class="tag">&lt;h2&gt;</span>Mastering Grid Layouts<span class="tag">&lt;/h2&gt;</span>
+      <span class="tag">&lt;table&gt;</span>
+        <span class="tag">&lt;tr&gt;</span><span class="tag">&lt;th&gt;</span>Metric<span class="tag">&lt;/th&gt;</span><span class="tag">&lt;th&gt;</span>Value<span class="tag">&lt;/th&gt;</span><span class="tag">&lt;/tr&gt;</span>
+        <span class="tag">&lt;tr&gt;</span><span class="tag">&lt;td&gt;</span>Reading Time<span class="tag">&lt;/td&gt;</span><span class="tag">&lt;td&gt;</span>5 mins<span class="tag">&lt;/td&gt;</span><span class="tag">&lt;/tr&gt;</span>
+      <span class="tag">&lt;/table&gt;</span>
+    <span class="tag">&lt;/article&gt;</span>
+  <span class="tag">&lt;/main&gt;</span>
+  <span class="tag">&lt;aside&gt;</span><span class="tag">&lt;h3&gt;</span>About Author<span class="tag">&lt;/h3&gt;</span><span class="tag">&lt;/aside&gt;</span>
+  <span class="tag">&lt;footer&gt;</span>(c) 2026 UNDR<span class="tag">&lt;/footer&gt;</span>
+<span class="tag">&lt;/body&gt;</span>
+<span class="tag">&lt;/html&gt;</span></code></pre>
+                </div>
+            </div>
+        </main>
+
+        <!-- Navigation -->
+        <footer class="flex justify-between items-center py-12 border-t border-gray-100">
+            <button id="prevBtn" class="nav-btn nav-btn-prev" disabled onclick="changeStep(-1)">Previous</button>
+            <button id="nextBtn" class="nav-btn nav-btn-next" onclick="changeStep(1)">Next Phase</button>
+        </footer>
+    </div>
+
+    <!-- Completion Modal -->
+    <div id="completion-modal" class="fixed inset-0 z-[3000] hidden flex items-center justify-center p-4 backdrop-blur-xl bg-black/40">
+        <div class="bg-white rounded-[2rem] p-5 sm:p-8 max-w-[min(400px,90vw)] w-full text-center shadow-3xl scale-95 opacity-0 transition-all duration-500" id="completion-content">
+            <div class="mb-4 flex justify-center">
+                <canvas id="badge-canvas" class="rounded-3xl border border-gray-100 max-w-full h-auto"></canvas>
+            </div>
+            <h2 class="text-2xl font-bold mb-1">Great Job!</h2>
+            <p class="text-gray-600 text-sm mb-6">You've mastered the <strong>Semantic HTML Article</strong> lab.</p>
+
+            <div class="flex flex-col gap-2">
+                <button onclick="downloadBadge()" class="w-full py-3 bg-black text-white rounded-xl font-bold hover:bg-gray-800 transition-all flex items-center justify-center gap-2 text-sm">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                        <polyline points="7 10 12 15 17 10" />
+                        <line x1="12" y1="15" x2="12" y2="3" />
+                    </svg>
+                    Download Badge
+                </button>
+                <button onclick="window.location.href='../'" class="w-full py-2 text-gray-400 font-semibold hover:text-black transition-all text-xs">
+                    Return to Repository
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mobile Guidance Modal -->
+    <div id="mobile-guidance-modal">
+        <div class="modal-content">
+            <div class="modal-icon-box">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+                    <line x1="8" y1="21" x2="16" y2="21"></line>
+                    <line x1="12" y1="17" x2="12" y2="21"></line>
+                </svg>
+            </div>
+            <span class="modal-title">Desktop Recommended</span>
+            <p class="modal-text">Interactive labs are designed for desktop. You can still keep this open on your mobile to follow along while you build on your workstation.</p>
+            <button class="modal-btn" onclick="closeMobileModal()">Undrstood</button>
+        </div>
+    </div>
+
+    <script src="../content/js/mrstuck.js"></script>
+    <script src="../content/js/script.js"></script>
+    <script>
+        let currentStep = 1;
+        const totalSteps = 10;
+
+        function changeStep(delta) {
+            const nextStep = currentStep + delta;
+            if (nextStep < 1 || nextStep > totalSteps) return;
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+
+            setTimeout(() => {
+                document.getElementById(`step-${currentStep}`).classList.remove('active');
+                currentStep = nextStep;
+                document.getElementById(`step-${currentStep}`).classList.add('active');
+                updateUI();
+            }, 50);
+        }
+
+        function updateUI() {
+            document.getElementById('current-step-num').innerText = currentStep;
+            document.getElementById('progress-fill').style.width = `${(currentStep / totalSteps) * 100}%`;
+            document.getElementById('prevBtn').disabled = currentStep === 1;
+
+            const nextBtn = document.getElementById('nextBtn');
+            if (currentStep === totalSteps) {
+                nextBtn.innerText = "Complete Lab";
+                nextBtn.onclick = () => showCompletionModal();
+            } else {
+                nextBtn.innerText = "Next Phase";
+                nextBtn.onclick = () => changeStep(1);
+            }
+        }
+
+        let badgeGen = null;
+        function showCompletionModal() {
+            const modal = document.getElementById('completion-modal');
+            const content = document.getElementById('completion-content');
+            modal.classList.remove('hidden');
+
+            if (!badgeGen) {
+                // Ensure BadgeGenerator is defined in script.js before calling
+                if (typeof BadgeGenerator !== 'undefined') {
+                    badgeGen = new BadgeGenerator('badge-canvas', 'HTML Mastery', 'Semantic Article');
+                }
+            }
+
+            setTimeout(() => {
+                content.classList.remove('scale-95', 'opacity-0');
+                content.classList.add('scale-100', 'opacity-100');
+            }, 10);
+        }
+
+        function downloadBadge() {
+            if (badgeGen) {
+                badgeGen.download('html-mastery-badge.png');
+            }
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            if (window.innerWidth <= 768) {
+                document.getElementById('mobile-guidance-modal').classList.add('active');
+            }
+        });
+
+        function closeMobileModal() {
+            document.getElementById('mobile-guidance-modal').classList.remove('active');
+        }
+
+        updateUI();
+    </script>
+</body>
+</html>
