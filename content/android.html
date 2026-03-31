@@ -195,6 +195,8 @@
         <!-- Mobile Menu -->
         <div id="mobile-menu" class="fixed inset-0 bg-[#f4f4f4] z-[90] hidden flex-col pt-20 px-6 overflow-y-auto">
             <nav class="flex flex-col">
+                <a href="#intro" class="mobile-nav-link" onclick="toggleMobileMenu()">About Android</a>
+                <a href="#ecosystem" class="mobile-nav-link" onclick="toggleMobileMenu()">The Ecosystem</a>
                 <a href="#studio" class="mobile-nav-link" onclick="toggleMobileMenu()">The IDE</a>
                 <a href="#kotlin" class="mobile-nav-link" onclick="toggleMobileMenu()">Kotlin Basics</a>
                 <a href="#syntax" class="mobile-nav-link" onclick="toggleMobileMenu()">Syntax & Safety</a>
@@ -229,7 +231,8 @@
                             Dev</p>
                     </div>
                     <nav class="space-y-1">
-                        <a href="#intro" class="nav-link font-medium text-black">Introduction</a>
+                        <a href="#intro" class="nav-link font-medium text-black active">About Android</a>
+                        <a href="#ecosystem" class="nav-link">The Ecosystem</a>
                         <a href="#studio" class="nav-link">The IDE</a>
                         <a href="#kotlin" class="nav-link">Kotlin Basics</a>
                         <a href="#syntax" class="nav-link">Syntax & Safety</a>
@@ -254,12 +257,204 @@
                 <section id="intro" class="mb-16 md:mb-24 section-reveal active">
                     <h2
                         class="text-3xl sm:text-4xl md:text-5xl font-semibold mb-6 text-black tracking-tight leading-tight">
-                        Concise, Safe, <br>Interoperable.
+                        Powering the <br>Handheld World.
                     </h2>
                     <p class="text-sm sm:text-base md:text-lg text-gray-600 max-w-xl font-light leading-relaxed mb-6">
-                        From the IntelliJ powerhouse comes Kotlin—a modern language designed to make Android development
-                        happier, safer, and more productive.
+                        Android is a mobile operating system based on a modified version of the Linux kernel, designed primarily for touchscreen mobile devices. With over 3 billion active users, it is the most popular OS in existence.
                     </p>
+                </section>
+
+                <div class="w-full h-px bg-gray-200 hidden md:block mb-10"></div>
+
+                <!-- 00. Ecosystem -->
+                <section id="ecosystem" class="mb-20 md:mb-24 section-reveal">
+                    <span class="label-text">00 / The Evolution</span>
+                    <h3 class="text-xl font-medium mb-6">The Founding Story</h3>
+                    <p class="text-sm text-gray-600 mb-8 max-w-xl">
+                        Before it was a global phenomenon, Android was a small startup with a radically different goal: building an operating system for digital cameras.
+                    </p>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
+                        <div class="tech-card bg-gray-50 border-none shadow-inner">
+                            <h4 class="text-xs font-bold uppercase tracking-widest text-[#3DDC84] mb-4">Origin Hub</h4>
+                            <ul class="space-y-4">
+                                <li class="flex items-start gap-3">
+                                    <div class="w-6 h-6 flex items-center justify-center bg-white rounded-md border border-gray-100 shadow-sm shrink-0">
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#3DDC84" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"></path>
+                                            <path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"></path>
+                                            <path d="M9 12H4s.55-3.03 2-5c1.62-2.2 5-3 5-3"></path>
+                                            <path d="M12 15v5s3.03-.55 5-2c2.2-1.62 3-5 3-5"></path>
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <span class="block text-xs font-bold text-black uppercase">Founded</span>
+                                        <span class="text-xs text-gray-600">October 2003 in Palo Alto, CA.</span>
+                                    </div>
+                                </li>
+                                <li class="flex items-start gap-3">
+                                    <div class="w-6 h-6 flex items-center justify-center bg-white rounded-md border border-gray-100 shadow-sm shrink-0">
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#3DDC84" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
+                                            <circle cx="9" cy="7" r="4"></circle>
+                                            <path d="M22 21v-2a4 4 0 0 0-3-3.87"></path>
+                                            <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <span class="block text-xs font-bold text-black uppercase">Acquisition</span>
+                                        <span class="text-xs text-gray-600">Bought by Google in August 2005 for approx. $50M.</span>
+                                    </div>
+                                </li>
+                                <li class="flex items-start gap-3">
+                                    <div class="w-6 h-6 flex items-center justify-center bg-white rounded-md border border-gray-100 shadow-sm shrink-0">
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#3DDC84" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                            <rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect>
+                                            <line x1="12" y1="18" x2="12.01" y2="18"></line>
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <span class="block text-xs font-bold text-black uppercase">First Device</span>
+                                        <span class="text-xs text-gray-600">T-Mobile G1 (HTC Dream) &mdash; October 2008.</span>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <div class="tech-card border-l-4 border-l-gray-900">
+                            <h4 class="text-xs font-bold uppercase tracking-widest text-black mb-4">The Founders</h4>
+                            <p class="text-sm text-gray-600 leading-relaxed mb-4">
+                                Android Inc. was built by a powerhouse team of veteran engineers who envisioned a smarter, more open mobile world.
+                            </p>
+                            <div class="grid grid-cols-2 gap-2 text-[10px] font-mono text-gray-400">
+                                <div class="bg-white p-2 rounded border border-gray-100">&bull; Andy Rubin</div>
+                                <div class="bg-white p-2 rounded border border-gray-100">&bull; Rich Miner</div>
+                                <div class="bg-white p-2 rounded border border-gray-100">&bull; Nick Sears</div>
+                                <div class="bg-white p-2 rounded border border-gray-100">&bull; Chris White</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h4 class="text-sm font-bold uppercase text-black mb-6 italic">Chronological History</h4>
+                    <p class="text-xs text-gray-500 mb-8 font-light">Alphabetical release cycles ensure developers always know their environment version.</p>
+
+                    <!-- All OS Versions -->
+                    <div class="tech-card overflow-hidden !p-0">
+                        <div class="max-h-[500px] overflow-y-auto">
+                            <table class="w-full text-left border-collapse">
+                                <thead class="sticky top-0 bg-white shadow-sm z-10">
+                                    <tr class="bg-gray-50 border-b border-gray-200">
+                                        <th class="p-4 text-[10px] font-bold uppercase tracking-widest text-gray-400">Ver.</th>
+                                        <th class="p-4 text-[10px] font-bold uppercase tracking-widest text-gray-400">Codename</th>
+                                        <th class="p-4 text-[10px] font-bold uppercase tracking-widest text-gray-400">Key Focus</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="text-xs font-mono">
+                                    <tr class="border-b border-gray-100 bg-green-50/20">
+                                        <td class="p-4 font-bold">15</td>
+                                        <td class="p-4"><span class="px-2 py-1 bg-green-100 text-green-700 rounded">Vanilla Ice Cream</span></td>
+                                        <td class="p-4 text-gray-500">Private Space & Power</td>
+                                    </tr>
+                                    <tr class="border-b border-gray-100">
+                                        <td class="p-4 font-bold">14</td>
+                                        <td class="p-4">Upside Down Cake</td>
+                                        <td class="p-4 text-gray-500">Customization & Battery</td>
+                                    </tr>
+                                    <tr class="border-b border-gray-100">
+                                        <td class="p-4 font-bold">13</td>
+                                        <td class="p-4">Tiramisu</td>
+                                        <td class="p-4 text-gray-500">Themed Icons & Privacy</td>
+                                    </tr>
+                                    <tr class="border-b border-gray-100">
+                                        <td class="p-4 font-bold">12</td>
+                                        <td class="p-4">Snow Cone</td>
+                                        <td class="p-4 text-gray-500">Material You Design</td>
+                                    </tr>
+                                    <tr class="border-b border-gray-100">
+                                        <td class="p-4 font-bold">11</td>
+                                        <td class="p-4">Red Velvet Cake</td>
+                                        <td class="p-4 text-gray-500">Messaging & Media</td>
+                                    </tr>
+                                    <tr class="border-b border-gray-100">
+                                        <td class="p-4 font-bold">10</td>
+                                        <td class="p-4">Quince Tart</td>
+                                        <td class="p-4 text-gray-500">Gesture Navigation</td>
+                                    </tr>
+                                    <tr class="border-b border-gray-100">
+                                        <td class="p-4 font-bold">9.0</td>
+                                        <td class="p-4">Pie</td>
+                                        <td class="p-4 text-gray-500">Adaptive Battery</td>
+                                    </tr>
+                                    <tr class="border-b border-gray-100">
+                                        <td class="p-4 font-bold">8.0</td>
+                                        <td class="p-4">Oreo</td>
+                                        <td class="p-4 text-gray-500">Picture-in-Picture</td>
+                                    </tr>
+                                    <tr class="border-b border-gray-100">
+                                        <td class="p-4 font-bold">7.0</td>
+                                        <td class="p-4">Nougat</td>
+                                        <td class="p-4 text-gray-500">Split-screen Mode</td>
+                                    </tr>
+                                    <tr class="border-b border-gray-100">
+                                        <td class="p-4 font-bold">6.0</td>
+                                        <td class="p-4">Marshmallow</td>
+                                        <td class="p-4 text-gray-500">App Permissions</td>
+                                    </tr>
+                                    <tr class="border-b border-gray-100">
+                                        <td class="p-4 font-bold">5.0</td>
+                                        <td class="p-4">Lollipop</td>
+                                        <td class="p-4 text-gray-500">Material Design Introduction</td>
+                                    </tr>
+                                    <tr class="border-b border-gray-100">
+                                        <td class="p-4 font-bold">4.4</td>
+                                        <td class="p-4">KitKat</td>
+                                        <td class="p-4 text-gray-500">Project Svelte (Low RAM)</td>
+                                    </tr>
+                                    <tr class="border-b border-gray-100">
+                                        <td class="p-4 font-bold">4.1</td>
+                                        <td class="p-4">Jelly Bean</td>
+                                        <td class="p-4 text-gray-500">Project Butter (Fluid UI)</td>
+                                    </tr>
+                                    <tr class="border-b border-gray-100">
+                                        <td class="p-4 font-bold">4.0</td>
+                                        <td class="p-4">Ice Cream Sandwich</td>
+                                        <td class="p-4 text-gray-500">Modern Android Styling</td>
+                                    </tr>
+                                    <tr class="border-b border-gray-100">
+                                        <td class="p-4 font-bold">3.0</td>
+                                        <td class="p-4">Honeycomb</td>
+                                        <td class="p-4 text-gray-500">Tablet-only Era</td>
+                                    </tr>
+                                    <tr class="border-b border-gray-100">
+                                        <td class="p-4 font-bold">2.3</td>
+                                        <td class="p-4">Gingerbread</td>
+                                        <td class="p-4 text-gray-500">NFC & Gaming Support</td>
+                                    </tr>
+                                    <tr class="border-b border-gray-100">
+                                        <td class="p-4 font-bold">2.2</td>
+                                        <td class="p-4">Froyo</td>
+                                        <td class="p-4 text-gray-500">JIT & Voice Dialing</td>
+                                    </tr>
+                                    <tr class="border-b border-gray-100">
+                                        <td class="p-4 font-bold">2.0</td>
+                                        <td class="p-4">Eclair</td>
+                                        <td class="p-4 text-gray-500">Google Maps Nav</td>
+                                    </tr>
+                                    <tr class="border-b border-gray-100">
+                                        <td class="p-4 font-bold">1.6</td>
+                                        <td class="p-4">Donut</td>
+                                        <td class="p-4 text-gray-500">Quick Search Box</td>
+                                    </tr>
+                                    <tr class="border-b border-gray-100">
+                                        <td class="p-4 font-bold">1.5</td>
+                                        <td class="p-4">Cupcake</td>
+                                        <td class="p-4 text-gray-500">Virtual Keyboard</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
                 </section>
 
                 <div class="w-full h-px bg-gray-200 hidden md:block mb-10"></div>
@@ -296,7 +491,7 @@
                         </a>
                     </div>
 
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
                         <div class="tech-card border-l-4 border-l-[#3DDC84]">
                             <h4 class="text-sm font-bold uppercase tracking-widest text-black mb-3">Gradle Build System
                             </h4>
@@ -313,6 +508,150 @@
                                 Debug your UI in real-time. See exactly how your app is laid out on a device and inspect
                                 attributes on the fly.
                             </p>
+                        </div>
+                    </div>
+
+                    <h4 class="text-sm font-bold uppercase text-black mb-6 italic">Evolution of the IDE</h4>
+                    <div class="space-y-6 mb-16">
+                        <!-- 2026 -->
+                        <div class="flex flex-col md:flex-row md:items-center gap-4">
+                            <div class="md:w-20 text-[10px] font-black uppercase tracking-tighter text-[#3DDC84]">2026</div>
+                            <div class="flex-1 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                                <div class="p-3 border-2 border-[#3DDC84]/20 rounded bg-white shadow-md flex items-center justify-between">
+                                    <div class="flex flex-col">
+                                        <span class="text-xs font-bold text-[#3DDC84] uppercase tracking-widest">Preview</span>
+                                        <span class="text-sm font-bold">Panda 4</span>
+                                    </div>
+                                    <span class="text-[9px] font-mono text-gray-400 bg-gray-50 px-1.5 py-0.5 rounded">2025.3.4 Canary</span>
+                                </div>
+                                <div class="p-3 border border-gray-200 rounded bg-white shadow-sm flex items-center justify-between">
+                                    <span class="text-sm font-bold">Panda 3</span>
+                                    <span class="text-[9px] font-mono text-gray-400 bg-gray-50 px-1.5 py-0.5 rounded">2025.3.3 RC</span>
+                                </div>
+                                <div class="p-3 border border-gray-200 rounded bg-white shadow-sm flex items-center justify-between">
+                                    <span class="text-sm font-bold">Panda 2</span>
+                                    <span class="text-[9px] font-mono text-gray-400 bg-gray-50 px-1.5 py-0.5 rounded">2025.3.2 Stable</span>
+                                </div>
+                                <div class="p-3 border border-gray-200 rounded bg-white shadow-sm flex items-center justify-between">
+                                    <span class="text-sm font-bold">Panda 1</span>
+                                    <span class="text-[9px] font-mono text-gray-400 bg-gray-50 px-1.5 py-0.5 rounded">2025.3.1 Stable</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 2025 -->
+                        <div class="flex flex-col md:flex-row md:items-center gap-4">
+                            <div class="md:w-20 text-[10px] font-black uppercase tracking-tighter text-gray-400">2025</div>
+                            <div class="flex-1 grid grid-cols-1 sm:grid-cols-3 gap-3">
+                                <div class="p-3 border border-gray-200 rounded bg-white shadow-sm flex items-center justify-between">
+                                    <span class="text-sm font-bold">Otter</span>
+                                    <span class="text-[9px] font-mono text-gray-400 bg-gray-50 px-1.5 py-0.5 rounded">2025.2.1 Stable</span>
+                                </div>
+                                <div class="p-3 border border-gray-200 rounded bg-white shadow-sm flex items-center justify-between">
+                                    <span class="text-sm font-bold">Narwhal</span>
+                                    <span class="text-[9px] font-mono text-gray-400 bg-gray-50 px-1.5 py-0.5 rounded">2025.1.1 Stable</span>
+                                </div>
+                                <div class="p-3 border border-gray-200 rounded bg-white shadow-sm flex items-center justify-between">
+                                    <span class="text-sm font-bold font-mono text-[#3DDC84] italic">M</span>
+                                    <span class="text-sm font-bold">Meerkat</span>
+                                    <span class="text-[9px] font-mono text-gray-400 bg-gray-50 px-1.5 py-0.5 rounded">2024.3.1</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 2024 -->
+                        <div class="flex flex-col md:flex-row md:items-center gap-4">
+                            <div class="md:w-20 text-[10px] font-black uppercase tracking-tighter text-gray-400">2024</div>
+                            <div class="flex-1 grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                <div class="p-3 border border-gray-200 rounded bg-white shadow-sm flex items-center justify-between">
+                                    <span class="text-sm font-bold font-mono text-[#3DDC84] italic">L</span>
+                                    <span class="text-sm font-bold">Ladybug</span>
+                                    <span class="text-[9px] font-mono text-gray-400">2024.2.1</span>
+                                </div>
+                                <div class="p-3 border border-gray-200 rounded bg-white shadow-sm flex items-center justify-between">
+                                    <span class="text-sm font-bold font-mono text-[#3DDC84] italic">K</span>
+                                    <span class="text-sm font-bold">Koala</span>
+                                    <span class="text-[9px] font-mono text-gray-400">2024.1.1</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 2023 -->
+                        <div class="flex flex-col md:flex-row md:items-center gap-4">
+                            <div class="md:w-20 text-[10px] font-black uppercase tracking-tighter text-gray-400">2023</div>
+                            <div class="flex-1 grid grid-cols-1 sm:grid-cols-3 gap-3">
+                                <div class="p-3 border border-gray-100 rounded bg-white shadow-sm flex items-center justify-between">
+                                    <span class="text-sm font-bold font-mono text-[#3DDC84] italic">J</span>
+                                    <span class="text-sm font-medium">Jellyfish</span>
+                                    <span class="text-[9px] font-mono text-gray-400">2023.3.1</span>
+                                </div>
+                                <div class="p-3 border border-gray-100 rounded bg-white shadow-sm flex items-center justify-between">
+                                    <span class="text-sm font-bold font-mono text-[#3DDC84] italic">I</span>
+                                    <span class="text-sm font-medium">Iguana</span>
+                                    <span class="text-[9px] font-mono text-gray-400">2023.2.1</span>
+                                </div>
+                                <div class="p-3 border border-gray-100 rounded bg-white shadow-sm flex items-center justify-between">
+                                    <span class="text-sm font-bold font-mono text-[#3DDC84] italic">H</span>
+                                    <span class="text-sm font-medium">Hedgehog</span>
+                                    <span class="text-[9px] font-mono text-gray-400">2023.1.1</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 2022 -->
+                        <div class="flex flex-col md:flex-row md:items-center gap-4">
+                            <div class="md:w-20 text-[10px] font-black uppercase tracking-tighter text-gray-300">2022</div>
+                            <div class="flex-1 grid grid-cols-1 sm:grid-cols-3 gap-3">
+                                <div class="p-3 border border-gray-50 rounded bg-white shadow-sm flex items-center justify-between opacity-80">
+                                    <span class="text-sm font-bold font-mono text-[#3DDC84] italic">G</span>
+                                    <span class="text-sm">Giraffe</span>
+                                    <span class="text-[9px] font-mono text-gray-400">2022.3.1</span>
+                                </div>
+                                <div class="p-3 border border-gray-50 rounded bg-white shadow-sm flex items-center justify-between opacity-80">
+                                    <span class="text-sm font-bold font-mono text-[#3DDC84] italic">F</span>
+                                    <span class="text-sm">Flamingo</span>
+                                    <span class="text-[9px] font-mono text-gray-400">2022.2.1</span>
+                                </div>
+                                <div class="p-3 border border-gray-50 rounded bg-white shadow-sm flex items-center justify-between opacity-80">
+                                    <span class="text-sm font-bold font-mono text-[#3DDC84] italic">E</span>
+                                    <span class="text-sm">Electric Eel</span>
+                                    <span class="text-[9px] font-mono text-gray-400">2022.1.1</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 2021 -->
+                        <div class="flex flex-col md:flex-row md:items-center gap-4">
+                            <div class="md:w-20 text-[10px] font-black uppercase tracking-tighter text-gray-300">2021</div>
+                            <div class="flex-1 grid grid-cols-1 sm:grid-cols-3 gap-3">
+                                <div class="p-3 border border-gray-50 rounded bg-white shadow-sm flex items-center justify-between opacity-60">
+                                    <span class="text-sm font-bold font-mono text-[#3DDC84] italic">D</span>
+                                    <span class="text-sm">Dolphin</span>
+                                    <span class="text-[9px] font-mono text-gray-400">2021.3.1</span>
+                                </div>
+                                <div class="p-3 border border-gray-50 rounded bg-white shadow-sm flex items-center justify-between opacity-60">
+                                    <span class="text-sm font-bold font-mono text-[#3DDC84] italic">C</span>
+                                    <span class="text-sm">Chipmunk</span>
+                                    <span class="text-[9px] font-mono text-gray-400">2021.2.1</span>
+                                </div>
+                                <div class="p-3 border border-gray-50 rounded bg-white shadow-sm flex items-center justify-between opacity-60">
+                                    <span class="text-sm font-bold font-mono text-[#3DDC84] italic">B</span>
+                                    <span class="text-sm">Bumblebee</span>
+                                    <span class="text-[9px] font-mono text-gray-400">2021.1.1</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 2020 -->
+                        <div class="flex flex-col md:flex-row md:items-center gap-4">
+                            <div class="md:w-20 text-[10px] font-black uppercase tracking-tighter text-gray-300">2020</div>
+                            <div class="flex-1">
+                                <div class="p-3 border border-gray-50 rounded bg-white shadow-sm flex items-center justify-between opacity-50 max-w-[min(240px,100%)]">
+                                    <span class="text-sm font-bold font-mono text-[#3DDC84] italic">A</span>
+                                    <span class="text-sm italic">Arctic Fox</span>
+                                    <span class="text-[9px] font-mono text-gray-400">2020.3.1</span>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
