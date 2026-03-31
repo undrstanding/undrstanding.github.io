@@ -533,6 +533,12 @@
             tip: "Think of your background logic as a silent observer! 🕵️‍♂️ It's always ready to react when you trigger its magic button.",
             command: "The `chrome.tabs` API is like a master control panel for your browser. It gives you the power to see, move, or even close any tab with just a few lines of code! 🔧",
             why: "Chrome Extensions are the ultimate way to customize your web experience. You're not just using the browser anymore; you're building its features! 🌐"
+        },
+        'html-blog-article': {
+            name: 'Semantic Blog Lab',
+            tip: "Semantic tags are like labels on moving boxes! 📦 Using `<article>` instead of just a generic `<div>` tells Google exactly what's inside. It's the secret to great SEO.",
+            command: "The `<aside>` element is perfect for sidebars or pull quotes. It tells the browser: 'This is related, but not the main story!' 🗞️",
+            why: "Building with semantics makes the web accessible to everyone, including people using screen readers. You're not just coding; you're making the internet more inclusive! 🌐"
         }
     };
 
@@ -761,7 +767,7 @@
             ? nextBtn.textContent
             : "Next Phase";
 
-        let timeLeft = 20;
+        let timeLeft = 10;
         nextBtn.classList.add('timer-active');
 
         const update = () => {
