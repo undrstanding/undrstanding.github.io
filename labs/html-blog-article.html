@@ -26,8 +26,8 @@
             --border: #e5e7eb;
             --text-main: #000000;
             --text-muted: #666666;
-            --accent: #ff6b6b;
-            /* Blog Coral */
+            --accent: #E34C26;
+            /* Official HTML Orange */
         }
 
         html {
@@ -162,7 +162,7 @@
         }
 
         .why-box {
-            background: #fff5f5;
+            background: #fff5f2;
             border-left: 4px solid var(--accent);
             padding: 1.5rem;
             margin: 1.5rem 0;
@@ -171,7 +171,7 @@
 
         .why-title {
             font-weight: 700;
-            color: #c53030;
+            color: var(--accent);
             margin-bottom: 0.5rem;
             text-transform: uppercase;
             font-size: 0.7rem;
@@ -328,6 +328,18 @@
             h1 { font-size: 2.5rem !important; }
             .nav-btn { padding: 0.75rem 1.25rem; font-size: 0.8rem; }
             #mobile-guidance-modal.active { display: flex; }
+            
+            .demo-blog {
+                grid-template-columns: 1fr;
+                padding: 16px;
+            }
+            .demo-main {
+                grid-column: 1 / -1;
+            }
+            .demo-aside {
+                grid-column: 1 / -1;
+                height: auto;
+            }
         }
     </style>
 </head>
@@ -337,7 +349,7 @@
         <!-- Header -->
         <nav class="flex justify-between items-center mb-12">
             <a href="../"
-                class="mono text-xs font-bold tracking-widest hover:text-coral-500 transition-colors uppercase">&larr;
+                class="mono text-xs font-bold tracking-widest hover:text-[#E34C26] transition-colors uppercase">&larr;
                 Repository</a>
             <div class="mono text-[10px] font-bold uppercase tracking-widest text-gray-300">Phase <span
                     id="current-step-num">1</span> / 10</div>
@@ -357,7 +369,7 @@
 
                 <div class="mockup-container bg-[#fafafa] py-16">
                     <div class="demo-blog">
-                        <marquee class="demo-marquee text-[10px] font-bold text-coral-500 uppercase tracking-widest mb-2" scrollamount="5">BREAKING: HTML Mastery Lab 02 has just been released! Don't miss out on the latest updates.</marquee>
+                        <marquee class="demo-marquee text-[10px] font-bold text-[#E34C26] uppercase tracking-widest mb-2" scrollamount="5">BREAKING: HTML Mastery Lab 02 has just been released! Don't miss out on the latest updates.</marquee>
                         <header class="demo-header">
                             <nav class="demo-nav"><span>Home</span> &middot; <span>Articles</span></nav>
                             The UNDR Journal
@@ -394,15 +406,15 @@
                     <h3 class="mono text-xs font-black uppercase tracking-[0.3em] text-gray-400">Lab Objectives</h3>
                     <ul class="space-y-4 text-gray-600 font-light text-lg">
                         <li class="flex gap-4">
-                            <div class="w-8 h-8 rounded-full bg-coral-50 text-coral-500 flex items-center justify-center text-xs font-bold shrink-0">1</div>
-                            <span>Structure content using <code>header</code>, <code>article</code>, and <code>footer</code>.</span>
+                            <div class="w-8 h-8 rounded-full bg-[#E34C26]/10 text-[#E34C26] flex items-center justify-center text-xs font-bold shrink-0">1</div>
+                            <span>Master HTML5 semantic elements (Header, Main, Article, Footer).</span>
                         </li>
                         <li class="flex gap-4">
-                            <div class="w-8 h-8 rounded-full bg-coral-50 text-coral-500 flex items-center justify-center text-xs font-bold shrink-0">2</div>
+                            <div class="w-8 h-8 rounded-full bg-[#E34C26]/10 text-[#E34C26] flex items-center justify-center text-xs font-bold shrink-0">2</div>
                             <span>Implement sidebars with <code>aside</code> and dynamic text with <code>marquee</code>.</span>
                         </li>
                         <li class="flex gap-4">
-                            <div class="w-8 h-8 rounded-full bg-coral-50 text-coral-500 flex items-center justify-center text-xs font-bold shrink-0">3</div>
+                            <div class="w-8 h-8 rounded-full bg-[#E34C26]/10 text-[#E34C26] flex items-center justify-center text-xs font-bold shrink-0">3</div>
                             <span>Display metadata using clean, accessible <code>table</code> elements.</span>
                         </li>
                     </ul>
