@@ -25,7 +25,7 @@
 
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;600;800&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800;900&display=swap');
 
         :root {
             --bg: #72BAA9;
@@ -50,7 +50,7 @@
         }
 
         body {
-            font-family: 'Public Sans', sans-serif;
+            font-family: 'Outfit', sans-serif;
             font-weight: 600;
             background-color: var(--bg);
             color: var(--border);
@@ -75,7 +75,6 @@
             /* Dark frame background */
             border: 2px solid var(--border);
             border-radius: 8px;
-            height: 240px;
             overflow: hidden;
         }
 
@@ -155,7 +154,6 @@
 
         .door-label {
             font-weight: 800;
-            font-size: 3.5rem;
             user-select: none;
         }
 
@@ -378,7 +376,7 @@
             padding: 40px;
         }
 
-        @media screen and (orientation: portrait) and (max-width: 1024px) {
+        @media screen and (orientation: landscape) and (max-height: 500px) {
             .orientation-overlay {
                 display: flex;
             }
@@ -408,33 +406,33 @@
 
         @keyframes rotatePhone {
             0% {
-                transform: rotate(0deg);
+                transform: rotate(90deg);
             }
 
             50% {
-                transform: rotate(90deg);
+                transform: rotate(0deg);
             }
 
             100% {
-                transform: rotate(90deg);
+                transform: rotate(0deg);
             }
         }
     </style>
 </head>
 
-<body class="h-screen w-screen overflow-hidden flex items-center justify-center bg-[var(--bg)]">
+<body class="h-screen w-screen overflow-hidden flex flex-col bg-[var(--bg)]">
 
     <!-- FULL-WIDTH PLATFORM HEADER -->
     <nav
-        class="absolute top-0 left-0 right-0 w-full flex flex-col sm:flex-row justify-between items-start sm:items-center bg-white px-8 py-5 border-b-2 border-zinc-900 z-[5000]">
-        <a href="../" class="relative inline-block group cursor-pointer hover:no-underline">
+        class="w-full flex flex-col sm:flex-row justify-between items-start sm:items-center bg-white px-4 py-2 sm:px-8 sm:py-5 border-b-2 border-zinc-900 z-[5000] shrink-0 relative">
+        <a href="../" class="relative inline-block group cursor-pointer hover:no-underline mb-2 sm:mb-0">
             <span
-                class="font-mono text-sm font-black uppercase tracking-widest bg-zinc-900 text-white px-4 py-1.5 relative z-0 group-hover:bg-zinc-800 transition-colors">Undrstanding</span>
+                class="font-mono text-xs sm:text-sm font-black uppercase tracking-widest bg-zinc-900 text-white px-3 sm:px-4 py-1 sm:py-1.5 relative z-0 group-hover:bg-zinc-800 transition-colors">Undrstanding</span>
             <div
-                class="absolute -bottom-2 -right-4 bg-violet-600 text-white text-[9px] font-mono font-black px-2 py-0.5 transform -rotate-3 shadow-[2px_2px_0_#18181b] border border-zinc-900 z-10 select-none group-hover:scale-110 transition-transform">
+                class="absolute -bottom-1 -right-2 sm:-bottom-2 sm:-right-4 bg-violet-600 text-white text-[7px] sm:text-[9px] font-mono font-black px-1.5 py-0.5 sm:px-2 sm:py-0.5 transform -rotate-3 shadow-[1px_1px_0_#18181b] sm:shadow-[2px_2px_0_#18181b] border border-zinc-900 z-10 select-none group-hover:scale-110 transition-transform">
                 GAMES</div>
         </a>
-        <div class="font-mono text-[11px] sm:text-sm font-black uppercase tracking-widest text-zinc-900 mt-2 sm:mt-0">
+        <div class="font-mono text-[9px] sm:text-sm font-black uppercase tracking-widest text-zinc-900 mt-1 sm:mt-0">
             The Monty Hall Simulation</div>
     </nav>
 
@@ -442,72 +440,56 @@
     <div class="orientation-overlay">
         <div class="phone-icon"></div>
         <h2 class="text-2xl font-black uppercase mb-4 font-mono">Rotate Your Device</h2>
-        <p class="font-mono text-[10px] uppercase opacity-60 tracking-[0.3em]">Landscape Protocol Required for Gameplay
+        <p class="font-mono text-[10px] uppercase opacity-60 tracking-[0.3em]">Portrait Protocol Required for Gameplay
         </p>
     </div>
 
-    <div id="scene-container" class="w-full max-w-4xl p-6 opacity-0 invisible" style="transform-origin: center center;">
-        <!-- Header -->
-        <header class="flex flex-col sm:flex-row justify-between items-start sm:items-end mb-8 gap-6">
-            <div>
-                <h1 class="text-3xl font-800 mt-2">The Monty Hall</h1>
-            </div>
-
-            <div class="flex gap-6 sm:gap-12">
-                <div class="stat-box">
-                    <div class="text-[10px] font-800 uppercase text-zinc-500">Stay Efficiency</div>
-                    <div id="stay-percent" class="text-2xl font-800">0%</div>
-                </div>
-                <div class="stat-box">
-                    <div class="text-[10px] font-800 uppercase text-zinc-500">Switch Efficiency</div>
-                    <div id="switch-percent" class="text-2xl font-800">0%</div>
-                </div>
-            </div>
-        </header>
-
-        <!-- Main Display -->
-        <main class="neo-card p-6 sm:p-8 mb-6 bg-white relative">
-            <!-- Info Toggle Button -->
-            <button onclick="toggleInfo(true)"
-                class="absolute top-4 right-4 w-8 h-8 flex items-center justify-center border-2 border-zinc-900 rounded-md font-800 hover:bg-zinc-100 transition-colors z-10"
-                title="About the Monty Hall Problem">
-                ?
-            </button>
+    <!-- MAIN ISOLATED SCALING WRAPPER -->
+    <div id="game-wrapper" class="flex-1 w-full flex items-center justify-center relative overflow-hidden">
+        <div id="scene-container" class="w-full max-w-sm sm:max-w-4xl p-2 sm:p-6 opacity-0 invisible mx-auto" style="transform-origin: center center;">
+            <!-- Main Display -->
+            <main class="neo-card p-6 sm:p-8 mb-6 bg-white relative">
+                <!-- Info Toggle Button -->
+                <button onclick="toggleInfo(true)"
+                    class="absolute top-4 right-4 w-8 h-8 flex items-center justify-center border-2 border-zinc-900 rounded-md font-800 hover:bg-zinc-100 transition-colors z-10"
+                    title="About the Monty Hall Problem">
+                    ?
+                </button>
 
             <!-- Info Panel (Hidden by default) -->
             <div id="about-panel" class="info-panel hidden">
                 <button onclick="toggleInfo(false)" class="info-close">×</button>
                 <div class="max-w-2xl mx-auto py-4">
-                    <h2 class="text-3xl font-800 mb-6 text-violet-600">The Monty Hall Paradox</h2>
-                    <div class="space-y-4 text-zinc-600 leading-relaxed">
+                    <h2 class="text-2xl sm:text-3xl font-900 mb-4 sm:mb-6 text-violet-600 tracking-tight">The Monty Hall Paradox</h2>
+                    <div class="space-y-3 text-zinc-600 leading-relaxed sm:text-sm md:text-base">
                         <p>
                             The Monty Hall problem is a counter-intuitive probability puzzle based on the American
                             television game show <span class="italic">Let's Make a Deal</span>.
                         </p>
-                        <div class="neo-card p-4 bg-zinc-50 border-zinc-200">
-                            <h4 class="font-800 text-zinc-900 mb-2">The Setup:</h4>
-                            <ol class="list-decimal pl-5 space-y-1">
+                        <div class="neo-card p-4 sm:p-6 bg-zinc-50 border-zinc-200">
+                            <h4 class="font-800 text-zinc-900 mb-2 sm:text-xl">The Setup:</h4>
+                            <ol class="list-decimal pl-5 space-y-1 sm:space-y-3">
                                 <li>You pick one of three doors. Behind one is a <span
-                                        class="font-600 text-red-600">Car</span>, behind the others are <span
-                                        class="font-600">Goats</span>.</li>
+                                        class="font-800 text-red-600">Car</span>, behind the others are <span
+                                        class="font-800">Goats</span>.</li>
                                 <li>Monty Hall (who knows what's behind the doors) opens another door, always revealing
                                     a goat.</li>
                                 <li>He then asks: "Do you want to stick with your original choice, or switch to the
                                     remaining door?"</li>
                             </ol>
                         </div>
-                        <p class="font-800 text-zinc-900 text-xl pt-4">Should you switch?</p>
+                        <p class="font-900 text-zinc-900 text-lg sm:text-xl pt-4">Should you switch?</p>
                         <p>
-                            <span class="bg-yellow-200 px-1 font-600">Yes. Always.</span> Most people think it's a 50/50
+                            <span class="bg-yellow-200 px-1 font-800">Yes. Always.</span> Most people think it's a 50/50
                             chance once one door is removed, but the math says otherwise.
                         </p>
                         <p>
-                            When you first pick, you have a <span class="font-800 text-zinc-900">1/3</span> chance of
+                            When you first pick, you have a <span class="font-900 text-zinc-900 text-lg sm:text-xl">1/3</span> chance of
                             being right. The other doors collectively have a <span
-                                class="font-800 text-zinc-900">2/3</span> chance. By opening a door he knows is empty,
+                                class="font-900 text-zinc-900 text-lg sm:text-xl">2/3</span> chance. By opening a door he knows is empty,
                             Monty "concentrates" that 2/3 probability into the one door you didn't pick.
                         </p>
-                        <p class="pt-2 italic">
+                        <p class="pt-4 italic font-600 text-sm sm:text-base">
                             Keep playing the simulation to see your "Switch Efficiency" climb toward the theoretical
                             limit of 66.7%.
                         </p>
@@ -515,65 +497,65 @@
                 </div>
             </div>
 
-            <div id="game-view" class="min-h-[400px] sm:min-h-[550px]">
-                <div id="instruction-container" class="mb-6 text-center sm:text-left">
-                    <p id="msg-step" class="text-xs font-800 uppercase text-violet-600 mb-1">Pick a Door</p>
-                    <h2 id="msg-main" class="text-2xl font-600">Choose one door to find the hidden car.</h2>
+            <div id="game-view" class="min-h-[300px] sm:min-h-[450px]">
+                <div id="instruction-container" class="mb-4 sm:mb-8 text-center sm:text-left">
+                    <p id="msg-step" class="text-[10px] sm:text-xs font-900 uppercase text-violet-600 mb-1 tracking-widest">Pick a Door</p>
+                    <h2 id="msg-main" class="text-xl sm:text-2xl md:text-3xl font-800 tracking-tight leading-tight">Choose one door to find the hidden car.</h2>
                 </div>
 
 
 
-                <div class="grid grid-cols-1 sm:grid-cols-3 gap-8 mb-8">
+                <div class="grid grid-cols-3 gap-3 sm:gap-8 mb-8 mx-auto w-full">
                     <!-- Door 0 -->
-                    <div class="flex flex-col gap-3">
+                    <div class="flex flex-col gap-1 sm:gap-3">
                         <div id="label-door-0"
-                            class="h-10 flex items-center justify-center invisible opacity-0 transition-all duration-300 transform translate-y-2">
+                            class="h-6 sm:h-8 flex items-center justify-center invisible opacity-0 transition-all duration-300 transform translate-y-2">
                             <div id="badge-door-0"
-                                class="px-4 py-1.5 rounded border-2 border-zinc-900 text-[10px] font-800 uppercase tracking-tighter">
+                                class="px-2 sm:px-4 py-0.5 sm:py-1 rounded border-2 border-zinc-900 text-[6px] sm:text-[10px] font-900 uppercase tracking-tighter inline-block text-center">
                                 Selection
                             </div>
                         </div>
-                        <div class="door-perspective">
+                        <div class="door-perspective w-full h-[140px] sm:h-[220px]">
                             <div class="prize-container" id="prize-0"></div>
                             <div id="door-0" class="door" onclick="handleDoorClick(0)">
                                 <div id="front-0" class="door-front">
-                                    <span class="door-label">1</span>
+                                    <span class="door-label text-xl sm:text-5xl">1</span>
                                 </div>
                             </div>
                         </div>
                     </div>
                     <!-- Door 1 -->
-                    <div class="flex flex-col gap-3">
+                    <div class="flex flex-col gap-1 sm:gap-3">
                         <div id="label-door-1"
-                            class="h-10 flex items-center justify-center invisible opacity-0 transition-all duration-300 transform translate-y-2">
+                            class="h-6 sm:h-8 flex items-center justify-center invisible opacity-0 transition-all duration-300 transform translate-y-2">
                             <div id="badge-door-1"
-                                class="px-4 py-1.5 rounded border-2 border-zinc-900 text-[10px] font-800 uppercase tracking-tighter">
+                                class="px-2 sm:px-4 py-0.5 sm:py-1 rounded border-2 border-zinc-900 text-[6px] sm:text-[10px] font-900 uppercase tracking-tighter inline-block text-center">
                                 Selection
                             </div>
                         </div>
-                        <div class="door-perspective">
+                        <div class="door-perspective w-full h-[140px] sm:h-[220px]">
                             <div class="prize-container" id="prize-1"></div>
                             <div id="door-1" class="door" onclick="handleDoorClick(1)">
                                 <div id="front-1" class="door-front">
-                                    <span class="door-label">2</span>
+                                    <span class="door-label text-xl sm:text-5xl">2</span>
                                 </div>
                             </div>
                         </div>
                     </div>
                     <!-- Door 2 -->
-                    <div class="flex flex-col gap-3">
+                    <div class="flex flex-col gap-1 sm:gap-3">
                         <div id="label-door-2"
-                            class="h-10 flex items-center justify-center invisible opacity-0 transition-all duration-300 transform translate-y-2">
+                            class="h-6 sm:h-8 flex items-center justify-center invisible opacity-0 transition-all duration-300 transform translate-y-2">
                             <div id="badge-door-2"
-                                class="px-4 py-1.5 rounded border-2 border-zinc-900 text-[10px] font-800 uppercase tracking-tighter">
+                                class="px-2 sm:px-4 py-0.5 sm:py-1 rounded border-2 border-zinc-900 text-[6px] sm:text-[10px] font-900 uppercase tracking-tighter inline-block text-center">
                                 Selection
                             </div>
                         </div>
-                        <div class="door-perspective">
+                        <div class="door-perspective w-full h-[140px] sm:h-[220px]">
                             <div class="prize-container" id="prize-2"></div>
                             <div id="door-2" class="door" onclick="handleDoorClick(2)">
                                 <div id="front-2" class="door-front">
-                                    <span class="door-label">3</span>
+                                    <span class="door-label text-xl sm:text-5xl">3</span>
                                 </div>
                             </div>
                         </div>
@@ -582,20 +564,20 @@
 
                 <!-- Interaction Layer -->
                 <div id="controls"
-                    class="hidden flex flex-col sm:flex-row justify-center gap-4 opacity-0 transition-opacity">
+                    class="hidden flex flex-col sm:flex-row justify-center gap-3 sm:gap-4 opacity-0 transition-opacity">
                     <button onclick="finalizeChoice(false)"
-                        class="btn-neo px-8 py-4 bg-zinc-100 hover:bg-zinc-200 text-zinc-900">
+                        class="btn-neo px-6 py-3 sm:py-4 sm:px-8 sm:text-base font-900 bg-zinc-100 hover:bg-zinc-200 text-zinc-900">
                         Stay with Choice
                     </button>
                     <button onclick="finalizeChoice(true)"
-                        class="btn-neo px-8 py-4 bg-violet-600 hover:bg-violet-700 text-white">
+                        class="btn-neo px-6 py-3 sm:py-4 sm:px-8 sm:text-base font-900 bg-violet-600 hover:bg-violet-700 text-white shadow-[4px_4px_0_#18181b]">
                         Switch My Selection
                     </button>
                 </div>
 
-                <div id="reset-area" class="hidden flex justify-center">
+                <div id="reset-area" class="hidden flex justify-center mt-2">
                     <button id="reset-btn" onclick="initGame()"
-                        class="btn-neo px-10 py-4 text-white flex items-center justify-center min-w-[200px]">
+                        class="btn-neo px-8 py-3 sm:py-4 sm:px-12 sm:text-lg font-900 text-white flex items-center justify-center shadow-[4px_4px_0_#18181b]">
                         <span id="reset-text">Play Next Round</span>
                     </button>
                 </div>
@@ -603,24 +585,25 @@
         </main>
 
         <!-- Data Footer -->
-        <footer class="grid grid-cols-2 sm:grid-cols-4 gap-4">
-            <div class="neo-card p-4 text-center">
-                <div class="text-[10px] font-800 uppercase text-zinc-400">Total Games</div>
-                <div id="stat-total" class="text-xl font-800">0</div>
+        <footer class="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-4 mt-6">
+            <div class="neo-card p-2 sm:p-4 text-center">
+                <div class="text-[8px] sm:text-[10px] font-900 uppercase tracking-widest text-zinc-400 sm:mb-1">Total Games</div>
+                <div id="stat-total" class="text-lg sm:text-2xl font-900">0</div>
             </div>
-            <div class="neo-card p-4 text-center">
-                <div class="text-[10px] font-800 uppercase text-zinc-400">Stay Wins</div>
-                <div id="stat-stay" class="text-xl font-800">0</div>
+            <div class="neo-card p-2 sm:p-4 text-center">
+                <div class="text-[8px] sm:text-[10px] font-900 uppercase tracking-widest text-zinc-400 sm:mb-1">Stay Wins</div>
+                <div id="stat-stay" class="text-lg sm:text-2xl font-900">0</div>
             </div>
-            <div class="neo-card p-4 text-center">
-                <div class="text-[10px] font-800 uppercase text-zinc-400">Switch Wins</div>
-                <div id="stat-switch" class="text-xl font-800">0</div>
+            <div class="neo-card p-2 sm:p-4 text-center">
+                <div class="text-[8px] sm:text-[10px] font-900 uppercase tracking-widest text-zinc-400 sm:mb-1">Switch Wins</div>
+                <div id="stat-switch" class="text-lg sm:text-2xl font-900">0</div>
             </div>
-            <div class="neo-card p-4 text-center bg-zinc-900 border-none">
-                <div class="text-[10px] font-800 uppercase text-zinc-500">Theoretical Prob.</div>
-                <div class="text-xl font-800 text-white">66.7%</div>
+            <div class="neo-card p-2 sm:p-4 text-center bg-zinc-900 border-none">
+                <div class="text-[8px] sm:text-[10px] font-900 uppercase tracking-widest text-zinc-500 sm:mb-1">Theoretical Prob.</div>
+                <div class="text-lg sm:text-2xl font-900 text-white">66.7%</div>
             </div>
         </footer>
+    </div>
     </div>
 
     <script>
@@ -655,7 +638,7 @@
                 <svg class="absolute -top-6 -right-6 sparkle" width="24" height="24" viewBox="0 0 24 24"><path d="M12 0l3 9 9 3-9 3-3 9-3-9-9-3 9-3z" fill="#fde047" stroke="#18181b" stroke-width="0.8"/></svg>
                 <svg class="absolute top-4 -left-4 sparkle" style="animation-delay: 0.5s" width="14" height="14" viewBox="0 0 24 24"><path d="M12 0l3 9 9 3-9 3-3 9-3-9-9-3 9-3z" fill="#fde047" stroke="#18181b" stroke-width="0.8"/></svg>
                 
-                <svg width="190" height="140" viewBox="0 0 40 32" fill="none" stroke="#18181b" stroke-width="0.6" stroke-linecap="round" stroke-linejoin="round">
+                <svg class="w-full max-w-[80px] sm:max-w-[140px] mx-auto" height="auto" viewBox="0 0 40 32" fill="none" stroke="#18181b" stroke-width="0.6" stroke-linecap="round" stroke-linejoin="round">
                     <ellipse cx="20" cy="29" rx="16" ry="3" fill="rgba(0,0,0,0.1)" stroke="none" />
                     
                     <rect x="4" y="23" width="8" height="7" rx="1.5" fill="#09090b" stroke-width="1"/>
@@ -703,7 +686,7 @@
             `,
             goat: `
                 <div class="character-idle">
-                <svg width="180" height="180" viewBox="0 0 40 40" fill="none" stroke="#18181b" stroke-width="0.7" stroke-linecap="round" stroke-linejoin="round">
+                <svg class="w-full max-w-[80px] sm:max-w-[140px] mx-auto" height="auto" viewBox="0 0 40 40" fill="none" stroke="#18181b" stroke-width="0.7" stroke-linecap="round" stroke-linejoin="round">
                     <ellipse cx="20" cy="38" rx="12" ry="2" fill="rgba(0,0,0,0.08)" stroke="none" />
                     
                     <path d="M11 20c-1 5 1 12 4 15h10c3-3 5-10 4-15H11z" fill="#fefaf0" />
@@ -782,6 +765,7 @@
                 const layer = document.getElementById(`label-door-${i}`);
                 layer.classList.add('invisible', 'opacity-0', 'translate-y-2');
             }
+            adjustScale();
         }
 
         function handleDoorClick(idx) {
@@ -806,6 +790,7 @@
 
                 const ctrl = document.getElementById('controls');
                 ctrl.classList.remove('hidden');
+                adjustScale();
                 setTimeout(() => {
                     ctrl.classList.remove('opacity-0');
                 }, 10);
@@ -860,7 +845,7 @@
                     prizeCont.appendChild(confetti);
                 } else if (!win && i === state.userSelected) {
                     // Update the label instead of adding a clipped bubble
-                    showStatusLabel(i, "Baa!", "bg-white text-zinc-900 border-zinc-900 animate-pop font-800 scale-125");
+                    showStatusLabel(i, "Baa!", "bg-white text-zinc-900 border-zinc-900 animate-pop font-800");
                 } else if (!win && i === state.winningDoor) {
                     // Show "LOST" over the car if selection was wrong
                     showStatusLabel(i, "LOST", "bg-rose-600 text-white border-rose-900 animate-pop font-800");
@@ -877,10 +862,11 @@
             const rTxt = document.getElementById('reset-text');
 
             rArea.classList.remove('hidden');
+            adjustScale();
             rTxt.textContent = win ? "Win Another" : "Try Again";
 
             // Apply outcome colors
-            rBtn.className = `btn-neo px-10 py-4 text-white flex items-center justify-center min-w-[200px] transition-colors ${win ? 'bg-emerald-600 hover:bg-emerald-700' : 'bg-rose-600 hover:bg-rose-700'}`;
+            rBtn.className = `btn-neo px-10 py-4 sm:py-6 sm:px-16 sm:text-2xl font-900 text-white flex items-center justify-center min-w-[200px] shadow-[6px_6px_0_#18181b] transition-colors ${win ? 'bg-emerald-600 hover:bg-emerald-700' : 'bg-rose-600 hover:bg-rose-700'}`;
 
             refreshStats();
         }
@@ -889,21 +875,6 @@
             document.getElementById('stat-total').textContent = state.stats.total;
             document.getElementById('stat-stay').textContent = state.stats.stayWins;
             document.getElementById('stat-switch').textContent = state.stats.switchWins;
-
-            const stayRate = state.stats.stayAttempts ? Math.round((state.stats.stayWins / state.stats.stayAttempts) * 100) : 0;
-            const switchRate = state.stats.switchAttempts ? Math.round((state.stats.switchWins / state.stats.switchAttempts) * 100) : 0;
-
-            document.getElementById('stay-percent').textContent = `${stayRate}%`;
-            document.getElementById('switch-percent').textContent = `${switchRate}%`;
-
-            const s1 = document.getElementById('stay-percent');
-            const s2 = document.getElementById('switch-percent');
-            s1.classList.add('animate-pop');
-            s2.classList.add('animate-pop');
-            setTimeout(() => {
-                s1.classList.remove('animate-pop');
-                s2.classList.remove('animate-pop');
-            }, 300);
         }
 
         function showStatusLabel(idx, text, colors) {
@@ -911,7 +882,7 @@
             const badge = document.getElementById(`badge-door-${idx}`);
 
             badge.textContent = text;
-            badge.className = `px-4 py-1.5 rounded border-2 text-[10px] font-800 uppercase tracking-tighter ${colors}`;
+            badge.className = `px-1 sm:px-6 py-1 sm:py-2 rounded border-2 text-[6px] sm:text-sm font-900 uppercase tracking-tighter inline-block text-center shadow-[1px_1px_0_#18181b] sm:shadow-[3px_3px_0_#18181b] ${colors}`;
 
             layer.classList.remove('invisible', 'opacity-0', 'translate-y-2');
         }
@@ -923,19 +894,23 @@
 
         function adjustScale() {
             const container = document.getElementById('scene-container');
-            if (!container) return;
+            const wrapper = document.getElementById('game-wrapper');
+            if (!container || !wrapper) return;
 
-            const viewportWidth = window.innerWidth;
-            const viewportHeight = window.innerHeight;
+            // Bound viewport explicitly to the available free internal DOM grid space, bypassing headers natively
+            const viewportWidth = wrapper.clientWidth;
+            const viewportHeight = wrapper.clientHeight;
 
             // Get the natural layout dimensions (offsetWidth/Height are pre-transform)
             const contentWidth = container.offsetWidth;
             const contentHeight = container.offsetHeight;
 
-            const margin = 40;
-            const scaleX = (viewportWidth - margin) / contentWidth;
-            const scaleY = (viewportHeight - margin) / contentHeight;
+            const margin = 20;
+            // Ensure 20px margin space surrounding every side equally before scaling caps clamp it
+            const scaleX = (viewportWidth - (margin * 2)) / contentWidth;
+            const scaleY = (viewportHeight - (margin * 2)) / contentHeight;
 
+            // Re-established 1.0 ceiling natively standardizing layout to other Undrstanding pages
             const finalScale = Math.min(1, scaleX, scaleY);
 
             container.style.transform = `scale(${finalScale})`;
