@@ -450,10 +450,10 @@
     <!-- Undo Toast -->
     <div id="undo-toast" class="hidden">
         <div
-            class="bg-white text-black p-1.5 pl-5 rounded-xl shadow-2xl flex items-center gap-6 animate-toast border border-black/5">
+            class="bg-white text-black p-1.5 pl-5 rounded-xl shadow-2xl flex items-center gap-6 animate-toast border-2 border-black">
             <span class="mono text-[9px] uppercase tracking-widest font-bold text-black/20">Deleted</span>
             <button onclick="undoDelete()"
-                class="mono text-[9px] uppercase tracking-[0.2em] font-black bg-[#ED2939] text-white px-5 py-2.5 rounded-lg hover:bg-black hover:scale-105 active:scale-95 transition-all">Undo
+                class="mono text-[9px] uppercase tracking-[0.2em] font-black bg-[#DE1A58] text-white px-5 py-2.5 rounded-lg border-2 border-black hover:bg-black hover:scale-105 active:scale-95 transition-all">Undo
                 Delete</button>
         </div>
     </div>
@@ -463,11 +463,11 @@
     <script>
         const PAGE_CONFIG = {
             'content/algo': { color: '#db2777', short: 'ALGO' },
-            'content/android': { color: '#3DDC84', short: 'AND' },
+            'content/android': { color: '#3DDC84', short: 'ANDR' },
             'content/ai': { color: '#4f46e5', short: 'AI' },
             'content/bigdata': { color: '#85193C', short: 'DATA' },
             'content/networks': { color: '#0e7490', short: 'NET' },
-            'content/crypto': { color: '#5DD3B6', short: 'SEC' },
+            'content/crypto': { color: '#5DD3B6', short: 'CRYP' },
             'content/dbms': { color: '#525252', short: 'DBMS' },
             'content/ds': { color: '#15803d', short: 'DS' },
             'content/html': { color: '#E34C26', short: 'HTML' },
@@ -482,11 +482,8 @@
             'content/software': { color: '#E6B800', short: 'SOFT' },
             'content/system': { color: '#92400e', short: 'SD' },
             'content/computation': { color: '#6d28d9', short: 'THRY' },
-            'content/uiux': { color: '#6594B1', short: 'UX' },
+            'content/uiux': { color: '#6594B1', short: 'UIUX' },
             'content/git': { color: '#c2410c', short: 'GIT' },
-            'content/css': { color: '#2563eb', short: 'CSS' },
-            'content/python': { color: '#3776ab', short: 'PY' },
-            'content/sql': { color: '#00758f', short: 'SQL' }
         };
 
         const container = document.getElementById('highlights-container');
