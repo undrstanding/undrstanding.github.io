@@ -851,7 +851,8 @@
             .battle-arena {
                 padding-top: 5px !important;
                 min-height: 0 !important;
-                flex-grow: 1 !important; /* Take remaining space and push shelf down */
+                flex-grow: 1 !important;
+                /* Take remaining space and push shelf down */
                 display: flex;
                 flex-direction: column;
                 justify-content: center;
@@ -883,8 +884,9 @@
             }
 
             .hand-shelf {
-                padding-bottom: 70px !important; /* Raised significantly for clear visibility */
-                height: 150px !important; 
+                padding-bottom: 70px !important;
+                /* Raised significantly for clear visibility */
+                height: 150px !important;
             }
 
             #pick-screen {
@@ -1353,7 +1355,7 @@
             autoDistBtn.style.opacity = '1';
             autoDistBtn.style.pointerEvents = 'all';
             document.getElementById('pick-title').innerText = "PLAYER 1 PICKING";
-            
+
             document.getElementById('p1-hand-info').innerText = "0 / 6";
             document.getElementById('p2-hand-info').innerText = "0 / 6";
             document.getElementById('s1-display').innerText = "0";
@@ -1420,6 +1422,14 @@
 
         function pickCard(idx, el) {
             if (el.classList.contains('picked')) return;
+
+            // Disable Auto Distribute if manual pick starts
+            const autoDistBtn = document.getElementById('auto-dist-btn');
+            if (autoDistBtn) {
+                autoDistBtn.style.opacity = '0.3';
+                autoDistBtn.style.pointerEvents = 'none';
+            }
+
             const grid = document.getElementById('grid-box');
             grid.style.pointerEvents = 'none';
             el.classList.add('picked'); el.style.opacity = '0';
@@ -1631,9 +1641,27 @@
 
         function endGame() {
             document.getElementById('battle-screen').classList.add('hidden');
-            document.getElementById('game-over-screen').classList.remove('hidden');
+            const screen = document.getElementById('game-over-screen');
+            screen.classList.remove('hidden');
             const r = document.getElementById('game-title-final');
-            if (s1 > s2) r.innerText = "PLAYER 1 WINS!"; else if (s2 > s1) r.innerText = "GAME OVER"; else r.innerText = "DRAW!";
+            r.style.color = '#000'; // Reset color
+
+            if (s1 > s2) {
+                r.innerText = "PLAYER 1 WINS!";
+                screen.style.backgroundColor = 'var(--p1-main)';
+            } else if (s2 > s1) {
+                if (mode === 'single') {
+                    r.innerText = "GAME OVER";
+                    screen.style.backgroundColor = '#000';
+                    r.style.color = '#fff';
+                } else {
+                    r.innerText = "PLAYER 2 WINS!";
+                    screen.style.backgroundColor = 'var(--p2-main)';
+                }
+            } else {
+                r.innerText = "DRAW!";
+                screen.style.backgroundColor = '#fff';
+            }
         }
     </script>
 </body>
