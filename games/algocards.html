@@ -1617,6 +1617,7 @@
             document.getElementById('modal-best-name').innerText = best.n;
             document.getElementById('modal-best-comp').innerText = best.c;
             let res = "IT'S A DRAW!";
+            lastW = 0;
             if (v1 > v2) { res = "PLAYER 1 WINS!"; lastW = 1; }
             else if (v2 > v1) { res = (mode === 'single' ? "COMPUTER WINS!" : "PLAYER 2 WINS!"); lastW = 2; }
             document.getElementById('modal-outcome').innerText = res;
