@@ -10,6 +10,210 @@ if ('serviceWorker' in navigator) {
 }
 
 /**
+ * Eye Care Settings Modal
+ * Toggled via "/eye" command in search bar.
+ */
+(function () {
+    let settings = JSON.parse(localStorage.getItem('night_light_settings') || '{"active":false,"brightness":80,"auto":false,"start":"20:00","end":"07:00"}');
+
+    const updateOverlay = () => {
+        let overlay = document.getElementById('night-light-overlay');
+        if (!settings.active) {
+            if (overlay) {
+                overlay.style.opacity = '0';
+                setTimeout(() => overlay.remove(), 800);
+            }
+            return;
+        }
+
+        if (!overlay) {
+            overlay = document.createElement('div');
+            overlay.id = 'night-light-overlay';
+            overlay.style.cssText = `
+                position: fixed;
+                inset: 0;
+                pointer-events: none;
+                z-index: 2147483647;
+                transition: opacity 0.8s ease, backdrop-filter 0.3s ease;
+                opacity: 0;
+            `;
+            document.body.appendChild(overlay);
+            overlay.offsetHeight; // force reflow
+        }
+
+        const b = settings.brightness / 100;
+        const s = 0.3 + (100 - settings.brightness) / 100 * 0.2;
+        overlay.style.background = `rgba(255, 120, 0, ${0.04 + (1-b) * 0.08})`;
+        overlay.style.backdropFilter = `brightness(${b}) sepia(${s})`;
+        overlay.style.webkitBackdropFilter = `brightness(${b}) sepia(${s})`;
+        overlay.style.opacity = '1';
+    };
+
+    const checkAutomation = () => {
+        if (!settings.auto) return;
+        const now = new Date();
+        const time = now.getHours().toString().padStart(2, '0') + ":" + now.getMinutes().toString().padStart(2, '0');
+
+        let shouldBeActive = false;
+        if (settings.start <= settings.end) {
+            shouldBeActive = time >= settings.start && time < settings.end;
+        } else {
+            // Over midnight
+            shouldBeActive = time >= settings.start || time < settings.end;
+        }
+
+        if (shouldBeActive !== settings.active) {
+            settings.active = shouldBeActive;
+            localStorage.setItem('night_light_settings', JSON.stringify(settings));
+            updateOverlay();
+        }
+    };
+
+    window.toggleNightLight = function () {
+        if (document.getElementById('eye-care-modal')) return;
+
+        const modal = document.createElement('div');
+        modal.id = 'eye-care-modal';
+        // Use a lower z-index than the overlay (2147483647) so the overlay covers the modal
+        modal.className = 'fixed inset-0 z-[2147483640] flex items-center justify-center p-4 bg-black/30 backdrop-blur-sm';
+        modal.innerHTML = `
+            <div class="bg-white p-6 max-w-[320px] w-full rounded-[24px] shadow-2xl border border-black transform scale-95 transition-all duration-300 opacity-0" id="eye-care-content" style="font-family:'Inter', sans-serif;">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-sm font-bold tracking-tight text-gray-900">Eye Care Settings</h3>
+                    <button id="close-eye-care" class="text-gray-300 hover:text-black transition-colors"><i class="bi bi-x-lg"></i></button>
+                </div>
+                
+                <div class="space-y-6">
+                    <!-- Quick Toggle -->
+                    <div class="flex justify-between items-center bg-gray-50/50 p-4 rounded-2xl border border-gray-100">
+                        <span class="text-xs font-semibold text-gray-700">Night Light Mode</span>
+                        <button id="modal-night-light-toggle" class="relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-200 ${settings.active ? 'bg-black' : 'bg-gray-200'}">
+                            <span class="inline-block h-4 w-4 transform rounded-full bg-white transition-transform duration-200 ${settings.active ? 'translate-x-6' : 'translate-x-1'}"></span>
+                        </button>
+                    </div>
+
+                    <!-- Brightness Control -->
+                    <div class="space-y-3 px-1">
+                        <div class="flex justify-between items-center">
+                            <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Adjustment</span>
+                            <span class="text-[10px] font-mono text-gray-600 font-bold">${settings.brightness}%</span>
+                        </div>
+                        <input type="range" id="brightness-slider" min="30" max="100" value="${settings.brightness}" 
+                            class="w-full h-1 bg-gray-100 rounded-lg appearance-none cursor-pointer accent-black border border-gray-50">
+                    </div>
+
+                    <!-- Schedule Task -->
+                    <div class="space-y-4 pt-4 px-1">
+                        <div class="flex justify-between items-center">
+                            <span class="text-xs font-semibold text-gray-700">Auto-Schedule</span>
+                            <input type="checkbox" id="auto-toggle" ${settings.auto ? 'checked' : ''} class="w-4 h-4 accent-black cursor-pointer rounded">
+                        </div>
+                        
+                        <div id="time-inputs" class="flex gap-3 ${settings.auto ? '' : 'opacity-10 pointer-events-none'} transition-all duration-300">
+                            <div class="flex-1">
+                                <label class="block text-[8px] font-bold text-gray-400 uppercase mb-2 tracking-widest">Start Time</label>
+                                <input type="time" id="start-time" value="${settings.start}" class="w-full bg-gray-50 border border-gray-100 p-2.5 rounded-xl text-xs font-medium focus:outline-none focus:ring-1 focus:ring-black/5">
+                            </div>
+                            <div class="flex-1">
+                                <label class="block text-[8px] font-bold text-gray-400 uppercase mb-2 tracking-widest">End Time</label>
+                                <input type="time" id="end-time" value="${settings.end}" class="w-full bg-gray-50 border border-gray-100 p-2.5 rounded-xl text-xs font-medium focus:outline-none focus:ring-1 focus:ring-black/5">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-8">
+                    <button id="save-eye-care" class="w-full bg-black text-white py-3.5 rounded-2xl text-xs font-bold hover:bg-gray-900 transition-all active:scale-[0.98] shadow-lg shadow-black/10">
+                        Update Preferences
+                    </button>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(modal);
+        
+        const content = document.getElementById('eye-care-content');
+        setTimeout(() => content.classList.remove('scale-95', 'opacity-0'), 10);
+
+        // Bind events
+        const close = () => {
+            content.classList.add('scale-95', 'opacity-0');
+            setTimeout(() => modal.remove(), 300);
+        };
+        document.getElementById('close-eye-care').onclick = close;
+        
+        // Close on backdrop click
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) close();
+        });
+
+        document.addEventListener('keydown', function esc(e) {
+            if (e.key === 'Escape' && document.getElementById('eye-care-modal')) {
+                close();
+                document.removeEventListener('keydown', esc);
+            }
+        });
+
+        const toggleBtn = document.getElementById('modal-night-light-toggle');
+        const autoCheck = document.getElementById('auto-toggle');
+        const slider = document.getElementById('brightness-slider');
+
+        toggleBtn.onclick = () => {
+            settings.active = !settings.active;
+            const dot = toggleBtn.querySelector('span');
+            toggleBtn.className = `relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-200 ${settings.active ? 'bg-black' : 'bg-gray-200'}`;
+            dot.className = `inline-block h-4 w-4 transform rounded-full bg-white transition-transform duration-200 ${settings.active ? 'translate-x-6' : 'translate-x-1'}`;
+            updateOverlay();
+        };
+
+        autoCheck.onchange = (e) => {
+            settings.auto = e.target.checked;
+            document.getElementById('time-inputs').classList.toggle('opacity-10', !settings.auto);
+            document.getElementById('time-inputs').classList.toggle('pointer-events-none', !settings.auto);
+        };
+
+        slider.oninput = (e) => {
+            settings.brightness = e.target.value;
+            // Update percentage text display
+            const label = el => el.parentElement.querySelector('span:last-child');
+            if (slider.parentElement.querySelector('span:last-child')) {
+                slider.parentElement.querySelector('span:last-child').textContent = `${settings.brightness}%`;
+            }
+            if (settings.active) updateOverlay();
+        };
+
+        document.getElementById('save-eye-care').onclick = () => {
+            settings.start = document.getElementById('start-time').value;
+            settings.end = document.getElementById('end-time').value;
+            localStorage.setItem('night_light_settings', JSON.stringify(settings));
+            updateOverlay();
+            close();
+        };
+    };
+
+    window.quickToggleNightLight = function () {
+        settings.active = !settings.active;
+        localStorage.setItem('night_light_settings', JSON.stringify(settings));
+        updateOverlay();
+        // Sync modal if open
+        const toggleBtn = document.getElementById('modal-night-light-toggle');
+        if (toggleBtn) {
+            toggleBtn.querySelector('.status-dot').className = `status-dot w-2 h-2 rounded-full ${settings.active ? 'bg-green-500' : 'bg-gray-300'}`;
+            toggleBtn.querySelector('span:last-child').textContent = settings.active ? 'Active' : 'Disabled';
+        }
+    };
+
+    // Auto-apply on load
+    if (settings.active) {
+        if (document.body) updateOverlay();
+        else document.addEventListener('DOMContentLoaded', updateOverlay);
+    }
+    
+    // Start automation checker
+    setInterval(checkAutomation, 60000);
+    checkAutomation();
+})();
+
+/**
  * Global System Lockdown Check
  */
 (function () {
