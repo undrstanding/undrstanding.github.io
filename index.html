@@ -2761,7 +2761,8 @@
                     <span
                         class="mono text-[10px] font-bold uppercase tracking-widest text-black/40 block mb-1">Mandatory
                         Reminder</span>
-                    <p class="mono text-xs md:text-sm font-bold text-black leading-relaxed">
+                    <p id="mandatory-reminder-p"
+                        class="mono text-xs md:text-sm font-bold text-black leading-relaxed transition-opacity duration-500">
                         Complete your assignments first and prepare for exams if any incoming.
                     </p>
                 </div>
@@ -3886,7 +3887,7 @@
         // --- Extracted Search Logic ---
         function performSearch(rawQuery) {
             const query = rawQuery.toLowerCase().trim();
-            
+
             // --- Custom Command: Night Light ---
             if (query === '/eye') {
                 if (window.quickToggleNightLight) {
@@ -3969,7 +3970,7 @@
                         el.addEventListener('touchstart', () => {
                             holdTimer = setTimeout(() => {
                                 holdStarted = true;
-                                if (window.toggleNightLight) window.toggleNightLight(); 
+                                if (window.toggleNightLight) window.toggleNightLight();
                             }, 600);
                         });
                         el.addEventListener('touchend', () => {
@@ -4042,6 +4043,49 @@
                 resultsBox.classList.remove('active');
             }
         });
+
+        // --- Mandatory Reminder Rotation ---
+        (function () {
+            const reminderEl = document.getElementById('mandatory-reminder-p');
+            if (!reminderEl) return;
+
+            const baseReminders = [
+                "Complete your assignments first and prepare for exams if any incoming.",
+                "Take a 20-20-20 rule break: every 20 mins, look 20ft away for 20s.",
+                "Stay hydrated! Take a sip of water to keep your brain sharp.",
+                "Check your posture—sit up straight and keep your screen at eye level.",
+                "Blink often! It helps reduce eye strain and keeps them moist.",
+                "Stretch your neck and shoulders to release accumulated tension.",
+                "Rest your eyes: Look out of a window at a distant object for a minute.",
+                "Keep your workspace clean: A tidy desk helps a tidy mind."
+            ];
+            let index = 0;
+
+            setInterval(() => {
+                const hour = new Date().getHours();
+                const isNight = (hour >= 0 && hour < 6);
+                
+                if (isNight) {
+                    const nightMsg = "It's late—your body needs rest! You should sleep and not stay awake unnecessarily.";
+                    if (reminderEl.textContent !== nightMsg) {
+                        reminderEl.style.opacity = '0';
+                        setTimeout(() => {
+                            reminderEl.textContent = nightMsg;
+                            reminderEl.style.opacity = '1';
+                        }, 500);
+                    }
+                    return; // Skip rotation during night hours
+                }
+
+                // Normal rotation (6am - 12am)
+                reminderEl.style.opacity = '0';
+                setTimeout(() => {
+                    index = (index + 1) % baseReminders.length;
+                    reminderEl.textContent = baseReminders[index];
+                    reminderEl.style.opacity = '1';
+                }, 500);
+            }, 7000);
+        })();
 
         // --- Highlights Strip Renderer ---
         function renderHighlights() {
