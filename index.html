@@ -3885,16 +3885,27 @@
 
         // --- Extracted Search Logic ---
         function performSearch(rawQuery) {
-            const query = rawQuery.toLowerCase();
+            const query = rawQuery.toLowerCase().trim();
+            
+            // --- Custom Command: Night Light ---
+            if (query === '/eye') {
+                if (window.quickToggleNightLight) {
+                    window.quickToggleNightLight();
+                    input.value = '';
+                    resultsBox.classList.remove('active');
+                    return;
+                }
+            }
+
             selectedIndex = -1;
 
-            if (query.length < 2) {
+            if (query.length < 1) {
                 resultsBox.classList.remove('active');
                 return;
             }
 
             // Contextual Filtering: Match both query AND current section type
-            const results = searchIndex.filter(item => {
+            let results = searchIndex.filter(item => {
                 const matchesQuery = item.t.toLowerCase().includes(query) ||
                     item.k.includes(query) ||
                     item.s.toLowerCase().includes(query);
@@ -3904,21 +3915,76 @@
                 return matchesQuery && matchesContext;
             });
 
+            // COMMAND LAYER: If input starts with '/', insert command options
+            if (query.startsWith('/')) {
+                const availableCommands = [
+                    { s: "CMD", t: "Night Light (Eye Care)", u: "#", k: "/eye night light tint dim toggle command", y: activeSection, cmd: "/eye" }
+                ];
+                // Filter commands based on current query
+                const filteredCmds = availableCommands.filter(c => c.k.includes(query) || c.t.toLowerCase().includes(query));
+                results = [...filteredCmds, ...results];
+            }
+
             if (results.length > 0) {
                 resultsBox.innerHTML = results.map((item, index) => `
-                    <div class="result-item" data-url="${item.u}" data-index="${index}">
-                        <span class="result-series">Series: ${item.s}</span>
+                    <div class="result-item" data-url="${item.u}" data-index="${index}" ${item.cmd ? `data-cmd="${item.cmd}"` : ''}>
+                        ${item.s === 'CMD' ? '' : `<span class="result-series">Series: ${item.s}</span>`}
                          <div class="result-title">${item.t}</div>
-                        ${item.k.includes(query) ? `<div class="result-context">Matches: "${query}"</div>` : ''}
+                        ${item.k.includes(query) && item.s !== 'CMD' ? `<div class="result-context">Matches: "${query}"</div>` : ''}
+                        ${item.cmd === '/eye' ? `<div class="result-context" style="color: #FF9F00; font-weight: 700; font-size: 8px; text-transform: uppercase;">Toggle: Click • Settings: Hold / Right-Click</div>` : ''}
+                        ${item.cmd && item.cmd !== '/eye' ? `<div class="result-context" style="color: #FF9F00; font-weight: 700; font-size: 9px; text-transform: uppercase;">System Command Control</div>` : ''}
                     </div>
                 `).join('');
                 resultsBox.classList.add('active');
 
                 // Add click listeners
                 document.querySelectorAll('.result-item').forEach(el => {
-                    el.addEventListener('click', () => {
+                    let holdStarted = false;
+                    let holdTimer;
+
+                    el.addEventListener('click', (e) => {
+                        if (holdStarted) {
+                            holdStarted = false;
+                            return;
+                        }
+                        if (el.dataset.cmd) {
+                            performSearch(el.dataset.cmd);
+                            return;
+                        }
                         window.location.href = el.dataset.url;
                     });
+
+                    // Add Context/Hold logic for commands
+                    if (el.dataset.cmd === '/eye') {
+                        // Desktop Right Click
+                        el.addEventListener('contextmenu', (e) => {
+                            if (window.toggleNightLight) {
+                                e.preventDefault();
+                                window.toggleNightLight(); // Opens settings modal
+                                holdStarted = true; // Block following click if any
+                            }
+                        });
+
+                        // Mobile Hold Detection
+                        el.addEventListener('touchstart', () => {
+                            holdTimer = setTimeout(() => {
+                                holdStarted = true;
+                                if (window.toggleNightLight) window.toggleNightLight(); 
+                            }, 600);
+                        });
+                        el.addEventListener('touchend', () => {
+                            if (holdTimer) {
+                                clearTimeout(holdTimer);
+                                holdTimer = null;
+                            }
+                        });
+                        el.addEventListener('touchmove', () => {
+                            if (holdTimer) {
+                                clearTimeout(holdTimer);
+                                holdTimer = null;
+                            }
+                        });
+                    }
                 });
             } else {
                 resultsBox.innerHTML = `<div class="p-3 text-xs text-gray-400 text-center">No results found.</div>`;
@@ -3946,7 +4012,12 @@
             } else if (e.key === 'Enter') {
                 e.preventDefault();
                 if (selectedIndex >= 0) {
-                    window.location.href = items[selectedIndex].dataset.url;
+                    const item = items[selectedIndex];
+                    if (item.dataset.cmd) {
+                        performSearch(item.dataset.cmd);
+                    } else {
+                        window.location.href = item.dataset.url;
+                    }
                 }
             } else if (e.key === 'Escape') {
                 resultsBox.classList.remove('active');
