@@ -66,6 +66,7 @@
     }
     </script>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Outfit:wght@400;700;900&display=swap');
 
@@ -829,6 +830,60 @@
 
             .minimal-support-text {
                 font-size: 13.5px;
+            }
+        }
+
+        /* Smaller Ultra-Minimal Footer */
+        .footer-icon-link {
+            width: 42px;
+            height: 42px;
+            background: #fff;
+            border: 2px solid #000;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #000;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 3px 3px 0 #000;
+        }
+
+        .footer-icon-link:hover {
+            transform: translateY(-4px) rotate(6deg);
+            box-shadow: 5px 5px 0 #000;
+            color: #fff;
+        }
+
+        .footer-icon-link.email:hover {
+            background: #4285F4;
+        }
+
+        .footer-icon-link.youtube:hover {
+            background: #FF0000;
+        }
+
+        .footer-icon-link.linkedin:hover {
+            background: #0077B5;
+        }
+
+        .footer-icon-link.whatsapp:hover {
+            background: #25D366;
+        }
+
+        .footer-icon-link svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        @media (max-width: 640px) {
+            .footer-icon-link {
+                width: 38px;
+                height: 38px;
+            }
+
+            .footer-icon-link svg {
+                width: 16px;
+                height: 16px;
             }
         }
     </style>
@@ -3144,10 +3199,51 @@
     </div>
     </main>
 
-    <footer class="max-w-6xl mx-auto px-6 w-full mt-24">
-        <div class="border-t border-gray-300 pt-8 flex justify-between items-center">
-            <span class="text-[10px] mono uppercase text-gray-400">Undrstanding</span>
-            <span class="text-[10px] mono uppercase text-gray-400">For Humans, From Humans</span>
+    <footer class="max-w-6xl mx-auto px-6 w-full mt-32 mb-12">
+        <div
+            class="border-t-2 border-black pt-10 flex flex-col md:flex-row justify-between items-start md:items-center gap-8">
+            <!-- Branding Section -->
+            <div class="flex flex-col gap-1">
+                <h2
+                    class="text-2xl md:text-3xl font-black tracking-tighter transition-transform hover:scale-[1.02] cursor-default leading-none">
+                    Undrstanding
+                </h2>
+                <p class="text-[10px] md:text-xs mono font-black text-gray-400 tracking-[0.2em]">
+                    For Humans, From Humans
+                </p>
+            </div>
+
+            <!-- Socials Group -->
+            <div class="flex items-center gap-4 md:gap-6">
+                <a href="mailto:project.undrstanding@gmail.com" class="footer-icon-link email" title="Email">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                        <polyline points="22,6 12,13 2,6"></polyline>
+                    </svg>
+                </a>
+
+                <a href="https://www.youtube.com/@undrstanding" target="_blank" class="footer-icon-link youtube"
+                    title="YouTube">
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                        <path
+                            d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
+                    </svg>
+                </a>
+
+                <a href="https://www.linkedin.com/company/undrstanding/" target="_blank"
+                    class="footer-icon-link linkedin" title="LinkedIn">
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                        <path
+                            d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z" />
+                    </svg>
+                </a>
+
+                <a href="https://whatsapp.com/channel/0029Vb7xdUZAYlUKlSXyNf0h" target="_blank"
+                    class="footer-icon-link whatsapp text-xl" title="WhatsApp Channel">
+                    <i class="bi bi-whatsapp"></i>
+                </a>
+            </div>
         </div>
     </footer>
 
