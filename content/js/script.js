@@ -49,8 +49,12 @@ if ('serviceWorker' in navigator) {
         overlay.style.opacity = '1';
     };
 
+    let lastAutoState = null;
     const checkAutomation = () => {
-        if (!settings.auto) return;
+        if (!settings.auto) {
+            lastAutoState = null;
+            return;
+        }
         const now = new Date();
         const time = now.getHours().toString().padStart(2, '0') + ":" + now.getMinutes().toString().padStart(2, '0');
 
@@ -62,11 +66,13 @@ if ('serviceWorker' in navigator) {
             shouldBeActive = time >= settings.start || time < settings.end;
         }
 
-        if (shouldBeActive !== settings.active) {
+        // Only trigger if the automation state has changed to avoid fighting manual toggles
+        if (lastAutoState !== null && shouldBeActive !== lastAutoState) {
             settings.active = shouldBeActive;
             localStorage.setItem('night_light_settings', JSON.stringify(settings));
             updateOverlay();
         }
+        lastAutoState = shouldBeActive;
     };
 
     window.toggleNightLight = function () {
@@ -162,6 +168,7 @@ if ('serviceWorker' in navigator) {
             const dot = toggleBtn.querySelector('span');
             toggleBtn.className = `relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-200 ${settings.active ? 'bg-black' : 'bg-gray-200'}`;
             dot.className = `inline-block h-4 w-4 transform rounded-full bg-white transition-transform duration-200 ${settings.active ? 'translate-x-6' : 'translate-x-1'}`;
+            localStorage.setItem('night_light_settings', JSON.stringify(settings));
             updateOverlay();
         };
 
