@@ -636,7 +636,203 @@
         .animate-spin-slow-reverse {
             animation: spin-slow-reverse 25s linear infinite;
         }
+
+        /* Floating Support Button */
+        #support-btn {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            width: 60px;
+            height: 60px;
+            background: #ff2e63;
+            border: 3px solid #000;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            cursor: pointer;
+            z-index: 9999;
+            box-shadow: none;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            opacity: 0;
+            pointer-events: none;
+            transform: scale(0.5);
+        }
+
+        #support-btn.visible {
+            opacity: 1;
+            pointer-events: auto;
+            transform: scale(1);
+        }
+
+        #support-btn:hover {
+            transform: scale(1.1) rotate(5deg);
+        }
+
+        #support-btn svg {
+            width: 32px;
+            height: 32px;
+            fill: currentColor;
+        }
+
+        /* Simplified Support Modal */
+        #support-modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(8px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+            padding: 20px;
+        }
+
+        #support-modal.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .support-modal-content {
+            background: #fff;
+            border: 4px solid #000;
+            width: 100%;
+            max-width: 400px;
+            position: relative;
+            padding: 32px 24px;
+            box-shadow: 16px 16px 0 rgba(0, 0, 0, 0.2);
+            transform: scale(0.9);
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        #support-modal.active .support-modal-content {
+            transform: scale(1);
+        }
+
+        .support-close-x {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 4px;
+            transition: transform 0.2s;
+        }
+
+        .support-close-x:hover {
+            transform: rotate(90deg);
+        }
+
+        .support-icons-row {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 24px;
+        }
+
+        .minimal-icon-box {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .icon-roundel {
+            width: 56px;
+            height: 56px;
+            background: #FFEB3B;
+            border: 3px solid #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            box-shadow: 4px 4px 0 #000;
+        }
+
+        .minimal-icon-label {
+            font-size: 10px;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .minimal-support-text {
+            font-size: 15px;
+            line-height: 1.6;
+            color: #000;
+            text-align: center;
+            font-family: 'Outfit', sans-serif;
+            margin-bottom: 24px;
+        }
+
+        .minimal-email-tag {
+            display: block;
+            background: #000;
+            color: #fff;
+            padding: 14px;
+            text-align: center;
+            text-decoration: none;
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 800;
+            font-size: 12px;
+            border: 3px solid #000;
+            transition: all 0.2s;
+        }
+
+        .minimal-email-tag:hover {
+            background: #fff;
+            color: #000;
+        }
+
+        /* Mobile Responsiveness for Support UI */
+        @media (max-width: 640px) {
+            #support-btn {
+                bottom: 16px;
+                right: 16px;
+                width: 52px;
+                height: 52px;
+            }
+
+            #support-btn svg {
+                width: 26px;
+                height: 26px;
+            }
+
+            .support-modal-content {
+                padding: 32px 20px;
+                margin: 0 16px;
+            }
+
+            .support-icons-row {
+                gap: 16px;
+            }
+
+            .icon-roundel {
+                width: 48px;
+                height: 48px;
+            }
+
+            .icon-roundel svg {
+                width: 24px;
+                height: 24px;
+            }
+
+            .minimal-icon-label {
+                font-size: 8px;
+            }
+
+            .minimal-support-text {
+                font-size: 13.5px;
+            }
+        }
     </style>
+
 </head>
 
 <body class="min-h-screen flex flex-col pt-12 pb-12">
@@ -2861,6 +3057,76 @@
                         </div>
                     </article>
                 </a>
+                </article>
+                </a>
+            </div>
+        </div>
+
+        <!-- Support UI Components (Relocated for higher depth) -->
+        <button id="support-btn" title="Support Us">
+            <svg viewBox="0 0 24 24">
+                <path
+                    d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+            </svg>
+        </button>
+
+        <div id="support-modal">
+            <div class="support-modal-content">
+                <button id="close-support-modal" class="support-close-x">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="3"
+                        stroke-linecap="round">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+
+                <div class="support-icons-row">
+                    <div class="minimal-icon-box">
+                        <div class="icon-roundel">
+                            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="black"
+                                stroke-width="2.5">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <line x1="4.93" y1="4.93" x2="19.07" y2="19.07"></line>
+                            </svg>
+                        </div>
+                        <span class="minimal-icon-label">No Ads</span>
+                    </div>
+                    <div class="minimal-icon-box">
+                        <div class="icon-roundel">
+                            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="black"
+                                stroke-width="2.5">
+                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                <circle cx="12" cy="7" r="4"></circle>
+                                <line x1="17" y1="17" x2="21" y2="21"></line>
+                                <line x1="21" y1="17" x2="17" y2="21"></line>
+                            </svg>
+                        </div>
+                        <span class="minimal-icon-label">No Signup</span>
+                    </div>
+                    <div class="minimal-icon-box">
+                        <div class="icon-roundel">
+                            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="black"
+                                stroke-width="2.5">
+                                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                                <line x1="9" y1="9" x2="15" y2="15"></line>
+                                <line x1="15" y1="9" x2="9" y2="15"></line>
+                            </svg>
+                        </div>
+                        <span class="minimal-icon-label">No Data</span>
+                    </div>
+                </div>
+
+                <div class="minimal-support-text">
+                    <b>Undrstanding</b> was built with a vision to make complex topics truly accessible through
+                    interactivity. We believe that learning shouldn't be a chore—it should be an adventure. <br><br>
+                    This project is built <b>For Humans, From Humans</b>. While we strive for perfection, we aren't
+                    immune to errors. If you spot a hiccup or find our work helpful, we would love to hear from you.
+                    Your appreciation—whether through a share or a quick email—is exactly what keeps us building.
+                </div>
+
+                <a href="mailto:project.undrstanding@gmail.com" class="minimal-email-tag">
+                    SAY THANK YOU
+                </a>
             </div>
         </div>
         </div>
@@ -2997,6 +3263,11 @@
                     }, 50);
                 }, 400);
             }
+
+            // Support Button Visibility: Trigger initial check
+            if (typeof window.adjustSupportBtn === 'function') {
+                window.adjustSupportBtn();
+            }
         }
 
         // Resizing Logic: Re-align navigation indicator
@@ -3004,15 +3275,83 @@
             const activeBtn = document.querySelector('.pill-nav button.active');
             const indicator = document.getElementById('nav-indicator');
             if (activeBtn && indicator) {
-                // Remove transition momentarily for responsive tracking
                 indicator.style.transition = 'none';
                 indicator.style.width = `${activeBtn.offsetWidth}px`;
                 indicator.style.left = `${activeBtn.offsetLeft}px`;
-                // Restore transition after internal layout stabilization
-                setTimeout(() => {
-                    indicator.style.transition = '';
-                }, 50);
+                setTimeout(() => { indicator.style.transition = ''; }, 10);
             }
+        });
+
+        // --- Support Modal Logic ---
+        document.addEventListener('DOMContentLoaded', () => {
+            const supportBtn = document.getElementById('support-btn');
+            const supportModal = document.getElementById('support-modal');
+            const closeSupportModal = document.getElementById('close-support-modal');
+            const footer = document.querySelector('footer');
+
+            if (supportBtn && supportModal && closeSupportModal) {
+                supportBtn.addEventListener('click', () => {
+                    supportModal.classList.add('active');
+                    document.body.style.overflow = 'hidden';
+                });
+
+                const closeModal = () => {
+                    supportModal.classList.remove('active');
+                    document.body.style.overflow = '';
+                };
+
+                closeSupportModal.addEventListener('click', closeModal);
+                supportModal.addEventListener('click', (e) => {
+                    if (e.target === supportModal) closeModal();
+                });
+
+                document.addEventListener('keydown', (e) => {
+                    if (e.key === 'Escape' && supportModal.classList.contains('active')) {
+                        closeModal();
+                    }
+                });
+
+                // Footer collision detection and Scroll-to-show logic
+                if (footer) {
+                    window.adjustSupportBtn = () => {
+                        const footerRect = footer.getBoundingClientRect();
+                        const viewportHeight = window.innerHeight;
+                        const defaultBottom = window.innerWidth <= 640 ? 16 : 24;
+                        const scrollThreshold = 100;
+
+                        // Visibility conditions
+                        const currentSection = localStorage.getItem('activeSection');
+                        const isDesktop = window.innerWidth > 640;
+                        const hasScrolled = window.scrollY > scrollThreshold;
+
+                        // Desktop: requires both section AND scroll threshold
+                        // Mobile: requires only section
+                        const shouldShow = (currentSection === 'games') && (!isDesktop || hasScrolled);
+
+                        if (shouldShow) {
+                            supportBtn.classList.add('visible');
+                        } else {
+                            supportBtn.classList.remove('visible');
+                        }
+
+                        if (footerRect.top < viewportHeight) {
+                            const offset = viewportHeight - footerRect.top;
+                            supportBtn.style.bottom = `${offset + defaultBottom}px`;
+                        } else {
+                            supportBtn.style.bottom = `${defaultBottom}px`;
+                        }
+                    };
+
+                    window.addEventListener('scroll', window.adjustSupportBtn);
+                    window.addEventListener('resize', window.adjustSupportBtn);
+                    // Initial check
+                    window.adjustSupportBtn();
+                }
+            }
+
+            // Initialize active section from localStorage
+            const savedSection = localStorage.getItem('activeSection') || 'learning';
+            switchSection(savedSection, true);
         });
 
         // Initialize state from localStorage
