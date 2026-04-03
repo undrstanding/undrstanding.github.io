@@ -918,7 +918,7 @@
     }
 
     // 10. Chat Core
-    const smartQuestions = ["What's this step about?", "Why are we doing this?", "Show me the command", "Give me a pro tip"];
+    const smartQuestions = ["What's this step about?", "Why are we doing this?", "Give me a pro tip", "Report a mistake"];
 
     function addMessage(text, type = 'ai') {
         const msg = document.createElement('div');
@@ -1022,7 +1022,26 @@
         const btn = document.createElement('button');
         btn.className = 'stuck-option-btn';
         btn.textContent = q;
-        btn.onclick = () => handleChat(q);
+        
+        if (q === "Report a mistake") {
+            btn.style.borderColor = "#ff4d4d";
+            btn.style.color = "#ff4d4d";
+            btn.onmouseenter = () => { 
+                btn.style.background = "#ff4d4d"; 
+                btn.style.color = "#ffffff"; 
+            };
+            btn.onmouseleave = () => { 
+                btn.style.background = "#ffffff"; 
+                btn.style.color = "#ff4d4d"; 
+            };
+            btn.onclick = () => {
+                const mailSubject = encodeURIComponent(`Mistake Report: Lab [${fileName.toUpperCase()}]`);
+                const mailBody = encodeURIComponent(`Hello,\n\nI found a mistake in the ${fileName.toUpperCase()} lab.\n\n[Describe mistake here]\n\nDetails:\n- URL: ${window.location.href}`);
+                window.location.href = `mailto:mistakes@undrstanding.example.com?subject=${mailSubject}&body=${mailBody}`;
+            };
+        } else {
+            btn.onclick = () => handleChat(q);
+        }
         optionsEl.appendChild(btn);
     });
 
