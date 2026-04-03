@@ -1037,7 +1037,7 @@
             btn.onclick = () => {
                 const mailSubject = encodeURIComponent(`Mistake Report: Lab [${fileName.toUpperCase()}]`);
                 const mailBody = encodeURIComponent(`Hello,\n\nI found a mistake in the ${fileName.toUpperCase()} lab.\n\n[Describe mistake here]\n\nDetails:\n- URL: ${window.location.href}`);
-                window.location.href = `mailto:mistakes@undrstanding.example.com?subject=${mailSubject}&body=${mailBody}`;
+                window.location.href = `mailto:project.undrstanding@gmail.com?subject=${mailSubject}&body=${mailBody}`;
             };
         } else {
             btn.onclick = () => handleChat(q);
