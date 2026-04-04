@@ -7,7 +7,8 @@
     <title>HTML Blog Lab | Undrstanding</title>
     <meta name="description"
         content="Master semantic HTML5 by building a professional blog article. Learn to use header, article, aside, tables, and footer in this interactive lab.">
-    <meta name="keywords" content="undrstanding, html lab, semantic html, blog article, web development, learning, educational">
+    <meta name="keywords"
+        content="undrstanding, html lab, semantic html, blog article, web development, learning, educational">
     <link rel="canonical" href="https://undrstanding.github.io/labs/html-blog-article">
     <meta property="og:title" content="HTML Blog Lab | Undrstanding">
     <meta property="og:description"
@@ -94,9 +95,17 @@
             border-radius: 50%;
         }
 
-        .dot-red { background: #ff5f56; }
-        .dot-yellow { background: #ffbd2e; }
-        .dot-green { background: #27c93f; }
+        .dot-red {
+            background: #ff5f56;
+        }
+
+        .dot-yellow {
+            background: #ffbd2e;
+        }
+
+        .dot-green {
+            background: #27c93f;
+        }
 
         .file-name {
             color: #888;
@@ -118,14 +127,33 @@
             height: 1px;
         }
 
-        pre::-webkit-scrollbar-track { background: #1e1e1e; }
-        pre::-webkit-scrollbar-thumb { background: #333; }
+        pre::-webkit-scrollbar-track {
+            background: #1e1e1e;
+        }
 
-        .keyword { color: #569cd6; }
-        .string { color: #ce9178; }
-        .comment { color: #6a9955; }
-        .tag { color: #e06c75; }
-        .attr { color: #d19a66; }
+        pre::-webkit-scrollbar-thumb {
+            background: #333;
+        }
+
+        .keyword {
+            color: #569cd6;
+        }
+
+        .string {
+            color: #ce9178;
+        }
+
+        .comment {
+            color: #6a9955;
+        }
+
+        .tag {
+            color: #e06c75;
+        }
+
+        .attr {
+            color: #d19a66;
+        }
 
         .step-content {
             display: none;
@@ -141,6 +169,7 @@
                 opacity: 0;
                 transform: translateY(15px);
             }
+
             to {
                 opacity: 1;
                 transform: translateY(0);
@@ -244,6 +273,7 @@
                 transform: scale(0.95) translateY(10px);
                 opacity: 0;
             }
+
             to {
                 transform: scale(1) translateY(0);
                 opacity: 1;
@@ -308,34 +338,137 @@
             overflow: hidden;
         }
 
-        .demo-blog { width: 100%; max-width: 600px; background: white; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); padding: 24px; text-align: left; display: grid; grid-template-columns: 1fr 180px; gap: 20px; }
-        .demo-marquee { grid-column: 1 / -1; }
-        .demo-header { grid-column: 1 / -1; font-weight: 900; border-bottom: 2px solid #111; padding-bottom: 12px; color: #111; }
-        .demo-nav { display: flex; gap: 15px; font-size: 10px; color: #888; text-transform: uppercase; margin-bottom: 10px; font-weight: 700; }
-        .demo-main { grid-column: 1 / 2; }
-        .demo-article h2 { font-size: 20px; font-weight: 800; margin-bottom: 12px; color: #111; }
-        .demo-article p { font-size: 13px; color: #555; line-height: 1.6; margin-bottom: 15px; }
-        .demo-table { width: 100%; border-collapse: collapse; font-size: 12px; margin: 15px 0; }
-        .demo-table th, .demo-table td { border: 1px solid #eee; padding: 8px; text-align: left; }
-        .demo-table th { background: #fafafa; color: #111; }
-        .demo-aside { grid-column: 2 / 3; background: #fffcfc; padding: 15px; border: 1px dashed var(--accent); border-radius: 8px; height: 100%; }
-        .demo-aside h3 { font-size: 13px; font-weight: 700; margin-bottom: 5px; color: var(--accent); }
-        .demo-aside p { font-size: 11px; color: #777; margin: 0; }
-        .demo-footer { grid-column: 1 / -1; border-top: 1px solid #eee; margin-top: 10px; padding-top: 12px; font-size: 10px; color: #aaa; text-align: center; }
+        .demo-blog {
+            width: 100%;
+            max-width: 600px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            padding: 24px;
+            text-align: left;
+            display: grid;
+            grid-template-columns: 1fr 180px;
+            gap: 20px;
+        }
+
+        .demo-marquee {
+            grid-column: 1 / -1;
+        }
+
+        .demo-header {
+            grid-column: 1 / -1;
+            font-weight: 900;
+            border-bottom: 2px solid #111;
+            padding-bottom: 12px;
+            color: #111;
+        }
+
+        .demo-nav {
+            display: flex;
+            gap: 15px;
+            font-size: 10px;
+            color: #888;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .demo-main {
+            grid-column: 1 / 2;
+        }
+
+        .demo-article h2 {
+            font-size: 20px;
+            font-weight: 800;
+            margin-bottom: 12px;
+            color: #111;
+        }
+
+        .demo-article p {
+            font-size: 13px;
+            color: #555;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        .demo-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12px;
+            margin: 15px 0;
+        }
+
+        .demo-table th,
+        .demo-table td {
+            border: 1px solid #eee;
+            padding: 8px;
+            text-align: left;
+        }
+
+        .demo-table th {
+            background: #fafafa;
+            color: #111;
+        }
+
+        .demo-aside {
+            grid-column: 2 / 3;
+            background: #fffcfc;
+            padding: 15px;
+            border: 1px dashed var(--accent);
+            border-radius: 8px;
+            height: 100%;
+        }
+
+        .demo-aside h3 {
+            font-size: 13px;
+            font-weight: 700;
+            margin-bottom: 5px;
+            color: var(--accent);
+        }
+
+        .demo-aside p {
+            font-size: 11px;
+            color: #777;
+            margin: 0;
+        }
+
+        .demo-footer {
+            grid-column: 1 / -1;
+            border-top: 1px solid #eee;
+            margin-top: 10px;
+            padding-top: 12px;
+            font-size: 10px;
+            color: #aaa;
+            text-align: center;
+        }
 
         @media (max-width: 768px) {
-            .lab-container { padding: 1.25rem; }
-            h1 { font-size: 2.5rem !important; }
-            .nav-btn { padding: 0.75rem 1.25rem; font-size: 0.8rem; }
-            #mobile-guidance-modal.active { display: flex; }
-            
+            .lab-container {
+                padding: 1.25rem;
+            }
+
+            h1 {
+                font-size: 2.5rem !important;
+            }
+
+            .nav-btn {
+                padding: 0.75rem 1.25rem;
+                font-size: 0.8rem;
+            }
+
+            #mobile-guidance-modal.active {
+                display: flex;
+            }
+
             .demo-blog {
                 grid-template-columns: 1fr;
                 padding: 16px;
             }
+
             .demo-main {
                 grid-column: 1 / -1;
             }
+
             .demo-aside {
                 grid-column: 1 / -1;
                 height: auto;
@@ -364,12 +497,34 @@
             <div class="step-content active" id="step-1">
                 <h1 class="text-6xl font-black tracking-tighter mb-6 leading-none">The Moving<br>Article.</h1>
                 <p class="text-xl text-gray-600 font-light mb-8 max-w-2xl">
-                    Welcome to the <strong>Dynamic HTML Lab</strong>. In this session, we’ll build a professional blog article using semantic tags and even experiment with legacy motion effects.
+                    Welcome to the <strong>Dynamic HTML Lab</strong>. In this session, we’ll build a professional blog
+                    article using semantic tags and even experiment with legacy motion effects.
                 </p>
+
+                <!-- Recommended Learning -->
+                <div class="mt-4 mb-8 p-6 bg-black rounded-xl text-white flex flex-col md:flex-row items-center justify-between gap-6 overflow-hidden relative group">
+                    <div class="relative z-10 text-left">
+                        <span class="mono text-[10px] font-black uppercase tracking-[0.3em] text-gray-500 mb-1 block">Recommended Learning</span>
+                        <h3 class="text-xl font-bold tracking-tighter mb-1">Master Semantic HTML</h3>
+                        <p class="text-gray-400 font-light text-xs max-w-sm">Learn why document structure matters for accessibility and SEO, and how to build truly descriptive web pages.</p>
+                    </div>
+                    <a href="../content/html" class="relative z-10 px-6 py-3 bg-white text-black rounded-xl font-bold text-xs hover:bg-gray-200 transition-all flex items-center gap-2 group-hover:scale-105 active:scale-95 whitespace-nowrap">
+                        Start Learning
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="5" y1="12" x2="19" y2="12"></line>
+                            <polyline points="12 5 19 12 12 19"></polyline>
+                        </svg>
+                    </a>
+                    <!-- Decorative Accent -->
+                    <div class="absolute -right-12 -bottom-12 w-48 h-48 bg-[#E34C26] rounded-full blur-[80px] opacity-10 transition-all group-hover:opacity-20"></div>
+                </div>
 
                 <div class="mockup-container bg-[#fafafa] py-16">
                     <div class="demo-blog">
-                        <marquee class="demo-marquee text-[10px] font-bold text-[#E34C26] uppercase tracking-widest mb-2" scrollamount="5">BREAKING: HTML Mastery Lab 02 has just been released! Don't miss out on the latest updates.</marquee>
+                        <marquee
+                            class="demo-marquee text-[10px] font-bold text-[#E34C26] uppercase tracking-widest mb-2"
+                            scrollamount="5">BREAKING: HTML Mastery Lab 02 has just been released! Don't miss out on the
+                            latest updates.</marquee>
                         <header class="demo-header">
                             <nav class="demo-nav"><span>Home</span> &middot; <span>Articles</span></nav>
                             The UNDR Journal
@@ -377,21 +532,31 @@
                         <main class="demo-main">
                             <article class="demo-article">
                                 <h2>Mastering Grid Layouts</h2>
-                                <p>CSS Grid has changed how we think about space. With just a few lines of code, you can create complex layouts...</p>
+                                <p>CSS Grid has changed how we think about space. With just a few lines of code, you can
+                                    create complex layouts...</p>
                                 <table class="demo-table text-[10px]">
                                     <thead>
-                                        <tr><th>Metric</th><th>Value</th></tr>
+                                        <tr>
+                                            <th>Metric</th>
+                                            <th>Value</th>
+                                        </tr>
                                     </thead>
                                     <tbody>
-                                        <tr><td>Reading Time</td><td>5 Minutes</td></tr>
-                                        <tr><td>Category</td><td>Web Design</td></tr>
+                                        <tr>
+                                            <td>Reading Time</td>
+                                            <td>5 Minutes</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Category</td>
+                                            <td>Web Design</td>
+                                        </tr>
                                     </tbody>
                                 </table>
                             </article>
                         </main>
                         <aside class="demo-aside">
                             <h3>About the Author</h3>
-                            <p>Alex is a front-end engineer obsessed with clean HTML and accessible interfaces.</p>
+                            <p>Mr. Stuck is a front-end engineer obsessed with clean HTML and accessible interfaces.</p>
                         </aside>
                         <footer class="demo-footer">&copy; 2026 The UNDR Journal. Built with Semantic HTML.</footer>
                     </div>
@@ -399,22 +564,32 @@
 
                 <div class="why-box">
                     <div class="why-title">Why Semantic HTML?</div>
-                    <p class="text-sm">Semantic tags like <code>&lt;article&gt;</code> and <code>&lt;header&gt;</code> aren't just for looks. They tell browsers and assistive technologies (like screen readers) <strong>exactly</strong> what each part of your page represents, boosting SEO and accessibility.</p>
+                    <p class="text-sm">Semantic tags like <code>&lt;article&gt;</code> and <code>&lt;header&gt;</code>
+                        aren't just for looks. They tell browsers and assistive technologies (like screen readers)
+                        <strong>exactly</strong> what each part of your page represents, boosting SEO and accessibility.
+                    </p>
                 </div>
 
                 <div class="mt-12 space-y-6">
                     <h3 class="mono text-xs font-black uppercase tracking-[0.3em] text-gray-400">Lab Objectives</h3>
                     <ul class="space-y-4 text-gray-600 font-light text-lg">
                         <li class="flex gap-4">
-                            <div class="w-8 h-8 rounded-full bg-[#E34C26]/10 text-[#E34C26] flex items-center justify-center text-xs font-bold shrink-0">1</div>
+                            <div
+                                class="w-8 h-8 rounded-full bg-[#E34C26]/10 text-[#E34C26] flex items-center justify-center text-xs font-bold shrink-0">
+                                1</div>
                             <span>Master HTML5 semantic elements (Header, Main, Article, Footer).</span>
                         </li>
                         <li class="flex gap-4">
-                            <div class="w-8 h-8 rounded-full bg-[#E34C26]/10 text-[#E34C26] flex items-center justify-center text-xs font-bold shrink-0">2</div>
-                            <span>Implement sidebars with <code>aside</code> and dynamic text with <code>marquee</code>.</span>
+                            <div
+                                class="w-8 h-8 rounded-full bg-[#E34C26]/10 text-[#E34C26] flex items-center justify-center text-xs font-bold shrink-0">
+                                2</div>
+                            <span>Implement sidebars with <code>aside</code> and dynamic text with
+                                <code>marquee</code>.</span>
                         </li>
                         <li class="flex gap-4">
-                            <div class="w-8 h-8 rounded-full bg-[#E34C26]/10 text-[#E34C26] flex items-center justify-center text-xs font-bold shrink-0">3</div>
+                            <div
+                                class="w-8 h-8 rounded-full bg-[#E34C26]/10 text-[#E34C26] flex items-center justify-center text-xs font-bold shrink-0">
+                                3</div>
                             <span>Display metadata using clean, accessible <code>table</code> elements.</span>
                         </li>
                     </ul>
@@ -447,7 +622,9 @@
                 </div>
                 <div class="why-box">
                     <div class="why-title">Standardization</div>
-                    <p class="text-sm">The <code>&lt;!DOCTYPE html&gt;</code> declaration ensures that the browser uses "Standards Mode" rather than "Quirks Mode," giving you consistent rendering across Chrome, Safari, and Firefox.</p>
+                    <p class="text-sm">The <code>&lt;!DOCTYPE html&gt;</code> declaration ensures that the browser uses
+                        "Standards Mode" rather than "Quirks Mode," giving you consistent rendering across Chrome,
+                        Safari, and Firefox.</p>
                 </div>
             </div>
 
@@ -477,7 +654,10 @@
                 </div>
                 <div class="why-box">
                     <div class="why-title">Identity</div>
-                    <p class="text-sm">By using <code>&lt;header&gt;</code>, you signal to screen readers that this is the site-wide branding area. You can have multiple headers on a page (e.g., inside an <code>&lt;article&gt;</code>), but there's usually one primary one at the top.</p>
+                    <p class="text-sm">By using <code>&lt;header&gt;</code>, you signal to screen readers that this is
+                        the site-wide branding area. You can have multiple headers on a page (e.g., inside an
+                        <code>&lt;article&gt;</code>), but there's usually one primary one at the top.
+                    </p>
                 </div>
             </div>
 
@@ -502,7 +682,9 @@
                 </div>
                 <div class="why-box">
                     <div class="why-title">Fun Fact</div>
-                    <p class="text-sm">The <code>&lt;marquee&gt;</code> tag is a "legacy" element from the early days of the web. While technically deprecated in modern standards, it's still fun to use for simple, retro scrolling effects!</p>
+                    <p class="text-sm">The <code>&lt;marquee&gt;</code> tag is a "legacy" element from the early days of
+                        the web. While technically deprecated in modern standards, it's still fun to use for simple,
+                        retro scrolling effects!</p>
                 </div>
             </div>
 
@@ -510,7 +692,8 @@
             <div class="step-content" id="step-5">
                 <h1 class="text-5xl font-bold tracking-tighter mb-6">The Article</h1>
                 <p class="text-xl text-gray-600 font-light mb-8 max-w-2xl">
-                    The <code>&lt;article&gt;</code> tag represents a self-contained composition that makes sense on its own.
+                    The <code>&lt;article&gt;</code> tag represents a self-contained composition that makes sense on its
+                    own.
                 </p>
                 <div class="code-window">
                     <div class="code-header">
@@ -531,7 +714,9 @@
                 </div>
                 <div class="why-box">
                     <div class="why-title">Portability</div>
-                    <p class="text-sm">The <code>&lt;article&gt;</code> tag is perfect for content that could be distributed in an RSS feed or shared as a standalone piece. It should contain its own headings and internal structure.</p>
+                    <p class="text-sm">The <code>&lt;article&gt;</code> tag is perfect for content that could be
+                        distributed in an RSS feed or shared as a standalone piece. It should contain its own headings
+                        and internal structure.</p>
                 </div>
             </div>
 
@@ -539,7 +724,8 @@
             <div class="step-content" id="step-6">
                 <h1 class="text-5xl font-bold tracking-tighter mb-6">Side Content</h1>
                 <p class="text-xl text-gray-600 font-light mb-8 max-w-2xl">
-                    The <code>&lt;aside&gt;</code> tag is used for content "to the side"—related but not part of the primary flow.
+                    The <code>&lt;aside&gt;</code> tag is used for content "to the side"—related but not part of the
+                    primary flow.
                 </p>
                 <div class="code-window">
                     <div class="code-header">
@@ -551,13 +737,14 @@
                     <pre><code><span class="comment">&lt;!-- After the &lt;main&gt; element --&gt;</span>
 <span class="tag">&lt;aside&gt;</span>
   <span class="tag">&lt;h3&gt;</span>About the Author<span class="tag">&lt;/h3&gt;</span>
-  <span class="tag">&lt;p&gt;</span>Mr. Stuck is a front-end engineer obsessed with clean HTML 
+  <span class="tag">&lt;p&gt;</span>Alex is a front-end engineer obsessed with clean HTML 
      and accessible interfaces.<span class="tag">&lt;/p&gt;</span>
 <span class="tag">&lt;/aside&gt;</span></code></pre>
                 </div>
                 <div class="why-box">
                     <div class="why-title">Context</div>
-                    <p class="text-sm">Asides are great for author bios, related links, terminology definitions, or advertisements. They are typically styled as sidebars on larger screens.</p>
+                    <p class="text-sm">Asides are great for author bios, related links, terminology definitions, or
+                        advertisements. They are typically styled as sidebars on larger screens.</p>
                 </div>
             </div>
 
@@ -585,7 +772,8 @@
                 </div>
                 <div class="why-box">
                     <div class="why-title">Tabular Logic</div>
-                    <p class="text-sm">Only use <code>&lt;table&gt;</code> for data that has a logical relationship. Never use tables for layout; use CSS Flexbox or Grid for that!</p>
+                    <p class="text-sm">Only use <code>&lt;table&gt;</code> for data that has a logical relationship.
+                        Never use tables for layout; use CSS Flexbox or Grid for that!</p>
                 </div>
             </div>
 
@@ -615,7 +803,8 @@
             <div class="step-content" id="step-9">
                 <h1 class="text-5xl font-bold tracking-tighter mb-6">Internal CSS</h1>
                 <p class="text-xl text-gray-600 font-light mb-8 max-w-2xl">
-                    Add a <code>&lt;style&gt;</code> block in the <code>&lt;head&gt;</code> to polish your blog's appearance.
+                    Add a <code>&lt;style&gt;</code> block in the <code>&lt;head&gt;</code> to polish your blog's
+                    appearance.
                 </p>
                 <div class="code-window">
                     <div class="code-header">
@@ -646,13 +835,13 @@
                 </p>
 
                 <div class="code-window">
-                  <div class="code-header">
-                      <div class="dot dot-red"></div>
-                      <div class="dot dot-yellow"></div>
-                      <div class="dot dot-green"></div>
-                      <span class="file-name">final-blog.html</span>
-                  </div>
-                  <pre><code><span class="keyword">&lt;!DOCTYPE html&gt;</span>
+                    <div class="code-header">
+                        <div class="dot dot-red"></div>
+                        <div class="dot dot-yellow"></div>
+                        <div class="dot dot-green"></div>
+                        <span class="file-name">final-blog.html</span>
+                    </div>
+                    <pre><code><span class="keyword">&lt;!DOCTYPE html&gt;</span>
 <span class="tag">&lt;html&gt;</span>
 <span class="tag">&lt;head&gt;</span>
   <span class="tag">&lt;style&gt;</span>
@@ -690,8 +879,10 @@
     </div>
 
     <!-- Completion Modal -->
-    <div id="completion-modal" class="fixed inset-0 z-[3000] hidden flex items-center justify-center p-4 backdrop-blur-xl bg-black/40">
-        <div class="bg-white rounded-[2rem] p-5 sm:p-8 max-w-[min(400px,90vw)] w-full text-center shadow-3xl scale-95 opacity-0 transition-all duration-500" id="completion-content">
+    <div id="completion-modal"
+        class="fixed inset-0 z-[3000] hidden flex items-center justify-center p-4 backdrop-blur-xl bg-black/40">
+        <div class="bg-white rounded-[2rem] p-5 sm:p-8 max-w-[min(400px,90vw)] w-full text-center shadow-3xl scale-95 opacity-0 transition-all duration-500"
+            id="completion-content">
             <div class="mb-4 flex justify-center">
                 <canvas id="badge-canvas" class="rounded-3xl border border-gray-100 max-w-full h-auto"></canvas>
             </div>
@@ -699,15 +890,18 @@
             <p class="text-gray-600 text-sm mb-6">You've mastered the <strong>Semantic HTML Article</strong> lab.</p>
 
             <div class="flex flex-col gap-2">
-                <button onclick="downloadBadge()" class="w-full py-3 bg-black text-white rounded-xl font-bold hover:bg-gray-800 transition-all flex items-center justify-center gap-2 text-sm">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <button onclick="downloadBadge()"
+                    class="w-full py-3 bg-black text-white rounded-xl font-bold hover:bg-gray-800 transition-all flex items-center justify-center gap-2 text-sm">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                        stroke-linecap="round" stroke-linejoin="round">
                         <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
                         <polyline points="7 10 12 15 17 10" />
                         <line x1="12" y1="15" x2="12" y2="3" />
                     </svg>
                     Download Badge
                 </button>
-                <button onclick="window.location.href='../'" class="w-full py-2 text-gray-400 font-semibold hover:text-black transition-all text-xs">
+                <button onclick="window.location.href='../'"
+                    class="w-full py-2 text-gray-400 font-semibold hover:text-black transition-all text-xs">
                     Return to Repository
                 </button>
             </div>
@@ -725,7 +919,8 @@
                 </svg>
             </div>
             <span class="modal-title">Desktop Recommended</span>
-            <p class="modal-text">Interactive labs are designed for desktop. You can still keep this open on your mobile to follow along while you build on your workstation.</p>
+            <p class="modal-text">Interactive labs are designed for desktop. You can still keep this open on your mobile
+                to follow along while you build on your workstation.</p>
             <button class="modal-btn" onclick="closeMobileModal()">Undrstood</button>
         </div>
     </div>
@@ -803,4 +998,5 @@
         updateUI();
     </script>
 </body>
+
 </html>
