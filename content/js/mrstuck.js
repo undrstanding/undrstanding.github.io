@@ -246,16 +246,30 @@
         }
 
         .stuck-msg code {
-            display: block;
             background: #1e1e1e;
             color: #fff;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9em;
+        }
+
+        .stuck-msg code:not(.inline-code) {
+            display: block;
             padding: 10px;
             border-radius: 8px;
             margin: 8px 0;
-            font-family: 'JetBrains Mono', monospace;
             font-size: 11px;
             word-break: break-all;
             white-space: pre-wrap;
+        }
+
+        .stuck-msg code.inline-code {
+            display: inline;
+            background: rgba(0,0,0,0.05);
+            color: #000;
+            border: 1px solid #eee;
+            margin: 0 2px;
         }
 
         .stuck-msg.user {
@@ -550,74 +564,173 @@
     };
 
     // 3. Intelligence Engine Logic
+    const intentPatterns = {
+        greeting: /\b(hi|hello|hey|yo|sup|good morning|good afternoon|good evening|greetings|morning|afternoon|evening)\b/i,
+        thanks: /\b(thank|thanks|thx|appreciate|grateful|helpful|ty)\b/i,
+        positive: /\b(awesome|great|nice|cool|love|wow|amazing|sweet|brilliant)\b/i,
+        bye: /\b(bye|goodbye|see ya|later|exit|quit|stop|done)\b/i,
+        step: /\b(step|phase|doing|about|currently|current|what's up|mission|goal|task|objective|situation|status)\b/i,
+        why: /\b(why|purpose|reason|concept|understand|philosophy|background|meaning|logic|thinking)\b/i,
+        how: /\b(how|instruction|guide|way|method|process|syntax|command|code|terminal|shell|write|type|paste)\b/i,
+        pro_tip: /\b(tip|pro|advice|suggestion|secret|trick|hack|advanced|extra|insider)\b/i,
+        negative: /\b(stupid|dumb|idiot|suck|hate|useless|boring|trash|garbage|worst|fail|broken|mistake|error|fix)\b/i,
+        identity: /\b(who are you|what are you|your name|identity|who made you|mr stuck)\b/i,
+        next: /\b(next|coming up|future|after this|following|move on)\b/i,
+        joke: /\b(joke|funny|laugh|humor)\b/i,
+        mistake: /\b(mistake|error|wrong|bug|incorrect|issue|problem|fix|fault)\b/i
+    };
+
+    // Advanced Text Processing
+    function cleanTaskText(text) {
+        if (!text) return "working through the requirements";
+        let t = text.trim();
+        // Remove noise
+        t = t.replace(/^[0-9\s.]+/, '');
+        t = t.replace(/^(step|phase|task|mission|goal|objective)\s*([0-9:]*)\s*/i, '');
+        t = t.replace(/^(welcome to|in this lab|we'll|we will|now let's|let's|in this session|this part involves|the goal is to|this is about)\s*/i, '');
+        t = t.replace(/^(creating|building|designing|implementing|testing|adding)\s/i, (m) => m.slice(0, -3) + " "); 
+        return t.charAt(0).toLowerCase() + t.slice(1).replace(/\.$/, '');
+    }
+
+    const universalWisdom = {
+        'git-essentials': {
+            core: "Git isn't just about saving files; it's about building a bulletproof history of your logic.",
+            logic: "We're focusing on atomic operations here. Small, clear changes make for a clean repository later.",
+            pro: "Try running `git log --oneline` after this step to see how professional your history is looking!"
+        },
+        'budget-tracker': {
+            core: "State management is the heart of every financial app. If the data isn't clean, the charts are useless.",
+            logic: "We're ensuring data persistence here so the user never loses their progress, even after a refresh.",
+            pro: "Check the 'Application' tab in DevTools to see exactly how your data is being mapped into LocalStorage."
+        },
+        'weather-app': {
+            core: "Async operations are the bridge between your code and the real world.",
+            logic: "We're setting up a robust fetch cycle to handle network latency and potential API errors gracefully.",
+            pro: "Open the 'Network' tab to see the JSON handshake between your app and the weather servers!"
+        },
+        'quick-tab-closer': {
+            core: "Extensions give you control over the entire browser ecosystem.",
+            logic: "We're leveraging the Chrome API to perform actions that a standard website simply isn't allowed to do.",
+            pro: "Load your extension in 'Developer Mode' to see how background scripts keep running even when the popup is closed."
+        },
+        'html-blog-article': {
+            core: "Semantics are the difference between a 'page' and an 'application'.",
+            logic: "We're using descriptive tags so that search engines and screen readers can truly 'understand' your content.",
+            pro: "Inspect your page and check the 'Accessibility' tree—see how your tags create a structured outline for the browser."
+        }
+    };
+
     function getContextFromPage(query) {
         const activeStep = document.querySelector('.step-content.active');
-        if (!activeStep) return "I'm having a little trouble seeing exactly where you are. Try clicking any lab step, and I'll be able to guide you better! 🧭";
+        if (!activeStep) return "I'm checking the coordinates... 🧭 Try selecting a lab step so I can get a lock on your current location!";
 
         const q = query.toLowerCase();
+        const wisdom = universalWisdom[fileName] || { core: "Development is about building reliable systems, one step at a time.", logic: "We are focusing on core functionality here.", pro: "Keep your code clean and your logic transparent!" };
 
-        // Robust Title Extraction (Skip "Step 1" headers, look for the actual title)
-        const primaryTitle = activeStep.querySelector('.text-2xl, .text-xl, h1')?.textContent?.trim();
-        const secondaryTitle = activeStep.querySelector('h2')?.textContent?.trim();
-        const stepTitle = (primaryTitle && primaryTitle.length > 2) ? primaryTitle : (secondaryTitle || 'the current phase');
+        // 1. Precise Data Harvesting
+        const titleEl = activeStep.querySelector('h1, h2, .text-2xl, .text-xl');
+        const phaseTitle = titleEl ? titleEl.textContent.trim().replace(/\s\s+/g, ' ') : "this stage";
 
-        // A. Supportive Status Check
-        if (q.includes('what') || q.includes('doing') || q.includes('about') || q.includes('current')) {
-            const firstPara = activeStep.querySelector('p')?.textContent?.trim().replace(/\n/g, ' ') || '';
-            const listItems = Array.from(activeStep.querySelectorAll('li')).slice(0, 2).map(li => {
-                const text = li.querySelector('span')?.textContent || li.textContent;
-                return text.trim().replace(/^[0-9\s.]+/, ''); // Strip leading numbers
-            });
+        const descEl = activeStep.querySelector('p');
+        const mission = cleanTaskText(descEl?.textContent);
 
-            // Analyze the content to find a specific "mission"
-            let mission = "progressing through the lesson";
-            if (firstPara.toLowerCase().includes('create') || firstPara.toLowerCase().includes('build')) mission = "building out the core skeleton";
-            else if (firstPara.toLowerCase().includes('understand') || firstPara.toLowerCase().includes('learn')) mission = "understanding how this component works";
-            else if (firstPara.toLowerCase().includes('test') || firstPara.toLowerCase().includes('verify')) mission = "verifying and testing the logic";
+        const actions = Array.from(activeStep.querySelectorAll('li'))
+            .map(li => cleanTaskText(li.querySelector('span')?.textContent || li.textContent))
+            .filter(t => t.length > 5);
 
-            let responses = [
-                `Scanning the blueprint... 🔍 We are currently focused on **${stepTitle}**. The main mission here is ${mission}.`,
-                `${getPrefix()} We're right in the middle of **${stepTitle}**. We need to focus on ${mission} to make sure everything stays robust!`,
-                `You're on the right track! 🧭 This part is all about **${stepTitle}**. We're basically ${mission} before moving forward.`
+        const codeBlocks = Array.from(activeStep.querySelectorAll('code, pre'))
+            .map(c => c.textContent.trim())
+            .filter(c => c.length > 2);
+
+        // 2. Expert Synthesis Logic
+        if (intentPatterns.step.test(q)) {
+            const analyticalResponses = [
+                `Looking at our progress in **${phaseTitle}**, we are primarily tasked to ${mission}. It's a vital step because ${wisdom.logic.toLowerCase()}`,
+                `We've moved into **${phaseTitle}**. The core objective here is to ${mission}. Essentially, ${wisdom.core}`,
+                `Scanning the requirements for **${phaseTitle}**... 🔍 We need to focus on ${mission}. This builds the necessary foundation for the more complex parts later!`
             ];
-
-            let response = responses[Math.floor(Math.random() * responses.length)];
-
-            // Append specific actions if found in lists
-            if (listItems.length > 0) {
-                response += `\n\nSpecifically, you'll ${listItems[0].toLowerCase().replace(/\./g, '')} and making sure it fits the overall structure!`;
-            } else if (firstPara.length > 20) {
-                const distilled = firstPara.split('.')[0] + '.';
-                response += `\n\nTo keep it simple: ${distilled}`;
+            
+            let response = analyticalResponses[Math.floor(Math.random() * analyticalResponses.length)];
+            
+            if (actions.length > 0) {
+                response += `\n\nTo move forward, ensure you focus on **${actions[0]}** and correctly **${actions[1] || 'implement the remaining logic'}**.`;
             }
-
             return response;
         }
 
-        // B. Explanatory Concepts
-        if (q.includes('why') || q.includes('purpose') || q.includes('concept') || q.includes('understand')) {
-            const whyText = activeStep.querySelector('.why-box p')?.textContent;
-            if (whyText) return `**Let's understand why we do this:**\n${whyText}\n\nThink of it as the 'logic' behind the magic! ✨`;
-            return `**A bit of context:**\n${currentLabMeta.why}`;
+        if (intentPatterns.why.test(q)) {
+            const whyText = activeStep.querySelector('.why-box p, .why-box')?.textContent;
+            let explainer = wisdom.core;
+            if (whyText) explainer = whyText.replace(/Why this.*?\?/, '').trim();
+
+            return `**Strategic Insight:**\n${explainer}\n\nBy mastering **${phaseTitle}**, you're learning how to build systems that are ${['scalable', 'robust', 'maintainable', 'efficient'][Math.floor(Math.random()*4)]}. ✨`;
         }
 
-        // C. Helpful Technical Guidance
-        if (q.includes('code') || q.includes('command') || q.includes('how') || q.includes('syntax') || q.includes('terminal')) {
-            const code = activeStep.querySelector('code')?.textContent;
-            if (code) return `**Here is the command you need:**\n\n\`\`\`\n${code.trim()}\n\`\`\`\n\nThis tells the machine exactly how to execute our goal for this step! ⌨️`;
-            return `**A quick pointer on commands:**\n${currentLabMeta.command}`;
+        if (intentPatterns.how.test(q)) {
+            if (codeBlocks.length > 0) {
+                return `The technical path for **${phaseTitle}** involves executing this command:\n\n\`\`\`\n${codeBlocks[0]}\n\`\`\`\n\nThis is the specific instruction the machine needs to ${mission}. ⌨️`;
+            }
+            if (actions.length > 0) {
+                return `For **${phaseTitle}**, our approach should be systematic:\n\nFirst, we'll ${actions[0]}, then we proceed to ${actions[1] || 'finalize the stage'}. This ensures nothing gets missed! 🧭`;
+            }
+            return `Generally, ${wisdom.logic} Just take it step-by-step!`;
         }
 
-        // D. Encouraging Pro Tips
-        if (q.includes('tip') || q.includes('pro') || q.includes('help') || q.includes('advice')) {
-            const tips = Array.from(activeStep.querySelectorAll('.why-title'))
-                .filter(el => el.textContent.toLowerCase().includes('tip'))
-                .map(el => el.nextElementSibling.textContent);
-            if (tips.length > 0) return `${getPrefix()}Here is a special trick for this step:\n\n**${tips[0]}** 💡`;
-            return `**A Pro Tip from me:**\n${currentLabMeta.tip}`;
+        if (intentPatterns.pro_tip.test(q)) {
+            return `**Lab Pro-Tip:**\n${wisdom.pro} 🚀\n\nSmall optimizations like this are what define a senior-level developer experience.`;
         }
 
         return null;
+    }
+
+    function handleChat(text) {
+        if (isTyping) return;
+        text = text.trim();
+        if (!text) return;
+        addMessage(text, 'user');
+
+        setTimeout(() => {
+            const q = text.toLowerCase();
+            let response;
+            const contextResponse = getContextFromPage(text);
+
+            // Intent Handling
+            if (intentPatterns.identity.test(q)) {
+                response = "I'm **Mr. Stuck**, your strategic lab partner! 🧭 I analyze your project state in real-time to provide high-level insights, structural logic, and pro-level debugging tips. I'm here to ensure you don't just 'follow' the lab, but actually master it.";
+            } else if (intentPatterns.negative.test(q)) {
+                setSuspicious(true);
+                setTimeout(() => setSuspicious(false), 2000);
+                const politeSupport = [
+                    "I hear you—development can be taxing! Let's strip away the noise and look at the core logic for **${document.querySelector('.step-content.active h1,h2')?.textContent || 'this step'}** together. 🧭",
+                    "Feeling the pressure? That's just the 'Learning Curve' in action! 📈 Let's simplify and get back to the basics.",
+                    "If something isn't clicking, it's my job to help bridge that gap. Let's redirect our focus and solve this logically! 🤝"
+                ];
+                response = politeSupport[Math.floor(Math.random() * politeSupport.length)];
+            } else if (intentPatterns.greeting.test(q)) {
+                response = `Happy ${getGreeting()} Developer! 🧭 Mr. Stuck here, ready to provide context, commands, and structural analysis for your current project. What's on your mind?`;
+            } else if (intentPatterns.thanks.test(q)) {
+                response = "Glad I could help! Seeing the logic align is the best part of the build. What's our next objective? 📚✨";
+            } else if (intentPatterns.positive.test(q)) {
+                response = "Exactly! 🚀 Once you master the underlying principles, everything starts to feel like second nature. Let's keep building!";
+            } else if (intentPatterns.joke.test(q)) {
+                const wholesomeJokes = [
+                    "Why did the developer go broke? Because he used up all his cache! 💰",
+                    "What's a programmer's favorite place to hang out? The Foo Bar! 🍹",
+                    "How many developers does it take to fix a bug? None, that's just a new feature! 💡"
+                ];
+                response = wholesomeJokes[Math.floor(Math.random() * wholesomeJokes.length)];
+            } else if (intentPatterns.next.test(q)) {
+                response = "We're close to a major milestone! 🏁 Stay focused on the current structural requirements, and you'll be perfectly set up for the next phase.";
+            } else if (intentPatterns.mistake.test(q)) {
+                response = "Spotted an inconsistency? 🐛 I strive for peak precision, but technology moves fast. Please use the **'Report a mistake'** button below to let our team maintain the lab's quality!";
+            } else if (q.length === 1) {
+                response = "A bit concise, aren't we? 😉 Provide a bit more context so I can analyze the right part of the project for you!";
+            } else {
+                response = contextResponse || "I'm synthesizing a response... 🧭 Currently, it looks like we're focused on high-level project structure. Can I provide a 'Why', a 'Pro Tip', or a specific 'Command' for this part?";
+            }
+
+            addMessage(response, 'ai');
+        }, 300);
     }
 
     // 4. Create Elements
@@ -943,6 +1056,8 @@
                         // Process markdown-like syntax while typing
                         let formatted = currentText
                             .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                            .replace(/\*(.*?)\*/g, '<em>$1</em>')
+                            .replace(/`([^`]+)`/g, '<code class="inline-code">$1</code>')
                             .replace(/\n\n/g, '<br><br>')
                             .replace(/\n/g, '<br>')
                             .replace(/```([\s\S]*?)```/g, '<code>$1</code>');
@@ -965,74 +1080,22 @@
         }
     }
 
-    function handleChat(text) {
-        if (isTyping) return;
-        text = text.trim();
-        if (!text) return;
-        addMessage(text, 'user');
-
-        setTimeout(() => {
-            const q = text.toLowerCase();
-            let response;
-
-            if (q.length === 1) {
-                const witty = [
-                    "A bit brief, don't you think? 😉",
-                    "I've got a lot to say, how about you use some more words? ⌨️",
-                    "One letter? Is that a secret code? 🕵️‍♂️",
-                    "I need a few more clues than that, Human! 🧭",
-                    "Is that the start of a very long sentence? I'll wait... ⏳"
-                ];
-                response = witty[Math.floor(Math.random() * witty.length)];
-            } else if (text.length > 15 && !text.includes(' ')) {
-                response = "Is that a secret encryption key or did you just sit on the keyboard? I'm guessing both. 👽";
-            } else if (/\b(stupid|dumb|idiot|suck|hate|useless|boring|trash|garbage)\b/i.test(q)) {
-
-
-                clearTimeout(suspiciousTimer);
-                button.classList.add('suspicious');
-                setTimeout(() => button.classList.remove('suspicious'), 2000);
-                const defensive = [
-                    "I'm rubber and you're glue! 🛡️ Let's stay focused on the code, shall we?",
-                    "Ouch! My virtual feelings aren't hurt, but my logic is disappointed. 🤖💔",
-                    "Is that a bug in your manners? 🐛 Let's debug those emotions and get back to learning.",
-                    "Negative input detected. ⚠️ I'll ignore that and wait for something more constructive! 🧭"
-                ];
-                response = defensive[Math.floor(Math.random() * defensive.length)];
-            } else if (/\b(hi|hello|hey|yo|sup)\b/i.test(q)) {
-                response = "Hello there, Human! I'm Mr. Stuck. Ready to dive back into the learning journey? I'm here to make sure every concept sticks! 🧠🧭";
-            } else if (/\b(thank|thanks|thx|appreciate)\b/i.test(q)) {
-                response = "You're very welcome! My favorite thing is seeing that 'Aha!' moment. What else are we exploring today? 📚✨";
-            } else if (/\b(bye|goodbye|see ya|later)\b/i.test(q)) {
-                response = "Farewell! Keep that curious mind active. I'll be right here whenever you're ready to learn something new. 🎓👋";
-            } else if (/\b(how|what|about|doing|tip|why|goal|mission)\b/i.test(q)) {
-                response = getContextFromPage(text) || "I'm here to simplify! 🎓 I can explain the **purpose** of this step, the **command syntax**, or even give you a **pro-tip**. What part of the current phase is giving you trouble?";
-            } else if (/\b(cool|awesome|great|nice)\b/i.test(q)) {
-                response = "Right?! 🚀 Learning is the superpower. Let's keep this momentum going and see what else we can build!";
-            } else if (q.includes('joke')) {
-                response = "**Error 404**: Better joke not found than your existence. 💀 Just kidding! Let's get back to mastering this lab.";
-            } else {
-                response = getContextFromPage(text) || "I'm not exactly sure about that, but let's take it step by step! 🧭 Try asking me about the 'Why', 'Pro Tip', or the 'Command' for this phase.";
-            }
-            addMessage(response, 'ai');
-        }, 100);
-    }
 
     smartQuestions.forEach(q => {
         const btn = document.createElement('button');
         btn.className = 'stuck-option-btn';
         btn.textContent = q;
-        
+
         if (q === "Report a mistake") {
             btn.style.borderColor = "#ff4d4d";
             btn.style.color = "#ff4d4d";
-            btn.onmouseenter = () => { 
-                btn.style.background = "#ff4d4d"; 
-                btn.style.color = "#ffffff"; 
+            btn.onmouseenter = () => {
+                btn.style.background = "#ff4d4d";
+                btn.style.color = "#ffffff";
             };
-            btn.onmouseleave = () => { 
-                btn.style.background = "#ffffff"; 
-                btn.style.color = "#ff4d4d"; 
+            btn.onmouseleave = () => {
+                btn.style.background = "#ffffff";
+                btn.style.color = "#ff4d4d";
             };
             btn.onclick = () => {
                 const mailSubject = encodeURIComponent(`Mistake Report: Lab [${fileName.toUpperCase()}]`);
