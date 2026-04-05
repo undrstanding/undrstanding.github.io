@@ -1,0 +1,1022 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Tower Stack | Undrstanding</title>
+    <link rel="icon" type="image/svg+xml" href="../assests/undrlogo.svg">
+
+    <!-- SEO Metadata -->
+    <meta name="description"
+        content="Build your knowledge brick by brick. Stack concepts from OOP to OS Scheduling in this architectural physics game by Undrstanding.">
+    <meta name="keywords"
+        content="undrstanding, tower stack, educational physics game, oop concepts, software engineering game, learn osi layers">
+    <meta name="author" content="Undrstanding">
+
+    <!-- Open Graph / Social -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Tower Stack | Knowledge Architect">
+    <meta property="og:description"
+        content="Can you build the ultimate tower of knowledge? Stack technical concepts and master software architecture in this high-stakes physics puzzle.">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;700;900&family=JetBrains+Mono:wght@700&family=Plus+Jakarta+Sans:wght@800&family=Fira+Code:wght@700&display=swap"
+        rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.19.0/matter.min.js"></script>
+    <style>
+        :root {
+            --bg: #F0F2F5;
+            --accent-1: #FFADAD;
+            --card-bg: #FFFFFF;
+            --text-main: #263238;
+            --text-muted: #607D8B;
+            --accent-1: #FFD54F;
+            /* Industrial Gold */
+            --accent-2: #81D4FA;
+            --accent-3: #A5D6A7;
+            --brutal-border: 3px solid #111;
+            --brutal-shadow: 5px 5px 0px #111;
+            --shadow: #263238;
+            --brutal-shadow-hover: 6px 6px 0px var(--shadow);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Outfit', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background: linear-gradient(to bottom, #7DD3FC, #BAE6FD);
+            color: var(--text-main);
+            overflow: hidden;
+            touch-action: none;
+            height: 100vh;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        /* Standard Platform Header */
+        .game-nav {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: white;
+            padding: 12px 24px;
+            border-bottom: 3px solid #000;
+            z-index: 1000;
+            position: relative;
+            box-sizing: border-box;
+        }
+
+        .logo-wrap {
+            position: relative;
+            text-decoration: none;
+            transition: transform 0.2s;
+        }
+
+        .logo-wrap:hover {
+            transform: scale(1.05);
+        }
+
+        .logo-text {
+            font-family: 'Fira Code', monospace;
+            font-weight: 700;
+            background: #000;
+            color: #fff;
+            padding: 6px 16px;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            display: inline-block;
+        }
+
+        .logo-badge {
+            position: absolute;
+            bottom: -6px;
+            right: -10px;
+            background: #8b5cf6;
+            color: #fff;
+            font-size: 9px;
+            padding: 2px 6px;
+            border: 2px solid #000;
+            box-shadow: 2px 2px 0 #000;
+            transform: rotate(-3deg);
+            font-weight: 900;
+        }
+
+        .nav-title {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 10px;
+            font-weight: 800;
+            text-transform: uppercase;
+            opacity: 0.6;
+            letter-spacing: 0.5px;
+            text-align: right;
+            line-height: 1;
+        }
+
+        @media (max-width: 480px) {
+            .game-nav {
+                padding: 10px 15px;
+            }
+
+            .logo-text {
+                font-size: 0.7rem;
+                padding: 4px 10px;
+            }
+
+            .logo-badge {
+                font-size: 7px;
+                bottom: -5px;
+                right: -5px;
+                padding: 1px 4px;
+                border-width: 1px;
+            }
+
+            .nav-title {
+                font-size: 9px;
+                max-width: 150px;
+            }
+        }
+
+        .sky-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+            pointer-events: none;
+        }
+
+        .cloud {
+            position: absolute;
+            fill: white;
+            opacity: 0.6;
+            filter: blur(2px);
+        }
+
+        @keyframes float {
+
+            0%,
+            100% {
+                transform: translateX(0) translateY(0);
+            }
+
+            50% {
+                transform: translateX(20px) translateY(-10px);
+            }
+        }
+
+        @keyframes float-reverse {
+
+            0%,
+            100% {
+                transform: translateX(0) translateY(0);
+            }
+
+            50% {
+                transform: translateX(-30px) translateY(-5px);
+            }
+        }
+
+        .cloud-1 {
+            top: 15%;
+            left: 10%;
+            animation: float 15s infinite ease-in-out;
+        }
+
+        .cloud-2 {
+            top: 25%;
+            right: 15%;
+            animation: float-reverse 18s infinite ease-in-out;
+            opacity: 0.4;
+        }
+
+        .cloud-3 {
+            top: 60%;
+            left: 20%;
+            animation: float 22s infinite ease-in-out;
+            opacity: 0.3;
+        }
+
+        .cloud-4 {
+            top: 45%;
+            right: 5%;
+            animation: float-reverse 12s infinite ease-in-out;
+            opacity: 0.5;
+        }
+
+        #game-container {
+            position: relative;
+            width: 100%;
+            flex: 1;
+            /* Take remaining space after nav */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-end;
+            overflow: hidden;
+        }
+
+        #ui-layer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            display: flex;
+            flex-direction: column;
+            padding: 1rem;
+            z-index: 10;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            width: 100%;
+            gap: 10px;
+        }
+
+        .glass-panel {
+            background: #FFFFFF;
+            border: 2px solid #000;
+            border-radius: 12px;
+            box-shadow: none;
+            overflow: hidden;
+        }
+
+        /* Keep blur for modals only */
+        .modal-wrap .glass-panel {
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(12px);
+            border: 3px solid #000;
+            box-shadow: 8px 8px 0px rgba(0, 0, 0, 0.1);
+            /* Softer shadow for modals */
+        }
+
+        .stat-card {
+            flex: 1;
+            min-width: 100px;
+            max-width: 140px;
+            height: 70px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 0.5rem;
+            text-align: center;
+        }
+
+        .stat-card h2,
+        .stat-card span {
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            font-weight: 700;
+            color: var(--text-muted);
+            letter-spacing: 1px;
+            margin-bottom: 2px;
+            display: block;
+        }
+
+        .stat-card .val {
+            font-size: 1.5rem;
+            font-weight: 900;
+            line-height: 1.1;
+            color: var(--text-main);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            width: 100%;
+        }
+
+        #lives {
+            display: flex;
+            gap: 8px;
+            /* Increased gap to prevent collision */
+            justify-content: center;
+            align-items: center;
+        }
+
+        .heart {
+            width: 20px;
+            /* Slightly smaller for better spacing */
+            height: 20px;
+            fill: #ff4d4d;
+            stroke: #000;
+            stroke-width: 1.5px;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transform-origin: center;
+        }
+
+        .heart.lost {
+            fill: #b0bec5;
+            animation: heart-pop 0.5s forwards cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            filter: grayscale(1);
+            opacity: 0.3;
+        }
+
+        @keyframes heart-pop {
+            0% {
+                transform: scale(1);
+            }
+
+            30% {
+                transform: scale(1.3);
+                fill: #ff0000;
+            }
+
+            100% {
+                transform: scale(0.6);
+            }
+        }
+
+        #current-topic {
+            font-size: 0.9rem !important;
+            line-height: 1.2;
+            white-space: normal !important;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            line-clamp: 2;
+        }
+
+        .modal-wrap {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+            pointer-events: auto;
+            backdrop-filter: blur(8px);
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        #start-screen,
+        #game-over-screen {
+            position: relative;
+            width: 92%;
+            max-width: 320px;
+            padding: 2.5rem 1.5rem;
+            text-align: center;
+            z-index: 101;
+            display: flex;
+            flex-direction: column;
+            gap: 1.2rem;
+            border-radius: 16px !important;
+        }
+
+        h1 {
+            font-size: 1.8rem;
+            /* Scaled down for compact modal */
+            font-weight: 900;
+            margin-bottom: 0.25rem;
+            line-height: 1;
+            text-transform: uppercase;
+            letter-spacing: -1px;
+            word-break: break-all;
+        }
+
+        .subtitle {
+            margin-bottom: 2rem;
+            font-weight: 500;
+            color: var(--text-muted);
+            font-size: 1rem;
+        }
+
+        .btn {
+            background: var(--accent-1);
+            color: #000;
+            border: 4px solid #000;
+            box-shadow: 4px 4px 0px #000;
+            padding: 1rem;
+            font-size: 1.1rem;
+            font-weight: 900;
+            cursor: pointer;
+            transition: all 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border-radius: 10px;
+            width: 100%;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn:hover {
+            transform: translate(-1px, -1px);
+            box-shadow: 6px 6px 0px #000;
+        }
+
+        .btn:active {
+            transform: translate(2px, 2px);
+            box-shadow: 1px 1px 0px #000;
+        }
+
+        #mobile-controls {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: 5;
+            cursor: pointer;
+        }
+
+        canvas {
+            display: block;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        /* ORIENTATION PROTOCOL (Enforce Portrait) */
+        .orientation-overlay {
+            position: fixed;
+            inset: 0;
+            background: #263238;
+            color: #fff;
+            z-index: 20000;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 40px;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        @media screen and (orientation: landscape) and (max-height: 500px) {
+            .orientation-overlay {
+                display: flex;
+            }
+        }
+
+        .phone-icon {
+            width: 45px;
+            height: 80px;
+            border: 3px solid #fff;
+            border-radius: 6px;
+            position: relative;
+            margin-bottom: 30px;
+            animation: rotatePhone 2s ease-in-out infinite;
+        }
+
+        .phone-icon::after {
+            content: "";
+            position: absolute;
+            bottom: 6px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #fff;
+        }
+
+        @keyframes rotatePhone {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            50% {
+                transform: rotate(90deg);
+            }
+
+            100% {
+                transform: rotate(0deg);
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- ORIENTATION ENFORCEMENT -->
+    <div class="orientation-overlay">
+        <div class="phone-icon"></div>
+        <h2 style="font-size: 1.5rem; font-weight: 900; text-transform: uppercase; margin-bottom: 10px;">Rotate Your
+            Device</h2>
+        <p style="font-size: 10px; text-transform: uppercase; opacity: 0.6; letter-spacing: 3px;">Portrait Protocol
+            Required for Gameplay</p>
+    </div>
+
+    <div class="sky-background">
+        <svg class="cloud cloud-1" width="120" height="60" viewBox="0 0 60 30">
+            <circle cx="15" cy="15" r="15" />
+            <circle cx="30" cy="15" r="12" />
+            <circle cx="45" cy="15" r="15" />
+            <rect x="15" y="15" width="30" height="15" />
+        </svg>
+        <svg class="cloud cloud-2" width="180" height="90" viewBox="0 0 60 30">
+            <circle cx="15" cy="15" r="15" />
+            <circle cx="30" cy="15" r="12" />
+            <circle cx="45" cy="15" r="15" />
+            <rect x="15" y="15" width="30" height="15" />
+        </svg>
+        <svg class="cloud cloud-3" width="100" height="50" viewBox="0 0 60 30">
+            <circle cx="15" cy="15" r="15" />
+            <circle cx="30" cy="15" r="12" />
+            <circle cx="45" cy="15" r="15" />
+            <rect x="15" y="15" width="30" height="15" />
+        </svg>
+        <svg class="cloud cloud-4" width="150" height="75" viewBox="0 0 60 30">
+            <circle cx="15" cy="15" r="15" />
+            <circle cx="30" cy="15" r="12" />
+            <circle cx="45" cy="15" r="15" />
+            <rect x="15" y="15" width="30" height="15" />
+        </svg>
+    </div>
+    <nav class="game-nav">
+        <a href="../" class="logo-wrap">
+            <span class="logo-text">Undrstanding</span>
+            <div class="logo-badge">GAMES</div>
+        </a>
+        <div class="nav-title">Tower Stack : Architect's Knowledge</div>
+    </nav>
+
+    <div id="game-container">
+        <div id="ui-layer">
+            <div class="header">
+                <div class="stat-card glass-panel" style="min-width: 80px;">
+                    <h2>Blocks</h2>
+                    <div class="val" id="score">0</div>
+                </div>
+                <div class="stat-card glass-panel" style="flex: 2.5; max-width: 450px;">
+                    <span id="topic-header">UP NEXT</span>
+                    <div class="val" id="current-topic">Abstraction</div>
+                </div>
+                <div class="stat-card glass-panel" style="min-width: 80px;">
+                    <h2>Chances</h2>
+                    <div class="val" id="lives">❤❤❤</div>
+                </div>
+            </div>
+        </div>
+
+        <div id="start-screen-wrap" class="modal-wrap">
+            <div id="start-screen" class="glass-panel">
+                <h1>KNOWLEDGE<br>TOWER</h1>
+                <p class="subtitle" style="margin: 0">Stack the concepts of technology.<br>Build high, learn deep.</p>
+                <button class="btn" onclick="startGame()">Start Building</button>
+            </div>
+        </div>
+
+        <div id="game-over-screen-wrap" class="modal-wrap hidden">
+            <div id="game-over-screen" class="glass-panel">
+                <h1 style="color: var(--accent-1)">COLLAPSED</h1>
+                <p class="subtitle" style="margin:0">Total knowledge stacked</p>
+                <div class="stat-card glass-panel" style="margin: 0 auto; width: 140px; height: 100px;">
+                    <span style="font-size: 0.8rem">BLOCKS</span>
+                    <div class="val" id="final-score" style="font-size: 4rem;">0</div>
+                </div>
+                <button class="btn" style="margin-top: 1rem;" onclick="startGame()">Rebuild Tower</button>
+            </div>
+        </div>
+
+        <div id="mobile-controls"></div>
+        <canvas id="game-canvas"></canvas>
+    </div>
+
+    <script>
+        const { Engine, Runner, World, Bodies, Body, Composite, Events, Vector } = Matter;
+
+        const config = {
+            blockWidth: 180,
+            blockHeight: 65,
+            gravity: 1.0,
+            swingSpeed: 0.015,
+            maxLives: 3,
+            colors: ['#FFADAD', '#CAFFBF', '#9BF6FF', '#FDFFB6', '#BDB2FF'],
+            topics: [
+                { category: 'OOP', terms: ['OOP Concepts', 'Abstraction', 'Polymorphism', 'Encapsulation', 'Inheritance', 'Classes', 'Objects'] },
+                { category: 'OSI', terms: ['OSI Layers', 'Physical', 'Data Link', 'Network', 'Transport', 'Session', 'Presentation', 'Application'] },
+                { category: 'SDLC', terms: ['Software Process', 'Requirements', 'Analysis', 'Design', 'Development', 'Testing', 'Deployment', 'Maintenance'] },
+                { category: 'OS', terms: ['Scheduling', 'FCFS', 'Shortest Job First', 'Round Robin', 'Priority Based', 'Multilevel Queue', 'Preemptive'] },
+                { category: 'DESIGN', terms: ['Dieter Rams 10', 'Innovative', 'Aesthetic', 'Understandable', 'Unobtrusive', 'Honest', 'Long-lasting', 'Eco-friendly', 'Minimalism'] },
+                { category: 'DIKW', terms: ['DIKW Pyramid', 'Data', 'Information', 'Knowledge', 'Wisdom'] }
+            ]
+        };
+
+        let gameplayTerms = [];
+        config.topics.forEach(t => {
+            t.terms.forEach((term, idx) => {
+                gameplayTerms.push({ term, category: t.category, isHeader: idx === 0 });
+            });
+        });
+
+        let engine, runner, canvas, ctx;
+        let ground, currentBlock, tower = [];
+        let score = 0, lives = 3, termIndex = 0;
+        let isGameOver = false, isGameStarted = false;
+        let cameraY = 0, targetCameraY = 0;
+        let swingPos = 0;
+        let shakeAmount = 0;
+
+        function init() {
+            canvas = document.getElementById('game-canvas');
+            ctx = canvas.getContext('2d');
+            resize();
+
+            engine = Engine.create();
+            engine.gravity.y = config.gravity;
+            engine.enableSleeping = true;
+            runner = Runner.create();
+
+            loop();
+
+            window.addEventListener('resize', resize);
+            document.getElementById('mobile-controls').addEventListener('pointerdown', (e) => {
+                if (isGameStarted && !isGameOver) dropBlock();
+            });
+            window.addEventListener('keydown', (e) => {
+                if (e.code === 'Space') {
+                    e.preventDefault(); // Prevent scrolling
+                    if (isGameStarted && !isGameOver) dropBlock();
+                }
+            });
+
+            Events.on(engine, 'collisionStart', (event) => {
+                event.pairs.forEach(pair => {
+                    const { bodyA, bodyB } = pair;
+                    const block = (bodyA.label === 'ground') ? bodyB : ((bodyB.label === 'ground') ? bodyA : null);
+
+                    if (block && !block.isBaseBlock && !block.hasDeductedLife) {
+                        block.hasDeductedLife = true;
+                        lives--;
+                        updateLivesUI();
+                        if (lives <= 0) endGame();
+                    }
+                    if (bodyA.label !== 'ground' && bodyB.label !== 'ground') {
+                        shakeAmount = 4;
+                    } else {
+                        shakeAmount = 2;
+                    }
+                });
+            });
+
+            Runner.run(runner, engine);
+        }
+
+        function resize() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            if (ground) Body.setPosition(ground, { x: canvas.width / 2, y: canvas.height - 15 });
+        }
+
+        function startGame() {
+            World.clear(engine.world);
+            tower = [];
+            lives = 3;
+            termIndex = 0;
+            cameraY = 0;
+            targetCameraY = 0;
+            shakeAmount = 0;
+            currentBlock = null;
+
+            // Force reset of UI and physics state
+            isGameOver = false;
+            isGameStarted = true;
+            resize(); // Refresh canvas dimensions
+
+            // Thin Brick-lined foundation base
+            ground = Bodies.rectangle(canvas.width / 2, canvas.height - 10, config.blockWidth * 1.3, 20, {
+                isStatic: true, label: 'ground',
+                friction: 1, frictionStatic: 1
+            });
+            World.add(engine.world, [ground]);
+
+            document.getElementById('score').innerText = '0';
+            updateLivesUI();
+            document.getElementById('start-screen-wrap').classList.add('hidden');
+            document.getElementById('game-over-screen-wrap').classList.add('hidden');
+
+            spawnBlock();
+        }
+
+        function spawnBlock() {
+            if (isGameOver) return;
+            const item = gameplayTerms[termIndex % gameplayTerms.length];
+            const term = item.term;
+            document.getElementById('current-topic').innerText = term;
+            document.getElementById('topic-header').innerText = item.category.toUpperCase();
+
+            currentBlock = Bodies.rectangle(canvas.width / 2, 180, config.blockWidth, config.blockHeight, {
+                isStatic: true, isSensor: true, label: term, isHeader: item.isHeader,
+                color: config.colors[termIndex % config.colors.length]
+            });
+            termIndex++;
+        }
+
+        function dropBlock() {
+            if (!currentBlock) return;
+
+            Body.setStatic(currentBlock, false);
+            currentBlock.isSensor = false;
+            currentBlock.friction = 1.0;
+            currentBlock.frictionStatic = 1.0;
+            currentBlock.slop = 0.5;
+            currentBlock.restitution = 0;
+            if (tower.length === 0) currentBlock.isBaseBlock = true;
+
+            World.add(engine.world, currentBlock);
+            tower.push(currentBlock);
+            const dropped = currentBlock; // keep ref for timeout check
+            currentBlock = null;
+
+            setTimeout(() => {
+                if (!isGameOver) {
+                    calculateScore();
+                    spawnBlock();
+                }
+            }, 1000);
+        }
+
+        function getTopY() {
+            if (tower.length === 0) return ground ? ground.position.y - 10 : canvas.height - 10;
+            let top = canvas.height;
+            tower.forEach(b => { if (b.position.y < top) top = b.position.y; });
+            return top;
+        }
+
+        function calculateScore() {
+            const count = tower.length;
+            document.getElementById('score').innerText = count;
+
+            const topY = getTopY();
+            const currentHeight = (canvas.height - topY);
+            const threshold = canvas.height * 0.45; // Start moving camera sooner
+
+            if (currentHeight > threshold) {
+                targetCameraY = currentHeight - threshold;
+            }
+        }
+
+        function updateLivesUI() {
+            const livesEl = document.getElementById('lives');
+            if (!livesEl) return;
+
+            const heartSVG = `
+                <svg class="heart" viewBox="0 0 24 24">
+                    <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                </svg>`;
+
+            let html = "";
+            for (let i = 0; i < 3; i++) {
+                if (i < lives) {
+                    html += heartSVG;
+                } else {
+                    // Inject heart with 'lost' class
+                    html += heartSVG.replace('class="heart"', 'class="heart lost"');
+                }
+            }
+            livesEl.innerHTML = html;
+        }
+
+        function endGame() {
+            if (isGameOver) return;
+            isGameOver = true;
+            document.getElementById('final-score').innerText = tower.length;
+            document.getElementById('game-over-screen-wrap').classList.remove('hidden');
+        }
+
+        function loop() {
+            requestAnimationFrame(loop);
+            cameraY += (targetCameraY - cameraY) * 0.1;
+
+            if (!ctx) return;
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            const sX = (Math.random() - 0.5) * shakeAmount;
+            const sY = (Math.random() - 0.5) * shakeAmount;
+            shakeAmount *= 0.8;
+
+            ctx.save();
+            ctx.translate(sX, sY + cameraY);
+
+            // Draw Ground only if it exists
+            if (ground) {
+                const label = (tower.length === 0 && !isGameOver) ? "TAP TO DROP" : null;
+                drawRect(ground, '#263238', label);
+            }
+
+            // Draw Tower
+            for (let i = tower.length - 1; i >= 0; i--) {
+                const b = tower[i];
+                if (b) {
+                    drawBlock(b);
+                    if (b.position.y > canvas.height + 200 || Math.abs(b.position.x - canvas.width / 2) > canvas.width) {
+                        if (!b.hasDeductedLife) {
+                            lives--;
+                            updateLivesUI();
+                        }
+                        World.remove(engine.world, b);
+                        tower.splice(i, 1);
+                        if (lives <= 0) endGame();
+                    }
+                }
+            }
+
+            if (currentBlock && !isGameOver) {
+                swingPos += config.swingSpeed;
+                const swX = (canvas.width / 2) + Math.sin(swingPos) * (canvas.width * 0.35);
+
+                // Keep block and arm at fixed vertical SCREEN positions
+                // This ensures the rope length is constant AND they never hit headers
+                const swY = 230 - cameraY; // Swings at 230px from top of screen
+                const armY = 120 - cameraY; // Arm stays at 120px from top (below header)
+
+                Body.setPosition(currentBlock, { x: swX, y: swY });
+
+                // Crane Arm
+                ctx.strokeStyle = '#000'; ctx.lineWidth = 6;
+                ctx.strokeRect(-10, armY - 30, canvas.width + 20, 30);
+
+                // Crane Pulley / Holder (Upside-down Trapezoid)
+                const swingX = swX;
+                const pulleyY = armY;
+                ctx.fillStyle = '#263238';
+                ctx.strokeStyle = '#000';
+                ctx.lineWidth = 2;
+                const tw = 36; const bw = 24; const th = 18;
+                ctx.beginPath();
+                ctx.moveTo(swingX - tw / 2 + 3, pulleyY - 10);
+                ctx.lineTo(swingX + tw / 2 - 3, pulleyY - 10);
+                ctx.quadraticCurveTo(swingX + tw / 2, pulleyY - 10, swingX + tw / 2 - 2, pulleyY - 7);
+                ctx.lineTo(swingX + bw / 2 + 2, pulleyY + th - 10 - 3);
+                ctx.quadraticCurveTo(swingX + bw / 2, pulleyY + th - 10, swingX + bw / 2 - 3, pulleyY + th - 10);
+                ctx.lineTo(swingX - bw / 2 + 3, pulleyY + th - 10);
+                ctx.quadraticCurveTo(swingX - bw / 2, pulleyY + th - 10, swingX - bw / 2 - 2, pulleyY + th - 10 - 3);
+                ctx.lineTo(swingX - tw / 2 + 2, pulleyY - 10 + 3);
+                ctx.quadraticCurveTo(swingX - tw / 2, pulleyY - 10, swingX - tw / 2 + 3, pulleyY - 10);
+                ctx.fill(); ctx.stroke();
+
+                // Twisted Steel Cable
+                ctx.beginPath();
+                ctx.strokeStyle = '#455A64'; // Steel Blue-Grey 
+                ctx.lineWidth = 3;
+                ctx.setLineDash([]);
+                ctx.moveTo(swX, pulleyY + 8);
+                ctx.lineTo(swX, swY - 25);
+                ctx.stroke();
+
+                // Cable Texture (Twist highlights)
+                ctx.strokeStyle = '#90A4AE'; // Lighter steel
+                ctx.lineWidth = 1;
+                for (let ty = pulleyY + 10; ty < swY - 30; ty += 6) {
+                    ctx.beginPath();
+                    ctx.moveTo(swX - 1.5, ty);
+                    ctx.lineTo(swX + 1.5, ty + 2);
+                    ctx.stroke();
+                }
+
+                drawBlock(currentBlock);
+            }
+
+            ctx.restore();
+        }
+
+        function drawRect(body, color, label) {
+            if (!body || !body.position) return;
+            const { x, y } = body.position;
+            const w = body.bounds.max.x - body.bounds.min.x;
+            const h = body.bounds.max.y - body.bounds.min.y;
+            ctx.save();
+            ctx.translate(x, y);
+            ctx.rotate(body.angle);
+            ctx.fillStyle = color; ctx.strokeStyle = '#000'; ctx.lineWidth = 3;
+            ctx.fillRect(-w / 2, -h / 2, w, h); ctx.strokeRect(-w / 2, -h / 2, w, h);
+
+            // Brick Pattern for Ground
+            if (body.label === 'ground') {
+                ctx.strokeStyle = 'rgba(0,0,0,0.3)';
+                ctx.lineWidth = 1;
+                // Horizontal lines
+                ctx.beginPath();
+                ctx.moveTo(-w / 2, 0); ctx.lineTo(w / 2, 0);
+                ctx.stroke();
+                // Vertical staggered lines
+                for (let x = -w / 2 + 20; x < w / 2; x += 40) {
+                    ctx.beginPath();
+                    ctx.moveTo(x, -h / 2); ctx.lineTo(x, 0);
+                    ctx.stroke();
+                }
+                for (let x = -w / 2 + 40; x < w / 2; x += 40) {
+                    ctx.beginPath();
+                    ctx.moveTo(x, 0); ctx.lineTo(x, h / 2);
+                    ctx.stroke();
+                }
+            }
+            if (label) {
+                ctx.fillStyle = 'rgba(255,255,255,0.08)'; // Camouflaged text on the stone base
+                ctx.font = '900 12px Outfit';
+                ctx.textAlign = 'center';
+                ctx.letterSpacing = '2px';
+                ctx.fillText(label, 0, 5);
+            }
+            ctx.restore();
+        }
+
+        function drawBlock(body) {
+            if (!body || !body.position) return;
+            const { x, y } = body.position;
+            const w = config.blockWidth;
+            const h = config.blockHeight;
+            ctx.save();
+            ctx.translate(x, y);
+            ctx.rotate(body.angle);
+
+            // Shadow
+            ctx.fillStyle = 'rgba(0,0,0,0.2)';
+            drawRoundRect(-w / 2 + 5, -h / 2 + 5, w, h, 8, true);
+
+            // Architectural Block (The Stone)
+            const isHeader = body.isHeader;
+            const baseColor = isHeader ? '#37474F' : (body.color || '#fff');
+            ctx.fillStyle = baseColor;
+            ctx.strokeStyle = '#000';
+            ctx.lineWidth = 3;
+            drawRoundRect(-w / 2, -h / 2, w, h, 5, true, true);
+
+            // Textures (Bricks)
+            ctx.strokeStyle = isHeader ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.15)';
+            ctx.lineWidth = 2;
+            // Horizontal lines
+            ctx.beginPath();
+            ctx.moveTo(-w / 2, -h / 6); ctx.lineTo(w / 2, -h / 6);
+            ctx.moveTo(-w / 2, h / 6); ctx.lineTo(w / 2, h / 6);
+            ctx.stroke();
+            // Vertical segments
+            ctx.beginPath();
+            ctx.moveTo(-w / 4, -h / 2); ctx.lineTo(-w / 4, -h / 6);
+            ctx.moveTo(w / 4, -h / 2); ctx.lineTo(w / 4, -h / 6);
+            ctx.moveTo(0, -h / 6); ctx.lineTo(0, h / 6);
+            ctx.moveTo(-w / 4, h / 6); ctx.lineTo(-w / 4, h / 2);
+            ctx.moveTo(w / 4, h / 6); ctx.lineTo(w / 4, h / 2);
+            ctx.stroke();
+
+            // The Board (Plaque)
+            ctx.fillStyle = isHeader ? '#FDFEFE' : '#FFF9C4'; // White for header, yellow for concepts
+            ctx.strokeStyle = isHeader ? '#FFD700' : '#5D4037'; // Gold border for header plaque
+            ctx.lineWidth = isHeader ? 3 : 2;
+            drawRoundRect(-w / 2 + 15, -h / 2 + 15, w - 30, h - 30, 4, true, true);
+
+            // Nails in corners of the board
+            ctx.fillStyle = isHeader ? '#FFD700' : '#757575';
+            const nailPos = [[-w / 2 + 22, -h / 2 + 22], [w / 2 - 22, -h / 2 + 22], [-w / 2 + 22, h / 2 - 22], [w / 2 - 22, h / 2 - 22]];
+            nailPos.forEach(p => {
+                ctx.beginPath(); ctx.arc(p[0], p[1], 2, 0, Math.PI * 2); ctx.fill();
+            });
+
+            // Text on the Board
+            if (body.label) {
+                ctx.fillStyle = '#111';
+                ctx.font = isHeader ? '900 14px Outfit' : '900 13px Outfit';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                const txt = body.label.toUpperCase();
+                if (txt.length > 15) {
+                    const parts = txt.split(' ');
+                    ctx.fillText(parts.slice(0, Math.ceil(parts.length / 2)).join(' '), 0, -8);
+                    ctx.fillText(parts.slice(Math.ceil(parts.length / 2)).join(' '), 0, 8);
+                } else {
+                    ctx.fillText(txt, 0, 0);
+                }
+            }
+            ctx.restore();
+        }
+
+        function drawRoundRect(x, y, w, h, r, fill, stroke) {
+            ctx.beginPath();
+            ctx.moveTo(x + r, y);
+            ctx.lineTo(x + w - r, y);
+            ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+            ctx.lineTo(x + w, y + h - r);
+            ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+            ctx.lineTo(x + r, y + h);
+            ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+            ctx.lineTo(x, y + r);
+            ctx.quadraticCurveTo(x, y, x + r, y);
+            ctx.closePath();
+            if (fill) ctx.fill();
+            if (stroke) ctx.stroke();
+        }
+
+        init();
+    </script>
+</body>
+
+</html>
