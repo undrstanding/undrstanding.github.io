@@ -693,7 +693,7 @@
 
             // Create Ground (Foundation) - Raised on mobile to ensure visibility
             const isMobile = window.innerWidth < 480;
-            const groundY = isMobile ? canvas.height - 60 : canvas.height - 10;
+            const groundY = isMobile ? canvas.height - 100 : canvas.height - 10;
             ground = Bodies.rectangle(canvas.width / 2, groundY, config.blockWidth * 1.3, 20, { 
                 isStatic: true, 
                 label: 'ground',
