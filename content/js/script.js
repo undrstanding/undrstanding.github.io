@@ -204,9 +204,11 @@ if ('serviceWorker' in navigator) {
         // Sync modal if open
         const toggleBtn = document.getElementById('modal-night-light-toggle');
         if (toggleBtn) {
-            toggleBtn.querySelector('.status-dot').className = `status-dot w-2 h-2 rounded-full ${settings.active ? 'bg-green-500' : 'bg-gray-300'}`;
-            toggleBtn.querySelector('span:last-child').textContent = settings.active ? 'Active' : 'Disabled';
+            toggleBtn.className = `relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-200 ${settings.active ? 'bg-black' : 'bg-gray-200'}`;
+            const dot = toggleBtn.querySelector('span');
+            if (dot) dot.className = `inline-block h-4 w-4 transform rounded-full bg-white transition-transform duration-200 ${settings.active ? 'translate-x-6' : 'translate-x-1'}`;
         }
+        return settings.active;
     };
 
     // Auto-apply on load
@@ -218,6 +220,59 @@ if ('serviceWorker' in navigator) {
     // Start automation checker
     setInterval(checkAutomation, 60000);
     checkAutomation();
+})();
+
+/**
+ * Serif Mode Toggle
+ * Toggled via "/serif" command in search bar.
+ */
+(function () {
+    let serifActive = localStorage.getItem('serif_mode') === 'true';
+
+    const applySerif = () => {
+        if (serifActive) {
+            document.documentElement.classList.add('serif-mode');
+        } else {
+            document.documentElement.classList.remove('serif-mode');
+        }
+    };
+
+    // Inject Serif Styles
+    const style = document.createElement('style');
+    style.innerHTML = `
+        /* Premium Serif Stacking */
+        @import url('https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,700;1,400&display=swap');
+        
+        .serif-mode, .serif-mode body {
+            font-family: 'Lora', 'Charter', 'Georgia', serif !important;
+        }
+        
+        .serif-mode h1, .serif-mode h2, .serif-mode h3, .serif-mode h4, .serif-mode h5, .serif-mode h6 {
+            font-family: 'Lora', 'Charter', 'Georgia', serif !important;
+            letter-spacing: -0.01em !important;
+        }
+
+        .serif-mode .mono, .serif-mode pre, .serif-mode code {
+            font-family: 'JetBrains Mono', 'Roboto Mono', monospace !important;
+        }
+    `;
+    document.head.appendChild(style);
+
+    window.toggleSerifMode = function() {
+        serifActive = !serifActive;
+        localStorage.setItem('serif_mode', serifActive);
+        applySerif();
+        
+        // Visual Feedback (optional toast or message)
+        console.log(`[System] Serif Mode: ${serifActive ? 'ON' : 'OFF'}`);
+        return serifActive;
+    };
+
+    // Initial Apply
+    if (serifActive) {
+        if (document.documentElement) applySerif();
+        else document.addEventListener('DOMContentLoaded', applySerif);
+    }
 })();
 
 /**
@@ -1304,7 +1359,27 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Real-time Search
     input.addEventListener('input', (e) => {
-        const term = e.target.value.toLowerCase();
+        const term = e.target.value.toLowerCase().trim();
+
+        // --- Custom Command: /serif ---
+        if (term === '/serif') {
+            if (window.toggleSerifMode) {
+                window.toggleSerifMode();
+                e.target.value = '';
+                closeSearch();
+                return;
+            }
+        }
+
+        // --- Custom Command: /eye ---
+        if (term === '/eye') {
+            if (window.quickToggleNightLight) {
+                window.quickToggleNightLight();
+                e.target.value = '';
+                closeSearch();
+                return;
+            }
+        }
 
         // Clear previous
         removeHighlights();
