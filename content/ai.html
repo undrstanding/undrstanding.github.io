@@ -35,7 +35,7 @@
 
         :root {
             /* Rams Palette - AI Variation */
-            --bg-color: #f4f4f4;
+            --bg-color: #fdfaf6;
             /* Light Grey housing */
             --card-bg: #ffffff;
             /* Pure White surface */
@@ -451,6 +451,21 @@
         .w-fog.revealed {
             display: none;
         }
+    
+        /* Paper Texture Overlay */
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E");
+            pointer-events: none;
+            z-index: -1;
+            opacity: 0.4;
+        }
+
     </style>
 </head>
 
@@ -1559,18 +1574,73 @@
                 <!-- Inline Quiz: Diffusion -->
                 <div id="quiz-ai-diffusion" class="mb-20 md:mb-24"></div>
 
-                <!-- 14. Reinforcement Learning (Wumpus World) -->
+                <!-- 14. Reinforcement Learning -->
                 <section id="rl" class="mb-20 md:mb-24">
                     <span class="rams-label">05 / Advanced</span>
-                    <h3 class="text-xl font-medium mb-2">Reinforcement Learning: Wumpus World</h3>
-                    <p class="text-sm text-gray-600 mb-8 max-w-lg">Navigating an unknown environment via sensors and
-                        rewards.</p>
+                    <h3 class="text-xl font-medium mb-2">Reinforcement Learning: Learning from Experience</h3>
+                    <p class="text-sm text-gray-600 mb-8 max-w-lg">Teaching machines to make sequences of decisions by maximizing numerical rewards.</p>
+                    
+                    <div class="space-y-12 mb-16">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-start">
+                            <div class="space-y-4">
+                                <p class="text-xs text-gray-500 leading-relaxed">
+                                    Reinforcement Learning (RL) is the third paradigm of ML. Unlike Supervised Learning (learning from examples) or Unsupervised Learning (learning from structure), RL is about <strong>learning through interaction</strong>. 
+                                </p>
+                                <p class="text-xs text-gray-500 leading-relaxed">
+                                    Imagine a robot in a maze. It doesn't have a map. It must move, observe the consequences, and adjust its behavior. This feedback loop is the core of "Agency" in AI.
+                                </p>
+                            </div>
+
+                            <div class="rams-card border-indigo-100 bg-indigo-50/10 p-4">
+                                <h4 class="text-[10px] font-bold text-indigo-600 uppercase mb-4 tracking-widest">The SAR Feedback Loop</h4>
+                                <div class="space-y-4">
+                                    <div class="flex items-center gap-3">
+                                        <span class="w-6 h-6 rounded-full bg-indigo-600 text-white flex items-center justify-center text-[10px] font-mono">S</span>
+                                        <div>
+                                            <span class="text-[10px] font-bold uppercase block">State</span>
+                                            <p class="text-[9px] text-gray-500">The current environment snapshot.</p>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center gap-3">
+                                        <span class="w-6 h-6 rounded-full bg-indigo-600 text-white flex items-center justify-center text-[10px] font-mono">A</span>
+                                        <div>
+                                            <span class="text-[10px] font-bold uppercase block">Action</span>
+                                            <p class="text-[9px] text-gray-500">The choice made by the Agent.</p>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center gap-3">
+                                        <span class="w-6 h-6 rounded-full bg-indigo-600 text-white flex items-center justify-center text-[10px] font-mono">R</span>
+                                        <div>
+                                            <span class="text-[10px] font-bold uppercase block">Reward</span>
+                                            <p class="text-[9px] text-gray-500">The feedback (+1 or -1) received.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                            <div>
+                                <h4 class="text-sm font-bold text-black uppercase mb-3">Exploration vs. Exploitation</h4>
+                                <p class="text-xs text-gray-500 leading-relaxed">
+                                    Every RL agent faces a dilemma: <strong>Exploitation</strong> (doing what worked before) vs. <strong>Exploration</strong> (trying something new). An agent that only exploits might settle for a small reward, never discovering the "Jackpot" hidden around the corner.
+                                </p>
+                            </div>
+                            <div>
+                                <h4 class="text-sm font-bold text-black uppercase mb-3">Deep RL</h4>
+                                <p class="text-xs text-gray-500 leading-relaxed">
+                                    When RL meets Neural Networks (Deep RL), machines can master complex games like <strong>AlphaGo</strong> or <strong>Dota 2</strong>. The network acts as a "Value Function," predicting which states will lead to the highest total reward in the long run.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h3 class="text-sm font-bold text-black uppercase mb-6">Interactive Case Study: Wumpus World</h3>
                     <p class="text-xs text-gray-500 mb-8 max-w-xl leading-relaxed">
                         In this classic AI problem, the agent must find the Gold without falling into a Pit or being
-                        eaten by the Wumpus. The agent doesn't know the map; it only perceives the local environment: a
-                        <strong>Breeze</strong> indicates a nearby Pit, and a <strong>Stench</strong> indicates the
-                        nearby Wumpus. The agent learns to navigate based on these sensory inputs (Percepts) to maximize
-                        reward.
+                        eaten by the Wumpus. The agent doesn't know the map; it only perceives sensors: a
+                        <strong>Breeze</strong> (🌬️) indicates a Pit, and a <strong>Stench</strong> (🤢) indicates the
+                        Wumpus. Through trial and error, it learns a <strong>Policy</strong> to reach the goal.
                     </p>
 
                     <div class="rams-card">
@@ -1859,8 +1929,7 @@
                             </div>
                             <div>
                                 <h4 class="font-bold text-sm mb-2">Reinforcement Learning</h4>
-                                <p class="text-xs text-gray-600">Learning by trial and error through rewards and
-                                    punishments.</p>
+                                <p class="text-xs text-gray-600">A learning paradigm where an agent learns to make decisions by taking actions in an environment to maximize cumulative rewards (SAR loop).</p>
                             </div>
                         </div>
                     </div>
