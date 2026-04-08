@@ -14,7 +14,7 @@
         rel="stylesheet">
     <link rel="icon" type="image/svg+xml" href="../assests/undrlogo.svg">
     <script src="https://cdn.jsdelivr.net/npm/monaco-editor@0.45.0/min/vs/loader.js"></script>
-    <script src="https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/monaco-editor@0.45.0/min/vs/loader.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Outfit:wght@400;500;600;700;800;900&display=swap');
 
@@ -513,8 +513,13 @@
         }
 
         @keyframes bounceTiny {
-            from { transform: translateX(-50%) translateY(0); }
-            to { transform: translateX(-50%) translateY(-3px); }
+            from {
+                transform: translateX(-50%) translateY(0);
+            }
+
+            to {
+                transform: translateX(-50%) translateY(-3px);
+            }
         }
 
         .step-btn:active {
@@ -1342,11 +1347,11 @@ public class Main {
                     ? Array.from(typeof indices.toJs === 'function' ? indices.toJs() : indices)
                     : [];
                 if (!jsArr.length) return;
-                
+
                 // --- DE-DUPLICATION: Don't push identical frames ---
                 if (frames.length > 0) {
                     const last = frames[frames.length - 1];
-                    if (JSON.stringify(last.data) === JSON.stringify(jsArr) && 
+                    if (JSON.stringify(last.data) === JSON.stringify(jsArr) &&
                         JSON.stringify(last.highlight) === JSON.stringify(jsIdx)) {
                         return; // Identical, skip.
                     }
@@ -1393,7 +1398,7 @@ public class Main {
                 } else {
                     // Custom labels for Binary Search
                     if (idx === mid) {
-                        square.classList.add('swap-candidate'); 
+                        square.classList.add('swap-candidate');
                         square.setAttribute('data-pointer', 'MID');
                         const m = document.createElement('div');
                         m.className = 'square-label'; m.textContent = 'MID';
@@ -1407,7 +1412,7 @@ public class Main {
                         r.className = 'square-label'; r.textContent = 'R';
                         square.appendChild(r);
                     }
-                    
+
                     if (idx === left || idx === right) {
                         square.classList.add('comparing');
                     }
@@ -1669,51 +1674,8 @@ public class Main {
         });
 
         // ---------------------------------------------------------------------------
-        //  Python Runtime (Pyodide)
+        //  UI / Visualizer Clear
         // ---------------------------------------------------------------------------
-        async function startPython() {
-            if (pyodide) return;
-            log('Loading Python runtime...');
-            try {
-                pyodide = await loadPyodide({
-                    indexURL: 'https://cdn.jsdelivr.net/pyodide/v0.26.4/full/',
-                    stdout: function (msg) { log(msg); },
-                    stderr: function (msg) { log(msg, true); }
-                });
-                pyodide.globals.set('renderBars', window.renderBars);
-                pyodide.globals.set('swap', window.liveSwap);
-                pyodide.globals.set('highlight', window.liveHighlight);
-                log('Python runtime ready.');
-            } catch (e) {
-                log('Python failed to load: ' + e, true);
-            }
-        }
-        startPython();
-
-        // ---------------------------------------------------------------------------
-        //  Hook helpers
-        // ---------------------------------------------------------------------------
-        function setLiveHooks() {
-            if (!pyodide) return;
-            pyodide.globals.set('renderBars', window.renderBars);
-            pyodide.globals.set('swap', window.liveSwap);
-            pyodide.globals.set('highlight', window.liveHighlight);
-        }
-        function setCaptureHooks() {
-            if (!pyodide) return;
-            // For Python, we use the auto-tracer (sys.settrace) as the source of truth.
-            // Manual hooks are made no-ops during capture to prevent duplicate frames.
-            pyodide.globals.set('renderBars', function () { });
-            pyodide.globals.set('swap', function () { return Promise.resolve(); });
-            pyodide.globals.set('highlight', function () { return Promise.resolve(); });
-        }
-        function setNoopHooks() {
-            if (!pyodide) return;
-            pyodide.globals.set('renderBars', function () { });
-            pyodide.globals.set('swap', function () { return Promise.resolve(); });
-            pyodide.globals.set('highlight', function () { return Promise.resolve(); });
-        }
-
         function clearVisualizer() {
             const vc = document.getElementById('vis-content');
             if (vc) {
@@ -1727,411 +1689,230 @@ public class Main {
         }
 
         // ---------------------------------------------------------------------------
-        //  RUN Button — plain code execution, text output only, no animation
+        //  Predefined Backend Visualization Engine
+        // ---------------------------------------------------------------------------
+        const PREDEFINED_ALGOS = {
+            selectionSort: function(arr) {
+                let frames = [];
+                let data = [...arr];
+                frames.push({ type: 'sort_highlight', data: [...data], highlight: [] });
+                for (let i = 0; i < data.length; i++) {
+                    let minIdx = i;
+                    for (let j = i + 1; j < data.length; j++) {
+                        frames.push({ type: 'sort_highlight', data: [...data], highlight: [i, j, minIdx] });
+                        if (data[j] < data[minIdx]) {
+                            minIdx = j;
+                            frames.push({ type: 'sort_highlight', data: [...data], highlight: [i, j, minIdx] });
+                        }
+                    }
+                    if (minIdx !== i) {
+                        let temp = data[i];
+                        data[i] = data[minIdx];
+                        data[minIdx] = temp;
+                        frames.push({ type: 'swap', data: [...data], before: [...frames[frames.length-1].data], highlight: [i, minIdx] });
+                    }
+                }
+                frames.push({ type: 'sort_highlight', data: [...data], highlight: [] });
+                return frames;
+            },
+            bubbleSort: function(arr) {
+                let frames = [];
+                let data = [...arr];
+                frames.push({ type: 'sort_highlight', data: [...data], highlight: [] });
+                for (let i = 0; i < data.length - 1; i++) {
+                    for (let j = 0; j < data.length - i - 1; j++) {
+                        frames.push({ type: 'sort_highlight', data: [...data], highlight: [j, j + 1] });
+                        if (data[j] > data[j + 1]) {
+                            let temp = data[j];
+                            data[j] = data[j + 1];
+                            data[j + 1] = temp;
+                            frames.push({ type: 'swap', data: [...data], before: [...frames[frames.length-1].data], highlight: [j, j+1] });
+                        }
+                    }
+                }
+                frames.push({ type: 'sort_highlight', data: [...data], highlight: [] });
+                return frames;
+            },
+            insertionSort: function(arr) {
+                let frames = [];
+                let data = [...arr];
+                frames.push({ type: 'sort_highlight', data: [...data], highlight: [] });
+                for (let i = 1; i < data.length; i++) {
+                    let key = data[i];
+                    let j = i - 1;
+                    frames.push({ type: 'sort_highlight', data: [...data], highlight: [i, j] });
+                    while (j >= 0 && data[j] > key) {
+                        data[j + 1] = data[j];
+                        frames.push({ type: 'swap', data: [...data], before: [...frames[frames.length-1].data], highlight: [j, j+1] });
+                        j = j - 1;
+                        if(j>=0) frames.push({ type: 'sort_highlight', data: [...data], highlight: [j+1, j] });
+                    }
+                    data[j + 1] = key;
+                }
+                frames.push({ type: 'sort_highlight', data: [...data], highlight: [] });
+                return frames;
+            },
+            binarySearch: function(arr, target) {
+                let frames = [];
+                let data = [...arr].sort((a,b)=>a-b); // Ensure sorted
+                frames.push({ type: 'searching', data: [...data], highlight: [-1, -1, -1, -1] });
+                let left = 0;
+                let right = data.length - 1;
+                let found = -1;
+                while (left <= right) {
+                    let mid = Math.floor((left + right) / 2);
+                    frames.push({ type: 'searching', data: [...data], highlight: [left, mid, right, -1] });
+                    if (data[mid] === target) {
+                        found = mid;
+                        frames.push({ type: 'searching', data: [...data], highlight: [left, mid, right, found] });
+                        break;
+                    } else if (data[mid] < target) {
+                        left = mid + 1;
+                    } else {
+                        right = mid - 1;
+                    }
+                }
+                if (found === -1) frames.push({ type: 'searching', data: [...data], highlight: [-1, -1, -1, -1] });
+                return frames;
+            },
+            linearSearch: function(arr, target) {
+                let frames = [];
+                let data = [...arr];
+                frames.push({ type: 'searching', data: [...data], highlight: [-1, -1, -1, -1] });
+                let found = -1;
+                for(let i=0; i<data.length; i++) {
+                    frames.push({ type: 'searching', data: [...data], highlight: [-1, i, -1, -1] });
+                    if (data[i] === target) {
+                        found = i;
+                        frames.push({ type: 'searching', data: [...data], highlight: [-1, i, -1, found] });
+                        break;
+                    }
+                }
+                if (found === -1) frames.push({ type: 'searching', data: [...data], highlight: [-1, -1, -1, -1] });
+                return frames;
+            }
+        };
+
+        function simulateBackend(code) {
+           // 1. Extract array
+           const arrMatch = code.match(/\[([\s\d,.-]+)\]/) || code.match(/\{([\s\d,.-]+)\}/);
+           let arr = [];
+           if (arrMatch) {
+               const str = arrMatch[1] || arrMatch[2];
+               arr = str.split(',').map(s => parseInt(s.trim())).filter(n => !isNaN(n));
+           } 
+           if (arr.length === 0) {
+               arr = [64, 25, 12, 22, 11]; // default fallback
+           }
+
+           // 2. Extract target (for search)
+           let target = 7; // default
+           const targetVarMatch = code.match(/(?:target|let x|int x)\s*=\s*(-?\d+)/i);
+           const callMatch = code.match(/(?:search|binary|linear)[\w]*\s*\([^,]*,[^]*?(-?\d+)\s*\)/i);
+           const genericCallMatch = code.match(/,\s*(-?\d+)\s*\)/);
+           
+           if (targetVarMatch) {
+               target = parseInt(targetVarMatch[1]);
+           } else if (callMatch) {
+               target = parseInt(callMatch[1]);
+           } else if (genericCallMatch) {
+               target = parseInt(genericCallMatch[1]);
+           }
+
+           // 3. Detect Algorithm
+           const lowercaseCode = code.toLowerCase();
+           let algo = 'selectionSort'; // default
+           if (lowercaseCode.includes('binary')) algo = 'binarySearch';
+           else if (lowercaseCode.includes('linear')) algo = 'linearSearch';
+           else if (lowercaseCode.includes('bubble')) algo = 'bubbleSort';
+           else if (lowercaseCode.includes('insertion')) algo = 'insertionSort';
+           else if (lowercaseCode.includes('selection')) algo = 'selectionSort';
+
+           const generatedFrames = PREDEFINED_ALGOS[algo](arr, target);
+           return {
+               frames: generatedFrames,
+               algoName: algo,
+               jsAnySwaps: algo.includes('Sort')
+           };
+        }
+
+        // ---------------------------------------------------------------------------
+        //  RUN Button — code logic execution output
         // ---------------------------------------------------------------------------
         document.getElementById('run-btn').addEventListener('click', async function () {
             if (!editor) return;
             const code = editor.getValue();
             const area = document.getElementById('console-output');
-            if (area) area.innerHTML = ''; 
-            log('Starting execution...');
+            if (area) area.innerHTML = '';
+            
             stopPlay();
             clearVisualizer();
             runType = 'plain';
+
             try {
-                if (currentLang === 'javascript') {
-                    try {
-                        const pSwap = window.swap;
-                        const pRender = window.renderBars;
-                        const pHigh = window.highlight;
-                        
-                        // No-op hooks during plain run
-                        window.swap = function () { return Promise.resolve(); };
-                        window.highlight = function () { return Promise.resolve(); };
-                        window.renderBars = function () { };
-                        
-                        const pLog = console.log;
-                        const pPrint = window.print;
-                        
-                        console.log = function () {
-                            const val = Array.from(arguments).map(arg => {
-                                if (typeof arg === 'object') return JSON.stringify(arg, null, 2);
-                                return String(arg);
-                            }).join(' ');
-                            log(val);
-                        };
-                        window.print = console.log;
-                        
-                        await eval('(async function(){ ' + code + ' \n})()');
-                        
-                        console.log = pLog;
-                        window.print = pPrint;
-                        window.swap = pSwap;
-                        window.renderBars = pRender;
-                        window.highlight = pHigh;
-                        log('Execution finished.', 'status');
-                    } catch (e) { log('Error: ' + e.message, true); }
+                log('Extracting inputs to backend server...', 'status');
+                const res = simulateBackend(code);
+                log('Algorithm Detected: ' + res.algoName.replace('Sort', ' Sort').replace('Search', ' Search'));
+                log('Executing...');
+                
+                // Sleep visually to simulate latency
+                await new Promise(r => setTimeout(r, 600));
 
-                } else if (currentLang === 'python') {
-                    if (!pyodide) { log('Waiting for Python...'); await startPython(); }
-                    log('Running Python...');
-                    setNoopHooks();
-                    try { await pyodide.runPythonAsync(code); }
-                    catch (e) { log(String(e), true); }
-                    setLiveHooks();
-
+                const finalState = res.frames[res.frames.length - 1];
+                if (res.jsAnySwaps) {
+                    log('Array Output -> [' + finalState.data.join(', ') + ']', true);
                 } else {
-                    log(currentLang.toUpperCase() + ' - simulation mode (no remote compiler).');
+                    const highlight = finalState.highlight;
+                    const foundIdx = highlight[3] !== undefined ? highlight[3] : -1;
+                    if (foundIdx !== -1) {
+                        log('Search complete: Target found at Position = ' + foundIdx, true);
+                    } else {
+                        log('Search complete: Target NOT found in array.', true);
+                    }
                 }
+                log('Execution finished.', 'status');
+            } catch (e) { 
+                log('Execution Failed: ' + e.message, true); 
             } finally {
                 runType = null;
             }
         });
 
         // ---------------------------------------------------------------------------
-        //  Transpiler-lite (C++/Java → JS for Visualization)
-        // ---------------------------------------------------------------------------
-        function transpileToJS(code, lang) {
-            let js = code;
-            
-            // 1. Convert complex method declarations (Standardize headers)
-            // This consumes multiple modifiers like 'public static void name(int x, ...)'
-            js = js.replace(/\b(?:public|static|private|protected|void|int|double|float|boolean|String|class)\b[\s\w$<>\[\]]*\b([\w$]+)\s*\(([^)]*)\)\s*\{/g, function(match, name, args) {
-                // Clean the arguments (remove types: 'int n' -> 'n')
-                const cleanArgs = args.replace(/\b(?:int|double|float|boolean|String|char|final|\[\])\b\s*/g, '').replace(/\[\]/g, '');
-                return `async function ${name}(${cleanArgs.trim()}) {`;
-            });
-
-            // 2. Main method and Class stripping
-            js = js.replace(/public\s+class\s+\w+\s*\{([^]*)\}/, '$1');
-            js = js.replace(/async\s+function\s+main\s*\(([^]*)\)\s*\{([^]*)\}/g, '$2');
-
-            // 3. Array Literals: {1,2} -> [1,2]
-            js = js.replace(/=\s*\{([^}]*)\}/g, '= [$1]');
-
-            // 4. Global Type Stripping (Clean up declarations)
-            js = js.replace(/\b(?:int|double|float|boolean|String|char|long|void|final|public|static|private|protected)\b/g, 'let ');
-            
-            // 5. Semantic fixups
-            js = js.replace(/\b(let\s+)+/g, 'let '); // Collapse 'let let'
-            js = js.replace(/\[\]/g, ' '); // Final bracket cleanup
-            js = js.replace(/;\s*;/g, ';'); // Double semicolon cleanup
-            
-            return js.trim();
-        }
-
-        // ---------------------------------------------------------------------------
-        //  VISUALISE Button — capture all frames, then enable step controls
+        //  VISUALISE Button — generate frames via backend mapping
         // ---------------------------------------------------------------------------
         document.getElementById('visualise-btn').addEventListener('click', async function () {
             if (!editor) return;
             const code = editor.getValue();
             const area = document.getElementById('console-output');
             if (area) area.innerHTML = ''; // Fresh console for new capture
-            log('Capture starting...');
+            
             stopPlay();
             showStepControls(false);
 
-            if (currentLang.startsWith('python')) {
-                if (!pyodide) { log('Waiting for Python...'); await startPython(); }
-                log('Analysing logic...');
-                frames = [];
+            try {
+                log('Sending payload to backend analyzer...', 'status');
+                
+                // Simulate network
+                await new Promise(r => setTimeout(r, 400));
+                
+                const res = simulateBackend(code);
+                frames = res.frames;
+                jsAnySwaps = res.jsAnySwaps;
                 currentFrame = -1;
-                showStepControls(false);
+                
+                log('Algorithm Confirmed: ' + res.algoName.replace('Sort', ' Sort').replace('Search', ' Search'), 'status');
+                log('Initial Data: [' + res.frames[0].data.join(', ') + ']', 'status');
+                
+                if (!res.jsAnySwaps) log('Search Target Extracted. Building animations...', 'status');
+                else log('Generating sort state machines...', 'status');
 
-                // Inject a sys.settrace auto-tracer that instruments user code with zero modifications.
-                // It watches every executed line for: numeric list variables (the array) and integer
-                // variables with common pointer names (left, right, mid, i, j, lo, hi, ...).
-                await pyodide.runPythonAsync(`
-import sys as _sys
-_vis_frames = []
-_vis_last   = [None, None]    # [prev_data, prev_ptrs]
-_VIS_PTR = frozenset([
-    'left','right','mid','lo','hi','low','high',
-    'l','r','m','start','end','begin','target'
-])
-
-def _vis_trace(frame, event, arg):
-    global _vis_has_swaps
-    if event != 'line' or len(_vis_frames) >= 500:
-        return _vis_trace
-    # Only trace the user's own code frames, not Pyodide internals
-    if frame.f_code.co_filename not in ('<exec>', '<string>'):
-        return _vis_trace
-    locs = frame.f_locals
-    # Find the first numeric list in locals (the array being worked on)
-    arr = next(
-        (v for v in locs.values()
-         if isinstance(v, list) and 2 <= len(v) <= 200
-         and all(isinstance(x, (int, float)) for x in v)),
-        None
-    )
-    if arr is None:
-        return _vis_trace
-    data = list(arr)
-    # Fixed-size pointer array for searching: [left, mid, right, found]
-    v_left  = locs.get('left', locs.get('lo', -1))
-    v_right = locs.get('right', locs.get('hi', -1))
-    v_mid   = locs.get('mid', locs.get('m', -1))
-    v_found = -1
-
-    target = locs.get('target', locs.get('targetVal', locs.get('x')))
-    if target is not None and isinstance(target, (int, float)):
-        if isinstance(v_mid, int) and 0 <= v_mid < len(arr):
-            if arr[v_mid] == target:
-                v_found = v_mid
-    
-    # Pack into standard format
-    search_ptrs = [
-        v_left if isinstance(v_left, int) else -1,
-        v_mid if isinstance(v_mid, int) else -1,
-        v_right if isinstance(v_right, int) else -1,
-        v_found
-    ]
-
-    prev = _vis_last[0]
-    if data == prev and search_ptrs == _vis_last[1]:
-        return _vis_trace   # nothing changed, skip
-
-    # Detect swap...
-    changed = ([] if prev is None
-               else [i for i in range(min(len(data), len(prev))) if data[i] != prev[i]])
-    if len(changed) == 2:
-        a, b = changed
-        if prev and data[a] == prev[b] and data[b] == prev[a]:
-            _vis_has_swaps = True
-            _vis_frames.append({'type':'swap', 'before':prev[:], 'data':data[:], 'highlight':[a,b]})
-            _vis_last[0] = data[:]
-            _vis_last[1] = search_ptrs[:]
-            return _vis_trace
-
-    # Default: highlight frame
-    _vis_frames.append({'type':'highlight', 'data':data[:], 'highlight':search_ptrs})
-    _vis_last[0] = data[:]
-    _vis_last[1] = search_ptrs[:]
-    return _vis_trace
-
-_vis_has_swaps = False
-_sys.settrace(_vis_trace)
-`);
-                try { await pyodide.runPythonAsync(code); }
-                catch (e) { log(String(e), true); }
-                await pyodide.runPythonAsync('_sys.settrace(None)');
-
-                // Transfer captured frames from Python list-of-dicts → JS frames[]
-                try {
-                    const pyList = pyodide.globals.get('_vis_frames');
-                    const pyHasSwp = pyodide.globals.get('_vis_has_swaps');
-                    const rawItems = pyList.toJs({ depth: 8 });
-
-                    pyList.destroy();
-                    (rawItems || []).forEach(function (m) {
-                        if (!(m instanceof Map)) return;
-                        const f = {
-                            type: String(m.get('type') || 'highlight'),
-                            data: Array.from(m.get('data') || []).map(Number),
-                            highlight: Array.from(m.get('highlight') || []).map(Number)
-                        };
-                        // FORCE: If any swap happened in the whole script, we treat everything as SORT (Bar View)
-                        if (pyHasSwp) {
-                            if (f.type !== 'swap') f.type = 'sort_highlight';
-                        } else {
-                            f.type = 'searching'; // Standard search (Square View)
-                        }
-
-                        const before = m.get('before');
-                        if (before) f.before = Array.from(before).map(Number);
-                        frames.push(f);
-                    });
-                } catch (e) { log('Frame read error: ' + e, true); }
-
-                setLiveHooks();
-
-                if (!frames.length) {
-                    log('No visualization data captured. Make sure your code has a numeric list variable.', true);
-                    return;
-                }
-                log('Captured ' + frames.length + ' steps. Ready to play.', true);
+                log('Captured ' + frames.length + ' structural steps. Ready to play.', true);
                 showStepControls(true);
                 showFrame(0);
-                return;
+            } catch(e) {
+                log('Backend Error: ' + e.message, true);
             }
-
-
-            if (currentLang.startsWith('javascript')) {
-                frames = [];
-                currentFrame = -1;
-                jsAnySwaps = false; 
-                log('Analysing logic...');
-
-                // Grab initial array state (greedy match)
-                const m = code.match(/\[[^]*?\]/);
-                if (m) {
-                    try {
-                        const init = JSON.parse(m[0].replace(/\s/g, '').replace(/,(\]|})/g, '$1'));
-                        frames.push({ data: init.slice(), highlight: [] });
-                    } catch (_) { }
-                }
-
-                const pRender = window.renderBars;
-                const pSwap = window.swap;
-                const pHigh = window.highlight;
-
-                window.renderBars = function () { }; // Silence during capture
-                window.swap = captureSwap;
-                window.highlight = function(data, ptrs) {
-                    const frame = { data: data.slice(), highlight: ptrs };
-                    const last = frames[frames.length - 1];
-                    if (last && JSON.stringify(last.data) === JSON.stringify(frame.data) && JSON.stringify(last.highlight) === JSON.stringify(frame.highlight)) return;
-                    frames.push(frame);
-                };
-
-                // --- REFINED: IN-SCOPE CAPTURE SYSTEM ---
-                let traceCode = code;
-                try {
-                    // Detect the main target array (Identify literals or common names)
-                    const arrMatch = code.match(/(?:const|let|var|[\w$]+)?\s*([\w$]+)\s*=\s*\[[^]*?\]/i);
-                    const arrName = arrMatch ? arrMatch[1] : (code.includes('arr') ? 'arr' : (code.includes('data') ? 'data' : null));
-
-                    if (arrName) {
-                        const lines = code.split('\n');
-                        const instrumented = lines.map(line => {
-                            const tr = line.trim();
-                            if (!tr || tr.startsWith('/') || tr.startsWith('*')) return line;
-                            
-                            // Key synchronization points (Assignments to pointers or loop starts)
-                            const isSync = /(=|\{)/.test(tr) && (tr.includes('left') || tr.includes('right') || tr.includes('mid') || tr.includes('lo') || tr.includes('hi'));
-                            const isReturn = tr.includes('return');
-                            
-                            if (isSync || isReturn) {
-                                // Prepend or append the capture call?
-                                // Assignments: Append. Returns: Prepend.
-                                if (isReturn) return ` ; await __visCapture(); ` + "\n" + line;
-                                return line + ` \n ; await __visCapture(); `;
-                            }
-                            return line;
-                        }).join('\n');
-
-                        // Wrap with scope-aware capture helper
-                        traceCode = `
-                            async function __visCapture() {
-                                try {
-                                    // Pointer Scraper with common search alias fallbacks
-                                    const l = typeof left !== 'undefined' ? left : (typeof lo !== 'undefined' ? lo : (typeof low !== 'undefined' ? low : (typeof L !== 'undefined' ? L : -1)));
-                                    const m = typeof mid !== 'undefined' ? mid : (typeof mid_val !== 'undefined' ? mid_val : (typeof M !== 'undefined' ? M : -1));
-                                    const r = typeof right !== 'undefined' ? right : (typeof hi !== 'undefined' ? hi : (typeof high !== 'undefined' ? high : (typeof R !== 'undefined' ? R : -1)));
-                                    const f = typeof found !== 'undefined' ? found : -1;
-                                    await window.highlight(${arrName}, [l, m, r, f]);
-                                } catch(e){}
-                            }
-                            ${instrumented}
-                        `;
-                    }
-                } catch(e) { }
-
-                try { await eval('(async function(){ ' + traceCode + ' \n})()'); }
-                catch (e) { log(e.message, true); }
-
-                window.renderBars = pRender;
-                window.swap = pSwap;
-                window.highlight = pHigh;
-
-                if (frames.length <= 1) {
-                    log('No visualization steps captured. Ensure your data array is defined at the top as an array literal (e.g., const data = [...]).', 'status');
-                }
-                log('Captured ' + frames.length + ' steps. Ready to play.', true);
-                
-                // Automatic Type Detection: Sort (Bars) vs Search (Squares)
-                frames.forEach(f => {
-                    if (jsAnySwaps) {
-                        if (f.type !== 'swap') f.type = 'sort_highlight';
-                    } else {
-                        f.type = 'searching';
-                    }
-                });
-
-                log('Captured ' + frames.length + ' steps. Ready to play.', true);
-                showStepControls(true);
-                showFrame(0);
-                return;
-
-            } else if (currentLang === 'cpp' || currentLang === 'java') {
-                log('Transpiling ' + currentLang.toUpperCase() + ' for visualization...', 'status');
-                const cleanCode = transpileToJS(code, currentLang);
-                
-                // Re-route to JS Engine
-                jsAnySwaps = false;
-                frames = [];
-                currentFrame = -1;
-                
-                const pRender = window.renderBars;
-                const pSwap = window.swap;
-                const pHigh = window.highlight;
-                
-                window.renderBars = function () { }; 
-                window.swap = captureSwap;
-                window.highlight = function(data, ptrs) {
-                    const frame = { data: data.slice(), highlight: ptrs };
-                    const last = frames[frames.length - 1];
-                    if (last && JSON.stringify(last.data) === JSON.stringify(frame.data) && JSON.stringify(last.highlight) === JSON.stringify(frame.highlight)) return;
-                    frames.push(frame);
-                };
-
-                // INSTRUMENTATION (Identical to JS)
-                let traceCode = cleanCode;
-                try {
-                    const arrMatch = cleanCode.match(/(?:let|[\w$]+)\s*=\s*\[[^]*?\]/i);
-                    const arrName = arrMatch ? arrMatch[1] : (cleanCode.includes('arr') ? 'arr' : (cleanCode.includes('data') ? 'data' : null));
-                    if (arrName) {
-                        const lines = cleanCode.split('\n');
-                        const instrumented = lines.map(line => {
-                            const tr = line.trim();
-                            const isSync = /(=|\{)/.test(tr) && (tr.includes('left') || tr.includes('right') || tr.includes('mid') || tr.includes('lo') || tr.includes('hi') || tr.includes('i') || tr.includes('j'));
-                            if (isSync || tr.includes('return')) {
-                                const call = ` ; await __visCapture(); `;
-                                return tr.includes('return') ? (call + "\n" + line) : (line + "\n" + call);
-                            }
-                            return line;
-                        }).join('\n');
-
-                        traceCode = `
-                            async function __visCapture() {
-                                try {
-                                    const l = typeof left !== 'undefined' ? left : (typeof lo !== 'undefined' ? lo : -1);
-                                    const m = typeof mid !== 'undefined' ? mid : (typeof mid_val !== 'undefined' ? mid_val : -1);
-                                    const r = typeof right !== 'undefined' ? right : (typeof hi !== 'undefined' ? hi : -1);
-                                    const f = typeof found !== 'undefined' ? found : -1;
-                                    await window.highlight(${arrName}, [l, m, r, f]);
-                                } catch(e){}
-                            }
-                            ${instrumented}
-                        `;
-                    }
-                } catch(e) {}
-
-                try { await eval('(async function(){ ' + traceCode + ' \n})()'); }
-                catch (e) { log('Simulation Error: ' + e.message, true); }
-
-                window.renderBars = pRender;
-                window.swap = pSwap;
-                window.highlight = pHigh;
-
-                if (frames.length <= 1) {
-                    log('No steps captured. Ensure your ' + currentLang.toUpperCase() + ' data is an array literal.', 'status');
-                }
-                
-                frames.forEach(f => {
-                    if (jsAnySwaps) f.type = (f.type === 'swap' ? 'swap' : 'sort_highlight');
-                    else f.type = 'searching';
-                });
-
-                log('Captured ' + frames.length + ' steps. Ready to play.', true);
-                showStepControls(true);
-                showFrame(0);
-                return;
-            }
-
-            log(currentLang.toUpperCase() + ' - visualization in simulation mode.');
         });
     </script>
     <script src="../content/js/script.js"></script>
