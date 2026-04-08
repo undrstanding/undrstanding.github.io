@@ -1172,15 +1172,41 @@ const data = [1, 3, 5, 7, 9, 11, 13, 15, 17, 19];
 await binarySearch(data, 11);
 console.log("Search finished.");`,
 
-            cpp: `// C++ - Simulation Mode
-void quickSort(int arr[], int low, int high) {
-    // paste your logic here
-}`,
+            cpp: `// C++ Visualization Mode
+// Zero-backend: Logic is transpiled to JS for visualization
+void selectionSort(int arr[], int n) {
+    for (int i = 0; i < n; i++) {
+        int min_idx = i;
+        for (int j = i + 1; j < n; j++) {
+            if (arr[j] < arr[min_idx]) {
+                min_idx = j;
+            }
+        }
+        // Use swap(i, j, arr) for best visual results
+        swap(i, min_idx, arr);
+    }
+}
 
-            java: `// Java - Simulation Mode
+int data[] = {64, 25, 12, 22, 11};
+selectionSort(data, 5);`,
+
+            java: `// Java Visualization Mode
+// Zero-backend: Logic is transpiled to JS for visualization
 public class Main {
+    public static void binarySearch(int[] arr, int target) {
+        int left = 0;
+        int right = arr.length - 1;
+        while (left <= right) {
+            int mid = (left + right) / 2;
+            if (arr[mid] == target) return;
+            if (arr[mid] < target) left = mid + 1;
+            else right = mid - 1;
+        }
+    }
+
     public static void main(String[] args) {
-        // paste your logic here
+        int[] data = {1, 3, 5, 7, 9, 11, 13, 15};
+        binarySearch(data, 7);
     }
 }`
         };
@@ -1763,6 +1789,38 @@ public class Main {
         });
 
         // ---------------------------------------------------------------------------
+        //  Transpiler-lite (C++/Java → JS for Visualization)
+        // ---------------------------------------------------------------------------
+        function transpileToJS(code, lang) {
+            let js = code;
+            
+            // 1. Convert complex method declarations (Standardize headers)
+            // This consumes multiple modifiers like 'public static void name(int x, ...)'
+            js = js.replace(/\b(?:public|static|private|protected|void|int|double|float|boolean|String|class)\b[\s\w$<>\[\]]*\b([\w$]+)\s*\(([^)]*)\)\s*\{/g, function(match, name, args) {
+                // Clean the arguments (remove types: 'int n' -> 'n')
+                const cleanArgs = args.replace(/\b(?:int|double|float|boolean|String|char|final|\[\])\b\s*/g, '').replace(/\[\]/g, '');
+                return `async function ${name}(${cleanArgs.trim()}) {`;
+            });
+
+            // 2. Main method and Class stripping
+            js = js.replace(/public\s+class\s+\w+\s*\{([^]*)\}/, '$1');
+            js = js.replace(/async\s+function\s+main\s*\(([^]*)\)\s*\{([^]*)\}/g, '$2');
+
+            // 3. Array Literals: {1,2} -> [1,2]
+            js = js.replace(/=\s*\{([^}]*)\}/g, '= [$1]');
+
+            // 4. Global Type Stripping (Clean up declarations)
+            js = js.replace(/\b(?:int|double|float|boolean|String|char|long|void|final|public|static|private|protected)\b/g, 'let ');
+            
+            // 5. Semantic fixups
+            js = js.replace(/\b(let\s+)+/g, 'let '); // Collapse 'let let'
+            js = js.replace(/\[\]/g, ' '); // Final bracket cleanup
+            js = js.replace(/;\s*;/g, ';'); // Double semicolon cleanup
+            
+            return js.trim();
+        }
+
+        // ---------------------------------------------------------------------------
         //  VISUALISE Button — capture all frames, then enable step controls
         // ---------------------------------------------------------------------------
         document.getElementById('visualise-btn').addEventListener('click', async function () {
@@ -1990,6 +2048,81 @@ _sys.settrace(_vis_trace)
                     } else {
                         f.type = 'searching';
                     }
+                });
+
+                log('Captured ' + frames.length + ' steps. Ready to play.', true);
+                showStepControls(true);
+                showFrame(0);
+                return;
+
+            } else if (currentLang === 'cpp' || currentLang === 'java') {
+                log('Transpiling ' + currentLang.toUpperCase() + ' for visualization...', 'status');
+                const cleanCode = transpileToJS(code, currentLang);
+                
+                // Re-route to JS Engine
+                jsAnySwaps = false;
+                frames = [];
+                currentFrame = -1;
+                
+                const pRender = window.renderBars;
+                const pSwap = window.swap;
+                const pHigh = window.highlight;
+                
+                window.renderBars = function () { }; 
+                window.swap = captureSwap;
+                window.highlight = function(data, ptrs) {
+                    const frame = { data: data.slice(), highlight: ptrs };
+                    const last = frames[frames.length - 1];
+                    if (last && JSON.stringify(last.data) === JSON.stringify(frame.data) && JSON.stringify(last.highlight) === JSON.stringify(frame.highlight)) return;
+                    frames.push(frame);
+                };
+
+                // INSTRUMENTATION (Identical to JS)
+                let traceCode = cleanCode;
+                try {
+                    const arrMatch = cleanCode.match(/(?:let|[\w$]+)\s*=\s*\[[^]*?\]/i);
+                    const arrName = arrMatch ? arrMatch[1] : (cleanCode.includes('arr') ? 'arr' : (cleanCode.includes('data') ? 'data' : null));
+                    if (arrName) {
+                        const lines = cleanCode.split('\n');
+                        const instrumented = lines.map(line => {
+                            const tr = line.trim();
+                            const isSync = /(=|\{)/.test(tr) && (tr.includes('left') || tr.includes('right') || tr.includes('mid') || tr.includes('lo') || tr.includes('hi') || tr.includes('i') || tr.includes('j'));
+                            if (isSync || tr.includes('return')) {
+                                const call = ` ; await __visCapture(); `;
+                                return tr.includes('return') ? (call + "\n" + line) : (line + "\n" + call);
+                            }
+                            return line;
+                        }).join('\n');
+
+                        traceCode = `
+                            async function __visCapture() {
+                                try {
+                                    const l = typeof left !== 'undefined' ? left : (typeof lo !== 'undefined' ? lo : -1);
+                                    const m = typeof mid !== 'undefined' ? mid : (typeof mid_val !== 'undefined' ? mid_val : -1);
+                                    const r = typeof right !== 'undefined' ? right : (typeof hi !== 'undefined' ? hi : -1);
+                                    const f = typeof found !== 'undefined' ? found : -1;
+                                    await window.highlight(${arrName}, [l, m, r, f]);
+                                } catch(e){}
+                            }
+                            ${instrumented}
+                        `;
+                    }
+                } catch(e) {}
+
+                try { await eval('(async function(){ ' + traceCode + ' \n})()'); }
+                catch (e) { log('Simulation Error: ' + e.message, true); }
+
+                window.renderBars = pRender;
+                window.swap = pSwap;
+                window.highlight = pHigh;
+
+                if (frames.length <= 1) {
+                    log('No steps captured. Ensure your ' + currentLang.toUpperCase() + ' data is an array literal.', 'status');
+                }
+                
+                frames.forEach(f => {
+                    if (jsAnySwaps) f.type = (f.type === 'swap' ? 'swap' : 'sort_highlight');
+                    else f.type = 'searching';
                 });
 
                 log('Captured ' + frames.length + ' steps. Ready to play.', true);
