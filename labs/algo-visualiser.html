@@ -624,7 +624,6 @@
                 white-space: nowrap;
             }
 
-            /* Hide 'First' and 'Last' buttons on narrow mobile to save space */
             #btn-first,
             #btn-last {
                 display: none !important;
@@ -633,6 +632,21 @@
             .step-btn i {
                 font-size: 0.8rem;
             }
+        }
+
+        #vis-content {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        #vis-content.fading {
+            opacity: 0;
+            transform: scale(0.98) translateY(20px);
+            filter: blur(8px);
         }
 
         /* Mobile Pill Nav */
@@ -932,8 +946,7 @@
                 </div>
             </div>
             <div id="visualizer-container">
-                <div id="vis-content"
-                    style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;">
+                <div id="vis-content">
                     <div style="text-align:center;opacity:0.1;">
                         <i class="bi bi-diagram-3" style="font-size:3rem;"></i>
                         <p
@@ -1505,6 +1518,29 @@ public class Main {
         }
 
         // Recursive async auto-play so each animation finishes before next starts
+        async function resetVisualizer() {
+            const vc = document.getElementById('vis-content');
+            if (vc && frames.length > 0) {
+                vc.classList.add('fading');
+                await new Promise(r => setTimeout(r, 300));
+            }
+
+            frames = [];
+            currentFrame = -1;
+            stopPlay();
+            isAnimating = false;
+            showStepControls(false);
+
+            if (vc) {
+                vc.innerHTML = `
+                    <div style="text-align:center;opacity:0.1;">
+                        <i class="bi bi-diagram-3" style="font-size:3rem;"></i>
+                        <p style="font-family:'JetBrains Mono',monospace;font-size:0.65rem;margin-top:12px;font-weight:800;text-transform:uppercase;letter-spacing:0.15em;">Ready</p>
+                    </div>
+                `;
+                vc.classList.remove('fading');
+            }
+        }
         function togglePlay() {
             if (isPlaying) { stopPlay(); return; }
             // If we're at the very end, we can reset, otherwise just play
@@ -1548,6 +1584,9 @@ public class Main {
                 fontFamily: 'JetBrains Mono'
             });
 
+            editor.onDidChangeModelContent(() => {
+                resetVisualizer();
+            });
         });
 
         // ---------------------------------------------------------------------------
@@ -1568,6 +1607,7 @@ public class Main {
             pill.addEventListener('click', function () {
                 const lang = pill.dataset.lang;
                 currentLang = lang;
+                resetVisualizer();
 
                 // Sync all pills (Modal and Header)
                 document.querySelectorAll('.lang-pill').forEach(p => {
