@@ -851,7 +851,7 @@
                 <div class="switcher-highlight" id="switcher-highlight"></div>
                 <div class="lang-pill active" data-lang="python">PYTHON</div>
                 <div class="lang-pill" data-lang="javascript">JAVASCRIPT</div>
-                <div class="lang-pill" data-lang="cpp">C++</div>
+                <div class="lang-pill" data-lang="cpp">C/C++</div>
                 <div class="lang-pill" data-lang="java">JAVA</div>
             </div>
             <button id="run-btn" class="btn btn-run">
@@ -881,7 +881,7 @@
         <div class="m-lang-switcher">
             <div class="lang-pill active" data-lang="python">PYTHON</div>
             <div class="lang-pill" data-lang="javascript">JAVASCRIPT</div>
-            <div class="lang-pill" data-lang="cpp">C++</div>
+            <div class="lang-pill" data-lang="cpp">C/C++</div>
             <div class="lang-pill" data-lang="java">JAVA</div>
         </div>
 
@@ -1092,13 +1092,11 @@
         //  Default Code Templates
         // ---------------------------------------------------------------------------
         const DEFAULTS = {
-            python: `# Selection Sort Visualization
-# Built-in hooks: renderBars(), swap(), highlight() — no imports needed
+            python: `# Selection Sort
 
 data = [64, 25, 12, 22, 11, 90, 34, 15]
-renderBars(data)
 
-async def selection_sort(arr):
+def selection_sort(arr):
     n = len(arr)
     for i in range(n):
         min_idx = i
@@ -1106,98 +1104,101 @@ async def selection_sort(arr):
             if arr[j] < arr[min_idx]:
                 min_idx = j
         arr[i], arr[min_idx] = arr[min_idx], arr[i]
-        await swap(i, min_idx, arr)
     return arr
 
-await selection_sort(data)
-print("Sorted:", data)`,
+selection_sort(data)`,
 
-            python_search: `# Binary Search Visualization
-# highlight(arr, [left, mid, right]) shows current pointers
+            python_search: `# Binary Search
 
 data = [1, 3, 5, 7, 9, 11, 13, 15, 17, 19]
 target = 11
 
-renderBars(data)
-
-async def binary_search(arr, target):
+def binary_search(arr, target):
     left, right = 0, len(arr) - 1
     while left <= right:
         mid = (left + right) // 2
-        await highlight(arr, [left, mid, right])
         if arr[mid] == target:
-            print("Found", target, "at index", mid)
             return mid
         elif arr[mid] < target:
             left = mid + 1
         else:
             right = mid - 1
-    print(target, "not found")
     return -1
 
-await binary_search(data, target)`,
+binary_search(data, target)`,
 
-            javascript: `// Bubble Sort Visualization
-async function bubbleSort(arr) {
+            javascript: `// Bubble Sort
+function bubbleSort(arr) {
     const n = arr.length;
     for (let i = 0; i < n; i++) {
         for (let j = 0; j < n - i - 1; j++) {
             if (arr[j] > arr[j + 1]) {
                 [arr[j], arr[j + 1]] = [arr[j + 1], arr[j]];
-                await swap(j, j + 1, arr);
             }
         }
     }
 }
+
 const data = [64, 34, 25, 12, 22, 11, 90, 45, 15, 75];
-await bubbleSort(data);
-console.log("Final Sorted Array Result:", data);`,
+bubbleSort(data);`,
 
-            javascript_search: `// Binary Search Visualization
-// highlight(arr, [left, mid, right]) shows current pointers
-
-async function binarySearch(arr, target) {
+            javascript_search: `// Binary Search
+function binarySearch(arr, target) {
     let left = 0, right = arr.length - 1;
     while (left <= right) {
         let mid = Math.floor((left + right) / 2);
-        // [left, mid, right, found_idx]
-        await highlight(arr, [left, mid, right]);
         
         if (arr[mid] === target) {
-            console.log("Found", target, "at index", mid);
-            await highlight(arr, [left, mid, right, mid]);
             return mid;
         }
         if (arr[mid] < target) left = mid + 1;
         else right = mid - 1;
     }
-    console.log(target, "not found");
     return -1;
 }
-const data = [1, 3, 5, 7, 9, 11, 13, 15, 17, 19];
-await binarySearch(data, 11);
-console.log("Search finished.");`,
 
-            cpp: `// C++ Visualization Mode
-// Zero-backend: Logic is transpiled to JS for visualization
-void selectionSort(int arr[], int n) {
-    for (int i = 0; i < n; i++) {
-        int min_idx = i;
-        for (int j = i + 1; j < n; j++) {
-            if (arr[j] < arr[min_idx]) {
-                min_idx = j;
-            }
+const data = [1, 3, 5, 7, 9, 11, 13, 15, 17, 19];
+binarySearch(data, 11);`,
+
+            cpp: `// Merge Sort C++
+
+void merge(int arr[], int l, int m, int r) {
+    int n1 = m - l + 1;
+    int n2 = r - m;
+    int L[n1], R[n2];
+
+    for (int i = 0; i < n1; i++) L[i] = arr[l + i];
+    for (int j = 0; j < n2; j++) R[j] = arr[m + 1 + j];
+
+    int i = 0, j = 0, k = l;
+    while (i < n1 && j < n2) {
+        if (L[i] <= R[j]) {
+            arr[k] = L[i];
+            i++;
+        } else {
+            arr[k] = R[j];
+            j++;
         }
-        // Use swap(i, j, arr) for best visual results
-        swap(i, min_idx, arr);
+        k++;
     }
+
+    while (i < n1) { arr[k] = L[i]; i++; k++; }
+    while (j < n2) { arr[k] = R[j]; j++; k++; }
 }
 
-int data[] = {64, 25, 12, 22, 11};
-selectionSort(data, 5);`,
+void mergeSort(int arr[], int l, int r) {
+    if (l >= r) return;
+    int m = l + (r - l) / 2;
+    mergeSort(arr, l, m);
+    mergeSort(arr, m + 1, r);
+    merge(arr, l, m, r);
+}
+
+int data[] = {12, 11, 13, 5, 6, 7};
+mergeSort(data, 0, 5);`,
 
             java: `// Java Visualization Mode
-// Zero-backend: Logic is transpiled to JS for visualization
+
 public class Main {
     public static void binarySearch(int[] arr, int target) {
         int left = 0;
@@ -1267,11 +1268,12 @@ public class Main {
         // ---------------------------------------------------------------------------
         //  Bar Renderer
         // ---------------------------------------------------------------------------
-        function renderBars(rawArr, comparing, swapping) {
+        function renderBars(rawArr, comparing, swapping, activeRange) {
             const arr = toArr(rawArr);
             if (!Array.isArray(arr) || !arr.length) return;
             const cmp = comparing || [];
             const swp = swapping || [];
+            const [activeStart, activeEnd] = activeRange || [-1, -1];
 
             const vc = document.getElementById('vis-content');
             if (!vc) return;
@@ -1292,6 +1294,12 @@ public class Main {
                 bar.style.height = Math.max(4, (val / max) * 100) + '%';
                 if (cmp.includes(idx)) bar.classList.add('comparing');
                 if (swp.includes(idx)) bar.classList.add('swapping');
+
+                if (activeStart !== -1 && activeEnd !== -1 && (idx < activeStart || idx > activeEnd)) {
+                    wrap.style.opacity = '0.15';
+                    wrap.style.filter = 'grayscale(1)';
+                    wrap.style.transform = 'scale(0.85)';
+                }
 
                 wrap.appendChild(lbl);
                 wrap.appendChild(bar);
@@ -1456,11 +1464,21 @@ public class Main {
             if (vc) vc.style.alignItems = 'flex-end'; // Enforce bar alignment
 
             // Step 1: render pre-swap state — all bars normal except both swap targets
-            renderBars(f.before, [], []);
+            renderBars(f.before, [], [], f.activeRange);
             const containers = vc.querySelectorAll('.bar-container');
             const ci = containers[i];
             const cj = containers[j];
-            if (!ci || !cj) { renderBars(f.data, [], []); return; }
+
+            // Handle 1-element write (e.g., Merge Sort rewriting an index)
+            if (ci && j === undefined) {
+                ci.querySelector('.bar').classList.add('swapping');
+                await new Promise(r => setTimeout(r, 150));
+                renderBars(f.data, [i], [], f.activeRange);
+                await new Promise(r => setTimeout(r, 150));
+                return;
+            }
+
+            if (!ci || !cj) { renderBars(f.data, [], [], f.activeRange); return; }
 
             // Highlight both as swap-candidate (orange, same color, distinct from blue rest)
             ci.querySelector('.bar').classList.add('swap-candidate');
@@ -1483,7 +1501,7 @@ public class Main {
 
             // Step 4: wait for slide to finish, then render clean post-swap state
             await new Promise(function (r) { setTimeout(r, DUR + 40); });
-            renderBars(f.data, [], []);
+            renderBars(f.data, [], [], f.activeRange);
         }
 
         // Alias for backwards compat — step engine calls animateFrame
@@ -1523,7 +1541,7 @@ public class Main {
                 renderBarsSearch(f.data, f.highlight);
             } else {
                 // Sorting or swap
-                renderBars(f.data, f.highlight, []);
+                renderBars(f.data, f.highlight, [], f.activeRange);
             }
             updateStepUI();
         }
@@ -1753,6 +1771,62 @@ public class Main {
                 frames.push({ type: 'sort_highlight', data: [...data], highlight: [] });
                 return frames;
             },
+            mergeSort: function(arr) {
+                let frames = [];
+                let data = [...arr];
+                frames.push({ type: 'sort_highlight', data: [...data], highlight: [], activeRange: [0, data.length - 1] });
+                
+                function merge(l, m, r) {
+                    frames.push({ type: 'sort_highlight', data: [...data], highlight: [], activeRange: [l, r] });
+                    let n1 = m - l + 1;
+                    let n2 = r - m;
+                    let L = new Array(n1);
+                    let R = new Array(n2);
+                    for (let i = 0; i < n1; i++) L[i] = data[l + i];
+                    for (let j = 0; j < n2; j++) R[j] = data[m + 1 + j];
+                    
+                    let i = 0, j = 0, k = l;
+                    while (i < n1 && j < n2) {
+                        frames.push({ type: 'sort_highlight', data: [...data], highlight: [k, l+i, m+1+j], activeRange: [l, r] });
+                        let prev = [...data];
+                        if (L[i] <= R[j]) {
+                            data[k] = L[i];
+                            frames.push({ type: 'swap', data: [...data], before: prev, highlight: [k], activeRange: [l, r] });
+                            i++;
+                        } else {
+                            data[k] = R[j];
+                            frames.push({ type: 'swap', data: [...data], before: prev, highlight: [k], activeRange: [l, r] });
+                            j++;
+                        }
+                        k++;
+                    }
+                    while (i < n1) {
+                        let prev = [...data];
+                        data[k] = L[i];
+                        frames.push({ type: 'swap', data: [...data], before: prev, highlight: [k], activeRange: [l, r] });
+                        i++; k++;
+                    }
+                    while (j < n2) {
+                        let prev = [...data];
+                        data[k] = R[j];
+                        frames.push({ type: 'swap', data: [...data], before: prev, highlight: [k], activeRange: [l, r] });
+                        j++; k++;
+                    }
+                }
+                
+                function sort(l, r) {
+                    if (l >= r) return;
+                    frames.push({ type: 'sort_highlight', data: [...data], highlight: [], activeRange: [l, r] });
+                    let m = l + Math.floor((r - l) / 2);
+                    sort(l, m);
+                    sort(m + 1, r);
+                    merge(l, m, r);
+                }
+                
+                sort(0, data.length - 1);
+                frames.push({ type: 'sort_highlight', data: [...data], highlight: [] });
+                return frames;
+            },
             binarySearch: function(arr, target) {
                 let frames = [];
                 let data = [...arr].sort((a,b)=>a-b); // Ensure sorted
@@ -1791,6 +1865,147 @@ public class Main {
                 }
                 if (found === -1) frames.push({ type: 'searching', data: [...data], highlight: [-1, -1, -1, -1] });
                 return frames;
+            },
+            quickSort: function(arr) {
+                let frames = [];
+                let data = [...arr];
+                frames.push({ type: 'sort_highlight', data: [...data], highlight: [], activeRange: [0, data.length - 1] });
+
+                function swap(i, j) {
+                    let temp = data[i];
+                    data[i] = data[j];
+                    data[j] = temp;
+                }
+
+                function partition(low, high) {
+                    let pivot = data[high];
+                    let i = (low - 1);
+                    for (let j = low; j <= high - 1; j++) {
+                        frames.push({ type: 'sort_highlight', data: [...data], highlight: [j, high], activeRange: [low, high] });
+                        if (data[j] < pivot) {
+                            i++;
+                            if (i !== j) {
+                                swap(i, j);
+                                frames.push({ type: 'swap', data: [...data], before: [...frames[frames.length-1].data], highlight: [i, j], activeRange: [low, high] });
+                            }
+                        }
+                    }
+                    if (i + 1 !== high) {
+                        swap(i + 1, high);
+                        frames.push({ type: 'swap', data: [...data], before: [...frames[frames.length-1].data], highlight: [i + 1, high], activeRange: [low, high] });
+                    }
+                    return (i + 1);
+                }
+
+                function sort(low, high) {
+                    if (low < high) {
+                        frames.push({ type: 'sort_highlight', data: [...data], highlight: [], activeRange: [low, high] });
+                        let pi = partition(low, high);
+                        sort(low, pi - 1);
+                        sort(pi + 1, high);
+                    }
+                }
+
+                sort(0, data.length - 1);
+                frames.push({ type: 'sort_highlight', data: [...data], highlight: [] });
+                return frames;
+            },
+            heapSort: function(arr) {
+                let frames = [];
+                let data = [...arr];
+                frames.push({ type: 'sort_highlight', data: [...data], highlight: [] });
+
+                function swap(i, j, bRange) {
+                    let temp = data[i];
+                    data[i] = data[j];
+                    data[j] = temp;
+                    frames.push({ type: 'swap', data: [...data], before: [...frames[frames.length-1].data], highlight: [i, j], activeRange: [0, bRange] });
+                }
+
+                function heapify(n, i) {
+                    let largest = i;
+                    let l = 2 * i + 1;
+                    let r = 2 * i + 2;
+
+                    if (l < n && data[l] > data[largest]) largest = l;
+                    if (r < n && data[r] > data[largest]) largest = r;
+
+                    frames.push({ type: 'sort_highlight', data: [...data], highlight: [i, largest], activeRange: [0, n - 1] });
+
+                    if (largest != i) {
+                        swap(i, largest, n - 1);
+                        heapify(n, largest);
+                    }
+                }
+
+                let n = data.length;
+                for (let i = Math.floor(n / 2) - 1; i >= 0; i--) {
+                    heapify(n, i);
+                }
+
+                for (let i = n - 1; i > 0; i--) {
+                    swap(0, i, i);
+                    heapify(i, 0);
+                }
+
+                frames.push({ type: 'sort_highlight', data: [...data], highlight: [] });
+                return frames;
+            },
+            countingSort: function(arr) {
+                let frames = [];
+                let data = [...arr];
+                frames.push({ type: 'sort_highlight', data: [...data], highlight: [] });
+                
+                let max = Math.max(...data);
+                let min = Math.min(...data);
+                let range = max - min + 1;
+                let count = new Array(range).fill(0);
+                let output = new Array(data.length).fill(0);
+
+                for (let i = 0; i < data.length; i++) count[data[i] - min]++;
+                for (let i = 1; i < count.length; i++) count[i] += count[i - 1];
+
+                for (let i = data.length - 1; i >= 0; i--) {
+                    output[count[data[i] - min] - 1] = data[i];
+                    count[data[i] - min]--;
+                }
+
+                for (let i = 0; i < data.length; i++) {
+                    let prev = [...data];
+                    data[i] = output[i];
+                    frames.push({ type: 'swap', data: [...data], before: prev, highlight: [i] });
+                }
+
+                frames.push({ type: 'sort_highlight', data: [...data], highlight: [] });
+                return frames;
+            },
+            bogoSort: function(arr) {
+                let frames = [];
+                let data = [...arr];
+                frames.push({ type: 'sort_highlight', data: [...data], highlight: [] });
+
+                function isSorted(arr) {
+                    for (let i = 1; i < arr.length; i++) {
+                        if (arr[i - 1] > arr[i]) return false;
+                    }
+                    return true;
+                }
+
+                let attempts = 0;
+                while (!isSorted(data) && attempts < 200) {
+                    let i = Math.floor(Math.random() * data.length);
+                    let j = Math.floor(Math.random() * data.length);
+                    if (i !== j) {
+                        let temp = data[i];
+                        data[i] = data[j];
+                        data[j] = temp;
+                        frames.push({ type: 'swap', data: [...data], before: [...frames[frames.length-1].data], highlight: [i, j] });
+                    }
+                    attempts++;
+                }
+
+                frames.push({ type: 'sort_highlight', data: [...data], highlight: [] });
+                return frames;
             }
         };
 
@@ -1825,6 +2040,11 @@ public class Main {
            let algo = 'selectionSort'; // default
            if (lowercaseCode.includes('binary')) algo = 'binarySearch';
            else if (lowercaseCode.includes('linear')) algo = 'linearSearch';
+           else if (lowercaseCode.includes('merge')) algo = 'mergeSort';
+           else if (lowercaseCode.includes('quick')) algo = 'quickSort';
+           else if (lowercaseCode.includes('heap')) algo = 'heapSort';
+           else if (lowercaseCode.includes('counting')) algo = 'countingSort';
+           else if (lowercaseCode.includes('bogo')) algo = 'bogoSort';
            else if (lowercaseCode.includes('bubble')) algo = 'bubbleSort';
            else if (lowercaseCode.includes('insertion')) algo = 'insertionSort';
            else if (lowercaseCode.includes('selection')) algo = 'selectionSort';
