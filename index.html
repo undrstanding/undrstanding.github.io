@@ -2878,7 +2878,7 @@
                          this.classList.add('random-card-pumping');
                          var overlay = document.getElementById('random-overlay');
                          overlay.classList.add('active');
-                         var urls = ['labs/algo-visualiser', 'labs/budget-tracker', 'labs/quick-tab-closer', 'labs/weather-app', 'labs/git-essentials', 'labs/html-blog-article'];
+                         var urls = ['labs/ds-visualiser', 'labs/algo-visualiser', 'labs/budget-tracker', 'labs/quick-tab-closer', 'labs/weather-app', 'labs/git-essentials', 'labs/html-blog-article'];
                          var target = urls[Math.floor(Math.random() * urls.length)];
                          setTimeout(() => { window.location.href = target; }, 800);"
                         class="block group relative overflow-hidden bg-black text-white hover:scale-[1.02] transition-all duration-500 shadow-xl border-black hover:shadow-2xl md:col-span-2">
@@ -4092,6 +4092,7 @@
 
             // --- Interactive Lab Environments (type: lab) ---
             { s: "VISUALAB", t: "Algorithm Visualiser", u: "labs/algo-visualiser", k: "algorithm visualiser simulator logic execution code tool", y: "lab" },
+            { s: "VISUALAB", t: "Data Structure Visualiser", u: "labs/ds-visualiser", k: "data structures library visualiser simulator nodes pointers memory tool linked list tree graph queue stack bubble binary", y: "lab" },
             { s: "LAB", t: "Lab: Budget Tracker", u: "labs/budget-tracker", k: "android studio jetpack compose kotlin finance sqlite room database mobile prototyping software engineering series 16", y: "lab" },
             { s: "LAB", t: "Lab: Chrome Extension", u: "labs/quick-tab-closer", k: "chrome extension javascript manifest v3 tabs api browser interaction productivity tool automation", y: "lab" },
             { s: "LAB", t: "Lab: Weather App", u: "labs/weather-app", k: "react.js rest api hooks openweather weather real-time dashboard web development series 15", y: "lab" },
