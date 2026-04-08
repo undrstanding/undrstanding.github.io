@@ -1,0 +1,1997 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DS Visualab | Undrstanding</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;700;900&family=JetBrains+Mono:wght@700&family=Fira+Code:wght@700&display=swap"
+        rel="stylesheet">
+    <link rel="icon" type="image/svg+xml" href="../assests/undrlogo.svg">
+    <script src="https://cdn.jsdelivr.net/npm/monaco-editor@0.45.0/min/vs/loader.js"></script>
+    <script src="https://cdn.jsdelivr.net/pyodide/v0.24.1/full/pyodide.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Outfit:wght@400;500;600;700;800;900&display=swap');
+
+        :root {
+            --bg: #f7f7f7;
+            --border: #000000;
+            --text: #0a0a0a;
+            --text-muted: #666666;
+            --p-blue: #dbeafe;
+            --p-green: #dcfce7;
+            --p-yellow: #fef9c3;
+            --p-purple: #f3e8ff;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Outfit', 'Inter', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            -webkit-font-smoothing: antialiased;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        #editor-container,
+        #console-output,
+        textarea,
+        input {
+            user-select: text !important;
+            -webkit-user-select: text !important;
+        }
+
+        /* Header */
+        header {
+            height: 60px;
+            border-bottom: 3px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 24px;
+            background: #fff;
+            flex-shrink: 0;
+            z-index: 100;
+        }
+
+        .logo-wrap {
+            text-decoration: none;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            margin-right: 20px;
+        }
+
+        .logo-wrap:hover {
+            transform: translateY(-1px);
+            opacity: 0.85;
+        }
+
+        .logo-text {
+            font-family: 'Outfit', sans-serif;
+            font-weight: 800;
+            color: #000;
+            padding: 4px 0;
+            text-transform: uppercase;
+            font-size: 1.2rem;
+            display: inline-block;
+            letter-spacing: -1.2px;
+        }
+
+        .logo-badge {
+            background: #6367FF;
+            color: #fff;
+            font-size: 0.95rem;
+            padding: 2px 14px;
+            border: 3px solid #000;
+            border-radius: 6px;
+            box-shadow: 3px 3px 0 #000;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: -0.5px;
+            line-height: 1;
+            display: inline-flex;
+            align-items: center;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .header-title {
+            font-weight: 900;
+            font-size: 1.1rem;
+            letter-spacing: -0.5px;
+        }
+
+        /* Controls */
+        .controls {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .btn {
+            height: 38px;
+            padding: 0 20px;
+            border-radius: 9999px;
+            font-size: 0.8rem;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border: 3px solid var(--border);
+            background: #fff;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        .btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 4px 4px 0 #000;
+        }
+
+        .btn:active:not(:disabled) {
+            transform: translateY(1px);
+            box-shadow: none;
+        }
+
+        .btn:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+
+        .btn-run {
+            background: var(--p-green);
+        }
+
+        .btn-visualize {
+            background: var(--p-blue);
+        }
+
+        /* Language Switcher */
+        .language-switcher {
+            display: flex;
+            background: #fff;
+            padding: 4px;
+            border-radius: 9999px;
+            border: 3px solid var(--border);
+            position: relative;
+        }
+
+        .lang-pill {
+            padding: 0 14px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.63rem;
+            font-weight: 800;
+            font-family: 'JetBrains Mono', monospace;
+            border-radius: 9999px;
+            cursor: pointer;
+            transition: color 0.25s;
+            color: var(--text-muted);
+            position: relative;
+            z-index: 2;
+            white-space: nowrap;
+        }
+
+        .lang-pill.active {
+            color: #000;
+        }
+
+        .switcher-highlight {
+            position: absolute;
+            height: 30px;
+            top: 4px;
+            left: 4px;
+            background: var(--p-yellow);
+            border: 2px solid #000;
+            border-radius: 9999px;
+            transition: transform 0.3s cubic-bezier(0.645, 0.045, 0.355, 1), width 0.3s cubic-bezier(0.645, 0.045, 0.355, 1), opacity 0.15s;
+            z-index: 1;
+            opacity: 0;
+            pointer-events: none;
+            width: 0;
+        }
+
+        .switcher-highlight.initialized {
+            opacity: 1;
+        }
+
+        /* Workspace */
+        .workspace {
+            display: flex;
+            flex-grow: 1;
+            height: calc(100vh - 60px - 28px);
+            overflow: hidden;
+        }
+
+        .panel-left {
+            width: 50%;
+            display: flex;
+            flex-direction: column;
+            border-right: 3px solid var(--border);
+        }
+
+        .panel-right {
+            width: 50%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .editor-container-wrapper {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            border-bottom: 3px solid var(--border);
+            overflow: hidden;
+            min-height: 0;
+        }
+
+        .console-container-wrapper {
+            height: 200px;
+            flex-shrink: 0;
+            display: flex;
+            flex-direction: column;
+            background: #fff;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .console-container-wrapper.collapsed {
+            height: 40px !important;
+        }
+
+        .panel-header {
+            height: 40px;
+            flex-shrink: 0;
+            background: #fff;
+            border-bottom: 3px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 16px;
+            font-size: 0.65rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            font-family: 'JetBrains Mono', monospace;
+            gap: 10px;
+        }
+
+        .header-title-wrap {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.9rem;
+        }
+
+        .icon-btn {
+            cursor: pointer;
+            padding: 4px;
+            border-radius: 4px;
+            transition: 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .icon-btn:hover {
+            background: #f1f5f9;
+            color: #000;
+        }
+
+        .icon-btn.btn-trash:hover {
+            color: #ef4444;
+            background: #fee2e2;
+        }
+
+        #editor-container {
+            flex-grow: 1;
+            min-height: 0;
+            background: #1e1e1e;
+        }
+
+        #console-output {
+            flex-grow: 1;
+            padding: 12px 16px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.72rem;
+            line-height: 1.6;
+            overflow-y: auto;
+            background: #fff;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+
+        #console-output::-webkit-scrollbar {
+            display: none;
+        }
+
+        /* Visualizer Stage */
+        #visualizer-container {
+            flex-grow: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #fff;
+            background-image:
+                linear-gradient(rgba(0, 0, 0, 0.025) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 0, 0, 0.025) 1px, transparent 1px);
+            background-size: 20px 20px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        #visualizer-container {
+            flex: 1;
+            width: 100%;
+            height: 100%;
+            position: relative;
+            background: #fff;
+            background-image:
+                linear-gradient(rgba(0, 0, 0, 0.025) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 0, 0, 0.025) 1px, transparent 1px);
+            background-size: 20px 20px;
+            overflow: hidden;
+        }
+
+        #vis-content {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .vis-stage {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 32px 24px 24px;
+            gap: 5px;
+            overflow: auto;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+        }
+
+        #edge-layer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            overflow: visible;
+        }
+
+        .edge-path {
+            stroke: #000;
+            stroke-width: 3.5;
+            fill: none;
+            stroke-dasharray: 1000;
+            stroke-dashoffset: 1000;
+            animation: drawEdge 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+            stroke-linecap: round;
+            filter: drop-shadow(2px 2px 2px rgba(0, 0, 0, 0.1));
+            transition: stroke 0.3s;
+        }
+
+        @keyframes drawEdge {
+            to {
+                stroke-dashoffset: 0;
+            }
+        }
+
+        .node-tree,
+        .node-graph {
+            z-index: 2;
+        }
+
+        .ds-node.node-tree,
+        .ds-node.node-graph {
+            border-radius: 50%;
+            width: 48px;
+            height: 48px;
+            min-width: 48px;
+            box-shadow: 4px 4px 0 #000;
+            cursor: pointer;
+        }
+
+        .ds-node.node-tree:hover,
+        .ds-node.node-graph:hover {
+            transform: scale(1.15) translateY(-5px);
+            background: var(--p-yellow);
+        }
+
+        @keyframes nodePulse {
+            0% {
+                transform: scale(0.8);
+                box-shadow: 0 0 0 0 rgba(0, 0, 0, 0.4);
+            }
+
+            70% {
+                transform: scale(1.1);
+                box-shadow: 0 0 0 10px rgba(0, 0, 0, 0);
+            }
+
+            100% {
+                transform: scale(1);
+                box-shadow: 0 0 0 0 rgba(0, 0, 0, 0);
+            }
+        }
+
+        .node-new-animation {
+            animation: nodePulse 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) both;
+        }
+
+        .vis-stage.fading {
+            opacity: 0;
+            transform: scale(0.98) translateY(20px);
+            filter: blur(8px);
+        }
+
+        /* DS Nodes */
+        .ds-node {
+            min-width: 48px;
+            max-width: 150px;
+            height: 48px;
+            background: #fff;
+            border: 3px solid #000;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 800;
+            font-size: 0.8rem;
+            position: relative;
+            transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 2px 2px 0 #000;
+            flex-shrink: 0;
+            padding: 0 10px;
+            user-select: none;
+        }
+
+        .ds-node.node-tree,
+        .ds-node.node-graph {
+            border-radius: 50%;
+            width: 48px;
+            height: 48px;
+            min-width: 48px;
+            box-shadow: 3px 3px 0 #000;
+        }
+
+        .ds-node-val {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            width: 100%;
+            text-align: center;
+        }
+
+        .ds-node.highlight {
+            background: var(--p-yellow);
+            transform: translateY(-5px) scale(1.1);
+            box-shadow: 6px 6px 0 #000;
+        }
+
+        .ds-node.active {
+            background: var(--p-blue);
+            border-color: #3b82f6;
+        }
+
+        .ds-node.new {
+            background: var(--p-green);
+            animation: bounceIn 0.5s ease;
+        }
+
+        .ds-label {
+            position: absolute;
+            top: -24px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.6rem;
+            font-weight: 900;
+            text-transform: uppercase;
+            background: #000;
+            color: #fff;
+            padding: 1px 6px;
+            border-radius: 4px;
+            white-space: nowrap;
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        .ds-arrow {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            color: #000;
+            margin: 0 -4px;
+        }
+
+        /* Linear Containers (Stack/Queue) */
+        .linear-container {
+            display: flex;
+            border: 4px solid #000;
+            padding: 12px;
+            background: #f8fafc;
+            border-radius: 16px;
+            box-shadow: 4px 4px 0 #000;
+            gap: 10px;
+            min-height: 80px;
+            align-items: center;
+            position: relative;
+        }
+
+        .stack-container {
+            flex-direction: column-reverse;
+            border-top: none;
+            padding-top: 30px;
+            border-radius: 0 0 20px 20px;
+            min-width: 100px;
+        }
+
+        .stack-container::before {
+            content: 'STACK';
+            position: absolute;
+            top: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.7rem;
+            font-weight: 900;
+            opacity: 0.4;
+        }
+
+        /* Step Controls */
+        #step-controls {
+            display: none;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .step-btn {
+            height: 28px;
+            padding: 0 10px;
+            border: 2.5px solid #000;
+            border-radius: 9999px;
+            background: #fff;
+            font-size: 0.7rem;
+            font-weight: 800;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            transition: all 0.15s;
+        }
+
+        .step-btn:hover:not(:disabled) {
+            background: #f1f5f9;
+            transform: translateY(-2px);
+            box-shadow: 2px 2px 0 #000;
+        }
+
+        .step-counter {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.62rem;
+            font-weight: 800;
+            padding: 0 10px;
+            border: 2px solid #000;
+            border-radius: 9999px;
+            background: var(--p-yellow);
+            white-space: nowrap;
+            line-height: 26px;
+        }
+
+        .btn-play {
+            background: var(--p-blue);
+            min-width: 60px;
+            justify-content: center;
+        }
+
+        @keyframes bounceIn {
+            0% {
+                transform: scale(0.3);
+                opacity: 0;
+            }
+
+            50% {
+                transform: scale(1.1);
+            }
+
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        /* Footer */
+        footer {
+            height: 28px;
+            background: #000;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            padding: 0 20px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.62rem;
+            flex-shrink: 0;
+        }
+
+        /* Mobile Adjustments */
+        @media (max-width: 768px) {
+            .workspace {
+                flex-direction: column;
+                height: calc(100vh - 100px);
+            }
+
+            .panel-left,
+            .panel-right {
+                width: 100% !important;
+                height: 100% !important;
+                display: none;
+                border-right: none;
+            }
+
+            .panel-right {
+                border-left: none;
+            }
+
+            .controls {
+                display: none;
+            }
+
+            #step-controls {
+                gap: 2px !important;
+                display: flex !important;
+                flex-wrap: nowrap !important;
+                justify-content: center;
+                padding: 4px;
+                width: 100%;
+                overflow: hidden;
+            }
+
+            .step-btn {
+                height: 28px !important;
+                padding: 0 6px !important;
+                font-size: 0.6rem !important;
+                min-width: 28px;
+            }
+
+            #step-counter {
+                padding: 0 6px !important;
+                font-size: 0.55rem !important;
+                white-space: nowrap;
+            }
+
+            #btn-first,
+            #btn-last {
+                display: none !important;
+            }
+
+            .mobile-nav {
+                display: flex !important;
+            }
+        }
+
+        /* Preloader Styles */
+        #global-loader {
+            position: fixed;
+            inset: 0;
+            background: #ffffff;
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.6s ease-out, visibility 0.6s;
+            overflow: hidden;
+            pointer-events: all;
+        }
+
+        #global-loader.fade-out {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+        }
+
+        .loader-content {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: 100%;
+        }
+
+        .loader-logo {
+            width: 80px;
+            height: 80px;
+            z-index: 2;
+            transition: transform 1s cubic-bezier(0.77, 0, 0.175, 1);
+            border-radius: 50%;
+        }
+
+        .loader-text {
+            position: absolute;
+            font-family: 'Outfit', sans-serif;
+            font-size: 3rem;
+            font-weight: 900;
+            letter-spacing: -0.04em;
+            color: #000;
+            opacity: 0;
+            white-space: nowrap;
+            z-index: 1;
+            transform: translateX(0);
+            transition: all 1s cubic-bezier(0.77, 0, 0.175, 1);
+        }
+
+        #global-loader.animating .loader-logo {
+            transform: translateX(-140px);
+        }
+
+        #global-loader.animating .loader-text {
+            opacity: 1;
+            transform: translateX(70px);
+        }
+
+        @media (max-width: 768px) {
+            .loader-logo {
+                width: 60px;
+                height: 60px;
+            }
+
+            .loader-text {
+                font-size: 1.5rem;
+            }
+
+            #global-loader.animating .loader-logo {
+                transform: translateX(-85px);
+            }
+
+            #global-loader.animating .loader-text {
+                transform: translateX(45px);
+            }
+        }
+
+        body.loading-active {
+            overflow: hidden !important;
+        }
+
+        /* Mobile Pill Nav */
+        .mobile-nav {
+            display: none;
+            position: fixed;
+            bottom: 44px;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            justify-content: center;
+            pointer-events: none;
+        }
+
+        @media (max-width: 768px) {
+            .mobile-nav {
+                display: flex;
+            }
+        }
+
+        .pill-toggle {
+            display: flex;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(8px);
+            border: 2px solid #000;
+            border-radius: 9999px;
+            padding: 4px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15), 4px 4px 0 #000;
+            pointer-events: auto;
+            gap: 4px;
+        }
+
+        .pill-btn {
+            padding: 6px 14px;
+            border-radius: 9999px;
+            font-size: 0.62rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            font-family: 'JetBrains Mono', monospace;
+            cursor: pointer;
+            transition: 0.2s;
+            border: none;
+            background: transparent;
+            color: #64748b;
+        }
+
+        .pill-btn.active {
+            background: #000;
+            color: #fff;
+        }
+
+        .pill-btn-more {
+            background: var(--p-yellow);
+            color: #000;
+            border: 1px solid #000;
+        }
+
+        /* ACTIONS MODAL */
+        #actions-modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(12px);
+            z-index: 2000;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+        }
+
+        #actions-modal.active {
+            display: flex;
+        }
+
+        .modal-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            width: 100%;
+            max-width: 320px;
+        }
+
+        .m-action-btn {
+            background: #fff;
+            border: 3px solid #000;
+            border-radius: 16px;
+            padding: 24px 16px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 6px 6px 0 #000;
+        }
+
+        .m-action-btn:active {
+            transform: translate(2px, 2px);
+            box-shadow: 2px 2px 0 #000;
+        }
+
+        .m-action-btn i {
+            font-size: 1.8rem;
+        }
+
+        .m-action-btn span {
+            font-size: 0.7rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .m-btn-run {
+            background: var(--p-green);
+        }
+
+        .m-btn-vis {
+            background: var(--p-blue);
+        }
+
+        .m-section-label {
+            width: 100%;
+            text-align: center;
+            font-family: 'Outfit', sans-serif;
+            font-weight: 800;
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: #64748b;
+            margin-bottom: 12px;
+            margin-top: 24px;
+        }
+
+        .m-lang-switcher {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            justify-content: center;
+            width: 100%;
+            margin-bottom: 20px;
+        }
+
+        .m-lang-switcher .lang-pill {
+            position: relative;
+            padding: 8px 14px;
+            border: 2px solid #000;
+            border-radius: 999px;
+            font-size: 0.65rem;
+            font-weight: 800;
+            background: #fff;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 3px 3px 0 #000;
+        }
+
+        .m-lang-switcher .lang-pill.active {
+            background: #000;
+            color: #fff;
+            transform: translate(1px, 1px);
+            box-shadow: 1px 1px 0 #000;
+        }
+
+        .modal-close {
+            margin-top: 40px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.7rem;
+            font-weight: 800;
+            text-decoration: underline;
+            cursor: pointer;
+        }
+
+        /* Paper Texture Overlay */
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.5' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E");
+            pointer-events: none;
+            z-index: -1;
+            opacity: 0.6;
+        }
+    </style>
+</head>
+
+<body class="loading-active">
+    <div id="global-loader">
+        <div class="loader-content">
+            <img src="../assests/undrlogo.svg" class="loader-logo" alt="Logo">
+            <span class="loader-text">Undrstanding</span>
+        </div>
+    </div>
+
+    <header>
+        <div class="header-left">
+            <a href="../index.html" class="logo-wrap">
+                <span class="logo-text">Undrstanding</span>
+                <span class="logo-badge">VisuaLabs</span>
+            </a>
+        </div>
+
+        <div class="controls">
+            <div class="language-switcher">
+                <div id="switcher-highlight" class="switcher-highlight"></div>
+                <div class="lang-pill active" data-lang="python">PYTHON</div>
+                <div class="lang-pill" data-lang="javascript">JAVASCRIPT</div>
+                <div class="lang-pill" data-lang="cpp">C/C++</div>
+                <div class="lang-pill" data-lang="java">JAVA</div>
+            </div>
+
+            <button id="run-btn" class="btn btn-run">
+                <i class="bi bi-play-fill"></i> Run
+            </button>
+
+            <button class="btn btn-visualize" id="visualise-btn">
+                <i class="bi bi-eye-fill"></i>
+                Visualise
+            </button>
+        </div>
+    </header>
+
+    <div class="mobile-nav">
+        <div class="pill-toggle">
+            <button class="pill-btn active" id="pill-editor" onclick="switchMobileTab('editor')">Editor</button>
+            <button class="pill-btn" id="pill-console" onclick="switchMobileTab('console')">Console</button>
+            <button class="pill-btn" id="pill-view" onclick="switchMobileTab('view')">View</button>
+            <button class="pill-btn pill-btn-more" onclick="toggleActions(true)">Actions</button>
+        </div>
+    </div>
+
+    <!-- Mobile Actions Modal -->
+    <div id="actions-modal">
+        <h2
+            style="font-family:'Outfit',sans-serif;font-weight:900;font-size:1.5rem;margin-bottom:32px;text-transform:uppercase;letter-spacing:-0.5px;">
+            IDE Actions</h2>
+        <div class="m-section-label">Select Language</div>
+        <div class="m-lang-switcher">
+            <div class="lang-pill active" data-lang="python">PYTHON</div>
+            <div class="lang-pill" data-lang="javascript">JAVASCRIPT</div>
+            <div class="lang-pill" data-lang="cpp">C/C++</div>
+            <div class="lang-pill" data-lang="java">JAVA</div>
+        </div>
+
+        <div class="m-section-label">Commands</div>
+        <div class="modal-grid">
+            <div class="m-action-btn m-btn-run" onclick="triggerAction('run')">
+                <i class="bi bi-play-circle-fill"></i>
+                <span>Run Code</span>
+            </div>
+            <div class="m-action-btn m-btn-vis" onclick="triggerAction('visualise')">
+                <i class="bi bi-eye-fill"></i>
+                <span>Visualise</span>
+            </div>
+        </div>
+        <div class="modal-close" onclick="toggleActions(false)">CLOSE MENU</div>
+    </div>
+
+    <div class="workspace">
+        <div class="panel-left">
+            <div class="editor-container-wrapper">
+                <div class="panel-header">
+                    <div class="header-title-wrap">
+                        <i class="bi bi-file-earmark-code" style="color:#94a3b8"></i> Editor
+                    </div>
+                </div>
+                <div id="editor-container"></div>
+            </div>
+
+            <div class="console-container-wrapper" id="panel-console-wrap">
+                <div class="panel-header">
+                    <div class="header-title-wrap">
+                        <i class="bi bi-terminal" style="color:#94a3b8"></i> Console
+                    </div>
+                    <div class="header-actions">
+                        <div class="icon-btn btn-trash" onclick="clearConsole()" title="Clear logs">
+                            <i class="bi bi-trash"></i>
+                        </div>
+                        <div class="icon-btn hidden md:flex" onclick="toggleConsole()" title="Toggle Console">
+                            <i class="bi bi-chevron-down" id="console-toggle-icon"></i>
+                        </div>
+                    </div>
+                </div>
+                <div id="console-output"></div>
+            </div>
+        </div>
+
+        <div class="panel-right">
+            <div class="panel-header">
+                <div class="header-title-wrap">
+                    <i class="bi bi-cpu" style="color:#94a3b8"></i> Visualizer
+                </div>
+                <div id="step-controls">
+                    <button class="step-btn" id="btn-first" title="First step" onclick="goFirst()">
+                        <i class="bi bi-skip-start-fill"></i>
+                    </button>
+                    <button class="step-btn" id="btn-prev" title="Previous step" onclick="stepBack()">
+                        <i class="bi bi-skip-backward-fill"></i>
+                    </button>
+                    <button class="step-btn btn-play" id="btn-play" onclick="togglePlay()">Play</button>
+                    <button class="step-btn" id="btn-next" title="Next step" onclick="stepForward()">
+                        <i class="bi bi-skip-forward-fill"></i>
+                    </button>
+                    <button class="step-btn" id="btn-last" title="Last step" onclick="goLast()">
+                        <i class="bi bi-skip-end-fill"></i>
+                    </button>
+                    <span id="step-counter" class="step-counter">0 / 0</span>
+                </div>
+            </div>
+            <div id="visualizer-container">
+                <div id="vis-content">
+                    <div style="text-align:center; opacity:0.1;">
+                        <i class="bi bi-diagram-3" style="font-size:3rem;"></i>
+                        <p
+                            style="font-family:'JetBrains Mono',monospace;font-size:0.65rem;margin-top:12px;font-weight:800;text-transform:uppercase;letter-spacing:0.15em;">
+                            Ready</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <span id="console-msg">> Load a data structure program and click Run or Visualise.</span>
+    </footer>
+
+    <script>
+        // --- Mobile Navigation Logic ---
+        window.switchMobileTab = function (tab) {
+            const pL = document.querySelector('.panel-left');
+            const pR = document.querySelector('.panel-right');
+            const edWrap = document.querySelector('.editor-container-wrapper');
+            const conWrap = document.querySelector('.console-container-wrapper');
+
+            const pillEd = document.getElementById('pill-editor');
+            const pillCon = document.getElementById('pill-console');
+            const pillVis = document.getElementById('pill-view');
+
+            [pillEd, pillCon, pillVis].forEach(p => p.classList.remove('active'));
+
+            if (tab === 'editor') {
+                pL.style.setProperty('display', 'flex', 'important');
+                pR.style.setProperty('display', 'none', 'important');
+                edWrap.style.display = 'flex';
+                conWrap.style.display = 'none';
+                pillEd.classList.add('active');
+            } else if (tab === 'console') {
+                pL.style.setProperty('display', 'flex', 'important');
+                pR.style.setProperty('display', 'none', 'important');
+                edWrap.style.display = 'none';
+                conWrap.style.display = 'flex';
+                conWrap.style.height = '100%';
+                conWrap.classList.remove('collapsed');
+                pillCon.classList.add('active');
+            } else {
+                pL.style.setProperty('display', 'none', 'important');
+                pR.style.setProperty('display', 'flex', 'important');
+                pillVis.classList.add('active');
+            }
+        };
+
+        function checkDesktopView() {
+            if (window.innerWidth > 768) {
+                const pL = document.querySelector('.panel-left');
+                const pR = document.querySelector('.panel-right');
+                const edWrap = document.querySelector('.editor-container-wrapper');
+                const conWrap = document.querySelector('.console-container-wrapper');
+                pL.style.display = 'flex'; pR.style.display = 'flex';
+                edWrap.style.display = 'flex'; conWrap.style.display = 'flex';
+                conWrap.style.height = '200px';
+            } else {
+                const activePill = document.querySelector('.pill-btn.active');
+                if (activePill) switchMobileTab(activePill.id.replace('pill-', ''));
+            }
+        }
+        window.addEventListener('resize', checkDesktopView);
+        checkDesktopView();
+
+        window.toggleActions = function (show) {
+            document.getElementById('actions-modal').classList.toggle('active', show);
+        };
+
+        window.triggerAction = function (type) {
+            toggleActions(false);
+            if (type === 'run') {
+                document.getElementById('run-btn').click();
+                switchMobileTab('console');
+            } else {
+                document.getElementById('visualise-btn').click();
+                switchMobileTab('view');
+            }
+        };
+
+        // --- Platform Security ---
+        document.addEventListener('copy', (e) => {
+            const isEditor = e.target.closest('#editor-container') || e.target.closest('.monaco-editor');
+            const isConsole = e.target.closest('#console-output');
+            if (!isEditor && !isConsole) {
+                e.preventDefault();
+                log('Platform Security: Copy-paste restricted here.', true);
+            }
+        });
+        document.addEventListener('paste', (e) => {
+            const isEditor = e.target.closest('#editor-container') || e.target.closest('.monaco-editor');
+            if (!isEditor) e.preventDefault();
+        });
+
+        // --- Global State ---
+        let editor, pyodide;
+        let currentLang = 'python';
+        let frames = [];
+        let currentFrame = -1;
+        let isPlaying = false;
+        let playTimer = null;
+
+        const DEFAULTS = {
+            python: `# Python Stack Visualization
+stack = Stack()
+stack.push("Alpha")
+stack.push("Beta")
+stack.push("Gamma")
+stack.pop()
+stack.push("Delta")
+stack.pop()
+print("Stack size:", len(stack))`,
+
+            javascript: `// JavaScript Queue Visualization
+const queue = new Queue();
+console.log("Initializing Queue...");
+
+queue.enqueue("Task 1");
+queue.enqueue("Task 2");
+queue.enqueue("Task 3");
+console.log("Queue after 3 enqueues:", JSON.stringify(queue.items));
+
+const processed = queue.dequeue();
+console.log("Processed:", processed);
+
+queue.enqueue("Task 4");
+console.log("Final Queue:", JSON.stringify(queue.items));
+console.log("Simulation finished.");`,
+
+            cpp: `// C++ Linked List Visualization
+LinkedList list;
+list.insert(100);
+list.insert(200);
+list.insert(300);
+list.delete(); // Removes last
+list.insert(400);`,
+
+            java: `// Node structure
+class Node {
+    public int data;
+    public Node left, right;
+
+    public Node(int d) {
+        this.data = d;
+        left = null;
+        right = null;
+    }
+}
+
+class Main {
+    static void Main() {
+        // Initialize tree nodes
+        Node root = new Node(10);
+        Node n1 = new Node(20);
+        Node n2 = new Node(30);
+        Node n3 = new Node(40);
+
+        // Connect nodes
+        root.left = n1;
+        root.right = n2;
+        n1.left = n3;
+    }
+}`
+        };
+
+        // --- Console Helpers ---
+        function log(msg, isErr) {
+            const area = document.getElementById('console-output');
+            if (!area) return;
+            const t = new Date().toLocaleTimeString([], { hour12: false });
+            const el = document.createElement('div');
+            el.style.cssText = 'margin-bottom:3px;' + (isErr ? 'color:#ef4444;font-weight:700;' : '');
+            el.innerHTML = `<span style="opacity:0.3;margin-right:8px;user-select:none">[${t}]</span>`
+                + String(msg).replace(/</g, '&lt;');
+            area.appendChild(el);
+            area.scrollTop = area.scrollHeight;
+            const f = document.getElementById('console-msg');
+            if (f) f.textContent = '> ' + String(msg);
+        }
+
+        function clearConsole() { document.getElementById('console-output').innerHTML = ''; }
+        function toggleConsole() {
+            const wrap = document.getElementById('panel-console-wrap');
+            wrap.classList.toggle('collapsed');
+            document.getElementById('console-toggle-icon').className = wrap.classList.contains('collapsed') ? 'bi bi-chevron-up' : 'bi bi-chevron-down';
+        }
+
+        function clearVisualiser() {
+            const vc = document.getElementById('vis-content');
+            if (vc) {
+                vc.innerHTML = `
+                    <div style="text-align:center; opacity:0.1;">
+                        <i class="bi bi-diagram-3" style="font-size:3rem;"></i>
+                        <p style="font-family:'JetBrains Mono',monospace;font-size:0.65rem;margin-top:12px;font-weight:800;text-transform:uppercase;letter-spacing:0.15em;">Ready</p>
+                    </div>`;
+            }
+            document.getElementById('step-controls').style.display = 'none';
+        }
+
+        function stopPlay() {
+            if (playTimer) clearInterval(playTimer);
+            isPlaying = false;
+            updateStepUI();
+        }
+
+        // --- Renderer ---
+        function renderFrame(idx) {
+            if (idx < 0 || idx >= frames.length) return;
+            currentFrame = idx;
+            const frame = frames[idx];
+            const vc = document.getElementById('vis-content');
+            vc.innerHTML = '';
+
+            const { type, data, highlightIndex, action } = frame;
+
+            if (frame.error) {
+                const errDiv = document.createElement('div');
+                errDiv.className = 'absolute top-4 left-1/2 -translate-x-1/2 bg-red-500 text-white px-4 py-1 rounded-lg font-black text-[0.6rem] shadow-[4px_4px_0_#000] border-2 border-black z-[1000]';
+                errDiv.textContent = frame.error.toUpperCase();
+                vc.appendChild(errDiv);
+            }
+
+            if (type === 'tree' || type === 'graph') {
+                const wrapper = document.createElement('div');
+                wrapper.className = 'absolute inset-0'; // Clear children but allow coordinate positioning
+                const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+                svg.id = 'edge-layer';
+                svg.setAttribute("width", "100%");
+                svg.setAttribute("height", "100%");
+                svg.setAttribute("style", "position:absolute; top:0; left:0; pointer-events:none; overflow:visible;");
+
+                // Define arrowhead
+                svg.innerHTML = `
+                    <defs>
+                        <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto">
+                            <polygon points="0 0, 10 3.5, 0 7" fill="#000" />
+                        </marker>
+                    </defs>
+                `;
+                wrapper.appendChild(svg);
+
+                if (type === 'tree') {
+                    const coords = calculateTreeCoords(data, vc.offsetWidth, vc.offsetHeight);
+                    const prevData = idx > 0 ? frames[idx - 1].data : null;
+                    const prevNodes = prevData ? getTreeNodes(prevData) : [];
+
+                    coords.forEach((node, i) => {
+                        const el = createDSNode(node.val, i === highlightIndex, 'node-tree');
+                        el.style.position = 'absolute';
+                        el.style.left = `${node.x}px`;
+                        el.style.top = `${node.y}px`;
+
+                        // Only pulse if this node value wasn't in the previous tree state
+                        if (!prevNodes.includes(node.val)) {
+                            el.classList.add('node-new-animation');
+                        }
+
+                        wrapper.appendChild(el);
+                        if (node.pX !== null) {
+                            drawCurvedEdge(svg, node.pX + 24, node.pY + 24, node.x + 24, node.y + 24);
+                        }
+                    });
+                } else {
+                    const nodes = Object.keys(data);
+                    const prevData = idx > 0 ? frames[idx - 1].data : {};
+                    const prevNodes = Object.keys(prevData);
+
+                    const positions = calculateGraphCoords(nodes, vc.offsetWidth, vc.offsetHeight);
+                    nodes.forEach(u => {
+                        data[u].forEach(v => {
+                            if (positions[u] && positions[v]) {
+                                drawCurvedEdge(svg, positions[u].x + 24, positions[u].y + 24, positions[v].x + 24, positions[v].y + 24, true);
+                            }
+                        });
+                    });
+                    nodes.forEach((id, i) => {
+                        const el = createDSNode(id, i === highlightIndex, 'node-graph');
+                        el.style.position = 'absolute';
+                        el.style.left = `${positions[id].x}px`;
+                        el.style.top = `${positions[id].y}px`;
+                        if (!prevNodes.includes(id)) {
+                            el.classList.add('node-new-animation');
+                        }
+                        wrapper.appendChild(el);
+                    });
+                }
+                vc.appendChild(wrapper);
+                fitToViewport(wrapper);
+            } else if (type === 'stack') {
+                const container = document.createElement('div');
+                container.className = 'linear-container stack-container';
+                data.forEach((val, i) => {
+                    const node = document.createElement('div');
+                    node.className = 'ds-node' + (i === highlightIndex ? ' highlight' : '');
+                    if (action === 'push' && i === data.length - 1 && idx === currentFrame) node.classList.add('new');
+
+                    const valSpan = document.createElement('div');
+                    valSpan.className = 'ds-node-val';
+                    valSpan.textContent = val;
+                    node.appendChild(valSpan);
+
+                    if (i === data.length - 1) {
+                        const lbl = document.createElement('div');
+                        lbl.className = 'ds-label'; lbl.textContent = 'TOP';
+                        node.appendChild(lbl);
+                    }
+                    container.appendChild(node);
+                });
+                if (data.length === 0 && !frame.error) {
+                    container.innerHTML = '<span class="opacity-20 italic text-[0.6rem]">Empty Stack</span>';
+                }
+                vc.appendChild(container);
+                fitToViewport(container);
+            } else if (type === 'queue') {
+                const container = document.createElement('div');
+                container.className = 'linear-container';
+                data.forEach((val, i) => {
+                    const node = document.createElement('div');
+                    node.className = 'ds-node' + (i === highlightIndex ? ' highlight' : '');
+                    if (action === 'enqueue' && i === data.length - 1 && idx === currentFrame) node.classList.add('new');
+
+                    const valSpan = document.createElement('div');
+                    valSpan.className = 'ds-node-val';
+                    valSpan.textContent = val;
+                    node.appendChild(valSpan);
+
+                    if (i === 0) {
+                        const lbl = document.createElement('div');
+                        lbl.className = 'ds-label'; lbl.textContent = 'FRONT';
+                        node.appendChild(lbl);
+                    }
+                    if (i === data.length - 1) {
+                        const lbl = document.createElement('div');
+                        lbl.className = 'ds-label'; lbl.textContent = 'REAR';
+                        node.appendChild(lbl);
+                    }
+                    container.appendChild(node);
+                });
+                if (data.length === 0 && !frame.error) {
+                    container.innerHTML = '<span class="opacity-20 italic text-[0.6rem]">Empty Queue</span>';
+                }
+                vc.appendChild(container);
+                fitToViewport(container);
+            } else if (type === 'linkedlist') {
+                const container = document.createElement('div');
+                container.className = 'flex items-center gap-1';
+                data.forEach((val, i) => {
+                    const node = document.createElement('div');
+                    node.className = 'ds-node' + (i === highlightIndex ? ' highlight' : '');
+
+                    const valSpan = document.createElement('div');
+                    valSpan.className = 'ds-node-val';
+                    valSpan.textContent = val;
+                    node.appendChild(valSpan);
+
+                    if (i === 0) {
+                        const lbl = document.createElement('div');
+                        lbl.className = 'ds-label'; lbl.textContent = 'HEAD';
+                        node.appendChild(lbl);
+                    }
+                    container.appendChild(node);
+                    if (i < data.length - 1) {
+                        const arrow = document.createElement('div');
+                        arrow.className = 'ds-arrow';
+                        arrow.innerHTML = '<i class="bi bi-arrow-right"></i>';
+                        container.appendChild(arrow);
+                    }
+                });
+                if (data.length === 0 && !frame.error) {
+                    container.innerHTML = '<span class="opacity-20 italic text-[0.6rem]">Empty List</span>';
+                }
+                vc.appendChild(container);
+                fitToViewport(container);
+            }
+
+            updateStepUI();
+        }
+
+        function createDSNode(val, highlight, extraClass = '') {
+            const node = document.createElement('div');
+            node.className = 'ds-node' + (highlight ? ' highlight' : '') + ' ' + extraClass;
+            const valSpan = document.createElement('div');
+            valSpan.className = 'ds-node-val';
+            valSpan.textContent = val;
+            node.appendChild(valSpan);
+            return node;
+        }
+
+        function drawCurvedEdge(svg, x1, y1, x2, y2, arrow = false) {
+            const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+            const dx = x2 - x1, dy = y2 - y1;
+            const len = Math.sqrt(dx * dx + dy * dy) || 1;
+
+            // Adjust offset to be smaller so lines always show
+            const edgeOffset = 22;
+            const offX = (dx / len) * edgeOffset;
+            const offY = (dy / len) * edgeOffset;
+
+            const midX = (x1 + x2) / 2;
+            const midY = (y1 + y2) / 2; // Straightened for more reliable visibility, can re-add curve if needed
+
+            path.setAttribute("d", `M ${x1 + offX} ${y1 + offY} L ${x2 - offX} ${y2 - offY}`);
+            path.setAttribute("class", "edge-path");
+            path.setAttribute("style", "stroke: #000; stroke-width: 3; fill: none;");
+            if (arrow) path.setAttribute("marker-end", "url(#arrowhead)");
+            svg.appendChild(path);
+        }
+
+        function calculateTreeCoords(root, width, height) {
+            if (!root) return [];
+            const result = [];
+            const levelHeight = 90;
+
+            // First pass: Generate relative coordinates
+            function traverse(node, level, xRangeStart, xRangeEnd, pX = null, pY = null) {
+                if (!node) return;
+                const x = (xRangeStart + xRangeEnd) / 2;
+                const y = level * levelHeight;
+                result.push({ val: node.val, x, y, pX, pY });
+
+                const nextRange = (xRangeEnd - xRangeStart) / 2;
+                traverse(node.left, level + 1, xRangeStart, xRangeStart + nextRange, x, y);
+                traverse(node.right, level + 1, xRangeStart + nextRange, xRangeEnd, x, y);
+            }
+
+            // Virtual width for calculation
+            const virtualWidth = Math.max(width, 600);
+            traverse(root, 0, 0, virtualWidth);
+
+            // Second pass: Bounding box centering
+            if (result.length > 0) {
+                const minX = Math.min(...result.map(n => n.x));
+                const maxX = Math.max(...result.map(n => n.x));
+                const minY = Math.min(...result.map(n => n.y));
+                const maxY = Math.max(...result.map(n => n.y));
+
+                const totalW = maxX - minX;
+                const totalH = maxY - minY;
+
+                const offsetX = (width - 48 - totalW) / 2 - minX;
+                const offsetY = (height - 48 - totalH) / 2 - minY;
+
+                result.forEach(n => {
+                    n.x += offsetX;
+                    n.y += offsetY;
+                    // Fix parent coordinates too
+                    if (n.pX !== null) {
+                        n.pX += offsetX;
+                        n.pY += offsetY;
+                    }
+                });
+            }
+
+            return result;
+        }
+
+        function fitToViewport(el, padding = 40) {
+            const vc = document.getElementById('vis-content');
+            if (!el || !vc) return;
+
+            // Allow DOM to settle for accurate measurement
+            requestAnimationFrame(() => {
+                const contentW = el.scrollWidth || el.offsetWidth;
+                const contentH = el.scrollHeight || el.offsetHeight;
+                const stageW = vc.offsetWidth - padding;
+                const stageH = vc.offsetHeight - padding;
+
+                const scaleX = stageW / contentW;
+                const scaleY = stageH / contentH;
+                const scale = Math.min(1, scaleX, scaleY);
+
+                if (scale < 1) {
+                    el.style.transformOrigin = 'center';
+                    el.style.transform = `scale(${scale})`;
+                }
+            });
+        }
+
+        function calculateGraphCoords(nodes, width, height) {
+            const count = nodes.length;
+            const centerX = width / 2;
+            const centerY = height / 2;
+            // Adaptive radius
+            const radius = Math.min(centerX, centerY) * (count < 5 ? 0.5 : 0.75);
+            const positions = {};
+            nodes.forEach((id, i) => {
+                const angle = (i / count) * 2 * Math.PI - Math.PI / 2;
+                positions[id] = {
+                    x: centerX + radius * Math.cos(angle) - 24,
+                    y: centerY + radius * Math.sin(angle) - 24
+                };
+            });
+            return positions;
+        }
+
+        function getTreeNodes(root) {
+            const nodes = [];
+            function walk(n) { if (n) { nodes.push(n.val); walk(n.left); walk(n.right); } }
+            walk(root);
+            return nodes;
+        }
+
+        // --- Step Engine ---
+        function updateStepUI() {
+            document.getElementById('step-counter').textContent = `${currentFrame + 1} / ${frames.length}`;
+            document.getElementById('btn-prev').disabled = currentFrame <= 0;
+            document.getElementById('btn-next').disabled = currentFrame >= frames.length - 1;
+            document.getElementById('btn-play').textContent = isPlaying ? 'Pause' : 'Play';
+        }
+
+        function stepForward() { if (currentFrame < frames.length - 1) renderFrame(currentFrame + 1); }
+        function stepBack() { if (currentFrame > 0) renderFrame(currentFrame - 1); }
+        function goFirst() { renderFrame(0); }
+        function goLast() { renderFrame(frames.length - 1); }
+
+        function togglePlay() {
+            if (isPlaying) {
+                clearInterval(playTimer);
+                isPlaying = false;
+            } else {
+                if (currentFrame >= frames.length - 1) currentFrame = -1;
+                isPlaying = true;
+                playTimer = setInterval(() => {
+                    if (currentFrame < frames.length - 1) stepForward();
+                    else togglePlay();
+                }, 1000);
+            }
+            updateStepUI();
+        }
+
+        // --- DS Logic Emulation ---
+        function generateFrames(code) {
+            const lines = code.split('\n');
+            let ds = [];
+            let treeRoot = null;
+            let adj = {};
+            let nodes = {}; // Track manual node variables
+            let type = 'stack';
+            let mockFrames = [];
+            const MAX_SIZE = 8;
+
+            lines.forEach(line => {
+                const l = line.trim().toLowerCase();
+                const cleanLine = line.split('//')[0].split('/*')[0].trim();
+                if (!cleanLine) return;
+
+                let lastState = mockFrames.length > 0 ? JSON.stringify(mockFrames[mockFrames.length - 1].data) : null;
+
+                // Structure Type Detection
+                if (l.includes('stack')) type = 'stack';
+                else if (l.includes('queue')) type = 'queue';
+                else if (l.includes('linkedlist') || l.includes('list<')) type = 'linkedlist';
+                else if (l.includes('tree') || l.includes('bst') || l.includes('node ')) type = 'tree';
+                else if (l.includes('graph')) type = 'graph';
+
+                // 1. Manual Node Creation
+                const nodeMatch = cleanLine.match(/(?:Node|var|let|const)\s+(\w+)\s*=\s*new\s+Node\((.*?)\)/i);
+                if (nodeMatch) {
+                    const varName = nodeMatch[1];
+                    const val = nodeMatch[2].replace(/['"]/g, '').trim();
+                    nodes[varName] = { val, left: null, right: null };
+                    if (!treeRoot) treeRoot = nodes[varName];
+
+                    const newState = JSON.stringify(treeRoot);
+                    if (newState !== lastState) {
+                        mockFrames.push({ type: 'tree', data: JSON.parse(newState), action: 'node_create' });
+                    }
+                }
+
+                // 2. Manual Linkage
+                const linkMatch = cleanLine.match(/(\w+)\.(left|right)\s*=\s*(\w+)/i);
+                if (linkMatch) {
+                    const parent = linkMatch[1];
+                    const side = linkMatch[2].toLowerCase();
+                    const child = linkMatch[3];
+                    if (nodes[parent] && nodes[child]) {
+                        nodes[parent][side] = nodes[child];
+                        const newState = JSON.stringify(treeRoot);
+                        if (newState !== lastState) {
+                            mockFrames.push({ type: 'tree', data: JSON.parse(newState), action: 'link' });
+                        }
+                    }
+                }
+
+                // 3. BST Patterns
+                const treeMatch = cleanLine.match(/\.(?:insert|addNode)\((.*?)\)/);
+                if (treeMatch && type === 'tree') {
+                    const val = treeMatch[1].replace(/['"]/g, '').trim();
+                    treeRoot = insertBST(treeRoot, val);
+                    const newState = JSON.stringify(treeRoot);
+                    if (newState !== lastState) {
+                        mockFrames.push({ type, data: JSON.parse(newState), action: 'push' });
+                    }
+                }
+
+                // 4. Graph Patterns
+                const graphMatch = cleanLine.match(/\.addEdge\((.*?),(.*?)\)/);
+                if (graphMatch && type === 'graph') {
+                    const u = graphMatch[1].replace(/['"]/g, '').trim();
+                    const v = graphMatch[2].replace(/['"]/g, '').trim();
+                    if (!adj[u]) adj[u] = [];
+                    if (!adj[v]) adj[v] = [];
+                    if (!adj[u].includes(v)) adj[u].push(v);
+                    const newState = JSON.stringify(adj);
+                    if (newState !== lastState) {
+                        mockFrames.push({ type, data: JSON.parse(newState), action: 'edge' });
+                    }
+                }
+
+                // 5. Linear Patterns
+                const pushMatch = cleanLine.match(/\.(?:push|enqueue|insert|push_back|emplace)\((.*?)\)/);
+                const popMatch = cleanLine.match(/\.(?:pop|dequeue|delete|pop_back)\(\)/);
+
+                if (pushMatch && type !== 'tree') {
+                    const val = pushMatch[1].replace(/['"]/g, '').trim();
+                    ds.push(val);
+                    const newState = JSON.stringify(ds);
+                    if (newState !== lastState) {
+                        mockFrames.push({ type, data: [...ds], action: 'push', highlightIndex: ds.length - 1 });
+                    }
+                } else if (popMatch && type !== 'tree') {
+                    if (ds.length > 0) {
+                        if (type === 'queue') ds.shift(); else ds.pop();
+                        const newState = JSON.stringify(ds);
+                        if (newState !== lastState) {
+                            mockFrames.push({ type, data: [...ds], action: 'pop' });
+                        }
+                    }
+                }
+            });
+            return mockFrames;
+        }
+
+        function insertBST(root, val) {
+            if (!root) return { val, left: null, right: null };
+            if (val < root.val) root.left = insertBST(root.left, val);
+            else root.right = insertBST(root.right, val);
+            return root;
+        }
+
+        // --- Buttons ---
+        document.getElementById('run-btn').addEventListener('click', async function () {
+            if (!editor) return;
+            const code = editor.getValue();
+            const area = document.getElementById('console-output');
+            if (area) area.innerHTML = '';
+
+            stopPlay();
+            clearVisualiser();
+
+            try {
+                // Improved detection: ignore standard comments, look for specific non-JS keywords
+                const cleanCode = code.replace(/\/\/.*$/gm, '').replace(/\/\*[\s\S]*?\*\//g, '');
+                const isStructuralOnly = cleanCode.includes('public class') ||
+                    cleanCode.includes('static void') ||
+                    cleanCode.includes('#include') ||
+                    cleanCode.includes('std::') ||
+                    (currentLang === 'cpp' && !cleanCode.includes('function') && !cleanCode.includes('console.log')) ||
+                    (currentLang === 'java' && !cleanCode.includes('function') && !cleanCode.includes('console.log'));
+
+                if (currentLang === 'javascript' && !isStructuralOnly) {
+                    log('Executing Javascript...', false);
+                    const oldLog = console.log;
+                    const oldWarn = console.warn;
+                    const oldInfo = console.info;
+                    const oldErr = console.error;
+
+                    const proxyLog = (...args) => {
+                        log(args.map(a => typeof a === 'object' ? JSON.stringify(a) : String(a)).join(' '), false);
+                    };
+                    const proxyErr = (...args) => {
+                        log(args.map(a => typeof a === 'object' ? JSON.stringify(a) : String(a)).join(' '), true);
+                    };
+
+                    console.log = proxyLog;
+                    console.info = proxyLog;
+                    console.warn = proxyLog;
+                    console.error = proxyErr;
+
+                    try {
+                        const mocks = `
+                            class Stack { constructor(){this.items=[]} push(x){this.items.push(x)} pop(){return this.items.pop()} }
+                            class Queue { constructor(){this.items=[]} enqueue(x){this.items.push(x)} dequeue(){return this.items.shift()} }
+                            class LinkedList { constructor(){this.items=[]} insert(x){this.items.push(x)} delete(){return this.items.pop()} }
+                            class Tree { constructor(){this.root=null} insert(x){if(!this.root)this.root={v:x};} }
+                            class Graph { constructor(){this.adj={}} addEdge(u,v){if(!this.adj[u])this.adj[u]=[]; this.adj[u].push(v);} }
+                        `;
+                        const asyncWrapper = '(async function() { ' + mocks + code + ' \n})();';
+                        await eval(asyncWrapper);
+                    } finally {
+                        console.log = oldLog;
+                        console.warn = oldWarn;
+                        console.info = oldInfo;
+                        console.error = oldErr;
+                    }
+                    log('Execution finished.', false);
+                } else if (currentLang === 'python' && !isStructuralOnly) {
+                    log('Initializing execution environment...', false);
+                    if (!pyodide) {
+                        const oldRequire = window.require;
+                        window.require = undefined;
+                        pyodide = await loadPyodide({
+                            indexURL: "https://cdn.jsdelivr.net/pyodide/v0.24.1/full/"
+                        });
+                        window.require = oldRequire;
+                        pyodide.runPython(`
+import sys
+import io
+import js
+class JSStdout(io.StringIO):
+    def write(self, s):
+        if s.strip():
+            js.log(s.strip(), False)
+        return len(s)
+sys.stdout = JSStdout()
+
+class Stack:
+    def __init__(self): self.items = []
+    def push(self, x): self.items.append(x)
+    def pop(self): return self.items.pop() if self.items else None
+    def __len__(self): return len(self.items)
+
+class Queue:
+    def __init__(self): self.items = []
+    def enqueue(self, x): self.items.append(x)
+    def dequeue(self): return self.items.pop(0) if self.items else None
+
+class LinkedList:
+    def __init__(self): self.items = []
+    def insert(self, x): self.items.append(x)
+    def delete(self): self.items.pop() if self.items else None
+
+class Tree:
+    def __init__(self): self.root = None
+    def insert(self, x): pass
+
+class Graph:
+    def __init__(self): self.adj = {}
+    def addEdge(self, u, v): pass
+                        `);
+                    }
+                    log('Executing Python...', false);
+                    try {
+                        await pyodide.runPythonAsync(code);
+                        log('Execution finished.', false);
+                    } catch (pyErr) {
+                        if (pyErr.message.includes('SyntaxError')) {
+                            log('Syntax Error: Please ensure you have selected the correct language for execution.', true);
+                        } else {
+                            log('Execution Error: ' + pyErr.message.split('\n').pop(), true);
+                        }
+                    }
+                } else {
+                    log('Analyzing structural logic (Static analysis active for C++/Java)...', false);
+                    const mock_frames = generateFrames(code);
+                    let detected = "None";
+                    if (code.toLowerCase().includes('stack')) detected = "Stack";
+                    else if (code.toLowerCase().includes('queue')) detected = "Queue";
+                    else if (code.toLowerCase().includes('tree') || code.toLowerCase().includes('node')) detected = "Tree";
+                    else if (code.toLowerCase().includes('list')) detected = "LinkedList";
+
+                    log('Structure Target: ' + detected);
+                    log('Processing steps...');
+                    await new Promise(r => setTimeout(r, 600));
+
+                    log(`Extracted ${mock_frames.length} operational states.`, true);
+                    log('Analysis finished.', false);
+                }
+            } catch (e) {
+                log('Execution Failed: ' + e.message.split('\n')[0], true);
+            }
+        });
+
+        document.getElementById('visualise-btn').addEventListener('click', async () => {
+            const code = editor.getValue();
+            const area = document.getElementById('console-output');
+            if (area) area.innerHTML = '';
+
+            stopPlay();
+            const vc = document.getElementById('vis-content');
+            vc.classList.add('fading');
+
+            try {
+                log('Sending payload to backend analyzer...', false);
+                await new Promise(r => setTimeout(r, 400));
+
+                frames = generateFrames(code);
+                if (frames.length > 0) {
+                    let detected = "Stack";
+                    if (code.toLowerCase().includes('queue')) detected = "Queue";
+                    else if (code.toLowerCase().includes('list')) detected = "LinkedList";
+
+                    log('Structure Confirmed: ' + detected);
+                    log('Generating state machines...', false);
+                    log(`Captured ${frames.length} structural steps. Ready to play.`, true);
+
+                    document.getElementById('step-controls').style.display = 'flex';
+                    vc.classList.remove('fading');
+                    renderFrame(0);
+                } else {
+                    log('No valid DS operations found.', true);
+                    vc.classList.remove('fading');
+                }
+            } catch (e) {
+                log('Backend Error: ' + e.message, true);
+                vc.classList.remove('fading');
+            }
+        });
+
+        // --- Monaco Init ---
+        require.config({ paths: { vs: 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.46.0/min/vs' } });
+        require(['vs/editor/editor.main'], function () {
+            editor = monaco.editor.create(document.getElementById('editor-container'), {
+                value: DEFAULTS.python,
+                language: 'python',
+                theme: 'vs-dark',
+                automaticLayout: true,
+                fontSize: 14,
+                minimap: { enabled: false },
+                scrollBeyondLastLine: false,
+                lineHeight: 1.7,
+                padding: { top: 16 },
+                roundedSelection: true,
+                fontFamily: 'JetBrains Mono'
+            });
+
+            editor.onDidChangeModelContent(() => {
+                stopPlay();
+                clearVisualiser();
+            });
+        });
+
+        // --- Language Switcher ---
+        document.querySelectorAll('.lang-pill').forEach(pill => {
+            pill.addEventListener('click', function () {
+                document.querySelectorAll('.lang-pill').forEach(p => p.classList.remove('active'));
+                this.classList.add('active');
+                currentLang = this.dataset.lang;
+
+                const h = document.getElementById('switcher-highlight');
+                h.style.width = this.offsetWidth + 'px';
+                h.style.left = this.offsetLeft + 'px';
+                h.style.opacity = '1';
+
+                const ml = (currentLang === 'python' || currentLang === 'javascript') ? currentLang : 'cpp';
+                monaco.editor.setModelLanguage(editor.getModel(), ml);
+                editor.setValue(DEFAULTS[currentLang]);
+
+                stopPlay();
+                clearVisualiser();
+            });
+        });
+
+        function initSwitcher() {
+            const active = document.querySelector('.language-switcher .lang-pill.active');
+            const h = document.getElementById('switcher-highlight');
+            if (active && h) {
+                h.style.width = active.offsetWidth + 'px';
+                h.style.left = active.offsetLeft + 'px';
+                // Trigger reflow then show
+                setTimeout(() => {
+                    h.classList.add('initialized');
+                }, 50);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', initSwitcher);
+        window.addEventListener('load', initSwitcher); // Backup for slow font loads
+
+        // --- Global Load Handler ---
+        window.addEventListener('load', () => {
+            const loader = document.getElementById('global-loader');
+            if (loader) {
+                // Trigger animation
+                requestAnimationFrame(() => {
+                    requestAnimationFrame(() => {
+                        loader.classList.add('animating');
+                    });
+                });
+
+                // Hide after small delay to let logo split breathe
+                setTimeout(() => {
+                    loader.classList.add('fade-out');
+                    document.body.classList.remove('loading-active');
+                    setTimeout(() => loader.remove(), 800);
+                }, 1500);
+            }
+        });
+    </script>
+    <script src="../content/js/script.js"></script>
+</body>
+
+</html>
