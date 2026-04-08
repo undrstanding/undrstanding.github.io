@@ -86,7 +86,7 @@
         }
 
         .logo-badge {
-            background: #0d9488;
+            background: #6367FF;
             color: #fff;
             font-size: 0.95rem;
             padding: 2px 14px;
@@ -1715,7 +1715,7 @@ public class Main {
         //  Predefined Backend Visualization Engine
         // ---------------------------------------------------------------------------
         const PREDEFINED_ALGOS = {
-            selectionSort: function(arr) {
+            selectionSort: function (arr) {
                 let frames = [];
                 let data = [...arr];
                 frames.push({ type: 'sort_highlight', data: [...data], highlight: [] });
@@ -1732,13 +1732,13 @@ public class Main {
                         let temp = data[i];
                         data[i] = data[minIdx];
                         data[minIdx] = temp;
-                        frames.push({ type: 'swap', data: [...data], before: [...frames[frames.length-1].data], highlight: [i, minIdx] });
+                        frames.push({ type: 'swap', data: [...data], before: [...frames[frames.length - 1].data], highlight: [i, minIdx] });
                     }
                 }
                 frames.push({ type: 'sort_highlight', data: [...data], highlight: [] });
                 return frames;
             },
-            bubbleSort: function(arr) {
+            bubbleSort: function (arr) {
                 let frames = [];
                 let data = [...arr];
                 frames.push({ type: 'sort_highlight', data: [...data], highlight: [] });
@@ -1749,14 +1749,14 @@ public class Main {
                             let temp = data[j];
                             data[j] = data[j + 1];
                             data[j + 1] = temp;
-                            frames.push({ type: 'swap', data: [...data], before: [...frames[frames.length-1].data], highlight: [j, j+1] });
+                            frames.push({ type: 'swap', data: [...data], before: [...frames[frames.length - 1].data], highlight: [j, j + 1] });
                         }
                     }
                 }
                 frames.push({ type: 'sort_highlight', data: [...data], highlight: [] });
                 return frames;
             },
-            insertionSort: function(arr) {
+            insertionSort: function (arr) {
                 let frames = [];
                 let data = [...arr];
                 frames.push({ type: 'sort_highlight', data: [...data], highlight: [] });
@@ -1766,20 +1766,20 @@ public class Main {
                     frames.push({ type: 'sort_highlight', data: [...data], highlight: [i, j] });
                     while (j >= 0 && data[j] > key) {
                         data[j + 1] = data[j];
-                        frames.push({ type: 'swap', data: [...data], before: [...frames[frames.length-1].data], highlight: [j, j+1] });
+                        frames.push({ type: 'swap', data: [...data], before: [...frames[frames.length - 1].data], highlight: [j, j + 1] });
                         j = j - 1;
-                        if(j>=0) frames.push({ type: 'sort_highlight', data: [...data], highlight: [j+1, j] });
+                        if (j >= 0) frames.push({ type: 'sort_highlight', data: [...data], highlight: [j + 1, j] });
                     }
                     data[j + 1] = key;
                 }
                 frames.push({ type: 'sort_highlight', data: [...data], highlight: [] });
                 return frames;
             },
-            mergeSort: function(arr) {
+            mergeSort: function (arr) {
                 let frames = [];
                 let data = [...arr];
                 frames.push({ type: 'sort_highlight', data: [...data], highlight: [], activeRange: [0, data.length - 1] });
-                
+
                 function merge(l, m, r) {
                     frames.push({ type: 'sort_highlight', data: [...data], highlight: [], activeRange: [l, r] });
                     let n1 = m - l + 1;
@@ -1788,10 +1788,10 @@ public class Main {
                     let R = new Array(n2);
                     for (let i = 0; i < n1; i++) L[i] = data[l + i];
                     for (let j = 0; j < n2; j++) R[j] = data[m + 1 + j];
-                    
+
                     let i = 0, j = 0, k = l;
                     while (i < n1 && j < n2) {
-                        frames.push({ type: 'sort_highlight', data: [...data], highlight: [k, l+i, m+1+j], activeRange: [l, r] });
+                        frames.push({ type: 'sort_highlight', data: [...data], highlight: [k, l + i, m + 1 + j], activeRange: [l, r] });
                         let prev = [...data];
                         if (L[i] <= R[j]) {
                             data[k] = L[i];
@@ -1817,7 +1817,7 @@ public class Main {
                         j++; k++;
                     }
                 }
-                
+
                 function sort(l, r) {
                     if (l >= r) return;
                     frames.push({ type: 'sort_highlight', data: [...data], highlight: [], activeRange: [l, r] });
@@ -1826,14 +1826,14 @@ public class Main {
                     sort(m + 1, r);
                     merge(l, m, r);
                 }
-                
+
                 sort(0, data.length - 1);
                 frames.push({ type: 'sort_highlight', data: [...data], highlight: [] });
                 return frames;
             },
-            binarySearch: function(arr, target) {
+            binarySearch: function (arr, target) {
                 let frames = [];
-                let data = [...arr].sort((a,b)=>a-b); // Ensure sorted
+                let data = [...arr].sort((a, b) => a - b); // Ensure sorted
                 frames.push({ type: 'searching', data: [...data], highlight: [-1, -1, -1, -1] });
                 let left = 0;
                 let right = data.length - 1;
@@ -1854,12 +1854,12 @@ public class Main {
                 if (found === -1) frames.push({ type: 'searching', data: [...data], highlight: [-1, -1, -1, -1] });
                 return frames;
             },
-            linearSearch: function(arr, target) {
+            linearSearch: function (arr, target) {
                 let frames = [];
                 let data = [...arr];
                 frames.push({ type: 'searching', data: [...data], highlight: [-1, -1, -1, -1] });
                 let found = -1;
-                for(let i=0; i<data.length; i++) {
+                for (let i = 0; i < data.length; i++) {
                     frames.push({ type: 'searching', data: [...data], highlight: [-1, i, -1, -1] });
                     if (data[i] === target) {
                         found = i;
@@ -1870,7 +1870,7 @@ public class Main {
                 if (found === -1) frames.push({ type: 'searching', data: [...data], highlight: [-1, -1, -1, -1] });
                 return frames;
             },
-            quickSort: function(arr) {
+            quickSort: function (arr) {
                 let frames = [];
                 let data = [...arr];
                 frames.push({ type: 'sort_highlight', data: [...data], highlight: [], activeRange: [0, data.length - 1] });
@@ -1890,13 +1890,13 @@ public class Main {
                             i++;
                             if (i !== j) {
                                 swap(i, j);
-                                frames.push({ type: 'swap', data: [...data], before: [...frames[frames.length-1].data], highlight: [i, j], activeRange: [low, high] });
+                                frames.push({ type: 'swap', data: [...data], before: [...frames[frames.length - 1].data], highlight: [i, j], activeRange: [low, high] });
                             }
                         }
                     }
                     if (i + 1 !== high) {
                         swap(i + 1, high);
-                        frames.push({ type: 'swap', data: [...data], before: [...frames[frames.length-1].data], highlight: [i + 1, high], activeRange: [low, high] });
+                        frames.push({ type: 'swap', data: [...data], before: [...frames[frames.length - 1].data], highlight: [i + 1, high], activeRange: [low, high] });
                     }
                     return (i + 1);
                 }
@@ -1914,7 +1914,7 @@ public class Main {
                 frames.push({ type: 'sort_highlight', data: [...data], highlight: [] });
                 return frames;
             },
-            heapSort: function(arr) {
+            heapSort: function (arr) {
                 let frames = [];
                 let data = [...arr];
                 frames.push({ type: 'sort_highlight', data: [...data], highlight: [] });
@@ -1923,7 +1923,7 @@ public class Main {
                     let temp = data[i];
                     data[i] = data[j];
                     data[j] = temp;
-                    frames.push({ type: 'swap', data: [...data], before: [...frames[frames.length-1].data], highlight: [i, j], activeRange: [0, bRange] });
+                    frames.push({ type: 'swap', data: [...data], before: [...frames[frames.length - 1].data], highlight: [i, j], activeRange: [0, bRange] });
                 }
 
                 function heapify(n, i) {
@@ -1955,11 +1955,11 @@ public class Main {
                 frames.push({ type: 'sort_highlight', data: [...data], highlight: [] });
                 return frames;
             },
-            countingSort: function(arr) {
+            countingSort: function (arr) {
                 let frames = [];
                 let data = [...arr];
                 frames.push({ type: 'sort_highlight', data: [...data], highlight: [] });
-                
+
                 let max = Math.max(...data);
                 let min = Math.min(...data);
                 let range = max - min + 1;
@@ -1983,7 +1983,7 @@ public class Main {
                 frames.push({ type: 'sort_highlight', data: [...data], highlight: [] });
                 return frames;
             },
-            bogoSort: function(arr) {
+            bogoSort: function (arr) {
                 let frames = [];
                 let data = [...arr];
                 frames.push({ type: 'sort_highlight', data: [...data], highlight: [] });
@@ -2003,7 +2003,7 @@ public class Main {
                         let temp = data[i];
                         data[i] = data[j];
                         data[j] = temp;
-                        frames.push({ type: 'swap', data: [...data], before: [...frames[frames.length-1].data], highlight: [i, j] });
+                        frames.push({ type: 'swap', data: [...data], before: [...frames[frames.length - 1].data], highlight: [i, j] });
                     }
                     attempts++;
                 }
@@ -2014,51 +2014,51 @@ public class Main {
         };
 
         function simulateBackend(code) {
-           // 1. Extract array
-           const arrMatch = code.match(/\[([\s\d,.-]+)\]/) || code.match(/\{([\s\d,.-]+)\}/);
-           let arr = [];
-           if (arrMatch) {
-               const str = arrMatch[1] || arrMatch[2];
-               arr = str.split(',').map(s => parseInt(s.trim())).filter(n => !isNaN(n));
-           } 
-           if (arr.length === 0) {
-               arr = [64, 25, 12, 22, 11]; // default fallback
-           }
+            // 1. Extract array
+            const arrMatch = code.match(/\[([\s\d,.-]+)\]/) || code.match(/\{([\s\d,.-]+)\}/);
+            let arr = [];
+            if (arrMatch) {
+                const str = arrMatch[1] || arrMatch[2];
+                arr = str.split(',').map(s => parseInt(s.trim())).filter(n => !isNaN(n));
+            }
+            if (arr.length === 0) {
+                arr = [64, 25, 12, 22, 11]; // default fallback
+            }
 
-           // 2. Extract target (for search)
-           let target = 7; // default
-           const targetVarMatch = code.match(/(?:target|let x|int x)\s*=\s*(-?\d+)/i);
-           const callMatch = code.match(/(?:search|binary|linear)[\w]*\s*\([^,]*,[^]*?(-?\d+)\s*\)/i);
-           const genericCallMatch = code.match(/,\s*(-?\d+)\s*\)/);
-           
-           if (targetVarMatch) {
-               target = parseInt(targetVarMatch[1]);
-           } else if (callMatch) {
-               target = parseInt(callMatch[1]);
-           } else if (genericCallMatch) {
-               target = parseInt(genericCallMatch[1]);
-           }
+            // 2. Extract target (for search)
+            let target = 7; // default
+            const targetVarMatch = code.match(/(?:target|let x|int x)\s*=\s*(-?\d+)/i);
+            const callMatch = code.match(/(?:search|binary|linear)[\w]*\s*\([^,]*,[^]*?(-?\d+)\s*\)/i);
+            const genericCallMatch = code.match(/,\s*(-?\d+)\s*\)/);
 
-           // 3. Detect Algorithm
-           const lowercaseCode = code.toLowerCase();
-           let algo = 'selectionSort'; // default
-           if (lowercaseCode.includes('binary')) algo = 'binarySearch';
-           else if (lowercaseCode.includes('linear')) algo = 'linearSearch';
-           else if (lowercaseCode.includes('merge')) algo = 'mergeSort';
-           else if (lowercaseCode.includes('quick')) algo = 'quickSort';
-           else if (lowercaseCode.includes('heap')) algo = 'heapSort';
-           else if (lowercaseCode.includes('counting')) algo = 'countingSort';
-           else if (lowercaseCode.includes('bogo')) algo = 'bogoSort';
-           else if (lowercaseCode.includes('bubble')) algo = 'bubbleSort';
-           else if (lowercaseCode.includes('insertion')) algo = 'insertionSort';
-           else if (lowercaseCode.includes('selection')) algo = 'selectionSort';
+            if (targetVarMatch) {
+                target = parseInt(targetVarMatch[1]);
+            } else if (callMatch) {
+                target = parseInt(callMatch[1]);
+            } else if (genericCallMatch) {
+                target = parseInt(genericCallMatch[1]);
+            }
 
-           const generatedFrames = PREDEFINED_ALGOS[algo](arr, target);
-           return {
-               frames: generatedFrames,
-               algoName: algo,
-               jsAnySwaps: algo.includes('Sort')
-           };
+            // 3. Detect Algorithm
+            const lowercaseCode = code.toLowerCase();
+            let algo = 'selectionSort'; // default
+            if (lowercaseCode.includes('binary')) algo = 'binarySearch';
+            else if (lowercaseCode.includes('linear')) algo = 'linearSearch';
+            else if (lowercaseCode.includes('merge')) algo = 'mergeSort';
+            else if (lowercaseCode.includes('quick')) algo = 'quickSort';
+            else if (lowercaseCode.includes('heap')) algo = 'heapSort';
+            else if (lowercaseCode.includes('counting')) algo = 'countingSort';
+            else if (lowercaseCode.includes('bogo')) algo = 'bogoSort';
+            else if (lowercaseCode.includes('bubble')) algo = 'bubbleSort';
+            else if (lowercaseCode.includes('insertion')) algo = 'insertionSort';
+            else if (lowercaseCode.includes('selection')) algo = 'selectionSort';
+
+            const generatedFrames = PREDEFINED_ALGOS[algo](arr, target);
+            return {
+                frames: generatedFrames,
+                algoName: algo,
+                jsAnySwaps: algo.includes('Sort')
+            };
         }
 
         // ---------------------------------------------------------------------------
@@ -2069,7 +2069,7 @@ public class Main {
             const code = editor.getValue();
             const area = document.getElementById('console-output');
             if (area) area.innerHTML = '';
-            
+
             stopPlay();
             clearVisualizer();
             runType = 'plain';
@@ -2079,7 +2079,7 @@ public class Main {
                     log('Executing Javascript...', 'status');
                     // Capture console.log
                     const oldLog = console.log;
-                    console.log = function(...args) {
+                    console.log = function (...args) {
                         log(args.map(a => typeof a === 'object' ? JSON.stringify(a) : String(a)).join(' '), true);
                     };
                     try {
@@ -2119,7 +2119,7 @@ sys.stdout = JSStdout()
                     const res = simulateBackend(code);
                     log('Algorithm Detected: ' + res.algoName.replace('Sort', ' Sort').replace('Search', ' Search'));
                     log('Executing...');
-                    
+
                     // Sleep visually to simulate latency
                     await new Promise(r => setTimeout(r, 600));
 
@@ -2137,8 +2137,8 @@ sys.stdout = JSStdout()
                     }
                     log('Execution finished.', 'status');
                 }
-            } catch (e) { 
-                log('Execution Failed: ' + e.message, true); 
+            } catch (e) {
+                log('Execution Failed: ' + e.message, true);
             } finally {
                 runType = null;
             }
@@ -2152,31 +2152,31 @@ sys.stdout = JSStdout()
             const code = editor.getValue();
             const area = document.getElementById('console-output');
             if (area) area.innerHTML = ''; // Fresh console for new capture
-            
+
             stopPlay();
             showStepControls(false);
 
             try {
                 log('Sending payload to backend analyzer...', 'status');
-                
+
                 // Simulate network
                 await new Promise(r => setTimeout(r, 400));
-                
+
                 const res = simulateBackend(code);
                 frames = res.frames;
                 jsAnySwaps = res.jsAnySwaps;
                 currentFrame = -1;
-                
+
                 log('Algorithm Confirmed: ' + res.algoName.replace('Sort', ' Sort').replace('Search', ' Search'), 'status');
                 log('Initial Data: [' + res.frames[0].data.join(', ') + ']', 'status');
-                
+
                 if (!res.jsAnySwaps) log('Search Target Extracted. Building animations...', 'status');
                 else log('Generating sort state machines...', 'status');
 
                 log('Captured ' + frames.length + ' structural steps. Ready to play.', true);
                 showStepControls(true);
                 showFrame(0);
-            } catch(e) {
+            } catch (e) {
                 log('Backend Error: ' + e.message, true);
             }
         });
