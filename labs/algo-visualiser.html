@@ -450,8 +450,9 @@
 
         /* Search Visuals (Squares) */
         .square {
-            width: 54px;
-            height: 54px;
+            width: 100%;
+            max-width: 54px;
+            aspect-ratio: 1;
             background: #fff;
             border: 3.5px solid #000;
             border-radius: 12px;
@@ -460,7 +461,7 @@
             justify-content: center;
             font-family: 'JetBrains Mono', monospace;
             font-weight: 800;
-            font-size: 1.1rem;
+            font-size: clamp(0.6rem, 2vw, 1.1rem);
             position: relative;
             transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             box-shadow: 4px 4px 0 #000;
