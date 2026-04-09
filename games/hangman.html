@@ -5,15 +5,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hangman Quiz | Undrstanding</title>
-    <meta name="description" content="Build your understanding of tech terminology with the Undrstanding Hangman Quiz. A minimalist word game challenging your knowledge of computer science concepts.">
-    <meta name="keywords" content="undrstanding, understanding tech, tech hangman, cs terms, programming quiz, educational word game, computer science concepts">
+    <meta name="description"
+        content="Build your understanding of tech terminology with the Undrstanding Hangman Quiz. A minimalist word game challenging your knowledge of computer science concepts.">
+    <meta name="keywords"
+        content="undrstanding, understanding tech, tech hangman, cs terms, programming quiz, educational word game, computer science concepts">
     <meta name="author" content="Undrstanding">
     <link rel="canonical" href="https://undrstanding.github.io/games/hangman">
     <link rel="icon" type="image/svg+xml" href="../assests/undrlogo.svg">
-    
+
     <!-- Open Graph Tags -->
     <meta property="og:title" content="Hangman: The Tech Quiz | Undrstanding">
-    <meta property="og:description" content="Test your understanding of tech concepts with our immersive hangman experience.">
+    <meta property="og:description"
+        content="Test your understanding of tech concepts with our immersive hangman experience.">
     <meta property="og:url" content="https://undrstanding.github.io/games/hangman">
     <meta property="og:type" content="website">
     <script src="https://cdn.tailwindcss.com"></script>
@@ -194,6 +197,7 @@
             animation: shake 0.2s ease-in-out 0s 2;
         }
     </style>
+    <script src='../content/js/script.js'></script>
 </head>
 
 <body class="p-6 md:p-12">
@@ -286,7 +290,7 @@
             <div id="overlay-icon" class="mb-6 text-5xl">🎉</div>
             <h2 id="overlay-title" class="text-3xl font-black outfit mb-4 uppercase">Victory!</h2>
             <p id="overlay-message" class="text-gray-500 mb-8 font-light italic">Solution: DIJKSTRA</p>
-            
+
             <!-- Dynamic Stats Logic (New) -->
             <div id="overlay-stats" class="mb-8 grid grid-cols-2 gap-2 opacity-0 transition-opacity duration-500">
                 <div class="bg-zinc-50 p-3 border border-black/5">
@@ -308,7 +312,7 @@
 
     <script>
         const QUESTIONS = [
-            // Algorithms & logic
+            // --- ALGORITHMS & LOGIC ---
             { a: "DIJKSTRA", q: "The shortest-path algorithm for weighted graphs named after a Dutch pioneer." },
             { a: "RECURSION", q: "A programming technique where a function calls itself until a base case is met." },
             { a: "BACKTRACKING", q: "The 'trial and error' algorithmic approach used to solve the N-Queens problem." },
@@ -316,59 +320,225 @@
             { a: "DEPTH", q: "The type of traversal (DFS) that explores as far as possible along each branch before backtracking." },
             { a: "HEURISTIC", q: "A 'rule of thumb' strategy used in A* search to estimate the remaining distance to the goal." },
             { a: "DYNAMIC", q: "The type of programming that solves complex problems by breaking them into overlapping subproblems." },
+            { a: "QUICKSORT", q: "A popular divide-and-conquer sorting algorithm that picks a 'pivot' element." },
+            { a: "MEMOIZATION", q: "The optimization technique used in dynamic programming to store results of expensive function calls." },
+            { a: "GREEDY", q: "The type of algorithm that makes the locally optimal choice at each step." },
 
-            // Data Structures
+            // --- DATA STRUCTURES ---
             { a: "STACK", q: "The 'Last-In, First-Out' (LIFO) data structure used for undo operations." },
             { a: "QUEUE", q: "The 'First-In, First-Out' (FIFO) data structure used for process scheduling." },
             { a: "POINTER", q: "A variable that stores the memory address of another value." },
             { a: "LINKED", q: "The type of list where each element contains a reference to the next node." },
             { a: "BINARY", q: "A tree structure where each node has at most two children." },
             { a: "HASHMAP", q: "A structure that maps keys to values using a special mathematical function." },
+            { a: "DEQUE", q: "A double-ended queue where elements can be added or removed from both ends." },
+            { a: "TRIE", q: "An ordered tree data structure (prefix tree) used to store a dynamic set of strings." },
+            { a: "HEAP", q: "A specialized tree-based data structure that satisfies the min/max property." },
+            { a: "GRAPH", q: "A collection of nodes (vertices) and the connections (edges) between them." },
 
-            // AI & Machine Learning
+            // --- AI & MACHINE LEARNING ---
             { a: "NEURAL", q: "The type of networks that mimic the human brain's architecture in Deep Learning." },
             { a: "TRANSFORMER", q: "The neural network architecture that revolutionized NLP with self-attention." },
             { a: "GRADIENT", q: "The mathematical vector used to minimize loss during neural network training." },
             { a: "INFERENCE", q: "The process of using a trained model to make predictions on new data." },
             { a: "OVERFITTING", q: "When a model learns training data too well but fails on new, unseen data." },
+            { a: "EPOCH", q: "One complete pass of the entire training dataset through the neural network." },
+            { a: "BIAS", q: "The error introduced by approximating a real-life problem with a much simpler model." },
+            { a: "STOCHASTIC", q: "The 'S' in SGD, referring to random selection of data points during descent." },
+            { a: "REGRESSION", q: "A type of supervised learning used to predict continuous numerical values." },
+            { a: "CLASSIFICATION", q: "The ML task of predicting which category or 'label' an input belongs to." },
 
-            // Networking & Systems
+            // --- NETWORKING & SYSTEMS ---
             { a: "PROTOCOL", q: "A set of rules governing how data is exchanged across a computer network." },
             { a: "LATENCY", q: "The term for the delay between sending a data packet and receiving it." },
             { a: "KERNEL", q: "The core part of any operating system that manages hardware and memory." },
-            { a: "TCP", q: "The reliable, connection-oriented protocol used for web browsing and file transfer." },
+            { a: "TCP", q: "The reliable, connection-oriented protocol used for web browsing." },
             { a: "DNS", q: "The system that translates human-readable domain names into IP addresses." },
-            { a: "FIREWALL", q: "The security system that monitors and controls incoming and outgoing network traffic." },
+            { a: "FIREWALL", q: "The security system that monitors and controls incoming/outgoing traffic." },
+            { a: "SUBNET", q: "A logical subdivision of an IP network to improve performance and security." },
+            { a: "GATEWAY", q: "A node on a network that serves as an entrance to another network." },
+            { a: "HANDSHAKE", q: "The process where two devices establish a connection and agree on parameters." },
+            { a: "ETHERNET", q: "The standard wired technology for connecting devices in a local area network (LAN)." },
 
-            // Databases
-            { a: "INDEXING", q: "The process of creating B-Tree structures to speed up database search queries." },
+            // --- DATABASES ---
+            { a: "INDEXING", q: "The process of creating B-Tree structures to speed up search queries." },
             { a: "REDUNDANCY", q: "The database concept of repeating data that Normalization aims to minimize." },
-            { a: "SCHEMA", q: "The formal blueprint that defines how a database is structured and organized." },
-            { a: "NORMALIZATION", q: "The process of organizing data to reduce redundancy and improve data integrity." },
-            { a: "ATOMICITY", q: "The 'A' in ACID, ensuring a database transaction either completes fully or fails entirely." },
+            { a: "SCHEMA", q: "The formal blueprint that defines how a database is structured." },
+            { a: "NORMALIZATION", q: "The process of organizing data to reduce redundancy and improve integrity." },
+            { a: "ATOMICITY", q: "The 'A' in ACID, ensuring a transaction completes fully or fails entirely." },
+            { a: "QUERY", q: "The formal request used to retrieve or manipulate data within a database." },
+            { a: "JOIN", q: "A SQL operation used to combine rows from two or more tables." },
+            { a: "IDEMPOTENCY", q: "The property where an operation can be applied multiple times without changing the result." },
+            { a: "MIGRATION", q: "The process of moving or transforming data from one storage system to another." },
+            { a: "DEADLOCK", q: "A situation where two transactions are waiting for each other to release locks." },
 
-            // Web Development (JS / CSS)
-            { a: "CLOSURE", q: "A JavaScript feature where an inner function has access to an outer function's scope." },
-            { a: "PROMISE", q: "An object representing the eventual completion or failure of an asynchronous operation." },
-            { a: "CALLBACK", q: "A function passed into another function as an argument, to be executed later." },
+            // --- WEB DEVELOPMENT (JS / CSS) ---
+            { a: "CLOSURE", q: "A JS feature where an inner function has access to an outer function's scope." },
+            { a: "PROMISE", q: "An object representing the eventual completion or failure of an async operation." },
+            { a: "CALLBACK", q: "A function passed into another function as an argument to be executed later." },
             { a: "CASCADE", q: "The 'C' in CSS, determining which styling rules take precedence." },
-            { a: "SPECIFICITY", q: "The rule used by browsers to decide which CSS property values are most relevant to an element." },
+            { a: "SPECIFICITY", q: "The rule used by browsers to decide which CSS values are most relevant." },
+            { a: "HOISTING", q: "A JS behavior where declarations are moved to the top of their scope." },
+            { a: "FLEXBOX", q: "A CSS layout module for aligning and distributing space among items." },
+            { a: "DEBOUNCING", q: "A practice to ensure time-consuming tasks do not fire too often (e.g., search bars)." },
+            { a: "THROTTLING", q: "Limiting the number of times a function can be called over time." },
+            { a: "EVENT", q: "The bubbling or capturing mechanism where actions like clicks propagate through the DOM." },
 
-            // Operating Systems & Hardware
-            { a: "THREAD", q: "The smallest unit of execution within a process that can be scheduled by the OS." },
+            // --- OPERATING SYSTEMS & HARDWARE ---
+            { a: "THREAD", q: "The smallest unit of execution within a process scheduled by the OS." },
             { a: "VIRTUAL", q: "The type of memory that allows for a larger address space than physical RAM." },
             { a: "MUTEX", q: "A synchronization primitive used to prevent multiple threads from accessing a shared resource." },
             { a: "CACHE", q: "A small, high-speed storage layer that holds frequently accessed data." },
+            { a: "INTERRUPT", q: "A signal to the processor emitted by hardware/software needing immediate attention." },
+            { a: "PAGING", q: "A memory management scheme that eliminates the need for contiguous physical memory." },
+            { a: "SPOOLING", q: "A process of placing data in a temporary working area for another program to process." },
+            { a: "FIRMWARE", q: "Permanent software programmed into a hardware device's read-only memory." },
+            { a: "SEMAPHORE", q: "A variable used to control access to a common resource by multiple processes." },
+            { a: "SCHEDULER", q: "The OS component that decides which process runs next on the CPU." },
 
-            // Security & Crypto
-            { a: "HASHING", q: "The process of converting data into a fixed-size string of characters for verification." },
+            // --- SECURITY & CRYPTO ---
+            { a: "HASHING", q: "The process of converting data into a fixed-size string for verification." },
             { a: "ENCRYPTION", q: "The method of scrambling data so it can only be read with a secret key." },
-            { a: "PHISHING", q: "A social engineering attack used to steal user data or login credentials via fake emails." },
+            { a: "PHISHING", q: "A social engineering attack used to steal data via fake emails." },
+            { a: "SALTING", q: "Adding random data to a password before hashing to protect against rainbow tables." },
+            { a: "SYMMETRIC", q: "Encryption where the same key is used for both encrypting and decrypting." },
+            { a: "HONEYPOT", q: "A decoy system intended to mimic a target for hackers to detect their activity." },
+            { a: "BLOCKCHAIN", q: "A distributed ledger technology where data is stored in linked, secure blocks." },
+            { a: "RANSOMWARE", q: "Malware that threatens to publish or block access to data unless a fee is paid." },
+            { a: "MALWARE", q: "An umbrella term for any software intentionally designed to cause damage to a computer." },
+            { a: "BOTNET", q: "A network of private computers infected with malicious software and controlled as a group." },
 
-            // Software & Tools
+            // --- SOFTWARE ENGINEERING & TOOLS ---
             { a: "COMPONENT", q: "The reusable UI building block that forms the core architecture of React." },
-            { a: "COMMIT", q: "The Git command used to save a snapshot of your changes to the project history." },
-            { a: "REPOSITORY", q: "The central location where all project files and their version history are stored." }
+            { a: "COMMIT", q: "The Git command used to save a snapshot of changes to project history." },
+            { a: "REPOSITORY", q: "The central location where all project files and version history are stored." },
+            { a: "BRANCHING", q: "The Git feature allowing developers to diverge from the main line of development." },
+            { a: "CONTAINER", q: "A lightweight package of software that includes everything needed to run it." },
+            { a: "LINTER", q: "A tool that analyzes source code to flag programming or stylistic errors." },
+            { a: "AGILE", q: "An iterative approach to software development emphasizing flexibility." },
+            { a: "REFACTORING", q: "Restructuring existing code without changing its external behavior." },
+            { a: "UNIT", q: "A type of testing that focuses on the smallest testable parts in isolation." },
+            { a: "SCRUM", q: "An Agile framework using 'Sprints' and 'Daily Standups' to manage work." },
+
+            // --- UI/UX DESIGN ---
+            { a: "WIREFRAME", q: "A low-fidelity visual blueprint of a UI, focusing on layout and functionality." },
+            { a: "AFFORDANCE", q: "Properties of an object that show users how they can interact with it." },
+            { a: "HEURISTIC", q: "One of Jakob Nielsen's 10 general principles for interaction design usability." },
+            { a: "KERNING", q: "The process of adjusting the spacing between specific pairs of characters." },
+            { a: "ACCESSIBILITY", q: "The practice of making software usable by people with disabilities (a11y)." },
+            { a: "FIDELITY", q: "The level of detail and realism in a prototype, from 'low' to 'high'." },
+            { a: "CONTRAST", q: "The difference in color that makes an object distinguishable from its background." },
+            { a: "PERSONA", q: "A fictional character created to represent a user type that might use a product." },
+            { a: "PROTOTYPE", q: "An interactive simulation of a product used for testing before development." },
+            { a: "WHITESPACE", q: "Empty areas between design elements that improve readability." },
+
+            // --- PIGEONHOLE PRINCIPLE & DISCRETE MATH ---
+            { a: "PIGEONHOLE", q: "If n items are put into m containers and n > m, one container must have > 1 item." },
+            { a: "COMBINATORICS", q: "The branch of mathematics dealing with counting and arrangement." },
+            { a: "FACTORIAL", q: "The product of all positive integers less than or equal to n (n!)." },
+            { a: "PERMUTATION", q: "An arrangement of a set of items where the order of selection matters." },
+            { a: "BIJECTION", q: "A function that is both injective (one-to-one) and surjective (onto)." },
+            { a: "CARDINALITY", q: "The mathematical term for the number of elements in a set." },
+            { a: "RELATION", q: "A set of ordered pairs defining properties like reflexivity or symmetry." },
+            { a: "PROBABILITY", q: "The measure of the likelihood that an event will occur." },
+            { a: "INDUCTION", q: "A method of mathematical proof used to prove a statement for all natural numbers." },
+            { a: "SET", q: "A well-defined collection of distinct objects." },
+
+            // --- ANDROID & KOTLIN ---
+            { a: "ACTIVITY", q: "The Android component that provides a single screen with a user interface." },
+            { a: "KOTLIN", q: "The modern language that is now Google's preferred choice for Android." },
+            { a: "COROUTINES", q: "Kotlin's solution for writing asynchronous, non-blocking code." },
+            { a: "MANIFEST", q: "The XML file describing essential info about an Android app to the OS." },
+            { a: "INTENT", q: "An abstract description of an operation, often used to start a new Activity." },
+            { a: "JETPACK", q: "A suite of libraries to help developers write high-quality Android apps." },
+            { a: "NULLABLE", q: "A type in Kotlin that can either hold a value or be null (?)." },
+            { a: "COMPOSE", q: "Android's modern toolkit for building native UI using a declarative approach." },
+            { a: "GRADLE", q: "The build automation tool used by Android Studio to compile apps." },
+            { a: "ADAPTER", q: "A design pattern used to bridge data between a source and a RecyclerView." },
+
+            // --- BIG DATA ANALYTICS ---
+            { a: "HADOOP", q: "The open-source framework for distributed processing of large data sets." },
+            { a: "SPARK", q: "A fast analytics engine for large-scale data processing that uses in-memory computing." },
+            { a: "MAPREDUCE", q: "A programming model for processing large data sets with a distributed algorithm." },
+            { a: "NOSQL", q: "A category of database systems that do not use the traditional relational model." },
+            { a: "INGESTION", q: "The process of obtaining and importing data for immediate use or storage." },
+            { a: "PETABYTE", q: "A unit of digital information equal to 1,000 terabytes." },
+            { a: "WAREHOUSE", q: "A central repository of integrated data used for reporting and analysis." },
+            { a: "TELEMETRY", q: "The automatic recording and transmission of data from remote sources." },
+            { a: "PIPELINE", q: "A set of data processing elements where the output of one is the input of the next." },
+            { a: "DATASET", q: "A collection of related sets of information treated as a single unit." },
+
+            // --- OOPS (OBJECT-ORIENTED PROGRAMMING) ---
+            { a: "ENCAPSULATION", q: "The bundling of data and methods that operate on that data within one unit." },
+            { a: "INHERITANCE", q: "The mechanism where a new class acquires properties of an existing class." },
+            { a: "POLYMORPHISM", q: "The ability of different objects to respond to the same function call in specific ways." },
+            { a: "ABSTRACTION", q: "The concept of hiding complex details and showing only necessary features." },
+            { a: "INTERFACE", q: "A contract defining a set of methods a class must implement." },
+            { a: "CONSTRUCTOR", q: "A special method called automatically when an object is created." },
+            { a: "SINGLETON", q: "A design pattern that restricts a class to one single instance." },
+            { a: "OVERLOADING", q: "When multiple methods have the same name but different parameters." },
+            { a: "OVERRIDING", q: "When a subclass provides a specific implementation for a method in its superclass." },
+            { a: "INSTANTIATION", q: "The process of creating a concrete object from a class template." },
+
+            // --- LINUX & COMMANDS ---
+            { a: "SUDO", q: "The command that allows a user to execute a command as the superuser." },
+            { a: "GREP", q: "A command-line utility used for searching plain-text data for patterns." },
+            { a: "CHMOD", q: "The command used to change the access permissions of file system objects." },
+            { a: "STDOUT", q: "The default file descriptor where a process writes its output data." },
+            { a: "DAEMON", q: "A background process that handles requests for services like printing." },
+            { a: "BASH", q: "The Unix shell and command language that is the default for most Linux distros." },
+            { a: "SSH", q: "A cryptographic network protocol for operating network services securely." },
+            { a: "ROOT", q: "The name of the user who has all rights or permissions on a Linux system." },
+            { a: "PIPE", q: "Represented by '|', it sends the output of one command as input to another." },
+            { a: "TAR", q: "The command used to collect many files into one archive file." },
+
+            // --- QUANTUM COMPUTING ---
+            { a: "QUBIT", q: "The basic unit of quantum info, which can exist as 0, 1, or both." },
+            { a: "SUPERPOSITION", q: "The principle that a quantum system can be in multiple states simultaneously." },
+            { a: "ENTANGLEMENT", q: "A phenomenon where quantum particles become linked regardless of distance." },
+            { a: "DECOHERENCE", q: "The loss of quantum coherence caused by environmental noise." },
+            { a: "HADAMARD", q: "The specific quantum gate used to create superposition." },
+            { a: "TELEPORTATION", q: "The process of transferring quantum info using entanglement." },
+            { a: "SHOR", q: "The mathematician who created a quantum algorithm for factoring integers." },
+            { a: "CRYPTO", q: "The field quantum computing threatens by potentially breaking RSA encryption." },
+            { a: "ANNEALING", q: "A quantum computing method used for solving optimization problems." },
+            { a: "GATE", q: "A basic quantum circuit operating on qubits, analogous to logic gates." },
+
+            // --- REACT.JS ---
+            { a: "HOOKS", q: "The React feature that allows you to use state without writing a class." },
+            { a: "JSX", q: "A syntax extension for JS that allows you to write HTML-like code inside JS." },
+            { a: "PROPS", q: "The inputs to a React component, passed down from parent to child." },
+            { a: "VIRTUALDOM", q: "A lightweight representation of the real DOM used to optimize performance." },
+            { a: "STATE", q: "An object that holds information that may change over the component's life." },
+            { a: "REDUX", q: "A predictable state container for JS apps, often used with React." },
+            { a: "FRAGMENT", q: "A component used to group elements without adding extra nodes to the DOM." },
+            { a: "EFFECT", q: "The hook used for performing side effects like data fetching (useEffect)." },
+            { a: "CONTEXT", q: "A way to pass data through the component tree without prop drilling." },
+            { a: "USEMEMO", q: "The hook used to memoize expensive calculations." },
+
+            // --- SYSTEM ARCHITECTURE ---
+            { a: "MICROSERVICES", q: "An architectural style structuring an app as small, independent services." },
+            { a: "LOADBALANCER", q: "A device that distributes network traffic across multiple servers." },
+            { a: "SCALABILITY", q: "The ability of a system to handle a growing amount of work by adding resources." },
+            { a: "MONOLITH", q: "A unified model for a software program where all parts are interconnected." },
+            { a: "KUBERNETES", q: "The open-source system for automating deployment and scaling of containers." },
+            { a: "REPLICATION", q: "The practice of sharing information to ensure consistency between redundant resources." },
+            { a: "THROUGHPUT", q: "The amount of data or requests a system can process in a given time." },
+            { a: "SHARDING", q: "A database architecture pattern that partitions data into smaller, faster pieces." },
+            { a: "CDN", q: "A geographically distributed group of servers which work together to provide fast delivery of internet content." },
+            { a: "SERVERLESS", q: "A model where the cloud provider manages the allocation of machine resources." },
+
+            // --- THEORY OF COMPUTATION ---
+            { a: "TURING", q: "The theoretical machine that serves as a mathematical model of computation." },
+            { a: "AUTOMATA", q: "The study of abstract machines and the problems they can solve." },
+            { a: "HALTING", q: "The undecidable problem of determining if a program will stop or run forever." },
+            { a: "DETERMINISTIC", q: "An automaton where for each state and input, there is exactly one next state." },
+            { a: "COMPLEXITY", q: "The branch of theory classifying problems based on resource usage." },
+            { a: "GRAMMAR", q: "A formal set of rules for generating strings in a language." },
+            { a: "ALPHABET", q: "A finite, non-empty set of symbols in formal language theory." },
+            { a: "NP-COMPLETE", q: "A class of decision problems which are as hard as any problem in NP." },
+            { a: "CHOMSKY", q: "The hierarchy that classifies formal grammars into four levels." },
+            { a: "DECIDABILITY", q: "The property of a problem for which a 'yes/no' algorithm exists for all inputs." }
         ];
 
         let selectedAnswer = '';
@@ -409,7 +579,7 @@
             overlay.style.opacity = '0';
             const stats = document.getElementById('overlay-stats');
             if (stats) stats.classList.add('opacity-0');
-            
+
             feedbackEl.innerText = "System Ready...";
             startTime = Date.now();
 
@@ -436,7 +606,7 @@
             for (let char of selectedAnswer) {
                 const span = document.createElement("span");
                 span.classList.add("word-char");
-                
+
                 if (guessedLetters.includes(char)) {
                     span.innerText = char;
                 } else {
@@ -495,7 +665,7 @@
 
         function handleGameEnd(isWin) {
             const timeTaken = Math.floor((Date.now() - startTime) / 1000);
-            
+
             overlay.classList.remove('hidden');
             setTimeout(() => overlay.style.opacity = '1', 10);
 
@@ -503,7 +673,7 @@
             const message = document.getElementById('overlay-message');
             const icon = document.getElementById('overlay-icon');
             const overlayStats = document.getElementById('overlay-stats');
-            
+
             // Set Stats
             document.getElementById('overlay-mistakes').innerText = `${mistakes} / 6`;
             document.getElementById('overlay-time').innerText = `${timeTaken}s`;
