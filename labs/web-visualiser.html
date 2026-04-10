@@ -1,0 +1,1347 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web Visualab | Undrstanding</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;700;900&family=JetBrains+Mono:wght@700&family=Fira+Code:wght@700&display=swap"
+        rel="stylesheet">
+    <link rel="icon" type="image/svg+xml" href="../assests/undrlogo.svg">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.46.0/min/vs/loader.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Outfit:wght@400;500;600;700;800;900&display=swap');
+
+        :root {
+            --bg: #f7f7f7;
+            --border: #000000;
+            --text: #0a0a0a;
+            --text-muted: #666666;
+            --p-blue: #dbeafe;
+            --p-green: #dcfce7;
+            --p-yellow: #fef9c3;
+            --p-purple: #f3e8ff;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Outfit', 'Inter', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            -webkit-font-smoothing: antialiased;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        #editor-container,
+        #console-output,
+        textarea,
+        input {
+            user-select: text !important;
+            -webkit-user-select: text !important;
+        }
+
+        /* Header */
+        header {
+            height: 60px;
+            border-bottom: 3px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 24px;
+            background: #fff;
+            flex-shrink: 0;
+            z-index: 100;
+        }
+
+        .logo-wrap {
+            text-decoration: none;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            margin-right: 20px;
+        }
+
+        .logo-wrap:hover {
+            transform: translateY(-1px);
+            opacity: 0.85;
+        }
+
+        .logo-text {
+            font-family: 'Outfit', sans-serif;
+            font-weight: 800;
+            color: #000;
+            padding: 4px 0;
+            text-transform: uppercase;
+            font-size: 1.2rem;
+            display: inline-block;
+            letter-spacing: -1.2px;
+        }
+
+        .logo-badge {
+            background: #6367FF;
+            color: #fff;
+            font-size: 0.95rem;
+            padding: 2px 14px;
+            border: 3px solid #000;
+            border-radius: 6px;
+            box-shadow: 3px 3px 0 #000;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: -0.5px;
+            line-height: 1;
+            display: inline-flex;
+            align-items: center;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        /* Controls */
+        .controls {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .btn {
+            height: 38px;
+            padding: 0 20px;
+            border-radius: 9999px;
+            font-size: 0.8rem;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border: 3px solid var(--border);
+            background: #fff;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        .btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 4px 4px 0 #000;
+        }
+
+        .btn:active:not(:disabled) {
+            transform: translateY(1px);
+            box-shadow: none;
+        }
+
+        .btn:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+
+        .btn-run {
+            background: var(--p-green);
+        }
+
+        .btn-visualize {
+            background: var(--p-blue);
+        }
+
+        /* Language Switcher */
+        .language-switcher {
+            display: flex;
+            background: #fff;
+            padding: 4px;
+            border-radius: 9999px;
+            border: 3px solid var(--border);
+            position: relative;
+        }
+
+        .lang-pill {
+            padding: 0 14px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.63rem;
+            font-weight: 800;
+            font-family: 'JetBrains Mono', monospace;
+            border-radius: 9999px;
+            cursor: pointer;
+            transition: color 0.25s;
+            color: var(--text-muted);
+            position: relative;
+            z-index: 2;
+            white-space: nowrap;
+        }
+
+        .lang-pill.active {
+            color: #000;
+        }
+
+        .switcher-highlight {
+            position: absolute;
+            height: 30px;
+            top: 4px;
+            left: 4px;
+            background: var(--p-yellow);
+            border: 2px solid #000;
+            border-radius: 9999px;
+            transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+            z-index: 1;
+            opacity: 0;
+            pointer-events: none;
+            width: 0;
+        }
+
+        .switcher-highlight.initialized {
+            opacity: 1;
+        }
+
+        /* Workspace */
+        .workspace {
+            display: flex;
+            flex-grow: 1;
+            height: calc(100vh - 60px - 28px);
+            overflow: hidden;
+        }
+
+        .panel-left {
+            width: 50%;
+            display: flex;
+            flex-direction: column;
+            border-right: 3px solid var(--border);
+        }
+
+        .panel-right {
+            width: 50%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .editor-container-wrapper {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            border-bottom: 3px solid var(--border);
+            overflow: hidden;
+            min-height: 0;
+        }
+
+        .console-container-wrapper {
+            height: 200px;
+            flex-shrink: 0;
+            display: flex;
+            flex-direction: column;
+            background: #fff;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .console-container-wrapper.collapsed {
+            height: 40px !important;
+        }
+
+        .panel-header {
+            height: 40px;
+            flex-shrink: 0;
+            background: #fff;
+            border-bottom: 3px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 16px;
+            font-size: 0.65rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            font-family: 'JetBrains Mono', monospace;
+            gap: 10px;
+        }
+
+        .header-title-wrap {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.9rem;
+        }
+
+        .icon-btn {
+            cursor: pointer;
+            padding: 4px;
+            border-radius: 4px;
+            transition: 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .icon-btn:hover {
+            background: #f1f5f9;
+            color: #000;
+        }
+
+        .icon-btn.btn-trash:hover {
+            color: #ef4444;
+            background: #fee2e2;
+        }
+
+        #editor-container {
+            flex-grow: 1;
+            min-height: 0;
+            background: #1e1e1e;
+        }
+
+        #console-output {
+            flex-grow: 1;
+            padding: 12px 16px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.72rem;
+            line-height: 1.6;
+            overflow-y: auto;
+            background: #fff;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+
+        #console-output::-webkit-scrollbar {
+            display: none;
+        }
+
+        /* Visualizer Stage */
+        #visualizer-container {
+            flex-grow: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #fff;
+            background-image:
+                linear-gradient(rgba(0, 0, 0, 0.025) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 0, 0, 0.025) 1px, transparent 1px);
+            background-size: 20px 20px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        #vis-content {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+
+        .vis-stage.fading {
+            opacity: 0;
+            transform: scale(0.98) translateY(20px);
+            filter: blur(8px);
+        }
+
+        /* Step Controls */
+        #step-controls {
+            display: none;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .step-btn {
+            height: 28px;
+            padding: 0 10px;
+            border: 2.5px solid #000;
+            border-radius: 9999px;
+            background: #fff;
+            font-size: 0.7rem;
+            font-weight: 800;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            transition: all 0.15s;
+        }
+
+        .step-btn:hover:not(:disabled) {
+            background: #f1f5f9;
+            transform: translateY(-2px);
+            box-shadow: 2px 2px 0 #000;
+        }
+
+        .step-counter {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.62rem;
+            font-weight: 800;
+            padding: 0 10px;
+            border: 2px solid #000;
+            border-radius: 9999px;
+            background: var(--p-yellow);
+            white-space: nowrap;
+            line-height: 26px;
+        }
+
+        .btn-play {
+            background: var(--p-blue);
+            min-width: 60px;
+            justify-content: center;
+        }
+
+        /* Footer */
+        footer {
+            height: 28px;
+            background: #000;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            padding: 0 20px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.62rem;
+            flex-shrink: 0;
+        }
+
+        /* Mobile Adjustments */
+        @media (max-width: 768px) {
+            .workspace {
+                flex-direction: column;
+                height: calc(100vh - 100px);
+            }
+
+            .panel-left,
+            .panel-right {
+                width: 100% !important;
+                height: 100% !important;
+                display: none;
+                border-right: none;
+            }
+
+            .controls {
+                display: none;
+            }
+
+            #step-controls {
+                display: none !important;
+            }
+
+            #visualizer-container {
+                scrollbar-width: none;
+                -ms-overflow-style: none;
+            }
+
+            #visualizer-container::-webkit-scrollbar {
+                display: none;
+            }
+
+            .step-btn {
+                height: 28px !important;
+                padding: 0 6px !important;
+                font-size: 0.6rem !important;
+                min-width: 28px;
+            }
+
+            #step-counter {
+                padding: 0 6px !important;
+                font-size: 0.55rem !important;
+                white-space: nowrap;
+            }
+
+            #btn-first,
+            #btn-last {
+                display: none !important;
+            }
+        }
+
+        /* Mobile Pill Nav */
+        .mobile-nav {
+            display: none;
+            position: fixed;
+            bottom: 44px;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            justify-content: center;
+            pointer-events: none;
+        }
+
+        @media (max-width: 768px) {
+            .mobile-nav {
+                display: flex;
+            }
+        }
+
+        .pill-toggle {
+            display: flex;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(8px);
+            border: 2px solid #000;
+            border-radius: 9999px;
+            padding: 4px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15), 4px 4px 0 #000;
+            pointer-events: auto;
+            gap: 4px;
+        }
+
+        .pill-btn {
+            padding: 6px 14px;
+            border-radius: 9999px;
+            font-size: 0.62rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            font-family: 'JetBrains Mono', monospace;
+            cursor: pointer;
+            transition: 0.2s;
+            border: none;
+            background: transparent;
+            color: #64748b;
+        }
+
+        ::-webkit-scrollbar {
+            width: 0px;
+            height: 0px;
+            display: none;
+        }
+
+        * {
+            scrollbar-width: none !important;
+            -ms-overflow-style: none !important;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #ccc;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #999;
+        }
+
+        .pill-btn.active {
+            background: #000;
+            color: #fff;
+        }
+
+        .pill-btn-more {
+            background: var(--p-yellow);
+            color: #000;
+            border: 1px solid #000;
+        }
+
+        /* ACTIONS MODAL */
+        #actions-modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(12px);
+            z-index: 2000;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+        }
+
+        #actions-modal.active {
+            display: flex;
+        }
+
+        .modal-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            width: 100%;
+            max-width: 320px;
+        }
+
+        .m-action-btn {
+            background: #fff;
+            border: 3px solid #000;
+            border-radius: 16px;
+            padding: 24px 16px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 6px 6px 0 #000;
+        }
+
+        .m-action-btn:active {
+            transform: translate(2px, 2px);
+            box-shadow: 2px 2px 0 #000;
+        }
+
+        .m-action-btn i {
+            font-size: 1.8rem;
+        }
+
+        .m-action-btn span {
+            font-size: 0.7rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .m-btn-run {
+            background: var(--p-green);
+        }
+
+        .m-btn-vis {
+            background: var(--p-blue);
+        }
+
+        .m-section-label {
+            width: 100%;
+            text-align: center;
+            font-family: 'Outfit', sans-serif;
+            font-weight: 800;
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: #64748b;
+            margin-bottom: 12px;
+            margin-top: 24px;
+        }
+
+        .m-lang-switcher {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            justify-content: center;
+            width: 100%;
+            margin-bottom: 20px;
+        }
+
+        .m-lang-switcher .lang-pill {
+            position: relative;
+            padding: 8px 14px;
+            border: 2px solid #000;
+            border-radius: 999px;
+            font-size: 0.65rem;
+            font-weight: 800;
+            background: #fff;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 3px 3px 0 #000;
+        }
+
+        .m-lang-switcher .lang-pill.active {
+            background: #000;
+            color: #fff;
+            transform: translate(1px, 1px);
+            box-shadow: 1px 1px 0 #000;
+        }
+
+        .modal-close {
+            margin-top: 40px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.7rem;
+            font-weight: 800;
+            text-decoration: underline;
+            cursor: pointer;
+        }
+
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.5' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E");
+            pointer-events: none;
+            z-index: -1;
+            opacity: 0.6;
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <div class="header-left">
+            <a href="../" class="logo-wrap">
+                <span class="logo-text">Undrstanding</span>
+                <span class="logo-badge">VisuaLab</span>
+            </a>
+        </div>
+
+        <div class="controls">
+            <div class="language-switcher">
+                <div id="switcher-highlight" class="switcher-highlight"></div>
+                <div class="lang-pill active" data-lang="html">HTML</div>
+                <div class="lang-pill" data-lang="css">CSS</div>
+                <div class="lang-pill" data-lang="javascript">JS</div>
+            </div>
+
+            <button id="run-btn" class="btn btn-run">
+                <i class="bi bi-play-fill"></i> Run
+            </button>
+
+            <button class="btn btn-visualize" id="visualise-btn">
+                <i class="bi bi-eye-fill"></i>
+                Visualise
+            </button>
+        </div>
+    </header>
+
+    <div class="mobile-nav">
+        <div class="pill-toggle">
+            <button class="pill-btn active" id="pill-editor" onclick="switchMobileTab('editor')">Editor</button>
+            <button class="pill-btn" id="pill-console" onclick="switchMobileTab('console')">Console</button>
+            <button class="pill-btn" id="pill-view" onclick="switchMobileTab('view')">View</button>
+            <button class="pill-btn pill-btn-more" onclick="toggleActions(true)">Actions</button>
+        </div>
+    </div>
+
+    <!-- Mobile Actions Modal -->
+    <div id="actions-modal">
+        <h2
+            style="font-family:'Outfit',sans-serif;font-weight:900;font-size:1.5rem;margin-bottom:32px;text-transform:uppercase;letter-spacing:-0.5px;">
+            IDE Actions</h2>
+        <div class="m-section-label">Select Language</div>
+        <div class="m-lang-switcher">
+            <div class="lang-pill active" data-lang="html">HTML</div>
+            <div class="lang-pill" data-lang="css">CSS</div>
+            <div class="lang-pill" data-lang="javascript">JS</div>
+        </div>
+
+        <div class="m-section-label">Commands</div>
+        <div class="modal-grid">
+            <div class="m-action-btn m-btn-run" onclick="triggerAction('run')">
+                <i class="bi bi-play-circle-fill"></i>
+                <span>Run Code</span>
+            </div>
+            <div class="m-action-btn m-btn-vis" onclick="triggerAction('visualise')">
+                <i class="bi bi-eye-fill"></i>
+                <span>Visualise</span>
+            </div>
+        </div>
+        <div class="modal-close" onclick="toggleActions(false)">CLOSE MENU</div>
+    </div>
+
+    <div class="workspace">
+        <div class="panel-left">
+            <div class="editor-container-wrapper">
+                <div class="panel-header">
+                    <div class="header-title-wrap">
+                        <i class="bi bi-file-earmark-code" style="color:#94a3b8"></i> Editor
+                    </div>
+                </div>
+                <div id="editor-container"></div>
+            </div>
+
+            <div class="console-container-wrapper" id="panel-console-wrap">
+                <div class="panel-header">
+                    <div class="header-title-wrap">
+                        <i class="bi bi-terminal" style="color:#94a3b8"></i> Console
+                    </div>
+                    <div class="header-actions">
+                        <div class="icon-btn btn-trash" onclick="clearConsole()" title="Clear logs">
+                            <i class="bi bi-trash"></i>
+                        </div>
+                        <div class="icon-btn hidden md:flex" onclick="toggleConsole()" title="Toggle Console">
+                            <i class="bi bi-chevron-down" id="console-toggle-icon"></i>
+                        </div>
+                    </div>
+                </div>
+                <div id="console-output"></div>
+            </div>
+        </div>
+
+        <div class="panel-right">
+            <div class="panel-header">
+                <div class="header-title-wrap">
+                    <i class="bi bi-cpu" style="color:#94a3b8"></i> Visualizer
+                </div>
+                <div id="step-controls">
+                    <button class="step-btn" id="btn-first" title="First step" onclick="goFirst()">
+                        <i class="bi bi-skip-start-fill"></i>
+                    </button>
+                    <button class="step-btn" id="btn-prev" title="Previous step" onclick="stepBack()">
+                        <i class="bi bi-skip-backward-fill"></i>
+                    </button>
+                    <button class="step-btn btn-play" id="btn-play" onclick="togglePlay()">Play</button>
+                    <button class="step-btn" id="btn-next" title="Next step" onclick="stepForward()">
+                        <i class="bi bi-skip-forward-fill"></i>
+                    </button>
+                    <button class="step-btn" id="btn-last" title="Last step" onclick="goLast()">
+                        <i class="bi bi-skip-end-fill"></i>
+                    </button>
+                    <span id="step-counter" class="step-counter">0 / 0</span>
+                </div>
+            </div>
+            <div id="visualizer-container">
+                <div id="vis-content">
+                    <div style="text-align:center; opacity:0.1;">
+                        <i class="bi bi-diagram-3" style="font-size:3rem;"></i>
+                        <p
+                            style="font-family:'JetBrains Mono',monospace;font-size:0.65rem;margin-top:12px;font-weight:800;text-transform:uppercase;letter-spacing:0.15em;">
+                            Ready</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <span id="console-msg">> Load a web program and click Run or Visualise.</span>
+    </footer>
+
+    <script src="../content/js/script.js"></script>
+    <script>
+        // --- Mobile Navigation Logic ---
+        window.switchMobileTab = function (tab) {
+            const pL = document.querySelector('.panel-left');
+            const pR = document.querySelector('.panel-right');
+            const edWrap = document.querySelector('.editor-container-wrapper');
+            const conWrap = document.querySelector('.console-container-wrapper');
+
+            const pillEd = document.getElementById('pill-editor');
+            const pillCon = document.getElementById('pill-console');
+            const pillVis = document.getElementById('pill-view');
+
+            [pillEd, pillCon, pillVis].forEach(p => p.classList.remove('active'));
+
+            if (tab === 'editor') {
+                pL.style.setProperty('display', 'flex', 'important');
+                pR.style.setProperty('display', 'none', 'important');
+                edWrap.style.display = 'flex';
+                conWrap.style.display = 'none';
+                pillEd.classList.add('active');
+            } else if (tab === 'console') {
+                pL.style.setProperty('display', 'flex', 'important');
+                pR.style.setProperty('display', 'none', 'important');
+                edWrap.style.display = 'none';
+                conWrap.style.display = 'flex';
+                conWrap.style.height = '100%';
+                conWrap.classList.remove('collapsed');
+                pillCon.classList.add('active');
+            } else {
+                pL.style.setProperty('display', 'none', 'important');
+                pR.style.setProperty('display', 'flex', 'important');
+                pillVis.classList.add('active');
+            }
+        };
+
+        function checkDesktopView() {
+            if (window.innerWidth > 768) {
+                const pL = document.querySelector('.panel-left');
+                const pR = document.querySelector('.panel-right');
+                const edWrap = document.querySelector('.editor-container-wrapper');
+                const conWrap = document.querySelector('.console-container-wrapper');
+                pL.style.display = 'flex'; pR.style.display = 'flex';
+                edWrap.style.display = 'flex'; conWrap.style.display = 'flex';
+                conWrap.style.height = '200px';
+            } else {
+                const activePill = document.querySelector('.pill-btn.active');
+                if (activePill) switchMobileTab(activePill.id.replace('pill-', ''));
+            }
+        }
+        window.addEventListener('resize', checkDesktopView);
+        checkDesktopView();
+
+        window.toggleActions = function (show) {
+            document.getElementById('actions-modal').classList.toggle('active', show);
+        };
+
+        window.triggerAction = function (type) {
+            toggleActions(false);
+            if (type === 'run') {
+                document.getElementById('run-btn').click();
+                switchMobileTab('console');
+            } else {
+                document.getElementById('visualise-btn').click();
+                switchMobileTab('view');
+            }
+        };
+
+        // --- Global State ---
+        let editor;
+        let currentLang = 'html';
+
+        const files = {
+            html: `<!-- Simple Project Dashboard -->
+<div class="app-root">
+    <header class="app-header">
+        <div class="brand">
+            <span class="brand-square"></span>
+            <h1>Project Explorer</h1>
+        </div>
+        <div id="live-clock" class="clock">00:00:00</div>
+    </header>
+
+    <main class="dashboard-grid">
+        <section class="stat-card">
+            <h3>Active Tasks</h3>
+            <p class="stat-value" id="task-count">0</p>
+        </section>
+        
+        <section class="content-section">
+            <div class="section-header">
+                <h2>Priority Tasks</h2>
+                <button class="action-btn" id="add-task-btn">Add New</button>
+            </div>
+            
+            <ul class="task-list" id="task-list">
+                <li class="task-item" data-id="1">
+                    <span class="status-indicator"></span>
+                    <div class="task-info">
+                        <strong>Review system architecture</strong>
+                        <span>Technical Design Document</span>
+                    </div>
+                </li>
+                <li class="task-item completed" data-id="2">
+                    <span class="status-indicator"></span>
+                    <div class="task-info">
+                        <strong>Optimize database queries</strong>
+                        <span>Performance Tuning</span>
+                    </div>
+                </li>
+                <li class="task-item" data-id="3">
+                    <span class="status-indicator"></span>
+                    <div class="task-info">
+                        <strong>Implement user authentication</strong>
+                        <span>Security Implementation</span>
+                    </div>
+                </li>
+            </ul>
+        </section>
+    </main>
+
+    <footer class="app-footer">
+        <p>Undrstanding Visualabs</p>
+        <span class="status-badge">Web Visualiser</span>
+    </footer>
+</div>`,
+            css: `body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Inter', -apple-system, sans-serif;
+    background-color: #fff;
+    color: #000;
+}
+
+.app-root {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    border: 4px solid #000;
+    box-sizing: border-box;
+}
+
+.app-header {
+    padding: 16px 20px;
+    border-bottom: 4px solid #000;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.brand-square {
+    width: 24px;
+    height: 24px;
+    background: #000;
+}
+
+h1 {
+    font-size: 1.1rem;
+    margin: 0;
+    text-transform: uppercase;
+    letter-spacing: -0.5px;
+    font-weight: 900;
+}
+
+.clock {
+    font-family: monospace;
+    font-weight: bold;
+    font-size: 0.85rem;
+    padding: 4px 12px;
+    border: 2px solid #000;
+}
+
+.dashboard-grid {
+    flex: 1;
+    padding: 20px;
+    display: grid;
+    grid-template-columns: 200px 1fr;
+    gap: 20px;
+}
+
+@media (max-width: 600px) {
+    .dashboard-grid {
+        grid-template-columns: 1fr;
+    }
+}
+* {
+    scrollbar-width: none !important;
+    -ms-overflow-style: none !important;
+}
+*::-webkit-scrollbar {
+    display: none !important;
+}
+
+.stat-card {
+    border: 4px solid #000;
+    padding: 20px;
+    background: #f0f0f0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.stat-card h3 {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    margin: 0 0 10px 0;
+    color: #666;
+}
+
+.stat-value {
+    font-size: 3rem;
+    font-weight: 900;
+    margin: 0;
+}
+
+.content-section {
+    border: 4px solid #000;
+    padding: 20px;
+}
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+    gap: 12px;
+}
+
+h2 {
+    font-size: 1rem;
+    text-transform: uppercase;
+    margin: 0;
+}
+
+.action-btn {
+    background: #6367FF;
+    color: #fff;
+    border: 2px solid #000;
+    padding: 8px 16px;
+    font-weight: bold;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.task-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.task-item {
+    border: 2px solid #000;
+    padding: 12px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.task-item:hover {
+    background: #f8f8f8;
+}
+
+.status-indicator {
+    width: 12px;
+    height: 12px;
+    border: 2px solid #000;
+    background: #fff;
+    flex-shrink: 0;
+}
+
+.task-item.completed {
+    background: #e0fde0;
+    border-color: #000;
+}
+
+.task-item.completed .status-indicator {
+    background: #000;
+}
+
+.task-item.completed strong {
+    text-decoration: line-through;
+    opacity: 0.5;
+}
+
+.task-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.task-info strong {
+    font-size: 0.9rem;
+    word-break: break-word;
+}
+
+.task-info span {
+    font-size: 0.7rem;
+    color: #666;
+}
+
+.app-footer {
+    padding: 12px 20px;
+    border-top: 4px solid #000;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #000;
+    color: #fff;
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    font-weight: bold;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.status-badge {
+    background: #63FF67;
+    color: #000;
+    padding: 2px 8px;
+    border-radius: 4px;
+}`,
+            javascript: `// Live Clock Implementation
+function updateClock() {
+    const clock = document.getElementById('live-clock');
+    const now = new Date();
+    clock.textContent = now.toTimeString().split(' ')[0];
+}
+
+setInterval(updateClock, 1000);
+updateClock();
+
+// Task Interaction Logic
+const taskList = document.getElementById('task-list');
+const taskCount = document.getElementById('task-count');
+
+function updateCount() {
+    const active = document.querySelectorAll('.task-item:not(.completed)').length;
+    taskCount.textContent = active;
+}
+
+taskList.addEventListener('click', (e) => {
+    const item = e.target.closest('.task-item');
+    if (item) {
+        item.classList.toggle('completed');
+        updateCount();
+        console.log("Task state toggled for ID: " + item.dataset.id);
+    }
+});
+
+// Add Task Placeholder
+document.getElementById('add-task-btn').addEventListener('click', () => {
+    const newTask = document.createElement('li');
+    newTask.className = 'task-item';
+    newTask.innerHTML = \`
+        <span class="status-indicator"></span>
+        <div class="task-info">
+            <strong>New Manual Task</strong>
+            <span>Added via JavaScript</span>
+        </div>
+    \`;
+    taskList.appendChild(newTask);
+    updateCount();
+    console.log("New task added to board.");
+});
+
+updateCount();
+console.log("Dashboard initialized.");`
+        };
+
+        // --- Console Helpers ---
+        function log(msg, isErr) {
+            const area = document.getElementById('console-output');
+            if (!area) return;
+            const t = new Date().toLocaleTimeString([], { hour12: false });
+            const el = document.createElement('div');
+            el.style.cssText = 'margin-bottom:3px;' + (isErr ? 'color:#ef4444;font-weight:700;' : '');
+            el.innerHTML = `<span style="opacity:0.3;margin-right:8px;user-select:none">[${t}]</span>`
+                + String(msg).replace(/</g, '&lt;');
+            area.appendChild(el);
+            area.scrollTop = area.scrollHeight;
+            const f = document.getElementById('console-msg');
+            if (f) f.textContent = '> ' + String(msg);
+        }
+
+        function clearConsole() { document.getElementById('console-output').innerHTML = ''; }
+        function toggleConsole() {
+            const wrap = document.getElementById('panel-console-wrap');
+            wrap.classList.toggle('collapsed');
+            document.getElementById('console-toggle-icon').className = wrap.classList.contains('collapsed') ? 'bi bi-chevron-up' : 'bi bi-chevron-down';
+        }
+
+        function clearVisualiser() {
+            const vc = document.getElementById('vis-content');
+            if (vc) {
+                vc.innerHTML = `
+                    <div style="text-align:center; opacity:0.1;">
+                        <i class="bi bi-diagram-3" style="font-size:3rem;"></i>
+                        <p style="font-family:'JetBrains Mono',monospace;font-size:0.65rem;margin-top:12px;font-weight:800;text-transform:uppercase;letter-spacing:0.15em;">Ready</p>
+                    </div>`;
+            }
+        }
+
+        function updatePreview() {
+            if (!editor) return;
+            files[currentLang] = editor.getValue();
+
+            const vc = document.getElementById('vis-content');
+            vc.classList.add('fading');
+
+            log('Generating web preview...', false);
+
+            setTimeout(() => {
+                // Construction using concatenation to avoid template literal interpolation errors with user code
+                let htmlContent = '<!DOCTYPE html>\n<html>\n<head>\n<style>' + files.css + '<\/style>\n<\/head>\n<body>\n';
+                htmlContent += files.html;
+                htmlContent += '\n<script>\n';
+                htmlContent += 'const _log = console.log; const _err = console.error;\n';
+                htmlContent += 'function sendLog(level, ...args) {\n';
+                htmlContent += '  const msg = args.map(a => (typeof a === "object" ? JSON.stringify(a) : String(a))).join(" ");\n';
+                htmlContent += '  window.parent.postMessage({ type: "web-log", level, msg }, "*");\n';
+                htmlContent += '}\n';
+                htmlContent += 'console.log = (...args) => { sendLog("info", ...args); _log(...args); };\n';
+                htmlContent += 'console.info = (...args) => { sendLog("info", ...args); _log(...args); };\n';
+                htmlContent += 'console.warn = (...args) => { sendLog("info", ...args); _log(...args); };\n';
+                htmlContent += 'console.error = (...args) => { sendLog("error", ...args); _err(...args); };\n';
+                htmlContent += 'window.onerror = function(msg, url, line, col, error) { sendLog("error", msg + " at line " + line + ":" + col); return false; };\n';
+                htmlContent += '<\/script>\n';
+                htmlContent += '<script>' + files.javascript.replace(/<\/script>/g, '<\\/script>') + '<\/script>\n';
+                htmlContent += '<\/body>\n<\/html>';
+
+                vc.innerHTML = '<iframe id="preview-iframe" style="width:100%; height:100%; border:none; background:#fff;"><\/iframe>';
+                const iframe = document.getElementById('preview-iframe');
+                iframe.srcdoc = htmlContent;
+
+                log('Preview updated successfully.', false);
+                vc.classList.remove('fading');
+            }, 100);
+        }
+
+        window.addEventListener('message', (e) => {
+            if (e.data && e.data.type === 'web-log') {
+                log(e.data.msg, e.data.level === 'error');
+            }
+        });
+
+        document.getElementById('run-btn').addEventListener('click', updatePreview);
+        document.getElementById('visualise-btn').addEventListener('click', updatePreview);
+
+        // Keyboard Shortcut: Ctrl + Enter to Run
+        window.addEventListener('keydown', (e) => {
+            if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+                e.preventDefault();
+                updatePreview();
+            }
+        });
+
+        // --- Monaco Init ---
+        require.config({ paths: { vs: 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.46.0/min/vs' } });
+        require(['vs/editor/editor.main'], function () {
+            editor = monaco.editor.create(document.getElementById('editor-container'), {
+                value: files.html,
+                language: 'html',
+                theme: 'vs-dark',
+                automaticLayout: true,
+                fontSize: 14,
+                minimap: { enabled: false },
+                scrollBeyondLastLine: false,
+                lineHeight: 1.7,
+                padding: { top: 16 },
+                fontFamily: 'JetBrains Mono'
+            });
+
+            // Monaco also needs the shortcut
+            editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.Enter, function () {
+                updatePreview();
+            });
+        });
+
+        // --- Language Switcher ---
+        document.querySelectorAll('.lang-pill').forEach(pill => {
+            pill.addEventListener('click', function () {
+                document.querySelectorAll('.lang-pill').forEach(p => p.classList.remove('active'));
+                this.classList.add('active');
+
+                if (editor) {
+                    files[currentLang] = editor.getValue();
+                    currentLang = this.dataset.lang;
+                    monaco.editor.setModelLanguage(editor.getModel(), currentLang === 'javascript' ? 'javascript' : currentLang);
+                    editor.setValue(files[currentLang]);
+                }
+
+                const h = document.getElementById('switcher-highlight');
+                if (h) {
+                    h.style.width = this.offsetWidth + 'px';
+                    h.style.left = this.offsetLeft + 'px';
+                    h.style.opacity = '1';
+                }
+            });
+        });
+
+        function initSwitcher() {
+            const active = document.querySelector('.language-switcher .lang-pill.active');
+            const h = document.getElementById('switcher-highlight');
+            if (active && h && active.offsetWidth > 0) {
+                h.style.width = active.offsetWidth + 'px';
+                h.style.left = active.offsetLeft + 'px';
+                if (!h.classList.contains('initialized')) {
+                    setTimeout(() => { h.classList.add('initialized'); }, 50);
+                }
+            } else if (h) {
+                // If not ready yet, retry in a bit
+                setTimeout(initSwitcher, 100);
+            }
+        }
+
+        window.addEventListener('load', initSwitcher);
+        document.addEventListener('DOMContentLoaded', initSwitcher);
+        // Final catch-all for any slow-loading fonts or assets
+        setTimeout(initSwitcher, 500);
+
+    </script>
+</body>
+
+</html>
