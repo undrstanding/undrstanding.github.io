@@ -2488,6 +2488,78 @@
                             </div>
                         </article>
                     </a>
+
+                    <!-- Web Visualiser Card -->
+                    <a href="labs/web-visualiser" class="block group text-[#EB4C4C] md:col-span-2">
+                        <article class="card md:flex-row md:items-stretch overflow-hidden relative h-full border-black">
+                            <!-- Icon Section (Left Pane) -->
+                            <div
+                                class="card-header md:border-b-0 md:border-r md:w-1/4 md:flex-col md:justify-center md:items-center py-10 relative bg-[#EB4C4C] overflow-hidden border-none text-white">
+                                <!-- Code Window Deco -->
+                                <div
+                                    class="absolute inset-x-0 top-0 bottom-0 opacity-10 group-hover:opacity-30 transition-all duration-1000 pointer-events-none flex flex-col items-center justify-center gap-2">
+                                    <div
+                                        class="w-32 h-24 border-2 border-white/40 rounded-lg relative overflow-hidden transition-all duration-700 group-hover:scale-110 group-hover:-translate-y-2 group-hover:-rotate-2">
+                                        <div class="h-4 border-b-2 border-white/20 flex items-center px-1 gap-1">
+                                            <div class="w-1.5 h-1.5 bg-white/40 rounded-full"></div>
+                                            <div class="w-1.5 h-1.5 bg-white/40 rounded-full"></div>
+                                        </div>
+                                        <div class="p-2 space-y-1.5">
+                                            <div
+                                                class="h-1.5 w-3/4 bg-white/20 rounded transition-all duration-1000 delay-100 group-hover:w-full">
+                                            </div>
+                                            <div
+                                                class="h-1.5 w-1/2 bg-white/20 rounded transition-all duration-1000 delay-200 group-hover:w-3/4">
+                                            </div>
+                                            <div
+                                                class="h-1.5 w-2/3 bg-white/20 rounded transition-all duration-1000 delay-300 group-hover:w-[90%]">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div
+                                        class="w-24 h-16 border-2 border-white/20 rounded-lg translate-x-12 -translate-y-4 transition-all duration-1000 group-hover:translate-x-16 group-hover:-translate-y-8 group-hover:rotate-12">
+                                    </div>
+                                </div>
+
+                                <!-- Main Icon and Label -->
+                                <span
+                                    class="mono text-[9px] font-black uppercase tracking-[0.2em] text-white/50 mb-6 relative z-10">Visualabs
+                                </span>
+                                <div
+                                    class="icon-box text-white relative z-10 border border-white/30 p-2 rounded-lg bg-white/10 backdrop-blur-sm transition-all duration-500 group-hover:scale-125 group-hover:rotate-12">
+                                    <i class="bi bi-code-slash text-2xl"></i>
+                                </div>
+                            </div>
+
+                            <!-- Content Section (Right Pane) -->
+                            <div class="card-body md:w-3/4 md:p-12 bg-white flex flex-col justify-between">
+                                <div>
+                                    <div class="flex items-center gap-3 mb-4">
+                                        <span
+                                            class="mono text-[10px] font-bold uppercase tracking-widest text-[#EB4C4C]">Web
+                                            Development Series</span>
+                                        <span
+                                            class="inline-flex items-center px-2 py-0.5 rounded-full text-[8px] font-black bg-[#EB4C4C]/10 text-[#EB4C4C] border border-[#EB4C4C]/20 uppercase tracking-tighter">Live
+                                            Environment</span>
+                                    </div>
+                                    <h3
+                                        class="text-4xl text-black font-semibold mb-6 group-hover:text-[#EB4C4C] transition-colors leading-tight">
+                                        Web Visualiser
+                                    </h3>
+                                    <p class="text-lg text-gray-500 font-light leading-relaxed max-w-2xl">
+                                        Design, prototype, and <strong>visualise web interfaces</strong> instantly.
+                                        A powerful sandbox with <strong>real-time preview</strong> for HTML, CSS, and
+                                        JavaScript.
+                                    </p>
+                                </div>
+                                <div
+                                    class="arrow-link text-black font-mono text-sm uppercase tracking-widest mt-8 flex items-center gap-4 group-hover:gap-6 transition-all">
+                                    <span>Initialize Lab</span>
+                                    <span class="text-xl">&rarr;</span>
+                                </div>
+                            </div>
+                        </article>
+                    </a>
                 </div>
             </div>
 
@@ -2878,7 +2950,7 @@
                          this.classList.add('random-card-pumping');
                          var overlay = document.getElementById('random-overlay');
                          overlay.classList.add('active');
-                         var urls = ['labs/ds-visualiser', 'labs/algo-visualiser', 'labs/budget-tracker', 'labs/quick-tab-closer', 'labs/weather-app', 'labs/git-essentials', 'labs/html-blog-article'];
+                         var urls = ['labs/ds-visualiser', 'labs/algo-visualiser', 'labs/web-visualiser', 'labs/budget-tracker', 'labs/quick-tab-closer', 'labs/weather-app', 'labs/git-essentials', 'labs/html-blog-article'];
                          var target = urls[Math.floor(Math.random() * urls.length)];
                          setTimeout(() => { window.location.href = target; }, 800);"
                         class="block group relative overflow-hidden bg-black text-white hover:scale-[1.02] transition-all duration-500 shadow-xl border-black hover:shadow-2xl md:col-span-2">
@@ -4093,6 +4165,7 @@
             // --- Interactive Lab Environments (type: lab) ---
             { s: "VISUALAB", t: "Algorithm Visualiser", u: "labs/algo-visualiser", k: "algorithm visualiser simulator logic execution code tool", y: "lab" },
             { s: "VISUALAB", t: "Data Structure Visualiser", u: "labs/ds-visualiser", k: "data structures library visualiser simulator nodes pointers memory tool linked list tree graph queue stack bubble binary", y: "lab" },
+            { s: "VISUALAB", t: "Web Visualiser", u: "labs/web-visualiser", k: "web html css javascript visualiser sandbox playground frontend development sandbox live preview editor tool coding monaco", y: "lab" },
             { s: "LAB", t: "Lab: Budget Tracker", u: "labs/budget-tracker", k: "android studio jetpack compose kotlin finance sqlite room database mobile prototyping software engineering series 16", y: "lab" },
             { s: "LAB", t: "Lab: Chrome Extension", u: "labs/quick-tab-closer", k: "chrome extension javascript manifest v3 tabs api browser interaction productivity tool automation", y: "lab" },
             { s: "LAB", t: "Lab: Weather App", u: "labs/weather-app", k: "react.js rest api hooks openweather weather real-time dashboard web development series 15", y: "lab" },
@@ -4364,12 +4437,12 @@
                 "Complete your assignments first and prepare for exams if any incoming.",
                 "Take a 20-20-20 rule break: every 20 mins, look 20ft away for 20s.",
                 "Stay hydrated! Take a sip of water to keep your brain sharp.",
-                "Type '/' in the searchbar for system commands.",
+                "Type '/' in the searchbar for system commands",
                 "Check your posture—sit up straight and keep your screen at eye level.",
                 "Blink often! It helps reduce eye strain and keeps them moist.",
                 "Stretch your neck and shoulders to release accumulated tension.",
                 "Keep your workspace clean: A tidy desk helps a tidy mind.",
-                "Type '/' in the searchbar for system commands."
+                "Type '/' in the searchbar for system commands"
             ];
             let index = 0;
 
