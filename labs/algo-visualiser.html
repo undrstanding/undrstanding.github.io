@@ -373,6 +373,7 @@
             justify-content: center;
             padding: 32px 24px 24px;
             gap: 5px;
+            position: relative;
         }
 
         .bar-container {
@@ -551,6 +552,17 @@
             background: var(--p-yellow);
             white-space: nowrap;
             line-height: 26px;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-8px); }
+            50% { transform: translateX(8px); }
+            75% { transform: translateX(-8px); }
+        }
+
+        .shake {
+            animation: shake 0.4s ease-in-out;
         }
 
         /* Footer */
@@ -1385,6 +1397,15 @@ public class Main {
             if (!vc) return;
             vc.innerHTML = '';
             vc.className = 'vis-stage';
+            if (frames[currentFrame] && frames[currentFrame].notFound) {
+                vc.classList.add('shake');
+                setTimeout(() => vc.classList.remove('shake'), 400);
+
+                const badge = document.createElement('div');
+                badge.className = 'absolute top-10 left-1/2 -translate-x-1/2 bg-red-500 text-white px-4 py-1.5 rounded-xl font-black text-[0.75rem] shadow-[4px_4px_0_#000] border-2 border-black z-[200] flex items-center gap-2';
+                badge.innerHTML = '<i class="bi bi-exclamation-circle-fill"></i> TARGET NOT FOUND';
+                vc.appendChild(badge);
+            }
             vc.style.alignItems = 'center'; // Center squares vertically
 
             const left = indices[0] !== undefined ? indices[0] : -1;
@@ -1409,8 +1430,16 @@ public class Main {
                     f_lbl.style.color = '#16a34a'; f_lbl.textContent = 'FOUND';
                     square.appendChild(f_lbl);
                 } else {
-                    // Custom labels for Binary Search
-                    if (idx === mid) {
+                    // Current pointer (Linear search usually)
+                    const curr = indices[4] !== undefined ? indices[4] : -1;
+
+                    if (idx === curr) {
+                        square.classList.add('swap-candidate');
+                        const c = document.createElement('div');
+                        c.className = 'square-label'; c.textContent = 'CURR';
+                        square.appendChild(c);
+                    } else if (idx === mid) {
+                        // Binary search mid
                         square.classList.add('swap-candidate');
                         square.setAttribute('data-pointer', 'MID');
                         const m = document.createElement('div');
@@ -1426,7 +1455,7 @@ public class Main {
                         square.appendChild(r);
                     }
 
-                    if (idx === left || idx === right) {
+                    if (idx === left || idx === right || idx === curr) {
                         square.classList.add('comparing');
                     }
                 }
@@ -1851,23 +1880,23 @@ public class Main {
                         right = mid - 1;
                     }
                 }
-                if (found === -1) frames.push({ type: 'searching', data: [...data], highlight: [-1, -1, -1, -1] });
+                if (found === -1) frames.push({ type: 'searching', data: [...data], highlight: [-1, -1, -1, -1], notFound: true });
                 return frames;
             },
             linearSearch: function (arr, target) {
                 let frames = [];
                 let data = [...arr];
-                frames.push({ type: 'searching', data: [...data], highlight: [-1, -1, -1, -1] });
+                frames.push({ type: 'searching', data: [...data], highlight: [-1, -1, -1, -1, -1] });
                 let found = -1;
                 for (let i = 0; i < data.length; i++) {
-                    frames.push({ type: 'searching', data: [...data], highlight: [-1, i, -1, -1] });
+                    frames.push({ type: 'searching', data: [...data], highlight: [-1, -1, -1, -1, i] });
                     if (data[i] === target) {
                         found = i;
-                        frames.push({ type: 'searching', data: [...data], highlight: [-1, i, -1, found] });
+                        frames.push({ type: 'searching', data: [...data], highlight: [-1, -1, -1, found, i] });
                         break;
                     }
                 }
-                if (found === -1) frames.push({ type: 'searching', data: [...data], highlight: [-1, -1, -1, -1] });
+                if (found === -1) frames.push({ type: 'searching', data: [...data], highlight: [-1, -1, -1, -1, -1], notFound: true });
                 return frames;
             },
             quickSort: function (arr) {
@@ -2027,7 +2056,8 @@ public class Main {
 
             // 2. Extract target (for search)
             let target = 7; // default
-            const targetVarMatch = code.match(/(?:target|let x|int x)\s*=\s*(-?\d+)/i);
+            // More robust match for target variable (captures x = 10, target = 10, const k = 10, etc.)
+            const targetVarMatch = code.match(/(?:let|var|const|int|float)?\s*(?:target|x|val|k|key|find|num)\s*=\s*(?:parseInt\(|parseFloat\()?\s*(-?\d+)/i);
             const callMatch = code.match(/(?:search|binary|linear)[\w]*\s*\([^,]*,[^]*?(-?\d+)\s*\)/i);
             const genericCallMatch = code.match(/,\s*(-?\d+)\s*\)/);
 
