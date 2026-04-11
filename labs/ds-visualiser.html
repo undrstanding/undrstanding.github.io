@@ -461,6 +461,25 @@
             filter: blur(8px);
         }
 
+        @keyframes shake {
+            0%, 100% { transform: translateX(24px) translateY(24px); } /* Handle the centering translate if any */
+            25% { transform: translateX(16px) translateY(24px); }
+            50% { transform: translateX(32px) translateY(24px); }
+            75% { transform: translateX(16px) translateY(24px); }
+        }
+
+        /* Standard shake without centering for other elements */
+        @keyframes shakeBasic {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-8px); }
+            50% { transform: translateX(8px); }
+            75% { transform: translateX(-8px); }
+        }
+
+        .shake {
+            animation: shakeBasic 0.4s ease-in-out;
+        }
+
         /* DS Nodes */
         .ds-node {
             min-width: 48px;
@@ -1229,9 +1248,12 @@ class Main {
             const { type, data, highlightIndex, action } = frame;
 
             if (frame.error) {
+                vc.classList.add('shake');
+                setTimeout(() => vc.classList.remove('shake'), 400);
+
                 const errDiv = document.createElement('div');
-                errDiv.className = 'absolute top-4 left-1/2 -translate-x-1/2 bg-red-500 text-white px-4 py-1 rounded-lg font-black text-[0.6rem] shadow-[4px_4px_0_#000] border-2 border-black z-[1000]';
-                errDiv.textContent = frame.error.toUpperCase();
+                errDiv.className = 'absolute top-10 left-1/2 -translate-x-1/2 bg-red-600 text-white px-5 py-2 rounded-xl font-black text-[0.7rem] shadow-[4px_4px_0_#000] border-2 border-black z-[2000] flex items-center gap-2';
+                errDiv.innerHTML = `<i class="bi bi-exclamation-triangle-fill"></i> ${frame.error.toUpperCase()}`;
                 vc.appendChild(errDiv);
             }
 
@@ -1628,18 +1650,20 @@ class Main {
 
                 if (pushMatch && type !== 'tree') {
                     const val = pushMatch[1].replace(/['"]/g, '').trim();
-                    ds.push(val);
-                    const newState = JSON.stringify(ds);
-                    if (newState !== lastState) {
+                    if (ds.length < MAX_SIZE) {
+                        ds.push(val);
                         mockFrames.push({ type, data: [...ds], action: 'push', highlightIndex: ds.length - 1 });
+                    } else {
+                        const err = type === 'stack' ? 'STACK OVERFLOW' : 'QUEUE FULL';
+                        mockFrames.push({ type, data: [...ds], action: 'push', error: err });
                     }
                 } else if (popMatch && type !== 'tree') {
                     if (ds.length > 0) {
                         if (type === 'queue') ds.shift(); else ds.pop();
-                        const newState = JSON.stringify(ds);
-                        if (newState !== lastState) {
-                            mockFrames.push({ type, data: [...ds], action: 'pop' });
-                        }
+                        mockFrames.push({ type, data: [...ds], action: 'pop' });
+                    } else {
+                        const err = type === 'stack' ? 'STACK UNDERFLOW' : 'QUEUE EMPTY';
+                        mockFrames.push({ type, data: [...ds], action: 'pop', error: err });
                     }
                 }
             });
