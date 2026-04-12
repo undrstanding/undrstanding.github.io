@@ -32,6 +32,8 @@
             background-color: #ffffff;
             color: var(--slate-900);
             -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
             user-select: none;
             overflow: hidden !important;
         }
@@ -64,6 +66,11 @@
 
         * {
             box-sizing: border-box;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+            -webkit-user-drag: none;
         }
 
         ::-webkit-scrollbar {
@@ -511,6 +518,25 @@
         function init() {
             render();
 
+            // Prevent Highlight/Copy/Paste Globally
+            document.addEventListener('selectstart', (e) => e.preventDefault());
+            document.addEventListener('copy', (e) => {
+                e.preventDefault();
+                if (state === 'TEST') triggerViolation('Clipboard Access Attempt');
+            });
+            document.addEventListener('cut', (e) => {
+                e.preventDefault();
+                if (state === 'TEST') triggerViolation('Clipboard Access Attempt');
+            });
+            document.addEventListener('paste', (e) => {
+                e.preventDefault();
+                if (state === 'TEST') triggerViolation('Clipboard Access Attempt');
+            });
+            document.addEventListener('contextmenu', (e) => {
+                e.preventDefault();
+                if (state === 'TEST' && !testData.showWarning) triggerViolation('Restricted Action');
+            });
+
             // Security & Proctoring
             window.addEventListener('blur', () => { if (state === 'TEST' && !testData.showWarning) triggerViolation('Tab Switch Detected'); });
             document.addEventListener('visibilitychange', () => { if (document.hidden && state === 'TEST' && !testData.showWarning) triggerViolation('Tab Switch Detected'); });
@@ -524,13 +550,6 @@
                         render();
                     }
                 }
-            });
-            document.addEventListener('copy', (e) => { if (state === 'TEST') { e.preventDefault(); triggerViolation('Clipboard Access Attempt'); } });
-            document.addEventListener('cut', (e) => { if (state === 'TEST') { e.preventDefault(); triggerViolation('Clipboard Access Attempt'); } });
-            document.addEventListener('paste', (e) => { if (state === 'TEST') { e.preventDefault(); triggerViolation('Clipboard Access Attempt'); } });
-            document.addEventListener('contextmenu', (e) => {
-                e.preventDefault();
-                if (state === 'TEST' && !testData.showWarning) triggerViolation('Restricted Action');
             });
         }
 
