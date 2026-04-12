@@ -1,0 +1,1058 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>C.U.T.E | Assessment Portal</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;700&family=Outfit:wght@400;700;900&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link rel="icon" type="image/svg+xml" href="../assests/undrlogo.svg">
+
+    <style>
+        :root {
+            --nb-yellow: #fef08a;
+            --nb-blue: #bfdbfe;
+            --nb-green: #bbf7d0;
+            --nb-red: #fecaca;
+            --nb-purple: #e9d5ff;
+            --slate-900: #0f172a;
+        }
+
+        html,
+        body {
+            height: 100vh;
+            width: 100vw;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+            background-color: #ffffff;
+            color: var(--slate-900);
+            -webkit-user-select: none;
+            user-select: none;
+            overflow: hidden !important;
+        }
+
+        #app {
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Refined Professional Aesthetic */
+        .nb-card {
+            background: white;
+            border: 1.5px solid var(--slate-900);
+            transition: all 0.2s;
+        }
+
+        .nb-button {
+            border: 1.5px solid var(--slate-900);
+            box-shadow: 2px 2px 0px var(--slate-900);
+            transition: all 0.15s;
+        }
+
+        .nb-button:active {
+            transform: translate(1px, 1px);
+            box-shadow: 0px 0px 0px var(--slate-900);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        ::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--slate-900);
+            border-radius: 10px;
+        }
+
+        .mono {
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .outfit {
+            font-family: 'Outfit', sans-serif;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            border: 1px solid var(--slate-900);
+        }
+
+        .status-unvisited {
+            background: #ffffff;
+        }
+
+        .status-not-answered {
+            background: var(--nb-red);
+        }
+
+        .status-answered {
+            background: var(--nb-green);
+        }
+
+        .status-marked {
+            background: var(--nb-purple);
+        }
+
+        /* Shape-based Accessibility Classes */
+        .q-btn.answered {
+            border-radius: 50%;
+            background: var(--nb-green) !important;
+        }
+
+        .q-btn.not-answered {
+            border-style: dashed;
+            background: var(--nb-red) !important;
+        }
+
+        .q-btn.marked {
+            transform: rotate(45deg) scale(0.85);
+            border-radius: 4px;
+            background: var(--nb-purple) !important;
+        }
+
+        .q-btn.marked span {
+            transform: rotate(-45deg);
+            display: block;
+        }
+
+        .q-btn.marked-answered {
+            transform: rotate(45deg) scale(0.85);
+            border-radius: 4px;
+            background: var(--nb-green) !important;
+            border-color: var(--nb-purple);
+            border-width: 4px;
+        }
+
+        .q-btn.marked-answered span {
+            transform: rotate(-45deg);
+            display: block;
+        }
+
+        .option-row {
+            padding: 14px 18px;
+            border: 2px solid var(--slate-900);
+            border-radius: 10px;
+            background: white;
+            cursor: pointer;
+            transition: all 0.1s;
+        }
+
+        .option-row:hover {
+            background: var(--slate-50);
+        }
+
+        .option-row.selected {
+            background: var(--nb-blue);
+            box-shadow: 3px 3px 0px var(--slate-900);
+        }
+
+        /* Base Question Button */
+        .q-btn {
+            width: 100%;
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            font-weight: 800;
+            border: 2px solid var(--slate-900);
+            background: white;
+            transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+            border-radius: 4px;
+        }
+
+        .q-btn.active {
+            border-width: 4px;
+            transform: scale(1.1);
+            z-index: 10;
+        }
+
+        .fade-in {
+            animation: fadeIn 0.2s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(5px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Mobile Restriction */
+        @media (max-width: 1024px) {
+            #app {
+                display: none !important;
+            }
+
+            #mobile-mask {
+                display: flex !important;
+            }
+        }
+
+        #mobile-mask {
+            display: none;
+            background: white;
+            height: 100vh;
+            width: 100vw;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 30px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="app" class="h-full w-full flex flex-col">
+        <!-- Core Content Injection -->
+    </div>
+
+    <div id="mobile-mask">
+        <div class="max-w-md">
+            <div class="mb-10">
+                <div class="w-16 h-[1.5px] bg-slate-900 mx-auto mb-10"></div>
+                <h1 class="text-4xl font-black outfit uppercase tracking-tighter text-slate-900 mb-6">Oops! We're Sorry.
+                </h1>
+                <p class="text-sm font-bold text-slate-500 uppercase tracking-widest leading-relaxed mb-6 px-4">
+                    To give you the <span class="text-slate-900">best possible experience</span> and ensure your
+                    evaluation is accurate, this test can only be taken on a computer.
+                </p>
+                <p class="text-[11px] font-bold text-slate-400 uppercase tracking-[0.2em] leading-relaxed">
+                    Please switch to your <span class="text-slate-900">laptop or desktop</span> to begin.
+                </p>
+            </div>
+            <div class="py-6 border-t border-slate-100 mt-10">
+                <span class="text-[10px] font-black text-slate-900 uppercase tracking-[0.4em] opacity-40">Desktop
+                    Environment Required</span>
+            </div>
+        </div>
+    </div>
+
+    <div id="cheat-screen"
+        class="fixed inset-0 bg-white z-[9999] hidden flex flex-col items-center justify-center p-12 text-center">
+        <div class="max-w-md">
+            <h1 class="text-4xl font-black mb-4">Integrity Violation</h1>
+            <p class="text-slate-500 mb-8">Navigation outside the assessment environment is prohibited. This session has
+                been paused for review.</p>
+            <button onclick="location.reload()" class="px-8 py-3 bg-slate-900 text-white font-bold rounded">Resume
+                Session</button>
+        </div>
+    </div>
+
+    <script>
+        // State Management
+        let state = 'WELCOME';
+        let config = { topics: ['aptitude', 'tech'], negativeMarking: false };
+        let testData = {
+            questions: [],
+            currentIdx: 0,
+            userAnswers: [],
+            status: [], // unvisited, not-answered, answered, marked, marked-answered
+            timeRemaining: 3600,
+            timerId: null
+        };
+        let analysis = null;
+
+        // Question Bank (Expanded & Diversified)
+        const questionBank = {
+            aptitude: [
+                { q: "A man can do a piece of work in 5 days, but with the help of his son, he can do it in 3 days. How many days would the son take to do it alone?", options: ["6.5 days", "7 days", "7.5 days", "8 days"], answer: 2, type: 'MCQ', category: 'aptitude' },
+                { q: "Pointing to a photograph, a man said, 'I have no brother or sister but that man's father is my father's son.' Whose photograph was it?", options: ["His own", "His son's", "His father's", "His nephew's"], answer: 1, type: 'MCQ', category: 'aptitude' },
+                { q: "The sum of ages of 5 children born at the intervals of 3 years each is 50 years. What is the age of the youngest child?", options: ["4 years", "8 years", "10 years", "None of these"], answer: 0, type: 'MCQ', category: 'aptitude' },
+                { q: "Look at this series: 2, 1, (1/2), (1/4), ... What number should come next?", options: ["(1/3)", "(1/8)", "(2/8)", "(1/16)"], answer: 1, type: 'MCQ', category: 'aptitude' },
+                { q: "Which word does NOT belong with the others?", options: ["index", "glossary", "chapter", "book"], answer: 3, type: 'MCQ', category: 'aptitude' },
+                { q: "If A + B = 15 and A - B = 3, what is A * B?", options: ["54", "45", "18", "36"], answer: 0, type: 'MCQ', category: 'aptitude' },
+                { q: "A clock shows 4:30. If the minute hand points East, in what direction does the hour hand point?", options: ["North-East", "South-East", "North-West", "South-West"], answer: 0, type: 'MCQ', category: 'aptitude' },
+                { q: "If 'TIGER' is coded as 'UJHFS', how is 'LEMON' coded?", options: ["MFNPO", "MFNPM", "MENPO", "MFNPO"], answer: 0, type: 'MCQ', category: 'aptitude' },
+                { q: "A train 120m long passes a man standing on the platform in 6 seconds. What is the speed of the train?", options: ["60 km/hr", "72 km/hr", "80 km/hr", "90 km/hr"], answer: 1, type: 'MCQ', category: 'aptitude' },
+                { q: "Complete the pattern: 7, 10, 8, 11, 9, 12, ...", options: ["7", "10", "12", "13"], answer: 1, type: 'MCQ', category: 'aptitude' },
+                { q: "Which of these are composite numbers?", options: ["4", "9", "11", "15"], answer: [0, 1, 3], type: 'MSQ', category: 'aptitude' },
+                { q: "Identify the logically correct conclusions for: 'All birds fly. All airplanes fly.'", options: ["All birds are airplanes", "Some things that fly are birds", "All airplanes are birds", "Some airplanes stay on ground"], answer: [1], type: 'MSQ', category: 'aptitude' },
+                { q: "A shopkeeper sells an item at 20% profit. If he bought it for $100, what is the selling price?", options: ["$110", "$120", "$125", "$140"], answer: 1, type: 'MCQ', category: 'aptitude' },
+                { q: "Find the odd one out:", options: ["Square", "Circle", "Triangle", "Cube"], answer: 3, type: 'MCQ', category: 'aptitude' },
+                { q: "If in a certain language, 'BLUE' is 'CLVF', what is 'PINK'?", options: ["QJOL", "QKLM", "QJNK", "QJMP"], answer: 0, type: 'MCQ', category: 'aptitude' },
+                { q: "A sum of money at simple interest amounts to $815 in 3 years and to $854 in 4 years. The sum is?", options: ["$650", "$690", "$698", "$700"], answer: 2, type: 'MCQ', category: 'aptitude' },
+                { q: "The ratio of ages of A and B is 4:3. If sum of their ages is 28, what is B's age?", options: ["12", "16", "20", "24"], answer: 0, type: 'MCQ', category: 'aptitude' },
+                { q: "If 'PEN' is 35, then 'HEN' is?", options: ["27", "28", "30", "32"], answer: 0, type: 'MCQ', category: 'aptitude' },
+                { q: "A man walks 5km North, then turns right and walks 3km. How far is he from start?", options: ["8km", "3km", "sqrt(34)km", "4km"], answer: 2, type: 'MCQ', category: 'aptitude' },
+                { q: "Find missing number: 1, 4, 9, 16, 25, ?", options: ["30", "36", "40", "49"], answer: 1, type: 'MCQ', category: 'aptitude' },
+                { q: "Choose synonyms for 'ABANDON':", options: ["Desert", "Forsake", "Maintain", "Keep"], answer: [0, 1], type: 'MSQ', category: 'aptitude' },
+                { q: "What is 15% of 200?", options: ["15", "30", "45", "60"], answer: 1, type: 'MCQ', category: 'aptitude' },
+                { q: "If today is Monday, what day is it after 61 days?", options: ["Wednesday", "Saturday", "Tuesday", "Thursday"], answer: 1, type: 'MCQ', category: 'aptitude' },
+                { q: "A cube is colored on all faces and cut into 64 small cubes. How many have no color?", options: ["8", "12", "16", "24"], answer: 0, type: 'MCQ', category: 'aptitude' },
+                { q: "Average of first five prime numbers?", options: ["5.2", "5.4", "5.6", "5.8"], answer: 2, type: 'MCQ', category: 'aptitude' },
+                { q: "Which of these are geometric shapes?", options: ["Polygon", "Parallelogram", "Pendulum", "Pyramid"], answer: [0, 1, 3], type: 'MSQ', category: 'aptitude' },
+                { q: "If 5 spiders can catch 5 flies in 5 minutes, how many minutes does it take 100 spiders to catch 100 flies?", options: ["1", "5", "50", "100"], answer: 1, type: 'MCQ', category: 'aptitude' },
+                { q: "Which number is divisible by 3?", options: ["123", "456", "789", "111"], answer: [0, 1, 2, 3], type: 'MSQ', category: 'aptitude' },
+                { q: "A boat goes 8km upstream in 2 hours. Speed of boat?", options: ["4 km/hr", "6 km/hr", "2 km/hr", "Not enough info"], answer: 3, type: 'MCQ', category: 'aptitude' },
+                { q: "Syllogism: No A is B. All C are A.", options: ["No C is B", "Some C is B", "All B is C", "none"], answer: 0, type: 'MCQ', category: 'aptitude' },
+                { q: "In how many ways can the letters of the word 'LEADER' be arranged?", options: ["72", "144", "360", "720"], answer: 2, type: 'MCQ', category: 'aptitude' },
+                { q: "A person crosses a 600m long street in 5 mins. Speed in km/hr?", options: ["3.6", "7.2", "8.4", "10"], answer: 1, type: 'MCQ', category: 'aptitude' },
+                { q: "If cost of 12 pens is equal to selling price of 8 pens, profit %?", options: ["25%", "33.3%", "50%", "66.6%"], answer: 2, type: 'MCQ', category: 'aptitude' },
+                { q: "Which of these are vowels?", options: ["a", "e", "i", "o", "u", "y"], answer: [0, 1, 2, 3, 4], type: 'MSQ', category: 'aptitude' },
+                { q: "Simple interest on $5000 for 2 years at 5% per annum?", options: ["$250", "$500", "$750", "$1000"], answer: 1, type: 'MCQ', category: 'aptitude' },
+                { q: "If A can finish work in 10 days and B in 15 days, together they take?", options: ["5 days", "6 days", "8 days", "9 days"], answer: 1, type: 'MCQ', category: 'aptitude' },
+                { q: "Which of these are primary colors?", options: ["Red", "Green", "Blue", "Yellow"], answer: [0, 2, 3], type: 'MSQ', category: 'aptitude' },
+                { q: "A clock at 3:00. Angle between hands?", options: ["45 deg", "90 deg", "120 deg", "180 deg"], answer: 1, type: 'MCQ', category: 'aptitude' },
+                { q: "Missing in 4, 9, 19, 39, ?", options: ["49", "59", "69", "79"], answer: 3, type: 'MCQ', category: 'aptitude' },
+                { q: "Probability of getting a head on a coin toss?", options: ["0", "0.5", "1", "1.5"], answer: 1, type: 'MCQ', category: 'aptitude' },
+                { q: "Anagram of 'SILENT'?", options: ["LISTEN", "LISTED", "SILENTLY", "none"], answer: 0, type: 'MCQ', category: 'aptitude' },
+                { q: "If 1st Jan 2007 was Monday, what was 1st Jan 2008?", options: ["Monday", "Tuesday", "Wednesday", "Sunday"], answer: 1, type: 'MCQ', category: 'aptitude' },
+                { q: "Which of these are leap years?", options: ["1900", "2000", "2004", "2022"], answer: [1, 2], type: 'MSQ', category: 'aptitude' },
+                { q: "A man is 3 times as old as his son. In 15 years he will be twice. Son's age?", options: ["10", "15", "20", "25"], answer: 1, type: 'MCQ', category: 'aptitude' },
+                { q: "Square root of 625?", options: ["15", "25", "35", "45"], answer: 1, type: 'MCQ', category: 'aptitude' },
+                { q: "Cube root of 27?", options: ["3", "9", "13", "none"], answer: 0, type: 'MCQ', category: 'aptitude' },
+                { q: "Synonym for 'METICULOUS':", options: ["Careless", "Precise", "Fast", "Quiet"], answer: 1, type: 'MCQ', category: 'aptitude' },
+                { q: "Which are prime numbers between 20 and 30?", options: ["21", "23", "27", "29"], answer: [1, 3], type: 'MSQ', category: 'aptitude' },
+                { q: "Half of 2 plus 2 is?", options: ["2", "3", "4", "none"], answer: 1, type: 'MCQ', category: 'aptitude' },
+                { q: "If water is called food, food is called tree, tree is called sky... what do we eat?", options: ["Water", "Food", "Tree", "Sky"], answer: 2, type: 'MCQ', category: 'aptitude' },
+                { q: "Next in series: J, F, M, A, M, J, ?", options: ["J", "S", "O", "N"], answer: 0, type: 'MCQ', category: 'aptitude' },
+                { q: "Odd one out: Iron, Silver, Gold, Hydrogen", options: ["Iron", "Silver", "Gold", "Hydrogen"], answer: 3, type: 'MCQ', category: 'aptitude' },
+                { q: "If '123' is 'ABC', what is '456'?", options: ["DEF", "DGH", "EGF", "none"], answer: 0, type: 'MCQ', category: 'aptitude' },
+                { q: "How many months have 28 days?", options: ["1", "4", "6", "12"], answer: 3, type: 'MCQ', category: 'aptitude' },
+                { q: "Smallest 3 digit prime number?", options: ["101", "103", "107", "109"], answer: 0, type: 'MCQ', category: 'aptitude' },
+                { q: "Two numbers ratio 3:4. HCF is 4. LCM is?", options: ["12", "16", "24", "48"], answer: 3, type: 'MCQ', category: 'aptitude' },
+                { q: "A is father of B. B is sister of C. C is husband of D. How is D related to A?", options: ["Daughter", "Granddaughter", "Daughter-in-law", "Niece"], answer: 2, type: 'MCQ', category: 'aptitude' },
+                { q: "Area of a circle with radius 7m? (pi=22/7)", options: ["44 sqm", "154 sqm", "49 sqm", "144 sqm"], answer: 1, type: 'MCQ', category: 'aptitude' },
+                { q: "Find the missing: B3, D5, G8, K12, ?", options: ["P17", "O16", "Q18", "M14"], answer: 0, type: 'MCQ', category: 'aptitude' },
+                { q: "A sum doubles in 8 years at simple interest. Rate of interest?", options: ["10%", "12.5%", "15%", "20%"], answer: 1, type: 'MCQ', category: 'aptitude' },
+                { q: "If 'SKY' is '123' and 'SEA' is '145', what is 'E'?", options: ["1", "3", "4", "5"], answer: 2, type: 'MCQ', category: 'aptitude' },
+                { q: "Angle between hands of clock at 8:30?", options: ["60 deg", "75 deg", "80 deg", "none"], answer: 1, type: 'MCQ', category: 'aptitude' },
+                { q: "Which are perfect squares?", options: ["144", "169", "225", "256", "300"], answer: [0, 1, 2, 3], type: 'MSQ', category: 'aptitude' },
+                { q: "A man can row 15 km/hr in still water. If stream is 3 km/hr, speed downstream?", options: ["12 km/hr", "15 km/hr", "18 km/hr", "21 km/hr"], answer: 2, type: 'MCQ', category: 'aptitude' },
+                { q: "In a group of 60, 40 like Cricket, 10 both Cricket and Tennis. Number liking Tennis only?", options: ["10", "20", "30", "none"], answer: 1, type: 'MCQ', category: 'aptitude' },
+                { q: "If 'FRIDGE' is 'GTLHLK', what is 'KITCHEN'?", options: ["LKVGMKO", "LKVGMJP", "LKVGMLP", "none"], answer: 0, type: 'MCQ', category: 'aptitude' },
+                { q: "Next in sequence: 3, 12, 48, 192, ?", options: ["240", "484", "768", "1024"], answer: 2, type: 'MCQ', category: 'aptitude' },
+                { q: "Which of these are prime numbers between 50 and 60?", options: ["51", "53", "57", "59"], answer: [1, 3], type: 'MSQ', category: 'aptitude' },
+                { q: "Average of first 50 natural numbers is?", options: ["25", "25.5", "50", "50.5"], answer: 1, type: 'MCQ', category: 'aptitude' },
+                { q: "If A:B = 2:3 and B:C = 4:5, then A:C is?", options: ["8:15", "10:15", "8:12", "none"], answer: 0, type: 'MCQ', category: 'aptitude' },
+                { q: "Probability of picking a King from a deck of 52 cards?", options: ["1/52", "1/13", "4/13", "1/4"], answer: 1, type: 'MCQ', category: 'aptitude' },
+                { q: "Choose antonyms for 'ELOQUENT':", options: ["Articulate", "Fluent", "Inarticulate", "Silent"], answer: [2, 3], type: 'MSQ', category: 'aptitude' },
+                { q: "If 1st Jan 2008 was Tuesday, what was 1st Jan 2009?", options: ["Wednesday", "Thursday", "Friday", "Monday"], answer: 1, type: 'MCQ', category: 'aptitude' },
+                { q: "Find odd one: Wheat, Rice, Barley, Mustard", options: ["Wheat", "Rice", "Barley", "Mustard"], answer: 3, type: 'MCQ', category: 'aptitude' },
+                { q: "Two pipes A and B fill in 20/30 mins. Both open together, time?", options: ["10 mins", "12 mins", "15 mins", "18 mins"], answer: 1, type: 'MCQ', category: 'aptitude' },
+                { q: "A sum of $12500 amounts to $15500 in 4 years at SI. Rate?", options: ["3%", "4%", "5%", "6%"], answer: 3, type: 'MCQ', category: 'aptitude' },
+                { q: "Volume of a cube with side 5cm?", options: ["25 ccm", "100 ccm", "125 ccm", "150 ccm"], answer: 2, type: 'MCQ', category: 'aptitude' },
+                { q: "Which of these are planets?", options: ["Mars", "Venus", "Moon", "Jupiter"], answer: [0, 1, 3], type: 'MSQ', category: 'aptitude' },
+                { q: "If 'GIVE' is '5137' and 'BAT' is '924', what is 'GATE'?", options: ["5247", "5427", "5724", "none"], answer: 0, type: 'MCQ', category: 'aptitude' },
+                { q: "How many triangles in a square with diagonals drawn?", options: ["4", "6", "8", "10"], answer: 2, type: 'MCQ', category: 'aptitude' },
+                { q: "A person sells goods at 10% loss. SP is $90. CP is?", options: ["$99", "$100", "$110", "$120"], answer: 1, type: 'MCQ', category: 'aptitude' },
+                { q: "If 'CLOCK' is 'MDNLD', what is 'WATCH'?", options: ["XBUDI", "XBUDJ", "XBUEI", "none"], answer: 0, type: 'MCQ', category: 'aptitude' },
+                { q: "A sum at CI doubles in 5 years. In how many years will it be 8 times?", options: ["10", "12", "15", "20"], answer: 2, type: 'MCQ', category: 'aptitude' },
+                { q: "In a bag, 6 white, 4 black balls. Two balls drawn. Prob. of same color?", options: ["7/15", "1/2", "8/15", "none"], answer: 0, type: 'MCQ', category: 'aptitude' },
+                { q: "Alphabetical series: AR, CS, ET, ?", options: ["GU", "GV", "FT", "none"], answer: 0, type: 'MCQ', category: 'aptitude' },
+                { q: "A person sells two items at $990 each. One at 10% profit, other 10% loss. Net?", options: ["1% profit", "1% loss", "No profit/loss", "none"], answer: 1, type: 'MCQ', category: 'aptitude' },
+                { q: "Which are triangular numbers?", options: ["1", "3", "6", "10", "12"], answer: [0, 1, 2, 3], type: 'MSQ', category: 'aptitude' },
+                { q: "Sum of 1+2+3...+n is 5050. Value of n?", options: ["50", "100", "150", "none"], answer: 1, type: 'MCQ', category: 'aptitude' },
+                { q: "If 3 men OR 5 women can do work in 12 days. 6 men AND 5 women combined?", options: ["4 days", "6 days", "8 days", "none"], answer: 0, type: 'MCQ', category: 'aptitude' },
+                { q: "Find the angle: Time is 10:25. Reflected angle in mirror?", options: ["1:35", "2:35", "1:25", "none"], answer: 0, type: 'MCQ', category: 'aptitude' },
+                { q: "Which of these are composite and even?", options: ["4", "8", "9", "10"], answer: [0, 1, 3], type: 'MSQ', category: 'aptitude' },
+                { q: "A, B, C partners. Ratio 2:3:4. Total profit $900. B's share?", options: ["$200", "$300", "$400", "none"], answer: 1, type: 'MCQ', category: 'aptitude' },
+                { q: "If 'MONDAY' is 617482, what is 'YAM'?", options: ["216", "261", "126", "none"], answer: 0, type: 'MCQ', category: 'aptitude' },
+                { q: "HCF of 2/3, 8/9, 64/81, 10/27 is?", options: ["2/81", "2/3", "10/3", "none"], answer: 0, type: 'MCQ', category: 'aptitude' },
+                { q: "How many ways to pick 2 people from 5?", options: ["5", "10", "20", "25"], answer: 1, type: 'MCQ', category: 'aptitude' },
+                { q: "Next in 1, 3, 7, 15, 31, ?", options: ["60", "61", "62", "63"], answer: 3, type: 'MCQ', category: 'aptitude' },
+                { q: "If '+' means '*', '-' means '/', what is 10 + 2 - 5?", options: ["4", "5", "10", "none"], answer: 0, type: 'MCQ', category: 'aptitude' },
+                { q: "Two trains 140m/160m at 60/40kmph in opposite dir. Pass time?", options: ["10.8s", "12s", "15s", "none"], answer: 0, type: 'MCQ', category: 'aptitude' },
+                { q: "Probability of sum 7 on two dice?", options: ["1/6", "1/12", "1/36", "none"], answer: 0, type: 'MCQ', category: 'aptitude' },
+                { q: "Circle radius doubles. Area increases how many times?", options: ["2", "3", "4", "none"], answer: 2, type: 'MCQ', category: 'aptitude' },
+                { q: "If today is Sunday, 10^10 days later is?", options: ["Sun", "Wed", "Fri", "Sat"], answer: 1, type: 'MCQ', category: 'aptitude' },
+                { q: "A sum of $1000 compounded annually at 10% for 2 years?", options: ["$1210", "$1200", "$1100", "none"], answer: 0, type: 'MCQ', category: 'aptitude' },
+                { q: "If 'A' is 1, 'B' is 2... 'CAT' is 24, what is 'DOG'?", options: ["24", "26", "28", "30"], answer: 1, type: 'MCQ', category: 'aptitude' },
+                { q: "Next in sequence: 11, 13, 17, 19, 23, ?", options: ["25", "27", "29", "31"], answer: 2, type: 'MCQ', category: 'aptitude' },
+                { q: "Which of these are prime and less than 10?", options: ["2", "3", "5", "7", "9"], answer: [0, 1, 2, 3], type: 'MSQ', category: 'aptitude' },
+                { q: "A is twice as fast as B. Together they take 12 days. A alone?", options: ["18 days", "24 days", "36 days", "none"], answer: 0, type: 'MCQ', category: 'aptitude' },
+                { q: "Probability of sum 2 or 12 on two dice?", options: ["1/18", "1/36", "1/6", "none"], answer: 0, type: 'MCQ', category: 'aptitude' },
+                { q: "If 'MONDAY' is 'TUESDAY' (shifted by 1 day), what is 'JAN'?", options: ["FEB", "MAR", "APR", "none"], answer: 0, type: 'MCQ', category: 'aptitude' },
+                { q: "Angle of hour hand at 6:00?", options: ["0", "90", "180", "270"], answer: 2, type: 'MCQ', category: 'aptitude' },
+                { q: "Smallest square number divisible by 6, 9, 15?", options: ["300", "600", "900", "none"], answer: 2, type: 'MCQ', category: 'aptitude' },
+                { q: "Which are the divisors of 64?", options: ["2", "4", "8", "32", "64"], answer: [0, 1, 2, 3, 4], type: 'MSQ', category: 'aptitude' },
+                { q: "If 1st Jan 1996 was Monday, what was 1st Jan 1997?", options: ["Tue", "Wed", "Thu", "none"], answer: 1, type: 'MCQ', category: 'aptitude' },
+                { q: "A cube of 3x3x3 painted red. Top layer removed. Remaining cubes?", options: ["9", "18", "27", "none"], answer: 1, type: 'MCQ', category: 'aptitude' },
+                { q: "Find odd one: P, Q, R, S (alphabetical positions)", options: ["P", "Q", "R", "S"], answer: 0, type: 'MCQ', category: 'aptitude' },
+                { q: "Ratio of area to perimeter of a square with side 4?", options: ["1:1", "1:2", "2:1", "none"], answer: 0, type: 'MCQ', category: 'aptitude' },
+                { q: "If 5 workers build wall in 5 days, 10 workers take?", options: ["2.5 days", "5 days", "10 days", "none"], answer: 0, type: 'MCQ', category: 'aptitude' },
+                { q: "Percentage of 60m in 1km?", options: ["6%", "0.6%", "60%", "none"], answer: 1, type: 'MCQ', category: 'aptitude' },
+                { q: "A person's age is 1/6th of father's. After 10 years, father will be 40. Person's age?", options: ["5", "10", "15", "none"], answer: 0, type: 'MCQ', category: 'aptitude' },
+                { q: "Which are leap years?", options: ["1600", "1700", "1800", "none"], answer: [0], type: 'MSQ', category: 'aptitude' },
+                { q: "Sum of interior angles of a pentagon?", options: ["360", "540", "720", "none"], answer: 1, type: 'MCQ', category: 'aptitude' },
+                { q: "If 'BOOK' is 'CPPL', 'PEN' is?", options: ["QFO", "QGM", "RFO", "none"], answer: 0, type: 'MCQ', category: 'aptitude' },
+                { q: "Probability of picking a vowel from 'ENGINEER'?", options: ["3/8", "4/8", "5/8", "none"], answer: 1, type: 'MCQ', category: 'aptitude' },
+                { q: "Cube of 4 plus square of 4?", options: ["64", "16", "80", "none"], answer: 2, type: 'MCQ', category: 'aptitude' },
+                { q: "If 3 pipes fill in 6h, 1 pipe takes?", options: ["2h", "6h", "18h", "none"], answer: 2, type: 'MCQ', category: 'aptitude' },
+                { q: "Next in series: AZ, CX, EV, ?", options: ["GT", "HS", "IR", "none"], answer: 0, type: 'MCQ', category: 'aptitude' }
+            ],
+            tech: [
+                { q: "Is 'undefined' equal to 'null' in JS (using ==)?", options: ["Yes", "No", "Depends on engine", "Error"], answer: 0, type: 'MCQ', category: 'tech' },
+                { q: "Which of these are valid HTTP methods?", options: ["GET", "PUT", "PATCH", "DELETE", "FETCH"], answer: [0, 1, 2, 3], type: 'MSQ', category: 'tech' },
+                { q: "Purpose of 'dangerouslySetInnerHTML' in React?", options: ["Set state", "Render raw HTML", "Optimize performance", "Security"], answer: 1, type: 'MCQ', category: 'tech' },
+                { q: "What is 'Hoisting' in JavaScript?", options: ["Moving declarations to top", "Lifting state", "Error handling", "none"], answer: 0, type: 'MCQ', category: 'tech' },
+                { q: "Which of these are CSS preprocessors?", options: ["Sass", "Less", "Stylus", "PostCSS"], answer: [0, 1, 2], type: 'MSQ', category: 'tech' },
+                { q: "What does 'SOLID' stand for in programming?", options: ["Software principles", "Hardware spec", "Network layers", "none"], answer: 0, type: 'MCQ', category: 'tech' },
+                { q: "Which command creates a new git tag?", options: ["git tag -a", "git branch", "git push --tags", "git commit"], answer: 0, type: 'MCQ', category: 'tech' },
+                { q: "What is the function of a 'Load Balancer'?", options: ["Storage", "Distribute traffic", "DB management", "Encryption"], answer: 1, type: 'MCQ', category: 'tech' },
+                { q: "Common usage of 'JWT'?", options: ["Styling", "Authentication", "Testing", "Animation"], answer: 1, type: 'MCQ', category: 'tech' },
+                { q: "Difference between 'let' and 'var'?", options: ["Scope", "Hoisting", "Redeclaration", "all"], answer: 3, type: 'MCQ', category: 'tech' },
+                { q: "What is 'Server Side Rendering'?", options: ["JS on backend", "UI generated on server", "A DB technique", "none"], answer: 1, type: 'MCQ', category: 'tech' },
+                { q: "Which of these are React hooks for side-effects?", options: ["useEffect", "useLayoutEffect", "useCallback", "useState"], answer: [0, 1], type: 'MSQ', category: 'tech' },
+                { q: "Purpose of 'tsconfig.json'?", options: ["Git config", "TypeScript config", "Package management", "none"], answer: 1, type: 'MCQ', category: 'tech' },
+                { q: "What is 'OAuth'?", options: ["DB index", "Authorization framework", "CSS property", "JS library"], answer: 1, type: 'MCQ', category: 'tech' },
+                { q: "Purpose of 'Index' in SQL?", options: ["Speed up queries", "Unique values", "Foreign key", "none"], answer: 0, type: 'MCQ', category: 'tech' },
+                { q: "Which part of JS is single-threaded?", options: ["Main execution thread", "Worker threads", "Network calls", "none"], answer: 0, type: 'MCQ', category: 'tech' },
+                { q: "Common use of 'Redux-Saga'?", options: ["Simple state", "Async side effects", "Routing", "Styling"], answer: 1, type: 'MCQ', category: 'tech' },
+                { q: "What does 'NoSQL' primarily mean?", options: ["No SQL allowed", "Not Only SQL", "New SQL", "none"], answer: 1, type: 'MCQ', category: 'tech' },
+                { q: "Which of these are frontend frameworks/libraries?", options: ["Vue", "Angular", "Svelte", "Spring"], answer: [0, 1, 2], type: 'MSQ', category: 'tech' },
+                { q: "Difference between 200 and 201 status?", options: ["Error vs Success", "OK vs Created", "Found vs Not Found", "none"], answer: 1, type: 'MCQ', category: 'tech' },
+                { q: "What is 'Docker Compose'?", options: ["Build an image", "Multi-container manager", "A network tool", "none"], answer: 1, type: 'MCQ', category: 'tech' },
+                { q: "What is 'Responsive Design' in CSS?", options: ["Fast loading", "Mobile-ready layout", "Dark mode", "none"], answer: 1, type: 'MCQ', category: 'tech' },
+                { q: "Purpose of 'alt' attribute in <img>?", options: ["Styling", "Accessibility/Fallback", "Source URL", "none"], answer: 1, type: 'MCQ', category: 'tech' },
+                { q: "Which 'Array' method returns a new array?", options: ["map", "filter", "forEach", "pop"], answer: [0, 1], type: 'MSQ', category: 'tech' },
+                { q: "What is 'Dependency Injection'?", options: ["Pattern for decoupling", "Importing a file", "API call", "error"], answer: 0, type: 'MCQ', category: 'tech' },
+                { q: "Difference between '==' and '==='?", options: ["Type coercion", "Speed", "Syntax only", "none"], answer: 0, type: 'MCQ', category: 'tech' },
+                { q: "Which is a valid 'npm' command?", options: ["npm install", "npm run", "npm list", "npm delete"], answer: [0, 1, 2], type: 'MSQ', category: 'tech' },
+                { q: "Purpose of 'robots.txt'?", options: ["Styling", "SEO/Crawler guidance", "Security", "none"], answer: 1, type: 'MCQ', category: 'tech' },
+                { q: "Common usage of 'Tailwind CSS'?", options: ["Utility-first styling", "JS logic", "DB queries", "none"], answer: 0, type: 'MCQ', category: 'tech' },
+                { q: "What is 'Web Component'?", options: ["A react element", "Encapsulated HTML tags", "A cloud service", "none"], answer: 1, type: 'MCQ', category: 'tech' },
+                { q: "How to prevent re-renders of a child in React?", options: ["React.memo", "useCallback", "useMemo", "all"], answer: 3, type: 'MCQ', category: 'tech' },
+                { q: "In JS, what is the 'Event Loop'?", options: ["A way to loop arrays", "Mechanism for async execution", "A networking protocol", "none"], answer: 1, type: 'MCQ', category: 'tech' },
+                { q: "Which CSS property is used for glassmorphism?", options: ["opacity", "backdrop-filter", "background-blur", "none"], answer: 1, type: 'MCQ', category: 'tech' },
+                { q: "Purpose of 'CORS' in web dev?", options: ["Coloring", "Cross-origin resource sharing", "Caching", "none"], answer: 1, type: 'MCQ', category: 'tech' },
+                { q: "Which of these are NoSQL databases?", options: ["MongoDB", "PostgreSQL", "DynamoDB", "MySQL"], answer: [0, 2], type: 'MSQ', category: 'tech' },
+                { q: "What is 'Tree Shaking' in JS?", options: ["Logging", "Removing unused code", "File compression", "none"], answer: 1, type: 'MCQ', category: 'tech' },
+                { q: "Which command pushes a git branch?", options: ["git push origin [name]", "git upload", "git remote add", "none"], answer: 0, type: 'MCQ', category: 'tech' },
+                { q: "What is 'Microservices' architecture?", options: ["One big app", "Independent small services", "A single DB for all", "none"], answer: 1, type: 'MCQ', category: 'tech' },
+                { q: "Purpose of 'Docker Volume'?", options: ["Increase speed", "Data persistence", "Image sizing", "none"], answer: 1, type: 'MCQ', category: 'tech' },
+                { q: "Which of these are React hooks?", options: ["useReducer", "useRef", "useImperativeHandle", "useStore"], answer: [0, 1, 2], type: 'MSQ', category: 'tech' },
+                { q: "What is 'PWA'?", options: ["Private Web App", "Progressive Web App", "Public Web App", "none"], answer: 1, type: 'MCQ', category: 'tech' },
+                { q: "Function of 'Babel'?", options: ["Testing", "Transpile ES6 to ES5", "Production build", "none"], answer: 1, type: 'MCQ', category: 'tech' },
+                { q: "What is 'Currying' in JS?", options: ["A spice", "Transforming f(a,b) to f(a)(b)", "Deleting a function", "none"], answer: 1, type: 'MCQ', category: 'tech' },
+                { q: "Purpose of 'package-lock.json'?", options: ["Lock version numbers", "Lock the file", "Speed up installs", "none"], answer: [0, 2], type: 'MSQ', category: 'tech' },
+                { q: "Which part of HTTP is encrypted by SSL?", options: ["Header only", "Body only", "Entire stream", "none"], answer: 2, type: 'MCQ', category: 'tech' },
+                { q: "What is 'Virtual DOM'?", options: ["Real DOM", "In-memory representation", "A CSS techniques", "none"], answer: 1, type: 'MCQ', category: 'tech' },
+                { q: "Difference between 'null' and 'undefined'?", options: ["Intentional absence vs not initialized", "They are same", "JS types", "none"], answer: [0, 2], type: 'MSQ', category: 'tech' },
+                { q: "Which are valid CSS units?", options: ["px", "rem", "vh", "percent"], answer: [0, 1, 2], type: 'MSQ', category: 'tech' },
+                { q: "Common usage of 'GraphQL'?", options: ["Style sheet", "Query language for APIs", "DB engine", "none"], answer: 1, type: 'MCQ', category: 'tech' },
+                { q: "What does 'Hydration' mean in SSR?", options: ["Cleaning code", "Attaching event listeners to server-rendered HTML", "Downloading images", "none"], answer: 1, type: 'MCQ', category: 'tech' },
+                { q: "Purpose of 'robots.txt'?", options: ["Styling", "Crawl instructions", "User login", "none"], answer: 1, type: 'MCQ', category: 'tech' },
+                { q: "Which is not a JS framework?", options: ["React", "Vue", "Django", "Angular"], answer: 2, type: 'MCQ', category: 'tech' },
+                { q: "Result of 'typeof []' in JS?", options: ["array", "list", "object", "undefined"], answer: 2, type: 'MCQ', category: 'tech' },
+                { q: "What is 'Normalization' in SQL?", options: ["Optimizing data structure", "Deleting data", "Adding rows", "none"], answer: 0, type: 'MCQ', category: 'tech' },
+                { q: "Difference between 'Debouncing' and 'Throttling'?", options: ["Wait for pause vs Limit frequency", "They are same", "Speed optimization", "none"], answer: [0, 2], type: 'MSQ', category: 'tech' },
+                { q: "What is 'Reconciliation' in React?", options: ["State management", "Virtual DOM diffing", "API sync", "none"], answer: 1, type: 'MCQ', category: 'tech' },
+                { q: "Which part of HTTP is not encrypted by TLS?", options: ["Destination IP", "Headers", "Body", "none"], answer: 0, type: 'MCQ', category: 'tech' },
+                { q: "What is 'Big O' of Merge Sort?", options: ["O(n log n)", "O(n^2)", "O(n)", "none"], answer: 0, type: 'MCQ', category: 'tech' },
+                { q: "Function of 'Proxy' object in JS?", options: ["Intercepting operations", "Networking", "Design Pattern", "none"], answer: [0, 2], type: 'MSQ', category: 'tech' },
+                { q: "What is 'Content Security Policy' (CSP)?", options: ["Styling", "Preventing XSS/Injection", "File config", "none"], answer: 1, type: 'MCQ', category: 'tech' },
+                { q: "Purpose of 'Index' in DB?", options: ["Unique rows", "Search performance", "Foreign keys", "none"], answer: [0, 1], type: 'MSQ', category: 'tech' },
+                { q: "What is 'Event Bubbling'?", options: ["Inner to outer", "Outer to inner", "Network delay", "none"], answer: 0, type: 'MCQ', category: 'tech' },
+                { q: "Which are valid React 'Concurrent' features?", options: ["Suspense", "Transitions", "Context", "none"], answer: [0, 1], type: 'MSQ', category: 'tech' },
+                { q: "Difference between 'Cluster' and 'Worker Threads' in Node?", options: ["Process vs Thread", "Both same", "Network vs CPU", "none"], answer: [0, 2], type: 'MSQ', category: 'tech' },
+                { q: "What is 'JWT' payload signed with?", options: ["Secret/Private Key", "Public Key", "None", "Random salt"], answer: 0, type: 'MCQ', category: 'tech' },
+                { q: "Result of '[] + []' in JS?", options: ["''", "[]", "undefined", "NaN"], answer: 0, type: 'MCQ', category: 'tech' },
+                { q: "What is 'Sharding' in DB?", options: ["Replication", "Horizontal partitioning", "Vertical scaling", "none"], answer: 1, type: 'MCQ', category: 'tech' },
+                { q: "Which CSS property enables 'Flexbox'?", options: ["display: block", "display: flex", "flex-direction", "none"], answer: 1, type: 'MCQ', category: 'tech' },
+                { q: "Purpose of 'Shadow DOM'?", options: ["Hiding elements", "Encapsulation for components", "Animation", "none"], answer: 1, type: 'MCQ', category: 'tech' },
+                { q: "What does 'Atomicity' mean in ACID?", options: ["All or nothing", "One by one", "Smallest unit", "none"], answer: 0, type: 'MCQ', category: 'tech' },
+                { q: "Common use of 'Redis'?", options: ["Persistent Storage", "Caching/In-memory", "UI styling", "none"], answer: 1, type: 'MCQ', category: 'tech' },
+                { q: "Which are 'Strict Mode' features in JS?", options: ["Prevent globals", "Unique params", "both", "none"], answer: 2, type: 'MCQ', category: 'tech' },
+                { q: "What is 'Hydration' error in Next.js?", options: ["Server vs Client mismatch", "Network failure", "Memory leak", "none"], answer: 0, type: 'MCQ', category: 'tech' },
+                { q: "Purpose of 'ErrorBoundary' in React?", options: ["Catch JS errors in children", "Handle API errors", "Prevent crashes", "none"], answer: [0, 2], type: 'MSQ', category: 'tech' },
+                { q: "What is 'WebAssembly' (Wasm)?", options: ["A JS binary format", "Binary instruction format for web", "A new CSS library", "none"], answer: 1, type: 'MCQ', category: 'tech' },
+                { q: "Function of 'useCallback' hook?", options: ["Memoize functions", "Memoize values", "Set state", "none"], answer: 0, type: 'MCQ', category: 'tech' },
+                { q: "Which property is used for 'Flexbox' gap?", options: ["gap", "spacing", "flex-gap", "none"], answer: 0, type: 'MCQ', category: 'tech' },
+                { q: "What is 'Atomic Design'?", options: ["A JS library", "Methodology for UI components", "Atom editor theme", "none"], answer: 1, type: 'MCQ', category: 'tech' },
+                { q: "Which are valid 'git' workflows?", options: ["Gitflow", "Trunk-based", "Feature-driven", "none"], answer: [0, 1, 2], type: 'MSQ', category: 'tech' },
+                { q: "What is 'Tree Shaking' specifically targeting?", options: ["Dead code", "Large images", "Old browsers", "none"], answer: 0, type: 'MCQ', category: 'tech' },
+                { q: "Purpose of 'useImperativeHandle'?", options: ["Expose ref to parent", "Set internal state", "Direct DOM access", "none"], answer: 0, type: 'MCQ', category: 'tech' },
+                { q: "Which describes 'REST'?", options: ["Stateless", "Client-server", "Cacheable", "none"], answer: [0, 1, 2], type: 'MSQ', category: 'tech' },
+                { q: "What is 'Serverless' computing?", options: ["No servers involved", "Abstracted server management", "Cloud only", "none"], answer: 1, type: 'MCQ', category: 'tech' },
+                { q: "Which tool is for unit testing in JS?", options: ["Jest", "Cypress", "Mocha", "Selenium"], answer: [0, 2], type: 'MSQ', category: 'tech' },
+                { q: "What is 'XSS'?", options: ["Cross-site scripting", "CSS extension", "XML schema", "none"], answer: 0, type: 'MCQ', category: 'tech' },
+                { q: "Purpose of 'defer' attribute in <script>?", options: ["Execute later", "Parallel download", "Blocking", "none"], answer: [0, 1], type: 'MSQ', category: 'tech' },
+                { q: "What is 'Micro-frontend'?", options: ["Small UI components", "Independent frontend apps", "A styling tool", "none"], answer: 1, type: 'MCQ', category: 'tech' },
+                { q: "Difference between 'Session' and 'Local' storage?", options: ["Expiry", "Storage limit", "Scope", "none"], answer: [0, 2], type: 'MSQ', category: 'tech' },
+                { q: "What is 'Semantic HTML'?", options: ["Meaningful tags", "Style tags", "Script tags", "none"], answer: 0, type: 'MCQ', category: 'tech' },
+                { q: "Which are JS module systems?", options: ["CommonJS", "ES Modules", "AMD", "none"], answer: [0, 1, 2], type: 'MSQ', category: 'tech' },
+                { q: "Purpose of 'Next.js'?", options: ["Production React framework", "Styling library", "DB engine", "none"], answer: 0, type: 'MCQ', category: 'tech' },
+                { q: "What is 'HSTS'?", options: ["HTTP Security Header", "A JS library", "Networking protocol", "none"], answer: 0, type: 'MCQ', category: 'tech' },
+                { q: "Difference between 'PUT' and 'PATCH'?", options: ["Full vs Partial update", "Both same", "Speed", "none"], answer: 0, type: 'MCQ', category: 'tech' },
+                { q: "Which are valid React lifecycle stages?", options: ["Mounting", "Updating", "Unmounting", "Fetching"], answer: [0, 1, 2], type: 'MSQ', category: 'tech' },
+                { q: "What is 'Pre-flight' request (CORS)?", options: ["OPTIONS request", "GET request", "Initial load", "none"], answer: 0, type: 'MCQ', category: 'tech' },
+                { q: "Purpose of 'useContext' hook?", options: ["Global state", "Routing", "Fetching", "none"], answer: 0, type: 'MCQ', category: 'tech' },
+                { q: "Result of '[] == ![]' in JS?", options: ["true", "false", "NaN", "error"], answer: 0, type: 'MCQ', category: 'tech' }
+            ]
+        };
+
+        // Initialize App
+        function init() {
+            render();
+
+            // Security & Proctoring
+            window.addEventListener('blur', () => { if (state === 'TEST' && !testData.showWarning) triggerViolation('Tab Switch Detected'); });
+            document.addEventListener('visibilitychange', () => { if (document.hidden && state === 'TEST' && !testData.showWarning) triggerViolation('Tab Switch Detected'); });
+            document.addEventListener('fullscreenchange', () => {
+                if (!document.fullscreenElement) {
+                    if (state === 'TEST') {
+                        testData.proctoring.fullscreenExits++;
+                        endTest('FULLSCREEN_EXIT');
+                    } else if (state === 'CONFIG') {
+                        state = 'WELCOME';
+                        render();
+                    }
+                }
+            });
+            document.addEventListener('copy', (e) => { if (state === 'TEST') { e.preventDefault(); triggerViolation('Clipboard Access Attempt'); } });
+            document.addEventListener('cut', (e) => { if (state === 'TEST') { e.preventDefault(); triggerViolation('Clipboard Access Attempt'); } });
+            document.addEventListener('paste', (e) => { if (state === 'TEST') { e.preventDefault(); triggerViolation('Clipboard Access Attempt'); } });
+            document.addEventListener('contextmenu', (e) => {
+                e.preventDefault();
+                if (state === 'TEST' && !testData.showWarning) triggerViolation('Restricted Action');
+            });
+        }
+
+        function triggerViolation(reason) {
+            testData.proctoring.totalViolations++;
+            testData.lastViolationReason = reason;
+
+            if (testData.proctoring.totalViolations === 1) {
+                testData.timeRemaining = Math.max(0, testData.timeRemaining - 600); // -10 mins
+                testData.showWarning = true;
+            } else if (testData.proctoring.totalViolations >= 2) {
+                endTest('SECURITY_INVALIDATION');
+                return;
+            }
+
+            render();
+        }
+
+        function toggleTopic(topic) {
+            const idx = config.topics.indexOf(topic);
+            if (idx === -1) config.topics.push(topic);
+            else if (config.topics.length > 1) config.topics.splice(idx, 1);
+            render();
+        }
+
+        function shuffle(array) {
+            let currentIndex = array.length, randomIndex;
+            while (currentIndex != 0) {
+                randomIndex = Math.floor(Math.random() * currentIndex);
+                currentIndex--;
+                [array[currentIndex], array[randomIndex]] = [array[randomIndex], array[currentIndex]];
+            }
+            return array;
+        }
+
+        function startTest() {
+            const totalRequired = 60;
+            let finalPool = [];
+            const topicsSelected = config.topics;
+            const countPerTopic = Math.floor(totalRequired / topicsSelected.length);
+
+            // Ensure 'aptitude' comes first, then 'tech'
+            const orderedTopics = [...topicsSelected].sort((a, b) => {
+                if (a === 'aptitude') return -1;
+                if (b === 'aptitude') return 1;
+                return 0;
+            });
+
+            orderedTopics.forEach((topic, idx) => {
+                let pool = shuffle([...questionBank[topic]]);
+                let countNeeded = (idx === orderedTopics.length - 1) ? (totalRequired - finalPool.length) : countPerTopic;
+
+                for (let i = 0; i < countNeeded; i++) {
+                    let baseQ = pool[i % pool.length];
+                    let q = JSON.parse(JSON.stringify(baseQ));
+                    q.uid = `${topic}_${i}_${Date.now()}`;
+                    q.shuffledOptions = q.options.map((opt, oIdx) => ({ text: opt, originalIdx: oIdx }));
+                    shuffle(q.shuffledOptions);
+                    finalPool.push(q);
+                }
+            });
+
+            testData.questions = finalPool; // No final shuffle to keep sections separate
+            testData.userAnswers = new Array(totalRequired).fill(null);
+            testData.status = new Array(totalRequired).fill('unvisited');
+            testData.status[0] = 'not-answered';
+            testData.currentIdx = 0;
+            testData.timeRemaining = 3600;
+            testData.showWarning = false;
+            testData.autoSubmitted = false;
+            testData.proctoring = { tabSwitches: 0, fullscreenExits: 0, copyPasteAttempts: 0, totalViolations: 0 };
+
+            state = 'TEST';
+            render();
+
+            testData.timerId = setInterval(() => {
+                testData.timeRemaining--;
+                const timerEl = document.getElementById('timer');
+                if (timerEl) timerEl.innerText = formatTime(testData.timeRemaining);
+                if (testData.timeRemaining <= 0) endTest();
+            }, 1000);
+        }
+
+        function formatTime(s) {
+            const m = Math.floor(s / 60);
+            const rs = s % 60;
+            return `${m}:${rs < 10 ? '0' : ''}${rs}`;
+        }
+
+        function navigate(i) {
+            if (i < 0 || i >= testData.questions.length) return;
+            testData.currentIdx = i;
+            if (testData.status[i] === 'unvisited') testData.status[i] = 'not-answered';
+            render();
+        }
+
+        function selectOption(originalIdx) {
+            const q = testData.questions[testData.currentIdx];
+            if (q.type === 'MCQ') {
+                testData.userAnswers[testData.currentIdx] = originalIdx;
+            } else {
+                let current = testData.userAnswers[testData.currentIdx] || [];
+                const i = current.indexOf(originalIdx);
+                if (i === -1) current.push(originalIdx);
+                else current.splice(i, 1);
+                testData.userAnswers[testData.currentIdx] = current;
+            }
+            updateStatus();
+            render();
+        }
+
+        function updateStatus() {
+            const idx = testData.currentIdx;
+            const ans = testData.userAnswers[idx];
+            const hasAns = ans !== null && (Array.isArray(ans) ? ans.length > 0 : true);
+            const isMarked = testData.status[idx].includes('marked');
+
+            if (isMarked) testData.status[idx] = hasAns ? 'marked-answered' : 'marked';
+            else testData.status[idx] = hasAns ? 'answered' : 'not-answered';
+        }
+
+        function mark() {
+            const idx = testData.currentIdx;
+            if (testData.status[idx].includes('marked')) {
+                const ans = testData.userAnswers[idx];
+                const hasAns = ans !== null && (Array.isArray(ans) ? ans.length > 0 : true);
+                testData.status[idx] = hasAns ? 'answered' : 'not-answered';
+            } else {
+                const ans = testData.userAnswers[idx];
+                const hasAns = ans !== null && (Array.isArray(ans) ? ans.length > 0 : true);
+                testData.status[idx] = hasAns ? 'marked-answered' : 'marked';
+            }
+            render();
+        }
+
+        function endTest(reason) {
+            clearInterval(testData.timerId);
+            if (reason) testData.autoSubmitted = reason;
+
+            let score = 0, correct = 0, incorrect = 0, skipped = 0;
+            let categories = { aptitude: { total: 0, correct: 0 }, tech: { total: 0, correct: 0 } };
+
+            testData.questions.forEach((q, i) => {
+                const userAns = testData.userAnswers[i];
+                categories[q.category].total++;
+                if (userAns === null || (Array.isArray(userAns) && userAns.length === 0)) skipped++;
+                else {
+                    let isCorrect = q.type === 'MCQ' ? userAns === q.answer : (Array.isArray(userAns) && userAns.length === q.answer.length && userAns.every(v => q.answer.includes(v)));
+                    if (isCorrect) { score += 1; correct++; categories[q.category].correct++; }
+                    else { if (config.negativeMarking) score -= 0.25; incorrect++; }
+                }
+            });
+
+            analysis = {
+                score: score.toFixed(2),
+                correct,
+                incorrect,
+                skipped,
+                accuracy: ((correct / (correct + incorrect || 1)) * 100).toFixed(1),
+                categories,
+                proctoring: { ...testData.proctoring },
+                autoSubmitted: testData.autoSubmitted
+            };
+            state = 'ANALYSIS';
+            render();
+        }
+
+        // --- Render System ---
+        function render() {
+            const app = document.getElementById('app');
+            app.innerHTML = '';
+
+            if (state === 'WELCOME') {
+                app.classList.remove('flex', 'items-center', 'justify-center', 'p-4');
+                app.innerHTML = `
+                    <div class="h-screen w-full flex flex-col md:flex-row overflow-hidden animate-fade-in bg-white">
+                        <!-- Left: Branding Panel (Inspired by Home Card) -->
+                        <div class="w-full md:w-[35%] bg-[#6366F1] p-10 lg:p-16 flex flex-col justify-between border-b-[1.5px] md:border-b-0 md:border-r-[1.5px] border-slate-900 relative overflow-hidden text-white">
+                            <!-- Background Decoration -->
+                            <div class="absolute -right-10 -bottom-10 opacity-10">
+                                <i class="bi bi-journal-text text-[240px] leading-none"></i>
+                            </div>
+
+                            <div class="relative z-10">
+                                <div class="flex items-center gap-3 mb-10">
+                                    <div class="w-8 h-[1.5px] bg-white"></div>
+                                    <span class="text-[10px] font-black uppercase tracking-[0.4em] opacity-80">Prep Series</span>
+                                </div>
+                                <h2 class="text-4xl lg:text-5xl font-black outfit leading-[0.85] tracking-tighter mb-8">
+                                    Combined<br>Undrstanding<br>Test Evaluation
+                                </h2>
+                                <div class="inline-block px-4 py-2 bg-white text-[#6366F1] border-[1.5px] border-slate-900 font-black outfit text-2xl tracking-tighter uppercase mb-4">
+                                    C.U.T.E
+                                </div>
+                            </div>
+
+                            <div class="relative z-10">
+                                <p class="text-[11px] font-bold uppercase tracking-widest opacity-60">Authentication Required</p>
+                            </div>
+                        </div>
+
+                        <!-- Right: Instructions Content -->
+                        <div class="w-full md:w-[65%] p-10 lg:p-20 flex flex-col justify-between h-full bg-white relative">
+                            <div class="max-w-3xl mx-auto w-full">
+                                <div class="mb-12 border-b border-slate-100 pb-8">
+                                    <h3 class="text-3xl font-bold text-slate-900 mb-2 tracking-tight uppercase">Instructions</h3>
+                                    <p class="text-slate-400 font-medium text-sm">Please review the following session parameters.</p>
+                                </div>
+
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-16 gap-y-12">
+                                    <div class="space-y-3">
+                                        <h4 class="text-[10px] font-black uppercase tracking-widest text-slate-900">Time Limit</h4>
+                                        <p class="text-xs text-slate-500 leading-relaxed font-medium">Session duration is fixed at 60 minutes. Progress is synchronized in real-time.</p>
+                                    </div>
+
+                                    <div class="space-y-3">
+                                        <h4 class="text-[10px] font-black uppercase tracking-widest text-slate-900">Security</h4>
+                                        <p class="text-xs text-slate-500 leading-relaxed font-medium">Fullscreen mode is mandatory. Any deviation will flag the session as invalid.</p>
+                                    </div>
+
+                                    <div class="space-y-3">
+                                        <h4 class="text-[10px] font-black uppercase tracking-widest text-slate-900">Item Count</h4>
+                                        <p class="text-xs text-slate-500 leading-relaxed font-medium">60 multi-modal logic puzzles designed to evaluate core comprehension.</p>
+                                    </div>
+
+                                    <div class="space-y-3">
+                                        <h4 class="text-[10px] font-black uppercase tracking-widest text-slate-900">Results</h4>
+                                        <p class="text-xs text-slate-500 leading-relaxed font-medium">Immediate performance diagnostics will be available upon session completion.</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="mt-8 flex items-center justify-end max-w-3xl mx-auto w-full border-t border-slate-100 pt-8">
+                                <button onclick="document.documentElement.requestFullscreen().catch(()=>{}); state='CONFIG'; render();" class="nb-button px-12 py-5 bg-slate-900 text-white font-black uppercase tracking-widest text-[11px] rounded-lg">
+                                    Accept & Continue
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            } else if (state === 'CONFIG') {
+                app.classList.remove('flex', 'items-center', 'justify-center', 'p-4');
+                app.innerHTML = `
+                    <div class="h-screen w-full flex flex-col md:flex-row overflow-hidden animate-fade-in bg-white">
+                        <!-- Left: Branding Panel (Inspired by Home Card) -->
+                        <div class="w-full md:w-[35%] bg-[#6366F1] p-10 lg:p-16 flex flex-col justify-between border-b-[1.5px] md:border-b-0 md:border-r-[1.5px] border-slate-900 relative overflow-hidden text-white">
+                             <div class="absolute -right-10 -bottom-10 opacity-10">
+                                <i class="bi bi-gear-wide-connected text-[240px] leading-none"></i>
+                            </div>
+
+                            <div class="relative z-10">
+                                <div class="flex items-center gap-3 mb-10">
+                                    <div class="w-8 h-[1.5px] bg-white"></div>
+                                    <span class="text-[10px] font-black uppercase tracking-[0.4em] opacity-80">Prep Series</span>
+                                </div>
+                                <h2 class="text-4xl lg:text-5xl font-black outfit leading-[0.85] tracking-tighter mb-8">
+                                    Configuration<br>Environment
+                                </h2>
+                                <div class="inline-block px-4 py-2 bg-white text-[#6366F1] border-[1.5px] border-slate-900 font-black outfit text-2xl tracking-tighter uppercase mb-4">
+                                    SETTINGS
+                                </div>
+                            </div>
+
+                            <div class="relative z-10">
+                                <p class="text-[11px] font-bold uppercase tracking-widest opacity-60">System Ready</p>
+                            </div>
+                        </div>
+
+                        <!-- Right: Configuration Controls -->
+                        <div class="w-full md:w-[65%] p-10 lg:p-20 flex flex-col justify-between h-full bg-white">
+                            <div class="max-w-3xl mx-auto w-full">
+                                <div class="mb-10 border-b border-slate-100 pb-6">
+                                    <h3 class="text-3xl font-bold text-slate-900 mb-1 tracking-tight uppercase">Parameters</h3>
+                                    <p class="text-slate-400 text-sm font-medium">Customize the assessment variables.</p>
+                                </div>
+
+                                <div class="space-y-12">
+                                    <div>
+                                        <h4 class="text-[10px] font-black uppercase tracking-widest text-slate-900 mb-6">Subject Domains</h4>
+                                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                            <div onclick="toggleTopic('aptitude')" class="p-8 border-[1.5px] cursor-pointer rounded-lg transition-all relative ${config.topics.includes('aptitude') ? 'bg-nb-yellow border-slate-900 shadow-[4px_4px_0px_#000]' : 'bg-slate-50 border-transparent'}">
+                                                <div class="flex items-center justify-between mb-1">
+                                                    <span class="block font-black text-lg uppercase tracking-tight text-slate-900">Aptitude</span>
+                                                    ${config.topics.includes('aptitude') ? '<i class="bi bi-check-circle-fill text-slate-900"></i>' : ''}
+                                                </div>
+                                                <span class="text-[10px] text-slate-400 font-bold uppercase mt-1">Logic & Spatial</span>
+                                            </div>
+                                            <div onclick="toggleTopic('tech')" class="p-8 border-[1.5px] cursor-pointer rounded-lg transition-all relative ${config.topics.includes('tech') ? 'bg-nb-blue border-slate-900 shadow-[4px_4px_0px_#000]' : 'bg-slate-50 border-transparent'}">
+                                                <div class="flex items-center justify-between mb-1">
+                                                    <span class="block font-black text-lg uppercase tracking-tight text-slate-900">Technical</span>
+                                                    ${config.topics.includes('tech') ? '<i class="bi bi-check-circle-fill text-slate-900"></i>' : ''}
+                                                </div>
+                                                <span class="text-[10px] text-slate-400 font-bold uppercase mt-1">Stack & Architecture</span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="flex items-center justify-between p-8 bg-slate-50 border-[1.5px] border-slate-900 rounded-lg">
+                                        <div>
+                                            <span class="block font-black text-sm text-slate-900 uppercase tracking-tight">Negative Marking Calibration</span>
+                                            <p class="text-[10px] text-slate-400 font-medium mt-1 uppercase">Penalty weight of 25% per error state.</p>
+                                        </div>
+                                        <button onclick="config.negativeMarking = !config.negativeMarking; render();" class="w-12 h-6 border-[1.5px] border-slate-900 rounded-full relative transition-all duration-300 ${config.negativeMarking ? 'bg-emerald-500' : 'bg-rose-500 shadow-inner'}">
+                                            <div class="w-4 h-4 bg-white border-[1.5px] border-slate-900 rounded-full absolute top-[50%] -translate-y-[50%] left-[.2rem] transition-all duration-300 ${config.negativeMarking ? 'translate-x-[1.35rem]' : ''}"></div>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="mt-8 flex items-center justify-end max-w-3xl mx-auto w-full border-t border-slate-100 pt-8">
+                                <button onclick="startTest()" class="nb-button px-14 py-5 bg-nb-green text-slate-900 font-black uppercase tracking-widest text-[11px] rounded-lg">
+                                    Begin Assessment
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            } else if (state === 'TEST') {
+                const q = testData.questions[testData.currentIdx];
+                app.classList.remove('items-center', 'justify-center');
+                app.innerHTML = `
+                    <div class="min-h-screen flex flex-col animate-fade-in overflow-hidden bg-white">
+                        <!-- Top Bar -->
+                        <div class="h-14 shrink-0 border-b border-slate-100 flex items-center justify-between px-8 bg-white">
+                            <div class="flex items-center gap-4">
+                                <span class="text-xs font-bold tracking-widest uppercase">C.U.T.E</span>
+                                <span class="h-4 w-[1px] bg-slate-100"></span>
+                                <span class="text-[10px] font-bold text-slate-400 uppercase">${q.category} session</span>
+                            </div>
+                            <div class="flex items-center gap-6">
+                                <div class="flex items-center gap-2 text-slate-900 font-bold mono text-lg">
+                                    <i class="bi bi-clock"></i>
+                                    <span id="timer">${formatTime(testData.timeRemaining)}</span>
+                                </div>
+                                <button onclick="testData.showSubmitModal = true; render();" class="nb-button px-5 py-1.5 bg-nb-red text-slate-900 text-[10px] font-black uppercase tracking-widest rounded hover:bg-red-600 hover:text-white transition-all">Finish</button>
+                            </div>
+                        </div>
+
+                        <div class="flex-grow flex overflow-hidden relative">
+                             <!-- Submit Confirmation Modal -->
+                            ${testData.showSubmitModal ? `
+                            <div class="absolute inset-0 z-50 flex items-center justify-center p-6 bg-slate-900/40 backdrop-blur-sm animate-fade-in">
+                                <div class="nb-card max-w-md w-full p-10 bg-white rounded-xl shadow-[12px_12px_0px_#000] animate-fade-in">
+                                    <div class="mb-8">
+                                        <h3 class="text-2xl font-black outfit text-slate-900 uppercase tracking-tight mb-2">Finalize Session?</h3>
+                                        <p class="text-xs text-slate-500 font-bold uppercase tracking-widest leading-relaxed">Once submitted, you cannot modify your answers. Performance metrics will be computed immediately.</p>
+                                    </div>
+                                    <div class="flex flex-col gap-3">
+                                        <button onclick="endTest()" class="nb-button w-full py-4 bg-[#6366F1] text-white font-black uppercase tracking-widest text-[11px] rounded-lg">Confirm & Submit</button>
+                                        <button onclick="testData.showSubmitModal = false; render();" class="text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-slate-900 transition-all py-2">Return to Assessment</button>
+                                    </div>
+                                </div>
+                            </div>
+                            ` : ''}
+
+                            <!-- Warning Modal -->
+                            ${testData.showWarning ? `
+                            <div class="absolute inset-0 z-50 flex items-center justify-center p-6 bg-slate-900/60 backdrop-blur-md animate-fade-in">
+                                <div class="nb-card max-w-md w-full p-10 bg-white rounded-xl shadow-[12px_12px_0px_#000] animate-fade-in">
+                                    <div class="mb-8">
+                                        <div class="flex items-center gap-3 mb-6 font-black outfit text-red-600 uppercase tracking-tight">
+                                            <i class="bi bi-exclamation-triangle-fill text-3xl"></i>
+                                            <span class="text-2xl">Security Alert</span>
+                                        </div>
+                                        <p class="text-xs text-slate-400 font-black uppercase tracking-[0.2em] mb-4">Violation: ${testData.lastViolationReason}</p>
+                                        
+                                        <div class="p-6 bg-red-50 border-[1.5px] border-red-200 rounded-lg">
+                                            <p class="text-[11px] font-bold text-red-700 uppercase leading-relaxed">System has detected a proctoring conflict. A penalty of <span class="underline">10 minutes</span> has been applied. <span class="block mt-2 text-red-900">Note: Any further violation will result in immediate session invalidation and auto-submission.</span></p>
+                                        </div>
+                                    </div>
+                                    <div class="flex flex-col gap-3">
+                                        <button onclick="testData.showWarning = false; render();" class="nb-button w-full py-4 bg-slate-900 text-white font-black uppercase tracking-widest text-[11px] rounded-lg">I Acknowledge</button>
+                                    </div>
+                                </div>
+                            </div>
+                            ` : ''}
+
+                            <!-- Sidebar -->
+                            <div class="w-64 shrink-0 border-r-2 border-slate-900 flex flex-col overflow-hidden bg-white">
+                                <div class="p-5 border-b-2 border-slate-900 text-[10px] font-bold text-slate-900 uppercase tracking-widest bg-slate-50">Question Navigator</div>
+                                <div class="flex-grow overflow-y-auto p-5 grid grid-cols-5 gap-3 content-start">
+                                    ${testData.questions.map((_, i) => {
+                    let statusClass = testData.status[i];
+                    return `
+                                        <button onclick="navigate(${i})" class="q-btn ${testData.currentIdx === i ? 'active' : ''} ${statusClass}">
+                                            <span>${i + 1}</span>
+                                        </button>
+                                        `;
+                }).join('')}
+                                </div>
+                                <div class="p-5 border-t-2 border-slate-900 bg-slate-50 space-y-3">
+                                    <h4 class="text-[8px] font-bold uppercase tracking-widest text-slate-400 mb-2">Legend</h4>
+                                    <div class="grid grid-cols-1 gap-2">
+                                        <div class="flex items-center gap-3 text-[9px] font-bold uppercase text-slate-900">
+                                            <div class="w-4 h-4 border-2 border-slate-900 rounded-full bg-nb-green"></div>
+                                            <span>Answered</span>
+                                        </div>
+                                        <div class="flex items-center gap-3 text-[9px] font-bold uppercase text-slate-900">
+                                            <div class="w-4 h-4 border-2 border-slate-900 border-dashed bg-nb-red"></div>
+                                            <span>Seen, Unanswered</span>
+                                        </div>
+                                        <div class="flex items-center gap-3 text-[9px] font-bold uppercase text-slate-900">
+                                            <div class="w-4 h-4 border-2 border-slate-900 bg-nb-purple transform rotate-45"></div>
+                                            <span class="ml-1">In Review</span>
+                                        </div>
+                                        <div class="flex items-center gap-3 text-[9px] font-bold uppercase text-slate-900">
+                                            <div class="w-4 h-4 border-2 border-slate-900 bg-white"></div>
+                                            <span>Unvisited</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Question Area -->
+                            <div class="flex-grow flex flex-col p-8 md:p-12 overflow-hidden bg-white">
+                                <div class="max-w-3xl w-full mx-auto flex flex-col h-full overflow-hidden">
+                                     <div class="shrink-0 mb-10">
+                                         <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-3 block">Question #${testData.currentIdx + 1} • ${q.type}</span>
+                                         <h2 class="text-2xl font-bold tracking-tight text-slate-900 leading-snug">${q.q}</h2>
+                                     </div>
+
+                                     <div class="flex-grow overflow-y-auto pr-4 space-y-3 mb-10">
+                                         ${q.shuffledOptions.map((opt, i) => {
+                    const isSel = q.type === 'MCQ' ? testData.userAnswers[testData.currentIdx] === opt.originalIdx : (testData.userAnswers[testData.currentIdx] || []).includes(opt.originalIdx);
+                    return `
+                                                 <div onclick="selectOption(${opt.originalIdx})" class="option-row ${isSel ? 'selected' : ''}">
+                                                     <div class="flex items-center gap-4">
+                                                         <span class="w-6 h-6 flex items-center justify-center border border-slate-200 rounded text-[9px] font-bold ${isSel ? 'bg-indigo-600 text-white border-indigo-600' : 'text-slate-400'}">${String.fromCharCode(65 + i)}</span>
+                                                         <span class="text-sm font-medium">${opt.text}</span>
+                                                     </div>
+                                                 </div>
+                                             `;
+                }).join('')}
+                                     </div>
+
+                                     <div class="shrink-0 pt-8 border-t border-slate-100 flex items-center justify-between">
+                                         <div class="flex gap-4">
+                                             <button onclick="mark()" class="px-5 py-2 border border-slate-200 text-[10px] font-bold uppercase tracking-widest rounded-lg hover:bg-slate-50 transition-all flex items-center gap-2">
+                                                 <i class="bi ${testData.status[testData.currentIdx].includes('marked') ? 'bi-star-fill text-indigo-500' : 'bi-star'}"></i>
+                                                 Review
+                                             </button>
+                                             <button onclick="testData.userAnswers[testData.currentIdx] = null; updateStatus(); render();" class="text-[9px] font-bold text-slate-400 uppercase tracking-widest hover:text-red-500 transition-all">Clear</button>
+                                         </div>
+                                         <div class="flex gap-2">
+                                             <button onclick="navigate(${testData.currentIdx - 1})" class="px-6 py-2 text-[10px] font-bold uppercase tracking-widest ${testData.currentIdx === 0 ? 'opacity-0' : 'hover:bg-slate-50'}" ${testData.currentIdx === 0 ? 'disabled' : ''}>Back</button>
+                                             <button onclick="navigate(${testData.currentIdx + 1})" class="px-8 py-2 bg-slate-900 text-white text-[10px] font-bold uppercase tracking-widest rounded-lg hover:bg-black transition-all" ${testData.currentIdx === testData.questions.length - 1 ? 'disabled' : ''}>${testData.currentIdx === testData.questions.length - 1 ? 'Last' : 'Next'}</button>
+                                         </div>
+                                     </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            } else if (state === 'ANALYSIS') {
+                app.classList.remove('flex', 'items-center', 'justify-center', 'p-4');
+                app.innerHTML = `
+                    <div class="h-screen w-full flex flex-col overflow-hidden animate-fade-in bg-white">
+                        <div class="h-24 shrink-0 bg-white border-b-[1.5px] border-slate-900 flex items-center justify-between px-12 lg:px-24">
+                            <h1 class="text-xl font-black outfit tracking-tighter text-slate-900 uppercase">Assessment Results</h1>
+                            <div class="flex gap-4">
+                                <button onclick="location.href='../'" class="nb-button px-8 py-3 bg-white text-slate-900 font-black uppercase tracking-widest text-[10px] rounded-lg">Home</button>
+                                <button onclick="location.reload()" class="nb-button px-8 py-3 bg-nb-yellow text-slate-900 font-black uppercase tracking-widest text-[10px] rounded-lg">Retake</button>
+                            </div>
+                        </div>
+
+                        <div class="flex-grow overflow-y-auto p-12 lg:p-24 relative">
+                            <div class="max-w-4xl mx-auto">
+                                ${analysis.autoSubmitted ? `
+                                <div class="mb-12 p-8 bg-red-600 text-white border-4 border-slate-900 shadow-[8px_8px_0px_#000] rounded-xl flex items-center gap-6 animate-fade-in">
+                                    <i class="bi bi-shield-lock-fill text-5xl"></i>
+                                    <div>
+                                        <h3 class="text-2xl font-black outfit uppercase tracking-tight">Session Suspended</h3>
+                                        <p class="text-sm font-bold uppercase opacity-80 tracking-widest">
+                                            ${analysis.autoSubmitted === 'FULLSCREEN_EXIT' ?
+                            'Terminal Violation: Fullscreen Escape detected. Session finalized by proctor.' :
+                            'Terminal Violation: Repeated Integrity Breaches. Security protocols have invalidated and submitted the session.'
+                        }
+                                        </p>
+                                    </div>
+                                </div>
+                                ` : ''}
+
+                                <div class="grid grid-cols-2 gap-12 mb-20">
+                                    <div>
+                                        <span class="block text-[10px] font-bold text-slate-400 uppercase mb-2 tracking-widest">Score</span>
+                                        <span class="text-6xl font-bold text-slate-900 tracking-tighter">${analysis.score}</span>
+                                    </div>
+                                    <div>
+                                        <span class="block text-[10px] font-bold text-slate-400 uppercase mb-2 tracking-widest">Accuracy</span>
+                                        <span class="text-6xl font-bold text-slate-900 tracking-tighter">${analysis.accuracy}%</span>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <h4 class="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400 mb-10">Category Breakdown</h4>
+                                    <div class="space-y-8">
+                                        ${Object.entries(analysis.categories).map(([name, data]) => {
+                            const ratio = (data.correct / data.total) * 100;
+                            return `
+                                                <div>
+                                                    <div class="flex justify-between items-end mb-2">
+                                                        <span class="text-[10px] font-black uppercase text-slate-900 tracking-widest">${name === 'aptitude' ? 'General Aptitude' : 'Technical Proficiency'}</span>
+                                                        <span class="text-sm font-black text-slate-900">${Math.round(ratio)}%</span>
+                                                    </div>
+                                                    <div class="w-full h-3 bg-slate-100 border-[1.5px] border-slate-900 rounded-full overflow-hidden">
+                                                        <div class="h-full transition-all duration-1000" style="width: ${ratio}%; background-color: ${name === 'aptitude' ? 'var(--nb-yellow)' : '#6366F1'}"></div>
+                                                    </div>
+                                                </div>
+                                            `;
+                        }).join('')}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+        }
+
+        init();
+    </script>
+    <script src="../content/js/script.js"></script>
+</body>
+
+</html>
