@@ -436,10 +436,25 @@
 
         /* Header Styling */
         .hero-title {
-            font-size: clamp(3rem, 8vw, 6rem);
+            font-size: clamp(3rem, 10vw, 6rem);
             line-height: 0.9;
             font-weight: 700;
             margin-bottom: 1.5rem;
+            letter-spacing: -0.04em;
+        }
+
+        @media (max-width: 640px) {
+            .hero-title {
+                font-size: clamp(2.25rem, 16vw, 3.5rem);
+                letter-spacing: -0.05em;
+                margin-bottom: 1rem;
+            }
+
+            .hero-desc {
+                font-size: 1rem;
+                line-height: 1.4;
+                opacity: 0.8;
+            }
         }
 
         .hero-desc {
@@ -545,12 +560,28 @@
         @media (max-width: 640px) {
             .pill-nav-container {
                 margin-bottom: 2.5rem;
+                padding: 0 16px;
+                width: 100%;
+            }
+
+            .pill-nav {
+                width: 100%;
+                display: grid;
+                grid-template-columns: repeat(4, 1fr);
+                padding: 4px;
+                gap: 2px;
             }
 
             .pill-nav button {
-                padding: 0.875rem 2.5rem;
-                /* Increased horizontal presence */
+                padding: 0.875rem 0;
+                width: 100%;
+                justify-content: center;
                 gap: 0;
+                transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            }
+
+            .pill-nav button:active {
+                transform: scale(0.9);
             }
 
             .pill-nav button span {
@@ -560,6 +591,11 @@
             .nav-icon {
                 width: 18px;
                 height: 18px;
+            }
+
+            /* Ensure indicator follows grid sizing */
+            .nav-indicator {
+                transition: all 0.4s cubic-bezier(0.645, 0.045, 0.355, 1);
             }
         }
 
@@ -909,8 +945,9 @@
                             GAMES</div>
                     </div>
                 </div>
-                <div class="md:text-right pb-2 flex flex-col items-end gap-6">
-                    <p class="hero-desc">Interactive explorations For<br>Humans, From Humans.</p>
+                <div class="md:text-right pb-2 flex flex-col items-start md:items-end gap-6">
+                    <p class="hero-desc">Interactive explorations For<br class="hidden md:block"> Humans, From Humans.
+                    </p>
 
                     <!-- Search Input -->
                     <div class="search-container w-full md:w-64">
@@ -957,6 +994,17 @@
                 </svg>
                 <span>Labs</span>
             </button>
+            <button id="btn-prep" onclick="switchSection('prep')">
+                <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                    <polyline points="14 2 14 8 20 8"></polyline>
+                    <line x1="16" y1="13" x2="8" y2="13"></line>
+                    <line x1="16" y1="17" x2="8" y2="17"></line>
+                    <polyline points="10 9 9 9 8 9"></polyline>
+                </svg>
+                <span>Prep</span>
+            </button>
             <button id="btn-games" onclick="switchSection('games')">
                 <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                     stroke-linecap="round" stroke-linejoin="round">
@@ -973,6 +1021,7 @@
             const savedSection = localStorage.getItem('activeSection') || 'learning';
             let btnId = 'btn-learning';
             if (savedSection === 'labs') btnId = 'btn-labs';
+            else if (savedSection === 'prep') btnId = 'btn-prep';
             else if (savedSection === 'games') btnId = 'btn-games';
 
             const activeBtn = document.getElementById(btnId);
@@ -2991,6 +3040,93 @@
             </div>
         </div>
 
+        <!-- Prep Section -->
+        <div id="prep-section" class="content-section hidden">
+            <!-- Learning Track -->
+            <div class="mb-12">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8">
+                    <!-- C.U.T.E Preparation Card -->
+                    <a href="prep/CUTE" class="block group md:col-span-2">
+                        <article
+                            class="relative flex flex-col md:flex-row h-full min-h-[200px] bg-[#6366F1] border border-black overflow-hidden transition-all duration-300">
+
+                            <!-- Left Content Pane -->
+                            <div class="flex-grow p-6 md:p-8 flex flex-col justify-between relative z-10 text-white">
+                                <div>
+                                    <div class="flex items-center gap-3 mb-4">
+                                        <div class="w-8 h-[1px] bg-white opacity-40"></div>
+                                        <span class="mono text-[9px] font-black uppercase tracking-[0.4em]">Prep
+                                            Series</span>
+                                    </div>
+
+                                    <h3
+                                        class="text-3xl md:text-4xl font-black outfit leading-[0.9] tracking-tighter mb-4">
+                                        Combined Undrstanding <br>
+                                        Test Evaluation
+                                    </h3>
+
+                                    <div class="flex items-center gap-6">
+                                        <div
+                                            class="px-3 py-1 bg-white text-[#6366F1] border border-black font-black outfit text-xl tracking-tighter uppercase select-none">
+                                            C.U.T.E
+                                        </div>
+                                        <p
+                                            class="hidden lg:block text-white/80 font-light text-xs max-w-[300px] leading-tight">
+                                            The definitive evaluation framework to measure comprehension depth across
+                                            all paths.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Right Decorative Pane (Stacked Papers) -->
+                            <div
+                                class="hidden md:flex md:w-[30%] bg-white/10 relative overflow-hidden items-center justify-center p-8 border-l border-black">
+                                <div class="relative w-20 h-28">
+                                    <!-- Paper 3 (Bottom) -->
+                                    <div
+                                        class="absolute inset-0 bg-white border border-black rotate-6 translate-x-3 translate-y-3">
+                                    </div>
+                                    <!-- Paper 2 -->
+                                    <div
+                                        class="absolute inset-0 bg-white border border-black -rotate-3 translate-x-2 translate-y-1">
+                                    </div>
+                                    <!-- Paper 1 (Top) -->
+                                    <div
+                                        class="absolute inset-0 bg-white border border-black p-3 flex flex-col gap-1.5 group-hover:-translate-y-2 group-hover:-rotate-2 transition-all duration-500">
+                                        <div class="w-full h-1 bg-indigo-50"></div>
+                                        <div class="w-full h-1 bg-indigo-50"></div>
+                                        <div class="w-3/4 h-1 bg-indigo-50"></div>
+
+                                        <div class="mt-auto self-end">
+                                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#6366F1"
+                                                stroke-width="3">
+                                                <polyline points="20 6 9 17 4 12"></polyline>
+                                            </svg>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Floating CTA -->
+                                <div
+                                    class="absolute bottom-6 right-6 flex items-center gap-3 text-white font-mono text-[9px] font-bold tracking-[0.3em] uppercase group-hover:translate-x-2 transition-transform">
+                                    <span>Proceed</span>
+                                    <span class="text-xl leading-none">&rarr;</span>
+                                </div>
+                            </div>
+
+                            <!-- Mobile CTA Overlay -->
+                            <div class="md:hidden p-8 pt-0 flex justify-end">
+                                <span
+                                    class="text-white font-mono text-[10px] font-bold tracking-[0.3em] uppercase">PROCEED
+                                    &rarr;</span>
+                            </div>
+                        </article>
+                    </a>
+                </div>
+            </div>
+        </div>
+
         <!-- Games Section -->
         <div id="games-section" class="content-section hidden">
             <!-- Academic Note -->
@@ -3633,13 +3769,15 @@
         function switchSection(section, isInitial = false) {
             const learning = document.getElementById('learning-section');
             const labs = document.getElementById('labs-section');
+            const prep = document.getElementById('prep-section');
             const games = document.getElementById('games-section');
             const btnLearning = document.getElementById('btn-learning');
             const btnLabs = document.getElementById('btn-labs');
+            const btnPrep = document.getElementById('btn-prep');
             const btnGames = document.getElementById('btn-games');
             const indicator = document.getElementById('nav-indicator');
 
-            if (!learning || !labs || !games || !btnLearning || !btnLabs || !btnGames || !indicator) return;
+            if (!learning || !labs || !prep || !games || !btnLearning || !btnLabs || !btnPrep || !btnGames || !indicator) return;
 
             // Persist state
             localStorage.setItem('activeSection', section);
@@ -3648,6 +3786,7 @@
             let activeBtn;
             if (section === 'learning') activeBtn = btnLearning;
             else if (section === 'labs') activeBtn = btnLabs;
+            else if (section === 'prep') activeBtn = btnPrep;
             else activeBtn = btnGames;
 
             indicator.style.width = `${activeBtn.offsetWidth}px`;
@@ -3657,19 +3796,28 @@
             if (sectionTransitionTimeout) clearTimeout(sectionTransitionTimeout);
             if (sectionTransitionTimeoutInner) clearTimeout(sectionTransitionTimeoutInner);
 
-            const allSections = [learning, labs, games];
+            const allSections = [learning, labs, prep, games];
 
             if (section === 'learning') {
                 activeSection = 'learning';
                 input.placeholder = "Search topics...";
                 btnLearning.classList.add('active');
                 btnLabs.classList.remove('active');
+                btnPrep.classList.remove('active');
                 btnGames.classList.remove('active');
             } else if (section === 'labs') {
                 activeSection = 'lab';
                 input.placeholder = "Search labs...";
                 btnLabs.classList.add('active');
                 btnLearning.classList.remove('active');
+                btnPrep.classList.remove('active');
+                btnGames.classList.remove('active');
+            } else if (section === 'prep') {
+                activeSection = 'prep';
+                input.placeholder = "Search materials...";
+                btnPrep.classList.add('active');
+                btnLearning.classList.remove('active');
+                btnLabs.classList.remove('active');
                 btnGames.classList.remove('active');
             } else {
                 activeSection = 'games';
@@ -3677,6 +3825,7 @@
                 btnGames.classList.add('active');
                 btnLearning.classList.remove('active');
                 btnLabs.classList.remove('active');
+                btnPrep.classList.remove('active');
                 const tag = document.getElementById('games-tag');
                 if (tag) {
                     tag.classList.remove('tag-inactive');
@@ -3865,14 +4014,18 @@
                     if (activeSection === 'learning') {
                         switchSection('labs');
                     } else if (activeSection === 'lab') {
+                        switchSection('prep');
+                    } else if (activeSection === 'prep') {
                         switchSection('games');
                     }
                 } else if (deltaX > 0) {
                     // Swipe right: Go backward
                     if (activeSection === 'lab') {
                         switchSection('learning');
-                    } else if (activeSection === 'games') {
+                    } else if (activeSection === 'prep') {
                         switchSection('labs');
+                    } else if (activeSection === 'games') {
+                        switchSection('prep');
                     }
                 }
             }
@@ -4178,7 +4331,11 @@
             { s: "GAME", t: "Correct or Crash", u: "games/correctcrash", k: "correct or crash debug debugging javascript swipe tinder logic runtime error macintosh", y: "games" },
             { s: "GAME", t: "Wumpus World", u: "games/wumpus", k: "wumpus world archer quest roguelike strategy puzzle inference pits gold", y: "games" },
             { s: "GAME", t: "Monty Hall", u: "games/montyhall", k: "monty hall probability paradox goats car doors choice switch selection psychology", y: "games" },
-            { s: "GAME", t: "Tower Stack", u: "games/towerstack", k: "tower stack knowledge physics architecture building blocks concepts oop abstraction polymorphism encapsulation inheritance osi sdlc os scheduling design dikw", y: "games" }
+            { s: "GAME", t: "Tower Stack", u: "games/towerstack", k: "tower stack knowledge physics architecture building blocks concepts oop abstraction polymorphism encapsulation inheritance osi sdlc os scheduling design dikw", y: "games" },
+
+            // Series 14: Prep
+            { s: "PREP", t: "Placement Prep", u: "prep/CUTE", k: "placement preparation cute academic assessments aptitude combined undrstanding test evaluation", y: "prep" },
+            { s: "PREP", t: "C.U.T.E Preparation", u: "prep/CUTE", k: "comprehensive guide cute placement assessments combined undrstanding test evaluation", y: "prep" }
         ];
 
 
