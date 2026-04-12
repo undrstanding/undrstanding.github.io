@@ -171,6 +171,7 @@
             flex-direction: column;
             height: 100%;
             overflow: hidden;
+            border-radius: 12px;
         }
 
         .card-header {
@@ -2259,7 +2260,7 @@
 
                 <!-- Flash Cards -->
                 <a href="content/flashcards"
-                    class="block group relative overflow-hidden bg-teal-800 text-white hover:scale-[1.02] transition-all duration-500 shadow-xl hover:shadow-2xl">
+                    class="block group relative overflow-hidden bg-teal-800 text-white hover:scale-[1.02] transition-all duration-500 shadow-xl hover:shadow-2xl rounded-[12px]">
 
                     <!-- Geometric Pattern Overlay (Dots) -->
                     <div class="absolute inset-0 opacity-10 pointer-events-none"
@@ -2314,7 +2315,7 @@
                          var urls = ['content/crypto', 'content/linux', 'content/software', 'content/ai', 'content/ds', 'content/oops', 'content/pigeon', 'content/quanta', 'content/algo', 'content/dbms', 'content/design', 'content/git', 'content/system', 'content/computation', 'content/react', 'content/networks', 'content/uiux', 'content/android', 'content/bigdata', 'content/os', 'content/software'];
                          var target = urls[Math.floor(Math.random() * urls.length)];
                          setTimeout(() => { window.location.href = target; }, 800);"
-                    class="block group relative overflow-hidden bg-black text-white hover:scale-[1.02] transition-all duration-500 shadow-xl hover:shadow-2xl">
+                    class="block group relative overflow-hidden bg-black text-white hover:scale-[1.02] transition-all duration-500 shadow-xl hover:shadow-2xl rounded-[12px]">
                     <!-- Simple Noise Texture Overlay -->
                     <div class="absolute inset-0 opacity-10 pointer-events-none"
                         style="background-image: url('data:image/svg+xml,%3Csvg viewBox=%220 0 200 200%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cfilter id=%22noise%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.65%22 numOctaves=%223%22 stitchTiles=%22stitch%22/%3E%3C/filter%3E%3Crect width=%22100%25%22 height=%22100%25%22 filter=%22url(%22noise)%22 opacity=%221%22/%3E%3C/svg%3E');">
@@ -3002,7 +3003,7 @@
                          var urls = ['labs/ds-visualiser', 'labs/algo-visualiser', 'labs/web-visualiser', 'labs/budget-tracker', 'labs/quick-tab-closer', 'labs/weather-app', 'labs/git-essentials', 'labs/html-blog-article'];
                          var target = urls[Math.floor(Math.random() * urls.length)];
                          setTimeout(() => { window.location.href = target; }, 800);"
-                        class="block group relative overflow-hidden bg-black text-white hover:scale-[1.02] transition-all duration-500 shadow-xl border-black hover:shadow-2xl md:col-span-2">
+                        class="block group relative overflow-hidden bg-black text-white hover:scale-[1.02] transition-all duration-500 shadow-xl border-black hover:shadow-2xl md:col-span-2 rounded-[12px]">
                         <!-- Simple Noise Texture Overlay -->
                         <div class="absolute inset-0 opacity-10 pointer-events-none"
                             style="background-image: url('data:image/svg+xml,%3Csvg viewBox=%220 0 200 200%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cfilter id=%22noise%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.65%22 numOctaves=%223%22 stitchTiles=%22stitch%22/%3E%3C/filter%3E%3Crect width=%22100%25%22 height=%22100%25%22 filter=%22url(%22noise)%22 opacity=%221%22/%3E%3C/svg%3E');">
@@ -3048,7 +3049,7 @@
                     <!-- C.U.T.E Preparation Card -->
                     <a href="prep/CUTE" class="block group md:col-span-2">
                         <article
-                            class="relative flex flex-col md:flex-row h-full min-h-[200px] bg-[#6366F1] border border-black overflow-hidden transition-all duration-300">
+                            class="relative flex flex-col md:flex-row h-full min-h-[200px] bg-[#6366F1] border border-black overflow-hidden rounded-[12px] transition-all duration-300">
 
                             <!-- Left Content Pane -->
                             <div class="flex-grow p-6 md:p-8 flex flex-col justify-between relative z-10 text-white">
@@ -3155,7 +3156,7 @@
                 <!-- Game 01: Hangman -->
                 <a href="games/hangman" class="block group">
                     <article
-                        class="card flex flex-col items-center justify-center p-8 md:p-12 relative overflow-hidden bg-[#6d28d9] border-4 border-black rounded-none h-[320px] transition-transform duration-300">
+                        class="card flex flex-col items-center justify-center p-8 md:p-12 relative overflow-hidden bg-[#6d28d9] border-4 border-black rounded-[12px] h-[320px] transition-transform duration-300">
                         <!-- Symmetrical Standardized Technical Floating Keys -->
                         <!-- Left Triple -->
                         <div
@@ -3210,7 +3211,7 @@
                 <!-- Game 02: ALGO CARDS -->
                 <a href="games/algocards" class="block group">
                     <article
-                        class="card flex flex-col items-center justify-center p-8 md:p-12 relative overflow-hidden bg-white border-4 border-black rounded-none h-[320px] transition-transform duration-300">
+                        class="card flex flex-col items-center justify-center p-8 md:p-12 relative overflow-hidden bg-white border-4 border-black rounded-[12px] h-[320px] transition-transform duration-300">
                         <!-- Technical Grid / Scatter Background -->
                         <div class="absolute inset-0 opacity-[0.03] pointer-events-none"
                             style="background-image: radial-gradient(#000 2px, transparent 2px); background-size: 24px 24px;">
@@ -3253,7 +3254,7 @@
                 <!-- Game 03: CORRECT OR CRASH -->
                 <a href="games/correctcrash" class="block group">
                     <article
-                        class="card flex flex-col items-center justify-center p-8 md:p-12 relative overflow-hidden bg-[#D6E6FF] border-4 border-black rounded-none h-[320px] transition-transform duration-300">
+                        class="card flex flex-col items-center justify-center p-8 md:p-12 relative overflow-hidden bg-[#D6E6FF] border-4 border-black rounded-[12px] h-[320px] transition-transform duration-300">
                         <!-- CRT Scanline / Monitor Texture -->
                         <div class="absolute inset-0 opacity-[0.05] pointer-events-none"
                             style="background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06)); background-size: 100% 4px, 3px 100%;">
@@ -3338,7 +3339,7 @@
                 <!-- Game 04: WUMPUS WORLD -->
                 <a href="games/wumpus" class="block group">
                     <article
-                        class="card flex flex-col items-center justify-center p-8 md:p-12 relative overflow-hidden bg-[#7DD3FC] border-4 border-black rounded-none h-[320px] transition-transform duration-300">
+                        class="card flex flex-col items-center justify-center p-8 md:p-12 relative overflow-hidden bg-[#7DD3FC] border-4 border-black rounded-[12px] h-[320px] transition-transform duration-300">
 
                         <!-- Top Half: Sky -->
                         <div class="absolute inset-x-0 top-0 h-1/2 bg-gradient-to-b from-[#7DD3FC] to-[#BAE6FD]">
@@ -3448,7 +3449,7 @@
                 <!-- Game 05: MONTY HALL -->
                 <a href="games/montyhall" class="block group">
                     <article
-                        class="card flex flex-col items-center justify-start py-10 md:py-14 px-8 relative overflow-hidden bg-[#72BAA9] border-4 border-black rounded-none h-[320px] transition-transform duration-300">
+                        class="card flex flex-col items-center justify-start py-10 md:py-14 px-8 relative overflow-hidden bg-[#72BAA9] border-4 border-black rounded-[12px] h-[320px] transition-transform duration-300">
 
                         <!-- Technical Grid Overlay -->
                         <div class="absolute inset-0 opacity-[0.08] pointer-events-none"
@@ -3511,7 +3512,7 @@
                 <!-- Game 06: TOWER STACK -->
                 <a href="games/towerstack" class="block group">
                     <article
-                        class="card flex flex-col items-center justify-center p-6 md:p-8 relative overflow-hidden bg-gradient-to-b from-[#7DD3FC] to-[#BAE6FD] border-4 border-black rounded-none h-[320px] transition-transform duration-300">
+                        class="card flex flex-col items-center justify-center p-6 md:p-8 relative overflow-hidden bg-gradient-to-b from-[#7DD3FC] to-[#BAE6FD] border-4 border-black rounded-[12px] h-[320px] transition-transform duration-300">
 
                         <!-- Floating Clouds Backdrop (Atmospheric Depth) -->
                         <div
