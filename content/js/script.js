@@ -43,7 +43,7 @@ if ('serviceWorker' in navigator) {
 
         const b = settings.brightness / 100;
         const s = 0.3 + (100 - settings.brightness) / 100 * 0.2;
-        overlay.style.background = `rgba(255, 120, 0, ${0.04 + (1-b) * 0.08})`;
+        overlay.style.background = `rgba(255, 120, 0, ${0.04 + (1 - b) * 0.08})`;
         overlay.style.backdropFilter = `brightness(${b}) sepia(${s})`;
         overlay.style.webkitBackdropFilter = `brightness(${b}) sepia(${s})`;
         overlay.style.opacity = '1';
@@ -136,7 +136,7 @@ if ('serviceWorker' in navigator) {
             </div>
         `;
         document.body.appendChild(modal);
-        
+
         const content = document.getElementById('eye-care-content');
         setTimeout(() => content.classList.remove('scale-95', 'opacity-0'), 10);
 
@@ -146,7 +146,7 @@ if ('serviceWorker' in navigator) {
             setTimeout(() => modal.remove(), 300);
         };
         document.getElementById('close-eye-care').onclick = close;
-        
+
         // Close on backdrop click
         modal.addEventListener('click', (e) => {
             if (e.target === modal) close();
@@ -216,7 +216,7 @@ if ('serviceWorker' in navigator) {
         if (document.body) updateOverlay();
         else document.addEventListener('DOMContentLoaded', updateOverlay);
     }
-    
+
     // Start automation checker
     setInterval(checkAutomation, 60000);
     checkAutomation();
@@ -258,11 +258,11 @@ if ('serviceWorker' in navigator) {
     `;
     document.head.appendChild(style);
 
-    window.toggleSerifMode = function() {
+    window.toggleSerifMode = function () {
         serifActive = !serifActive;
         localStorage.setItem('serif_mode', serifActive);
         applySerif();
-        
+
         // Visual Feedback (optional toast or message)
         console.log(`[System] Serif Mode: ${serifActive ? 'ON' : 'OFF'}`);
         return serifActive;
@@ -1244,11 +1244,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // Dynamic Floating Search Widget
 document.addEventListener('DOMContentLoaded', () => {
-    // Exclude index page, flashcards page, and all lab pages
+    // Exclude index page, flashcards page, all lab pages, and prep/assessment pages
     if (document.getElementById('site-search') ||
         document.getElementById('stack-container') ||
         window.location.pathname.includes('highlights') ||
-        window.location.pathname.includes('/labs/')) return;
+        window.location.pathname.includes('/labs/') ||
+        window.location.pathname.includes('/prep/')) return;
 
     // 1. Create Widget UI
     const widget = document.createElement('div');
@@ -1803,12 +1804,12 @@ document.addEventListener('DOMContentLoaded', () => {
         setTimeout(() => {
             const sel = window.getSelection();
             const text = sel?.toString().trim();
-            if (!text || text.length < 3) { 
+            if (!text || text.length < 3) {
                 // If valid text selection is gone and we're not inside tooltip, hide
                 if (!tooltip.contains(document.activeElement)) {
-                    hideTooltip(false); 
+                    hideTooltip(false);
                 }
-                return; 
+                return;
             }
             if (tooltip.contains(sel.anchorNode)) return;
             savedRange = sel.getRangeAt(0).cloneRange();
@@ -1862,7 +1863,7 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('note-toggle-btn').addEventListener('click', () => {
         const panel = document.getElementById('note-panel');
         const isOpening = !panel.classList.contains('open');
-        
+
         if (isOpening) {
             panel.style.display = 'flex';
             // Force reflow
@@ -1883,7 +1884,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const noteInput = document.getElementById('note-input');
         const noteText = noteInput.value.trim();
         const words = noteText ? noteText.split(/\s+/).length : 0;
-        
+
         if (words > 50) return; // Shouldn't happen as we'll disable button but for safety
         saveHighlightWithPossibleNote(noteText);
     });
@@ -1905,9 +1906,9 @@ document.addEventListener('DOMContentLoaded', () => {
         const words = text ? text.split(/\s+/).length : 0;
         const countDisplay = document.getElementById('word-count');
         const saveBtn = document.getElementById('save-with-note-btn');
-        
+
         countDisplay.textContent = `${words}/50 words`;
-        
+
         if (words > 50) {
             countDisplay.style.color = '#ff4d4d';
             saveBtn.disabled = true;
