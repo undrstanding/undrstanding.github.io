@@ -176,7 +176,8 @@
             startTime: null,
             timerId: null,
             showSubmitModal: false,
-            micMode: 'AUTO'
+            micMode: 'AUTO',
+            showTips: false
         };
 
         const sectionColors = {
@@ -276,14 +277,14 @@
 
             let hasResult = false;
 
-            recognition.onstart = () => { 
-                isRecording = true; 
+            recognition.onstart = () => {
+                isRecording = true;
                 hasResult = false;
-                render(); 
+                render();
             };
-            
-            recognition.onend = () => { 
-                isRecording = false; 
+
+            recognition.onend = () => {
+                isRecording = false;
                 // Auto-skip if no speech detected in AUTO mode
                 if (testData.micMode === 'AUTO' && !hasResult && state === 'TEST') {
                     setTimeout(() => {
@@ -292,9 +293,9 @@
                         }
                     }, 500);
                 }
-                render(); 
+                render();
             };
-            
+
             recognition.onresult = (event) => {
                 hasResult = true;
                 const transcript = event.results[0][0].transcript;
@@ -412,18 +413,18 @@
             let w1 = s1.toLowerCase().replace(/[^\w\s]/g, '').split(/\s+/).filter(w => w);
             let w2 = s2.toLowerCase().replace(/[^\w\s]/g, '').split(/\s+/).filter(w => w);
             if (w1.length === 0 || w2.length === 0) return 0;
-            
+
             // Jaccard-like word matching
             const intersection = w1.filter(word => w2.includes(word)).length;
             const wordSim = intersection / Math.max(w1.length, w2.length);
-            
+
             // Character matching fallback
             let c1 = s1.toLowerCase().replace(/[^\w\s]/g, '');
             let c2 = s2.toLowerCase().replace(/[^\w\s]/g, '');
             let longer = c1.length > c2.length ? c1 : c2;
             let shorter = c1.length > c2.length ? c2 : c1;
             let charSim = (longer.length - editDistance(longer, shorter)) / longer.length;
-            
+
             return (wordSim * 0.7) + (charSim * 0.3);
         }
 
@@ -476,7 +477,7 @@
                         // Significant threshold improvement (40%) - anything below this is 0
                         if (sim > 0.4) {
                             secScore += sim * 100;
-                            if (sim > 0.8) correctItemsCount++; 
+                            if (sim > 0.8) correctItemsCount++;
                         }
                     }
                 });
@@ -503,7 +504,7 @@
             if (state === 'WELCOME') {
                 app.innerHTML = `
                     <div class="h-full w-full flex flex-col md:flex-row overflow-hidden bg-white no-scrollbar">
-                        <div class="w-full md:w-[35%] bg-[#e8dbb3] p-6 md:p-10 flex flex-col justify-between border-b-[1.5px] md:border-b-0 md:border-r-[1.5px] border-slate-900 relative overflow-hidden text-black min-h-[180px] md:min-h-0">
+                        <div class="w-full md:w-[35%] bg-[#e8dbb3] p-6 md:p-10 flex flex-col justify-between border-b-[1.5px] md:border-b-0 md:border-r-[1.5px] border-slate-900 relative overflow-hidden text-black min-h-[240px] md:min-h-0">
                             <div class="absolute -right-8 -bottom-8 opacity-10">
                                 <i class="bi bi-mic-fill text-[120px] md:text-[240px] leading-none"></i>
                             </div>
@@ -519,6 +520,12 @@
                                 <div class="inline-block px-3 py-1 bg-black text-[#e8dbb3] border-[1.5px] border-black font-black outfit text-sm md:text-2xl tracking-tighter uppercase">
                                     VERBAL
                                 </div>
+                                <button onclick="testData.showTips = true; render();" class="block mt-4 md:mt-10 flex items-center gap-2 group">
+                                    <div class="w-6 h-6 md:w-8 md:h-8 rounded-full border-[1.5px] border-black flex items-center justify-center group-hover:bg-black group-hover:text-[#e8dbb3] transition-all">
+                                        <i class="bi bi-lightbulb text-xs md:text-sm"></i>
+                                    </div>
+                                    <span class="text-[9px] md:text-[10px] font-black uppercase tracking-[0.2em] opacity-40 group-hover:opacity-100 transition-opacity">Pro Tips</span>
+                                </button>
                             </div>
                         </div>
 
@@ -577,6 +584,71 @@
                         </div>
                     </div>
                 `;
+
+                if (testData.showTips) {
+                    const tipsOverlay = document.createElement('div');
+                    tipsOverlay.className = 'fixed inset-0 z-[100] bg-slate-900/40 backdrop-blur-sm flex items-center justify-center p-4 animate-fade-in no-scrollbar';
+                    tipsOverlay.innerHTML = `
+                        <div class="bg-white w-full max-w-lg rounded-xl border border-slate-200 overflow-hidden shadow-2xl no-scrollbar overflow-y-auto max-h-[90vh]">
+                            <div class="p-8 md:p-12">
+                                <div class="flex justify-between items-start mb-10">
+                                    <div>
+                                        <h4 class="text-[9px] font-bold uppercase tracking-[0.2em] text-slate-400 mb-2">Preparation Guide</h4>
+                                        <h2 class="text-2xl md:text-3xl font-black outfit text-slate-950">Pro Tips</h2>
+                                    </div>
+                                    <button onclick="testData.showTips = false; render();" class="text-slate-300 hover:text-slate-900 transition-colors">
+                                        <i class="bi bi-x-lg text-xl"></i>
+                                    </button>
+                                </div>
+
+                                <div class="space-y-10">
+                                    <section>
+                                        <h3 class="font-bold text-xs uppercase tracking-widest text-indigo-600 mb-2">Behavioral Framework</h3>
+                                        <h4 class="font-black text-xl text-slate-900 outfit mb-3">Mastering the STAR Method</h4>
+                                        <p class="text-sm text-slate-500 leading-relaxed mb-4">
+                                            The most effective way to answer behavioral questions is by distributing your time across four pillars:
+                                        </p>
+                                        <div class="space-y-3">
+                                            <div class="flex gap-3">
+                                                <span class="text-[10px] font-black text-indigo-400 mt-1">20%</span>
+                                                <p class="text-xs text-slate-600"><strong class="text-slate-900">Situation & Task:</strong> Briefly set the scene and the goal. Do not over-explain context.</p>
+                                            </div>
+                                            <div class="flex gap-3">
+                                                <span class="text-[10px] font-black text-indigo-400 mt-1">60%</span>
+                                                <p class="text-xs text-slate-600"><strong class="text-slate-900">Action:</strong> Detail the specific steps <em class="italic">you</em> took. Use "I" statements, not "We".</p>
+                                            </div>
+                                            <div class="flex gap-3">
+                                                <span class="text-[10px] font-black text-indigo-400 mt-1">20%</span>
+                                                <p class="text-xs text-slate-600"><strong class="text-slate-900">Result:</strong> Share the tangible outcome. Use numbers or percentages if possible.</p>
+                                            </div>
+                                        </div>
+                                    </section>
+
+                                    <section>
+                                        <h3 class="font-bold text-xs uppercase tracking-widest text-emerald-600 mb-2">Vocal Presence</h3>
+                                        <h4 class="font-black text-xl text-slate-900 outfit mb-3">Inflection & Dynamics</h4>
+                                        <p class="text-sm text-slate-500 leading-relaxed">
+                                            Avoid a "robotic" monotone. Use <span class="text-slate-900 font-bold">Natural Inflection</span>—vary your pitch slightly to emphasize key points. This helps the AI engine and human evaluators perceive confidence and conviction.
+                                        </p>
+                                    </section>
+
+                                    <section>
+                                        <h3 class="font-bold text-xs uppercase tracking-widest text-amber-600 mb-2">Cognitive Strategy</h3>
+                                        <h4 class="font-black text-xl text-slate-900 outfit mb-3">Active Listening</h4>
+                                        <p class="text-sm text-slate-500 leading-relaxed">
+                                            For repetition tasks, focus on <span class="text-slate-900 font-bold">Semantic Anchors</span> (the nouns and verbs). Your brain retains the "meaning" better than a literal audio recording. If you miss a word, continue the sentence naturally rather than stopping.
+                                        </p>
+                                    </section>
+                                </div>
+
+                                <button onclick="testData.showTips = false; render();" class="w-full mt-12 py-4 bg-slate-900 text-white font-bold uppercase tracking-[0.2em] text-[10px] rounded-xl hover:bg-black transition-all">
+                                    Continue to Assessment
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                    app.appendChild(tipsOverlay);
+                }
             } else if (state === 'TEST') {
                 const section = sections[currentSectionIdx];
                 const item = section.items[currentQuestionIdx];
