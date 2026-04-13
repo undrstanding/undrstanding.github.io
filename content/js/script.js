@@ -276,55 +276,6 @@ if ('serviceWorker' in navigator) {
 })();
 
 /**
- * Global System Lockdown Check
- */
-(function () {
-    window.showBanOverlay = function () {
-        if (document.getElementById('stuck-ban-overlay')) return;
-
-        const overlay = document.createElement('div');
-        overlay.id = 'stuck-ban-overlay';
-        overlay.innerHTML = `
-            <div style="position:fixed;inset:0;background:black;z-index:999999;display:flex;flex-direction:column;align-items:center;justify-content:center;color:white;font-family:'Outfit',sans-serif;text-align:center;padding:24px;box-sizing:border-box;">
-                <div style="font-size:min(15vw, 72px);margin-bottom:15px;">🛑</div>
-                <h1 style="font-size:clamp(20px, 8vw, 32px);font-weight:900;text-transform:uppercase;margin-bottom:12px;letter-spacing:-1px;line-height:1.1;">Access Revoked</h1>
-                <p style="font-weight:700;color:#666;text-transform:uppercase;font-size:clamp(8px, 3vw, 11px);letter-spacing:2px;margin-bottom:24px;">System Lockdown Protocol: Active</p>
-                <div style="background:#111;border:1px solid #333;padding:clamp(16px, 5vw, 24px);border-radius:12px;margin-bottom:32px;max-width:320px;width:100%;box-sizing:border-box;">
-                    <p style="font-size:clamp(11px, 3.5vw, 13.5px);line-height:1.6;color:#ccc;margin:0;">Repeated violations of the mission conduct have been detected. Your access to the entire platform has been suspended.</p>
-                </div>
-                <div id="ban-timer" style="font-size:clamp(24px, 10vw, 42px);font-family:'JetBrains Mono',monospace;font-weight:bold;color:#ff4d4d;margin-bottom:32px;letter-spacing:-2px;">05:00</div>
-                <p style="font-size:min(2.5vw, 10px);color:#444;text-transform:uppercase;letter-spacing:1px;">Unauthorized navigation attempts are currently disabled.</p>
-            </div>
-        `;
-        document.body.appendChild(overlay);
-
-        const timerEl = document.getElementById('ban-timer');
-        const updateTimer = () => {
-            const banTime = localStorage.getItem('mr_stuck_ban_until');
-            if (!banTime) return;
-
-            const remaining = parseInt(banTime) - Date.now();
-            if (remaining <= 0) {
-                localStorage.removeItem('mr_stuck_ban_until');
-                location.reload();
-            } else {
-                const mins = Math.floor(remaining / 60000);
-                const secs = Math.floor((remaining % 60000) / 1000);
-                timerEl.textContent = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
-                setTimeout(updateTimer, 1000);
-            }
-        };
-        updateTimer();
-    };
-
-    const banUntil = localStorage.getItem('mr_stuck_ban_until');
-    if (banUntil && Date.now() < parseInt(banUntil)) {
-        if (document.body) window.showBanOverlay();
-        else document.addEventListener('DOMContentLoaded', window.showBanOverlay);
-    }
-})();
-
-/**
  * "Resume Learning" Tracker
  * Saves the current content page path to localStorage so the index page
  * can show a "Resume Learning" badge on the last-visited card.
