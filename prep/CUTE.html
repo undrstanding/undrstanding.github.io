@@ -94,6 +94,15 @@
             font-family: 'Outfit', sans-serif;
         }
 
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
         .status-dot {
             width: 8px;
             height: 8px;
@@ -207,27 +216,12 @@
             }
         }
 
-        /* Mobile Restriction */
+        /* Responsive Utilities */
         @media (max-width: 1024px) {
             #app {
-                display: none !important;
-            }
-
-            #mobile-mask {
+                height: 100vh !important;
                 display: flex !important;
             }
-        }
-
-        #mobile-mask {
-            display: none;
-            background: white;
-            height: 100vh;
-            width: 100vw;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            padding: 30px;
         }
     </style>
 </head>
@@ -280,7 +274,9 @@
             userAnswers: [],
             status: [], // unvisited, not-answered, answered, marked, marked-answered
             timeRemaining: 3600,
-            timerId: null
+            timerId: null,
+            autoSubmitted: false,
+            isNavOpen: false
         };
         let analysis = null;
 
@@ -726,64 +722,60 @@
                 app.classList.remove('flex', 'items-center', 'justify-center', 'p-4');
                 app.innerHTML = `
                     <div class="h-screen w-full flex flex-col md:flex-row overflow-hidden animate-fade-in bg-white">
-                        <!-- Left: Branding Panel (Inspired by Home Card) -->
-                        <div class="w-full md:w-[35%] bg-[#6366F1] p-10 lg:p-16 flex flex-col justify-between border-b-[1.5px] md:border-b-0 md:border-r-[1.5px] border-slate-900 relative overflow-hidden text-white">
+                        <!-- Left: Branding Panel -->
+                        <div class="w-full md:w-[32%] bg-[#6366F1] p-6 md:p-10 lg:p-16 flex flex-col justify-between border-b-[1.5px] md:border-b-0 md:border-r-[1.5px] border-slate-900 relative overflow-hidden text-white min-h-[140px] md:min-h-0 shrink-0">
                             <!-- Background Decoration -->
                             <div class="absolute -right-10 -bottom-10 opacity-10">
-                                <i class="bi bi-journal-text text-[240px] leading-none"></i>
+                                <i class="bi bi-journal-text text-[140px] md:text-[240px] leading-none"></i>
                             </div>
 
                             <div class="relative z-10">
-                                <div class="flex items-center gap-3 mb-10">
-                                    <div class="w-8 h-[1.5px] bg-white"></div>
-                                    <span class="text-[10px] font-black uppercase tracking-[0.4em] opacity-80">Prep Series</span>
+                                <div class="flex items-center gap-3 mb-4 md:mb-10">
+                                    <div class="w-6 md:w-8 h-[1.5px] bg-white"></div>
+                                    <span class="text-[8px] md:text-[10px] font-black uppercase tracking-[0.4em] opacity-80">Prep Series</span>
                                 </div>
-                                <h2 class="text-4xl lg:text-5xl font-black outfit leading-[0.85] tracking-tighter mb-8">
+                                <h2 class="text-3xl md:text-5xl font-black outfit leading-[0.85] tracking-tighter mb-4 md:mb-8">
                                     Combined<br>Undrstanding<br>Test Evaluation
                                 </h2>
-                                <div class="inline-block px-4 py-2 bg-white text-[#6366F1] border-[1.5px] border-slate-900 font-black outfit text-2xl tracking-tighter uppercase mb-4">
+                                <div class="inline-block px-3 py-1.5 md:px-4 md:py-2 bg-white text-[#6366F1] border-[1.5px] border-slate-900 font-black outfit text-xl md:text-2xl tracking-tighter uppercase mb-2 md:mb-4">
                                     C.U.T.E
                                 </div>
-                            </div>
-
-                            <div class="relative z-10">
-                                <p class="text-[11px] font-bold uppercase tracking-widest opacity-60">Authentication Required</p>
                             </div>
                         </div>
 
                         <!-- Right: Instructions Content -->
-                        <div class="w-full md:w-[65%] p-10 lg:p-20 flex flex-col justify-between h-full bg-white relative">
+                        <div class="w-full md:w-[68%] p-5 md:p-10 lg:p-20 flex flex-col justify-between overflow-y-auto no-scrollbar bg-white relative">
                             <div class="max-w-3xl mx-auto w-full">
-                                <div class="mb-12 border-b border-slate-100 pb-8">
-                                    <h3 class="text-3xl font-bold text-slate-900 mb-2 tracking-tight uppercase">Instructions</h3>
-                                    <p class="text-slate-400 font-medium text-sm">Please review the following session parameters.</p>
+                                <div class="mb-6 md:mb-12 border-b border-slate-100 pb-4 md:pb-8">
+                                    <h3 class="text-xl md:text-3xl font-bold text-slate-900 mb-1 md:mb-2 tracking-tight uppercase">Instructions</h3>
+                                    <p class="text-slate-400 font-medium text-[10px] md:text-sm">Please review the session parameters.</p>
                                 </div>
 
-                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-16 gap-y-12">
-                                    <div class="space-y-3">
-                                        <h4 class="text-[10px] font-black uppercase tracking-widest text-slate-900">Time Limit</h4>
-                                        <p class="text-xs text-slate-500 leading-relaxed font-medium">Session duration is fixed at 60 minutes. Progress is synchronized in real-time.</p>
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-12 md:gap-x-16 gap-y-5 md:gap-y-12">
+                                    <div class="space-y-1 md:space-y-3">
+                                        <h4 class="text-[9px] md:text-[10px] font-black uppercase tracking-widest text-slate-900">Time Limit</h4>
+                                        <p class="text-[10px] md:text-xs text-slate-500 leading-relaxed font-medium">Session duration is fixed at 60 minutes. Progress is synchronized in real-time.</p>
                                     </div>
 
-                                    <div class="space-y-3">
-                                        <h4 class="text-[10px] font-black uppercase tracking-widest text-slate-900">Security</h4>
-                                        <p class="text-xs text-slate-500 leading-relaxed font-medium">Fullscreen mode is mandatory. Any deviation will flag the session as invalid.</p>
+                                    <div class="space-y-1 md:space-y-3">
+                                        <h4 class="text-[9px] md:text-[10px] font-black uppercase tracking-widest text-slate-900">Security</h4>
+                                        <p class="text-[10px] md:text-xs text-slate-500 leading-relaxed font-medium">Fullscreen mode is mandatory. Any deviation will flag the session as invalid.</p>
                                     </div>
 
-                                    <div class="space-y-3">
-                                        <h4 class="text-[10px] font-black uppercase tracking-widest text-slate-900">Item Count</h4>
-                                        <p class="text-xs text-slate-500 leading-relaxed font-medium">60 multi-modal logic puzzles designed to evaluate core comprehension.</p>
+                                    <div class="space-y-1 md:space-y-3">
+                                        <h4 class="text-[9px] md:text-[10px] font-black uppercase tracking-widest text-slate-900">Item Count</h4>
+                                        <p class="text-[10px] md:text-xs text-slate-500 leading-relaxed font-medium">60 multi-modal logic puzzles designed to evaluate core comprehension.</p>
                                     </div>
 
-                                    <div class="space-y-3">
-                                        <h4 class="text-[10px] font-black uppercase tracking-widest text-slate-900">Results</h4>
-                                        <p class="text-xs text-slate-500 leading-relaxed font-medium">Immediate performance diagnostics will be available upon session completion.</p>
+                                    <div class="space-y-1 md:space-y-3">
+                                        <h4 class="text-[9px] md:text-[10px] font-black uppercase tracking-widest text-slate-900">Results</h4>
+                                        <p class="text-[10px] md:text-xs text-slate-500 leading-relaxed font-medium">Immediate performance diagnostics available upon completion.</p>
                                     </div>
                                 </div>
                             </div>
 
-                            <div class="mt-8 flex items-center justify-end max-w-3xl mx-auto w-full border-t border-slate-100 pt-8">
-                                <button onclick="document.documentElement.requestFullscreen().catch(()=>{}); state='CONFIG'; render();" class="nb-button px-12 py-5 bg-slate-900 text-white font-black uppercase tracking-widest text-[11px] rounded-lg">
+                            <div class="mt-8 flex items-center justify-end max-w-3xl mx-auto w-full border-t border-slate-100 pt-6 md:pt-8">
+                                <button onclick="document.documentElement.requestFullscreen().catch(()=>{}); state='CONFIG'; render();" class="nb-button w-full sm:w-auto px-10 py-4 md:px-12 md:py-5 bg-slate-900 text-white font-black uppercase tracking-widest text-[10px] md:text-[11px] rounded-lg">
                                     Accept & Continue
                                 </button>
                             </div>
@@ -793,64 +785,60 @@
             } else if (state === 'CONFIG') {
                 app.classList.remove('flex', 'items-center', 'justify-center', 'p-4');
                 app.innerHTML = `
-                    <div class="h-screen w-full flex flex-col md:flex-row overflow-hidden animate-fade-in bg-white">
-                        <!-- Left: Branding Panel (Inspired by Home Card) -->
-                        <div class="w-full md:w-[35%] bg-[#6366F1] p-10 lg:p-16 flex flex-col justify-between border-b-[1.5px] md:border-b-0 md:border-r-[1.5px] border-slate-900 relative overflow-hidden text-white">
+                    <div class="min-h-screen w-full flex flex-col md:flex-row overflow-hidden animate-fade-in bg-white">
+                        <!-- Left: Branding Panel -->
+                        <div class="w-full md:w-[35%] bg-[#6366F1] p-8 md:p-10 lg:p-16 flex flex-col justify-between border-b-[1.5px] md:border-b-0 md:border-r-[1.5px] border-slate-900 relative overflow-hidden text-white min-h-[220px] md:min-h-0">
                              <div class="absolute -right-10 -bottom-10 opacity-10">
                                 <i class="bi bi-gear-wide-connected text-[240px] leading-none"></i>
                             </div>
 
                             <div class="relative z-10">
-                                <div class="flex items-center gap-3 mb-10">
+                                <div class="flex items-center gap-3 mb-6 md:mb-10">
                                     <div class="w-8 h-[1.5px] bg-white"></div>
                                     <span class="text-[10px] font-black uppercase tracking-[0.4em] opacity-80">Prep Series</span>
                                 </div>
-                                <h2 class="text-4xl lg:text-5xl font-black outfit leading-[0.85] tracking-tighter mb-8">
+                                <h2 class="text-3xl md:text-4xl lg:text-5xl font-black outfit leading-[0.85] tracking-tighter mb-4 md:mb-8">
                                     Configuration<br>Environment
                                 </h2>
                                 <div class="inline-block px-4 py-2 bg-white text-[#6366F1] border-[1.5px] border-slate-900 font-black outfit text-2xl tracking-tighter uppercase mb-4">
                                     SETTINGS
                                 </div>
                             </div>
-
-                            <div class="relative z-10">
-                                <p class="text-[11px] font-bold uppercase tracking-widest opacity-60">System Ready</p>
-                            </div>
                         </div>
 
                         <!-- Right: Configuration Controls -->
-                        <div class="w-full md:w-[65%] p-10 lg:p-20 flex flex-col justify-between h-full bg-white">
+                        <div class="w-full md:w-[65%] p-6 md:p-10 lg:p-20 flex flex-col justify-between bg-white overflow-y-auto no-scrollbar">
                             <div class="max-w-3xl mx-auto w-full">
                                 <div class="mb-10 border-b border-slate-100 pb-6">
                                     <h3 class="text-3xl font-bold text-slate-900 mb-1 tracking-tight uppercase">Parameters</h3>
                                     <p class="text-slate-400 text-sm font-medium">Customize the assessment variables.</p>
                                 </div>
 
-                                <div class="space-y-12">
+                                <div class="space-y-8 md:space-y-12">
                                     <div>
-                                        <h4 class="text-[10px] font-black uppercase tracking-widest text-slate-900 mb-6">Subject Domains</h4>
-                                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                            <div onclick="toggleTopic('aptitude')" class="p-8 border-[1.5px] cursor-pointer rounded-lg transition-all relative ${config.topics.includes('aptitude') ? 'bg-nb-yellow border-slate-900 shadow-[4px_4px_0px_#000]' : 'bg-slate-50 border-transparent'}">
+                                        <h4 class="text-[9px] md:text-[10px] font-black uppercase tracking-widest text-slate-900 mb-4 md:mb-6">Subject Domains</h4>
+                                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                            <div onclick="toggleTopic('aptitude')" class="p-6 md:p-8 border-[1.5px] cursor-pointer rounded-lg transition-all relative ${config.topics.includes('aptitude') ? 'bg-nb-yellow border-slate-900 shadow-[4px_4px_0px_#000]' : 'bg-slate-50 border-transparent'}">
                                                 <div class="flex items-center justify-between mb-1">
-                                                    <span class="block font-black text-lg uppercase tracking-tight text-slate-900">Aptitude</span>
+                                                    <span class="block font-black text-base md:text-lg uppercase tracking-tight text-slate-900">Aptitude</span>
                                                     ${config.topics.includes('aptitude') ? '<i class="bi bi-check-circle-fill text-slate-900"></i>' : ''}
                                                 </div>
-                                                <span class="text-[10px] text-slate-400 font-bold uppercase mt-1">Logic & Spatial</span>
+                                                <span class="text-[9px] md:text-[10px] text-slate-400 font-bold uppercase mt-1">Logic & Spatial</span>
                                             </div>
-                                            <div onclick="toggleTopic('tech')" class="p-8 border-[1.5px] cursor-pointer rounded-lg transition-all relative ${config.topics.includes('tech') ? 'bg-nb-blue border-slate-900 shadow-[4px_4px_0px_#000]' : 'bg-slate-50 border-transparent'}">
+                                            <div onclick="toggleTopic('tech')" class="p-6 md:p-8 border-[1.5px] cursor-pointer rounded-lg transition-all relative ${config.topics.includes('tech') ? 'bg-nb-blue border-slate-900 shadow-[4px_4px_0px_#000]' : 'bg-slate-50 border-transparent'}">
                                                 <div class="flex items-center justify-between mb-1">
-                                                    <span class="block font-black text-lg uppercase tracking-tight text-slate-900">Technical</span>
+                                                    <span class="block font-black text-base md:text-lg uppercase tracking-tight text-slate-900">Technical</span>
                                                     ${config.topics.includes('tech') ? '<i class="bi bi-check-circle-fill text-slate-900"></i>' : ''}
                                                 </div>
-                                                <span class="text-[10px] text-slate-400 font-bold uppercase mt-1">Stack & Architecture</span>
+                                                <span class="text-[9px] md:text-[10px] text-slate-400 font-bold uppercase mt-1">Stack & Architecture</span>
                                             </div>
                                         </div>
                                     </div>
 
-                                    <div class="flex items-center justify-between p-8 bg-slate-50 border-[1.5px] border-slate-900 rounded-lg">
+                                    <div class="flex items-center justify-between p-6 md:p-8 bg-slate-50 border-[1.5px] border-slate-900 rounded-lg">
                                         <div>
-                                            <span class="block font-black text-sm text-slate-900 uppercase tracking-tight">Negative Marking Calibration</span>
-                                            <p class="text-[10px] text-slate-400 font-medium mt-1 uppercase">Penalty weight of 25% per error state.</p>
+                                            <span class="block font-black text-xs md:text-sm text-slate-900 uppercase tracking-tight">Negative Marking</span>
+                                            <p class="text-[9px] md:text-[10px] text-slate-400 font-medium mt-1 uppercase">Penalty weight: 0.25 per error.</p>
                                         </div>
                                         <button onclick="config.negativeMarking = !config.negativeMarking; render();" class="w-12 h-6 border-[1.5px] border-slate-900 rounded-full relative transition-all duration-300 ${config.negativeMarking ? 'bg-emerald-500' : 'bg-rose-500 shadow-inner'}">
                                             <div class="w-4 h-4 bg-white border-[1.5px] border-slate-900 rounded-full absolute top-[50%] -translate-y-[50%] left-[.2rem] transition-all duration-300 ${config.negativeMarking ? 'translate-x-[1.35rem]' : ''}"></div>
@@ -871,20 +859,23 @@
                 const q = testData.questions[testData.currentIdx];
                 app.classList.remove('items-center', 'justify-center');
                 app.innerHTML = `
-                    <div class="min-h-screen flex flex-col animate-fade-in overflow-hidden bg-white">
+                    <div class="h-screen flex flex-col animate-fade-in overflow-hidden bg-white">
                         <!-- Top Bar -->
-                        <div class="h-14 shrink-0 border-b border-slate-100 flex items-center justify-between px-8 bg-white">
-                            <div class="flex items-center gap-4">
-                                <span class="text-xs font-bold tracking-widest uppercase">C.U.T.E</span>
-                                <span class="h-4 w-[1px] bg-slate-100"></span>
-                                <span class="text-[10px] font-bold text-slate-400 uppercase">${q.category} session</span>
+                        <div class="h-14 shrink-0 border-b-2 border-slate-900 flex items-center justify-between px-4 md:px-8 bg-white z-20">
+                            <div class="flex items-center gap-2 md:gap-4">
+                                <button onclick="testData.isNavOpen = !testData.isNavOpen; render();" class="md:hidden w-10 h-10 flex items-center justify-center text-xl">
+                                    <i class="bi ${testData.isNavOpen ? 'bi-x-lg' : 'bi-grid-3x3-gap-fill'}"></i>
+                                </button>
+                                <span class="text-xs font-black tracking-widest uppercase hidden xs:block">C.U.T.E</span>
+                                <span class="h-4 w-[1px] bg-slate-200 hidden xs:block"></span>
+                                <span class="text-[9px] md:text-[10px] font-black text-slate-400 uppercase">${q.category}</span>
                             </div>
-                            <div class="flex items-center gap-6">
-                                <div class="flex items-center gap-2 text-slate-900 font-bold mono text-lg">
+                            <div class="flex items-center gap-4 md:gap-6">
+                                <div class="flex items-center gap-2 text-slate-900 font-black mono text-base md:text-lg">
                                     <i class="bi bi-clock"></i>
                                     <span id="timer">${formatTime(testData.timeRemaining)}</span>
                                 </div>
-                                <button onclick="testData.showSubmitModal = true; render();" class="nb-button px-5 py-1.5 bg-nb-red text-slate-900 text-[10px] font-black uppercase tracking-widest rounded hover:bg-red-600 hover:text-white transition-all">Finish</button>
+                                <button onclick="testData.showSubmitModal = true; render();" class="nb-button px-4 md:px-5 py-1.5 md:py-1.5 bg-nb-red text-slate-900 text-[9px] md:text-[10px] font-black uppercase tracking-widest rounded transition-all">Finish</button>
                             </div>
                         </div>
 
@@ -905,19 +896,22 @@
                             </div>
                             ` : ''}
 
-                            <!-- Warning Modal -->
+                             <!-- Warning Modal -->
                             ${testData.showWarning ? `
-                            <div class="absolute inset-0 z-50 flex items-center justify-center p-6 bg-slate-900/60 backdrop-blur-md animate-fade-in">
-                                <div class="nb-card max-w-md w-full p-10 bg-white rounded-xl shadow-[12px_12px_0px_#000] animate-fade-in">
-                                    <div class="mb-8">
-                                        <div class="flex items-center gap-3 mb-6 font-black outfit text-red-600 uppercase tracking-tight">
-                                            <i class="bi bi-exclamation-triangle-fill text-3xl"></i>
-                                            <span class="text-2xl">Security Alert</span>
+                            <div class="absolute inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-md animate-fade-in">
+                                <div class="nb-card max-w-md w-full p-6 md:p-10 bg-white rounded-xl shadow-[12px_12px_0px_#000] animate-fade-in border-2 border-slate-900">
+                                    <div class="mb-6 md:mb-8">
+                                        <div class="flex items-center gap-3 mb-4 md:mb-6 font-black outfit text-red-600 uppercase tracking-tight">
+                                            <i class="bi bi-exclamation-triangle-fill text-2xl md:text-3xl"></i>
+                                            <span class="text-xl md:text-2xl">Security Alert</span>
                                         </div>
-                                        <p class="text-xs text-slate-400 font-black uppercase tracking-[0.2em] mb-4">Violation: ${testData.lastViolationReason}</p>
+                                        <p class="text-[9px] md:text-[10px] text-slate-400 font-black uppercase tracking-[0.2em] mb-4">Violation: ${testData.lastViolationReason}</p>
                                         
-                                        <div class="p-6 bg-red-50 border-[1.5px] border-red-200 rounded-lg">
-                                            <p class="text-[11px] font-bold text-red-700 uppercase leading-relaxed">System has detected a proctoring conflict. A penalty of <span class="underline">10 minutes</span> has been applied. <span class="block mt-2 text-red-900">Note: Any further violation will result in immediate session invalidation and auto-submission.</span></p>
+                                        <div class="p-4 md:p-6 bg-red-50 border-[1.5px] border-red-200 rounded-lg">
+                                            <p class="text-[10px] md:text-[11px] font-bold text-red-700 uppercase leading-relaxed">
+                                                System proctoring conflict. <span class="underline">10 minute penalty</span> applied. 
+                                                <span class="block mt-2 text-red-900">Further violations will result in immediate termination.</span>
+                                            </p>
                                         </div>
                                     </div>
                                     <div class="flex flex-col gap-3">
@@ -927,36 +921,39 @@
                             </div>
                             ` : ''}
 
-                            <!-- Sidebar -->
-                            <div class="w-64 shrink-0 border-r-2 border-slate-900 flex flex-col overflow-hidden bg-white">
-                                <div class="p-5 border-b-2 border-slate-900 text-[10px] font-bold text-slate-900 uppercase tracking-widest bg-slate-50">Question Navigator</div>
-                                <div class="flex-grow overflow-y-auto p-5 grid grid-cols-5 gap-3 content-start">
-                                    ${testData.questions.map((_, i) => {
-                    let statusClass = testData.status[i];
-                    return `
-                                        <button onclick="navigate(${i})" class="q-btn ${testData.currentIdx === i ? 'active' : ''} ${statusClass}">
-                                            <span>${i + 1}</span>
-                                        </button>
-                                        `;
-                }).join('')}
+                            <!-- Sidebar / Mobile Navigator -->
+                            <div class="${testData.isNavOpen ? 'flex' : 'hidden md:flex'} absolute md:relative inset-x-0 bottom-0 md:inset-auto top-14 md:top-auto z-40 bg-white md:w-64 shrink-0 border-r-2 md:border-r-2 border-slate-900 flex-col overflow-hidden">
+                                <div class="p-4 border-b-2 border-slate-900 text-[9px] md:text-[10px] font-black text-slate-900 uppercase tracking-widest bg-slate-50 flex justify-between items-center">
+                                    <span>Question Navigator</span>
+                                    <span class="text-slate-400 md:hidden">Select to jump</span>
                                 </div>
-                                <div class="p-5 border-t-2 border-slate-900 bg-slate-50 space-y-3">
-                                    <h4 class="text-[8px] font-bold uppercase tracking-widest text-slate-400 mb-2">Legend</h4>
-                                    <div class="grid grid-cols-1 gap-2">
-                                        <div class="flex items-center gap-3 text-[9px] font-bold uppercase text-slate-900">
-                                            <div class="w-4 h-4 border-2 border-slate-900 rounded-full bg-nb-green"></div>
+                                <div class="flex-grow overflow-y-auto p-4 grid grid-cols-6 md:grid-cols-5 gap-2 md:gap-3 content-start">
+                                    ${testData.questions.map((_, i) => {
+                                        let statusClass = testData.status[i];
+                                        return `
+                                            <button onclick="testData.isNavOpen=false; navigate(${i})" class="q-btn ${testData.currentIdx === i ? 'active' : ''} ${statusClass}">
+                                                <span>${i + 1}</span>
+                                            </button>
+                                        `;
+                                    }).join('')}
+                                </div>
+                                <div class="p-4 border-t-2 border-slate-900 bg-slate-50 space-y-3">
+                                    <h4 class="text-[8px] md:text-[9px] font-black uppercase tracking-widest text-slate-400 mb-2">Navigator Legend</h4>
+                                    <div class="grid grid-cols-2 lg:grid-cols-1 gap-3 md:gap-2">
+                                        <div class="flex items-center gap-2 md:gap-3 text-[9px] font-bold uppercase text-slate-900">
+                                            <div class="w-3 h-3 md:w-4 md:h-4 border-2 border-slate-900 rounded-full bg-nb-green"></div>
                                             <span>Answered</span>
                                         </div>
-                                        <div class="flex items-center gap-3 text-[9px] font-bold uppercase text-slate-900">
-                                            <div class="w-4 h-4 border-2 border-slate-900 border-dashed bg-nb-red"></div>
-                                            <span>Seen, Unanswered</span>
+                                        <div class="flex items-center gap-2 md:gap-3 text-[9px] font-bold uppercase text-slate-900">
+                                            <div class="w-3 h-3 md:w-4 md:h-4 border-2 border-slate-900 border-dashed bg-nb-red"></div>
+                                            <span>Unanswered</span>
                                         </div>
-                                        <div class="flex items-center gap-3 text-[9px] font-bold uppercase text-slate-900">
-                                            <div class="w-4 h-4 border-2 border-slate-900 bg-nb-purple transform rotate-45"></div>
-                                            <span class="ml-1">In Review</span>
+                                        <div class="flex items-center gap-2 md:gap-3 text-[9px] font-bold uppercase text-slate-900">
+                                            <div class="w-3 h-3 md:w-4 md:h-4 border-2 border-slate-900 bg-nb-purple transform rotate-45"></div>
+                                            <span class="ml-0.5 md:ml-1">In Review</span>
                                         </div>
-                                        <div class="flex items-center gap-3 text-[9px] font-bold uppercase text-slate-900">
-                                            <div class="w-4 h-4 border-2 border-slate-900 bg-white"></div>
+                                        <div class="flex items-center gap-2 md:gap-3 text-[9px] font-bold uppercase text-slate-900">
+                                            <div class="w-3 h-3 md:w-4 md:h-4 border-2 border-slate-900 bg-white"></div>
                                             <span>Unvisited</span>
                                         </div>
                                     </div>
@@ -964,38 +961,40 @@
                             </div>
 
                             <!-- Question Area -->
-                            <div class="flex-grow flex flex-col p-8 md:p-12 overflow-hidden bg-white">
+                            <div class="flex-grow flex flex-col p-5 md:p-12 overflow-hidden bg-white">
                                 <div class="max-w-3xl w-full mx-auto flex flex-col h-full overflow-hidden">
-                                     <div class="shrink-0 mb-10">
-                                         <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-3 block">Question #${testData.currentIdx + 1} • ${q.type}</span>
-                                         <h2 class="text-2xl font-bold tracking-tight text-slate-900 leading-snug">${q.q}</h2>
+                                     <div class="shrink-0 mb-6 md:mb-8">
+                                         <span class="text-[9px] md:text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 block">Question #${testData.currentIdx + 1} • ${q.type}</span>
+                                         <h2 class="text-xl md:text-2xl font-black tracking-tight text-slate-900 leading-snug outfit uppercase">${q.q}</h2>
                                      </div>
 
-                                     <div class="flex-grow overflow-y-auto pr-4 space-y-3 mb-10">
-                                         ${q.shuffledOptions.map((opt, i) => {
-                    const isSel = q.type === 'MCQ' ? testData.userAnswers[testData.currentIdx] === opt.originalIdx : (testData.userAnswers[testData.currentIdx] || []).includes(opt.originalIdx);
-                    return `
-                                                 <div onclick="selectOption(${opt.originalIdx})" class="option-row ${isSel ? 'selected' : ''}">
-                                                     <div class="flex items-center gap-4">
-                                                         <span class="w-6 h-6 flex items-center justify-center border border-slate-200 rounded text-[9px] font-bold ${isSel ? 'bg-indigo-600 text-white border-indigo-600' : 'text-slate-400'}">${String.fromCharCode(65 + i)}</span>
-                                                         <span class="text-sm font-medium">${opt.text}</span>
-                                                     </div>
-                                                 </div>
-                                             `;
-                }).join('')}
+                                     <div class="flex-grow overflow-y-auto no-scrollbar mb-6 md:mb-8">
+                                         <div class="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4 pr-2">
+                                             ${q.shuffledOptions.map((opt, i) => {
+                                                const isSel = q.type === 'MCQ' ? testData.userAnswers[testData.currentIdx] === opt.originalIdx : (testData.userAnswers[testData.currentIdx] || []).includes(opt.originalIdx);
+                                                return `
+                                                    <div onclick="selectOption(${opt.originalIdx})" class="option-row p-3 md:p-4 border-2 rounded-xl cursor-pointer ${isSel ? 'bg-indigo-50 border-slate-900 shadow-[2px_2px_0px_#000]' : 'bg-white border-slate-100'} transition-all hover:border-slate-300">
+                                                        <div class="flex items-center gap-3 md:gap-4">
+                                                            <span class="w-6 h-6 md:w-8 md:h-8 flex items-center justify-center border-2 border-slate-900 rounded-lg text-[9px] md:text-[10px] font-black ${isSel ? 'bg-indigo-600 text-white' : 'bg-white text-slate-400'}">${String.fromCharCode(65 + i)}</span>
+                                                            <span class="text-[11px] md:text-sm font-bold text-slate-900">${opt.text}</span>
+                                                        </div>
+                                                    </div>
+                                                `;
+                                            }).join('')}
+                                         </div>
                                      </div>
 
-                                     <div class="shrink-0 pt-8 border-t border-slate-100 flex items-center justify-between">
-                                         <div class="flex gap-4">
-                                             <button onclick="mark()" class="px-5 py-2 border border-slate-200 text-[10px] font-bold uppercase tracking-widest rounded-lg hover:bg-slate-50 transition-all flex items-center gap-2">
+                                     <div class="shrink-0 pt-6 md:pt-8 border-t-2 border-slate-100 flex items-center justify-between">
+                                         <div class="flex gap-2 md:gap-4">
+                                             <button onclick="mark()" class="px-10 md:px-14 py-2.5 md:py-3 border-2 border-black text-[10px] md:text-[11px] font-black uppercase tracking-widest rounded-lg hover:bg-slate-50 transition-all flex items-center justify-center gap-2">
                                                  <i class="bi ${testData.status[testData.currentIdx].includes('marked') ? 'bi-star-fill text-indigo-500' : 'bi-star'}"></i>
-                                                 Review
+                                                 <span class="hidden md:inline">Review</span>
                                              </button>
-                                             <button onclick="testData.userAnswers[testData.currentIdx] = null; updateStatus(); render();" class="text-[9px] font-bold text-slate-400 uppercase tracking-widest hover:text-red-500 transition-all">Clear</button>
+                                             <button onclick="testData.userAnswers[testData.currentIdx] = null; updateStatus(); render();" class="text-[9px] md:text-[10px] font-black text-slate-400 uppercase tracking-widest hover:text-red-500 transition-all p-2">Clear</button>
                                          </div>
                                          <div class="flex gap-2">
-                                             <button onclick="navigate(${testData.currentIdx - 1})" class="px-6 py-2 text-[10px] font-bold uppercase tracking-widest ${testData.currentIdx === 0 ? 'opacity-0' : 'hover:bg-slate-50'}" ${testData.currentIdx === 0 ? 'disabled' : ''}>Back</button>
-                                             <button onclick="navigate(${testData.currentIdx + 1})" class="px-8 py-2 bg-slate-900 text-white text-[10px] font-bold uppercase tracking-widest rounded-lg hover:bg-black transition-all" ${testData.currentIdx === testData.questions.length - 1 ? 'disabled' : ''}>${testData.currentIdx === testData.questions.length - 1 ? 'Last' : 'Next'}</button>
+                                             <button onclick="navigate(${testData.currentIdx - 1})" class="px-6 md:px-8 py-2.5 md:py-3 text-[10px] md:text-[11px] font-black uppercase tracking-widest ${testData.currentIdx === 0 ? 'opacity-0 pointer-events-none' : 'hover:bg-slate-50'}" ${testData.currentIdx === 0 ? 'disabled' : ''}>Back</button>
+                                             <button onclick="navigate(${testData.currentIdx + 1})" class="px-10 md:px-14 py-2.5 md:py-3 bg-slate-900 text-white text-[10px] md:text-[11px] font-black uppercase tracking-widest rounded-lg hover:bg-black transition-all" ${testData.currentIdx === testData.questions.length - 1 ? 'disabled' : ''}>${testData.currentIdx === testData.questions.length - 1 ? 'Last' : 'Next'}</button>
                                          </div>
                                      </div>
                                 </div>
@@ -1007,39 +1006,41 @@
                 app.classList.remove('flex', 'items-center', 'justify-center', 'p-4');
                 app.innerHTML = `
                     <div class="h-screen w-full flex flex-col overflow-hidden animate-fade-in bg-white">
-                        <div class="h-24 shrink-0 bg-white border-b-[1.5px] border-slate-900 flex items-center justify-between px-12 lg:px-24">
-                            <h1 class="text-xl font-black outfit tracking-tighter text-slate-900 uppercase">Assessment Results</h1>
-                            <div class="flex gap-4">
-                                <button onclick="location.href='../'" class="nb-button px-8 py-3 bg-white text-slate-900 font-black uppercase tracking-widest text-[10px] rounded-lg">Home</button>
-                                <button onclick="location.reload()" class="nb-button px-8 py-3 bg-nb-yellow text-slate-900 font-black uppercase tracking-widest text-[10px] rounded-lg">Retake</button>
+                        <div class="h-auto md:h-24 shrink-0 bg-white border-b-2 border-slate-900 flex flex-col md:flex-row items-center justify-between px-4 md:px-12 lg:px-24 py-4 md:py-0 gap-4">
+                            <h1 class="text-lg md:text-xl font-black outfit tracking-tighter text-slate-900 uppercase">Assessment Results</h1>
+                            <div class="flex gap-2 w-full md:w-auto">
+                                <button onclick="location.href='../'" class="nb-button flex-1 md:flex-none px-6 md:px-8 py-2.5 md:py-3 bg-white text-slate-900 font-black uppercase tracking-widest text-[9px] md:text-[10px] rounded-lg">Home</button>
+                                <button onclick="location.reload()" class="nb-button flex-1 md:flex-none px-6 md:px-8 py-2.5 md:py-3 bg-nb-yellow text-slate-900 font-black uppercase tracking-widest text-[9px] md:text-[10px] rounded-lg">Retake</button>
                             </div>
                         </div>
 
-                        <div class="flex-grow overflow-y-auto p-12 lg:p-24 relative">
+                        <div class="flex-grow overflow-y-auto p-6 md:p-12 lg:p-24 relative no-scrollbar">
                             <div class="max-w-4xl mx-auto">
                                 ${analysis.autoSubmitted ? `
-                                <div class="mb-12 p-8 bg-red-600 text-white border-4 border-slate-900 shadow-[8px_8px_0px_#000] rounded-xl flex items-center gap-6 animate-fade-in">
-                                    <i class="bi bi-shield-lock-fill text-5xl"></i>
+                                <div class="mb-8 md:mb-12 p-5 md:p-8 bg-black text-white border-2 border-slate-900 rounded-xl flex items-center gap-4 md:gap-6 animate-fade-in">
+                                    <div class="shrink-0 hidden xs:block">
+                                        <i class="bi bi-shield-lock-fill text-3xl md:text-5xl text-red-500"></i>
+                                    </div>
                                     <div>
-                                        <h3 class="text-2xl font-black outfit uppercase tracking-tight">Session Suspended</h3>
-                                        <p class="text-sm font-bold uppercase opacity-80 tracking-widest">
+                                        <h3 class="text-lg md:text-2xl font-black outfit uppercase tracking-tight text-red-500">Session Suspended</h3>
+                                        <p class="text-[9px] md:text-sm font-bold uppercase opacity-80 tracking-widest leading-relaxed">
                                             ${analysis.autoSubmitted === 'FULLSCREEN_EXIT' ?
-                            'Terminal Violation: Fullscreen Escape detected. Session finalized by proctor.' :
-                            'Terminal Violation: Repeated Integrity Breaches. Security protocols have invalidated and submitted the session.'
+                            'Terminal Violation: Fullscreen Escape detected. Local proctoring invalidated the session.' :
+                            'Repeated Integrity Breaches. Security protocols finalized the assessment early.'
                         }
                                         </p>
                                     </div>
                                 </div>
                                 ` : ''}
 
-                                <div class="grid grid-cols-2 gap-12 mb-20">
+                                <div class="grid grid-cols-2 gap-6 md:gap-12 mb-12 md:mb-20">
                                     <div>
-                                        <span class="block text-[10px] font-bold text-slate-400 uppercase mb-2 tracking-widest">Score</span>
-                                        <span class="text-6xl font-bold text-slate-900 tracking-tighter">${analysis.score}</span>
+                                        <span class="block text-[9px] md:text-[10px] font-black text-slate-400 uppercase mb-2 tracking-widest">Score</span>
+                                        <span class="text-3xl md:text-6xl font-black text-slate-950 tracking-tighter">${analysis.score}</span>
                                     </div>
                                     <div>
-                                        <span class="block text-[10px] font-bold text-slate-400 uppercase mb-2 tracking-widest">Accuracy</span>
-                                        <span class="text-6xl font-bold text-slate-900 tracking-tighter">${analysis.accuracy}%</span>
+                                        <span class="block text-[9px] md:text-[10px] font-black text-slate-400 uppercase mb-2 tracking-widest">Accuracy</span>
+                                        <span class="text-3xl md:text-6xl font-black text-slate-950 tracking-tighter">${analysis.accuracy}%</span>
                                     </div>
                                 </div>
 
