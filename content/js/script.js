@@ -276,6 +276,52 @@ if ('serviceWorker' in navigator) {
 })();
 
 /**
+ * Floating Navbar Toggle
+ * Toggled via "/Floatingbar" command in search bar.
+ */
+(function () {
+    let floatingActive = localStorage.getItem('floating_navbar') === 'true';
+
+    const applyFloating = () => {
+        const container = document.querySelector('.pill-nav-container');
+        if (!container) return;
+
+        if (floatingActive) {
+            container.classList.add('floating');
+        } else {
+            container.classList.remove('floating');
+        }
+        
+        // Refresh support button position
+        if (typeof window.adjustSupportBtn === 'function') {
+            window.adjustSupportBtn();
+        }
+    };
+
+    window.toggleFloatingNavbar = function () {
+        floatingActive = !floatingActive;
+        localStorage.setItem('floating_navbar', floatingActive);
+        
+        if (floatingActive) {
+            document.documentElement.classList.add('floating-nav-active');
+        } else {
+            document.documentElement.classList.remove('floating-nav-active');
+        }
+        
+        applyFloating();
+        console.log(`[System] Floating Navbar: ${floatingActive ? 'ON' : 'OFF'}`);
+        return floatingActive;
+    };
+
+    // Initial Apply
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', applyFloating);
+    } else {
+        applyFloating();
+    }
+})();
+
+/**
  * "Resume Learning" Tracker
  * Saves the current content page path to localStorage so the index page
  * can show a "Resume Learning" badge on the last-visited card.
