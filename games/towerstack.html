@@ -49,6 +49,10 @@
             box-sizing: border-box;
             font-family: 'Outfit', sans-serif;
             -webkit-tap-highlight-color: transparent;
+            user-select: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
         }
 
         body {
@@ -1039,6 +1043,13 @@
             if (fill) ctx.fill();
             if (stroke) ctx.stroke();
         }
+
+        // Prevent Copy-Paste and Right Click
+        document.addEventListener('copy', (e) => e.preventDefault());
+        document.addEventListener('paste', (e) => e.preventDefault());
+        document.addEventListener('cut', (e) => e.preventDefault());
+        document.addEventListener('contextmenu', (e) => e.preventDefault());
+        document.addEventListener('dragstart', (e) => e.preventDefault());
 
         init();
     </script>
