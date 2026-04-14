@@ -65,6 +65,12 @@
       ]
     }
     </script>
+    <script>
+        // Critical: Apply floating mode preference before paint to prevent flicker
+        if (localStorage.getItem('floating_navbar') === 'true') {
+            document.documentElement.classList.add('floating-nav-active');
+        }
+    </script>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <style>
@@ -356,7 +362,7 @@
             border: 1px solid #000;
             max-height: 300px;
             overflow-y: auto;
-            z-index: 50;
+            z-index: 5000;
             display: none;
             box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
         }
@@ -522,12 +528,24 @@
             justify-content: center;
             margin-bottom: 4rem;
             margin-top: -1rem;
-            /* Adjusting for balance */
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .pill-nav-container.floating, .floating-nav-active .pill-nav-container {
+            position: fixed;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%);
+            margin: 0;
+            z-index: 1000;
+            width: fit-content;
         }
 
         .pill-nav {
             display: flex;
-            background: #f4f4f4;
+            background: rgba(244, 244, 244, 0.8);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
             padding: 4px;
             border-radius: 9999px;
             border: 1px solid #000;
@@ -560,8 +578,22 @@
 
         @media (max-width: 640px) {
             .pill-nav-container {
+                position: relative;
+                margin-top: 1.5rem;
                 margin-bottom: 2.5rem;
-                padding: 0 16px;
+                padding: 0 24px;
+                width: 100%;
+                z-index: 1000;
+                transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.4s ease, bottom 0.4s ease;
+            }
+
+            .pill-nav-container.floating, .floating-nav-active .pill-nav-container {
+                position: fixed;
+                bottom: 20px;
+                left: 0;
+                right: 0;
+                transform: none;
+                margin: 0;
                 width: 100%;
             }
 
@@ -594,9 +626,9 @@
                 height: 18px;
             }
 
-            /* Ensure indicator follows grid sizing */
+            /* Ensure indicator follows grid sizing and has a crisp transition */
             .nav-indicator {
-                transition: all 0.4s cubic-bezier(0.645, 0.045, 0.355, 1);
+                transition: transform 0.4s cubic-bezier(0.645, 0.045, 0.355, 1), width 0.4s cubic-bezier(0.645, 0.045, 0.355, 1);
             }
         }
 
@@ -831,7 +863,7 @@
         /* Mobile Responsiveness for Support UI */
         @media (max-width: 640px) {
             #support-btn {
-                bottom: 16px;
+                bottom: 80px;
                 right: 16px;
                 width: 52px;
                 height: 52px;
@@ -930,7 +962,7 @@
 <body class="min-h-screen flex flex-col pt-12 pb-12">
 
     <!-- Header -->
-    <header class="max-w-6xl mx-auto px-6 w-full mb-12 md:mb-16">
+    <header class="max-w-6xl mx-auto px-6 w-full mb-12 md:mb-16 relative z-[2000]">
         <div class="border-b border-black pb-8">
             <div class="flex flex-col md:flex-row md:items-end justify-between gap-6">
                 <div>
@@ -1030,6 +1062,14 @@
             if (activeBtn && indicator) {
                 indicator.style.width = `${activeBtn.offsetWidth}px`;
                 indicator.style.left = `${activeBtn.offsetLeft}px`;
+            }
+
+            // Early check for floating mode to prevent layout flicker on refresh
+            if (localStorage.getItem('floating_navbar') === 'true') {
+                const container = document.querySelector('.pill-nav-container');
+                if (container) {
+                    container.classList.add('floating');
+                }
             }
         })();
     </script>
@@ -3154,20 +3194,29 @@
                                 class="hidden md:flex md:w-[30%] bg-black/10 relative overflow-hidden items-center justify-center p-8 border-l border-black">
                                 <div class="relative w-32 h-32">
                                     <!-- Bubble 1 (Typing) -->
-                                    <div class="absolute top-0 -left-7 transform -rotate-12 group-hover:-translate-y-2 transition-all duration-500">
+                                    <div
+                                        class="absolute top-0 -left-7 transform -rotate-12 group-hover:-translate-y-2 transition-all duration-500">
                                         <svg width="80" height="60" viewBox="0 0 80 60" fill="none">
-                                            <path d="M12 2h56a10 10 0 0 1 10 10v20a10 10 0 0 1-10 10H42l-10 10v-10H12a10 10 0 0 1-10-10V12a10 10 0 0 1 10-10z" fill="white" stroke="black" stroke-width="1.5" stroke-linejoin="round"/>
-                                            <circle cx="22" cy="22" r="3" fill="black" opacity="0.15"/>
-                                            <circle cx="40" cy="22" r="3" fill="black" opacity="0.15"/>
-                                            <circle cx="58" cy="22" r="3" fill="black" opacity="0.15"/>
+                                            <path
+                                                d="M12 2h56a10 10 0 0 1 10 10v20a10 10 0 0 1-10 10H42l-10 10v-10H12a10 10 0 0 1-10-10V12a10 10 0 0 1 10-10z"
+                                                fill="white" stroke="black" stroke-width="1.5"
+                                                stroke-linejoin="round" />
+                                            <circle cx="22" cy="22" r="3" fill="black" opacity="0.15" />
+                                            <circle cx="40" cy="22" r="3" fill="black" opacity="0.15" />
+                                            <circle cx="58" cy="22" r="3" fill="black" opacity="0.15" />
                                         </svg>
                                     </div>
 
                                     <!-- Bubble 2 (Lines) -->
-                                    <div class="absolute top-10 -right-1 transform rotate-6 group-hover:scale-110 transition-all duration-700">
+                                    <div
+                                        class="absolute top-10 -right-1 transform rotate-6 group-hover:scale-110 transition-all duration-700">
                                         <svg width="110" height="85" viewBox="0 0 110 85" fill="none">
-                                            <path d="M12 2h86a10 10 0 0 1 10 10v35a10 10 0 0 1-10 10H80l10 10v-10h-78a10 10 0 0 1-10-10V12a10 10 0 0 1 10-10z" fill="white" stroke="black" stroke-width="1.5" stroke-linejoin="round"/>
-                                            <path d="M22 22h66M22 34h50M22 46h35" stroke="black" stroke-width="1.5" stroke-linecap="round" opacity="0.1"/>
+                                            <path
+                                                d="M12 2h86a10 10 0 0 1 10 10v35a10 10 0 0 1-10 10H80l10 10v-10h-78a10 10 0 0 1-10-10V12a10 10 0 0 1 10-10z"
+                                                fill="white" stroke="black" stroke-width="1.5"
+                                                stroke-linejoin="round" />
+                                            <path d="M22 22h66M22 34h50M22 46h35" stroke="black" stroke-width="1.5"
+                                                stroke-linecap="round" opacity="0.1" />
                                         </svg>
                                     </div>
                                 </div>
@@ -3997,7 +4046,9 @@
                     window.adjustSupportBtn = () => {
                         const footerRect = footer.getBoundingClientRect();
                         const viewportHeight = window.innerHeight;
-                        const defaultBottom = window.innerWidth <= 640 ? 16 : 24;
+                        const navbarContainer = document.querySelector('.pill-nav-container');
+                        const isFloating = navbarContainer.classList.contains('floating');
+                        const defaultBottom = window.innerWidth <= 640 ? (isFloating ? 80 : 16) : 24;
                         const scrollThreshold = 100;
 
                         // Visibility conditions
@@ -4015,11 +4066,19 @@
                             supportBtn.classList.remove('visible');
                         }
 
-                        if (footerRect.top < viewportHeight) {
-                            const offset = viewportHeight - footerRect.top;
-                            supportBtn.style.bottom = `${offset + defaultBottom}px`;
+                        // Collision detection with footer
+                        const isAtFooter = footerRect.top < viewportHeight;
+                        const offset = isAtFooter ? viewportHeight - footerRect.top : 0;
+
+                        // Support Button adjusting
+                        supportBtn.style.bottom = `${offset + defaultBottom}px`;
+                        
+                        // Navbar adjusting (only if floating)
+                        if (isFloating) {
+                            const navBottom = window.innerWidth <= 640 ? 20 : 24; // Base bottom positions
+                            navbarContainer.style.bottom = `${offset + navBottom}px`;
                         } else {
-                            supportBtn.style.bottom = `${defaultBottom}px`;
+                            navbarContainer.style.bottom = ''; // Reset for static mode
                         }
                     };
 
@@ -4495,10 +4554,10 @@
                 }
             }
 
-            // --- Custom Command: Serif Mode ---
-            if (query === '/serif') {
-                if (window.toggleSerifMode) {
-                    window.toggleSerifMode();
+            // --- Custom Command: Floating Navbar ---
+            if (query === '/floatingbar') {
+                if (window.toggleFloatingNavbar) {
+                    window.toggleFloatingNavbar();
                     input.value = '';
                     resultsBox.classList.remove('active');
                     return;
@@ -4527,7 +4586,8 @@
             if (query.startsWith('/')) {
                 const availableCommands = [
                     { s: "CMD", t: "Night Light (Eye Care)", u: "#", k: "/eye night light tint dim toggle command", y: activeSection, cmd: "/eye" },
-                    { s: "CMD", t: "Serif Mode Toggle", u: "#", k: "/serif font family typography style command", y: activeSection, cmd: "/serif" }
+                    { s: "CMD", t: "Serif Mode Toggle", u: "#", k: "/serif font family typography style command", y: activeSection, cmd: "/serif" },
+                    { s: "CMD", t: "Floating Navbar Toggle", u: "#", k: "/floatingbar sticky bottom nav command", y: activeSection, cmd: "/floatingbar" }
                 ];
                 // Filter commands based on current query
                 const filteredCmds = availableCommands.filter(c => c.k.includes(query) || c.t.toLowerCase().includes(query));
