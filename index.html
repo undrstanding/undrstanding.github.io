@@ -4712,8 +4712,9 @@
                 updateSelection(items);
             } else if (e.key === 'Enter') {
                 e.preventDefault();
-                if (selectedIndex >= 0) {
-                    const item = items[selectedIndex];
+                const targetIndex = selectedIndex >= 0 ? selectedIndex : 0;
+                const item = items[targetIndex];
+                if (item) {
                     if (item.dataset.cmd) {
                         performSearch(item.dataset.cmd);
                     } else {
