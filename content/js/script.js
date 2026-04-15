@@ -240,15 +240,15 @@ if ('serviceWorker' in navigator) {
     // Inject Serif Styles
     const style = document.createElement('style');
     style.innerHTML = `
-        /* Premium Serif Stacking */
-        @import url('https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,700;1,400&display=swap');
+        /* Premium Serif Stacking - Glilda Display */
+        @import url('https://fonts.googleapis.com/css2?family=Glilda+Display&display=swap');
         
         .serif-mode, .serif-mode body {
-            font-family: 'Lora', 'Charter', 'Georgia', serif !important;
+            font-family: 'Glilda Display', 'Charter', 'Georgia', serif !important;
         }
         
         .serif-mode h1, .serif-mode h2, .serif-mode h3, .serif-mode h4, .serif-mode h5, .serif-mode h6 {
-            font-family: 'Lora', 'Charter', 'Georgia', serif !important;
+            font-family: 'Glilda Display', 'Charter', 'Georgia', serif !important;
             letter-spacing: -0.01em !important;
         }
 
@@ -256,6 +256,8 @@ if ('serviceWorker' in navigator) {
             font-family: 'JetBrains Mono', 'Roboto Mono', monospace !important;
         }
     `;
+
+    document.head.appendChild(style);
     document.head.appendChild(style);
 
     window.toggleSerifMode = function () {
@@ -291,7 +293,7 @@ if ('serviceWorker' in navigator) {
         } else {
             container.classList.remove('floating');
         }
-        
+
         // Refresh support button position
         if (typeof window.adjustSupportBtn === 'function') {
             window.adjustSupportBtn();
@@ -301,13 +303,13 @@ if ('serviceWorker' in navigator) {
     window.toggleFloatingNavbar = function () {
         floatingActive = !floatingActive;
         localStorage.setItem('floating_navbar', floatingActive);
-        
+
         if (floatingActive) {
             document.documentElement.classList.add('floating-nav-active');
         } else {
             document.documentElement.classList.remove('floating-nav-active');
         }
-        
+
         applyFloating();
         console.log(`[System] Floating Navbar: ${floatingActive ? 'ON' : 'OFF'}`);
         return floatingActive;
