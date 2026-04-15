@@ -4564,6 +4564,16 @@
                 }
             }
 
+            // --- Custom Command: Serif Mode ---
+            if (query === '/serif') {
+                if (window.toggleSerifMode) {
+                    window.toggleSerifMode();
+                    input.value = '';
+                    resultsBox.classList.remove('active');
+                    return;
+                }
+            }
+
             selectedIndex = -1;
 
             if (query.length < 1) {
