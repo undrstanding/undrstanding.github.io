@@ -255,17 +255,43 @@ if ('serviceWorker' in navigator) {
         .serif-mode .mono, .serif-mode pre, .serif-mode code {
             font-family: 'JetBrains Mono', 'Roboto Mono', monospace !important;
         }
+
+        /* Serif transition animation */
+        @keyframes serif-fade-in {
+            from { opacity: 0; filter: blur(4px); }
+            to   { opacity: 1; filter: blur(0px); }
+        }
+
+        .serif-transition-active {
+            animation: serif-fade-in 0.45s cubic-bezier(0.4, 0, 0.2, 1) both;
+        }
     `;
 
     document.head.appendChild(style);
-    document.head.appendChild(style);
 
     window.toggleSerifMode = function () {
-        serifActive = !serifActive;
-        localStorage.setItem('serif_mode', serifActive);
-        applySerif();
+        const body = document.body;
 
-        // Visual Feedback (optional toast or message)
+        // Fade out
+        body.style.transition = 'opacity 0.18s ease, filter 0.18s ease';
+        body.style.opacity = '0';
+        body.style.filter = 'blur(3px)';
+
+        setTimeout(() => {
+            serifActive = !serifActive;
+            localStorage.setItem('serif_mode', serifActive);
+            applySerif();
+
+            // Fade back in
+            body.style.opacity = '1';
+            body.style.filter = 'blur(0px)';
+
+            setTimeout(() => {
+                body.style.transition = '';
+                body.style.filter = '';
+            }, 220);
+        }, 180);
+
         console.log(`[System] Serif Mode: ${serifActive ? 'ON' : 'OFF'}`);
         return serifActive;
     };
