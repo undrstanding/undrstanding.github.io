@@ -84,17 +84,24 @@
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Outfit:wght@400;700;900&display=swap');
 
         /* Serif Mode - applied immediately via critical script */
-        .serif-mode, .serif-mode body {
+        .serif-mode,
+        .serif-mode body {
             font-family: 'Glilda Display', 'Charter', 'Georgia', serif !important;
         }
 
-        .serif-mode h1, .serif-mode h2, .serif-mode h3,
-        .serif-mode h4, .serif-mode h5, .serif-mode h6 {
+        .serif-mode h1,
+        .serif-mode h2,
+        .serif-mode h3,
+        .serif-mode h4,
+        .serif-mode h5,
+        .serif-mode h6 {
             font-family: 'Glilda Display', 'Charter', 'Georgia', serif !important;
             letter-spacing: -0.01em !important;
         }
 
-        .serif-mode .mono, .serif-mode pre, .serif-mode code {
+        .serif-mode .mono,
+        .serif-mode pre,
+        .serif-mode code {
             font-family: 'JetBrains Mono', 'Roboto Mono', monospace !important;
         }
 
@@ -553,7 +560,8 @@
             transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
-        .pill-nav-container.floating, .floating-nav-active .pill-nav-container {
+        .pill-nav-container.floating,
+        .floating-nav-active .pill-nav-container {
             position: fixed;
             bottom: 24px;
             left: 50%;
@@ -609,7 +617,8 @@
                 transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.4s ease, bottom 0.4s ease;
             }
 
-            .pill-nav-container.floating, .floating-nav-active .pill-nav-container {
+            .pill-nav-container.floating,
+            .floating-nav-active .pill-nav-container {
                 position: fixed;
                 bottom: 20px;
                 left: 0;
@@ -4094,7 +4103,7 @@
 
                         // Support Button adjusting
                         supportBtn.style.bottom = `${offset + defaultBottom}px`;
-                        
+
                         // Navbar adjusting (only if floating)
                         if (isFloating) {
                             const navBottom = window.innerWidth <= 640 ? 20 : 24; // Base bottom positions
@@ -4927,90 +4936,12 @@
             if (event.key === 'undrlib_last_page') renderResumeTag();
             if (event.key === 'undrlib_highlights') renderHighlights();
         });
-        // Desktop Recommendation Modal Logic
-        window.addEventListener('DOMContentLoaded', () => {
-            const isMobile = window.innerWidth < 768;
 
-            // Check localStorage for dismissal timestamp
-            const dismissedTime = localStorage.getItem('desktopModalDismissedTime');
-            const now = Date.now();
-            const ONE_DAY_MS = 24 * 60 * 60 * 1000;
-
-            // Show if mobile AND (never dismissed OR dismissed > 24 hours ago)
-            const shouldShow = isMobile && (!dismissedTime || (now - parseInt(dismissedTime) > ONE_DAY_MS));
-
-            if (shouldShow) {
-                const modal = document.getElementById('desktop-modal');
-                const btn = document.getElementById('close-desktop-modal');
-
-                if (modal && btn) {
-                    // Show
-                    setTimeout(() => {
-                        modal.classList.remove('hidden');
-                        modal.style.display = 'flex';
-                        setTimeout(() => {
-                            modal.classList.remove('opacity-0');
-                            modal.querySelector('div').classList.remove('scale-95');
-                            modal.querySelector('div').classList.add('scale-100');
-                        }, 10);
-                    }, 1000);
-
-                    // Close Logic
-                    const closeDesktopModal = () => {
-                        modal.classList.add('opacity-0');
-                        modal.querySelector('div').classList.remove('scale-100');
-                        modal.querySelector('div').classList.add('scale-95');
-                        setTimeout(() => {
-                            modal.classList.add('hidden');
-                            modal.style.display = 'none';
-                        }, 300);
-
-                        // Save current timestamp to localStorage
-                        localStorage.setItem('desktopModalDismissedTime', Date.now().toString());
-                    };
-
-                    // Manual Close
-                    btn.addEventListener('click', closeDesktopModal);
-
-                    // Auto-dismiss after 7 seconds (plus 1s initial delay)
-                    setTimeout(() => {
-                        // Check if it's still visible only to avoid double-triggering animation (optional but cleaner)
-                        if (!modal.classList.contains('hidden')) {
-                            closeDesktopModal();
-                        }
-                    }, 8000);
-                }
-            }
-        });
     </script>
 
     <!-- Liquid Transition Overlay -->
     <div id="random-overlay"></div>
-    <!-- Desktop Recommendation Modal -->
-    <div id="desktop-modal"
-        class="fixed inset-0 z-[2000] hidden flex-col items-center justify-center p-4 bg-black/50 backdrop-blur-sm transition-opacity duration-300 opacity-0">
-        <div
-            class="bg-white border border-black p-6 max-w-sm w-full shadow-2xl transform scale-95 transition-transform duration-300">
-            <div class="flex flex-col items-center text-center gap-4">
-                <div class="icon-box text-black">
-                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                        stroke-linecap="round" stroke-linejoin="round">
-                        <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
-                        <line x1="8" y1="21" x2="16" y2="21"></line>
-                        <line x1="12" y1="17" x2="12" y2="21"></line>
-                    </svg>
-                </div>
-                <h3 class="font-bold text-lg font-mono uppercase tracking-tight">Desktop Recommended</h3>
-                <p class="text-sm text-gray-600 leading-relaxed">
-                    This repository features complex visualizations that are best experienced on a larger screen.
-                </p>
-                <button id="close-desktop-modal"
-                    class="w-full py-3 bg-black text-white font-mono text-xs uppercase tracking-widest hover:bg-gray-800 transition-colors">
-                    Continue Anyway
-                </button>
-            </div>
-        </div>
-    </div>
+
     <script src="content/js/script.js"></script>
 </body>
 
