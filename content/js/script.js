@@ -224,7 +224,7 @@ if ('serviceWorker' in navigator) {
 
 /**
  * Serif Mode Toggle
- * Toggled via "/serif" command in search bar.
+ * Toggled via "/typography" command in search bar.
  */
 (function () {
     let serifActive = localStorage.getItem('serif_mode') === 'true';
@@ -1387,10 +1387,20 @@ document.addEventListener('DOMContentLoaded', () => {
     input.addEventListener('input', (e) => {
         const term = e.target.value.toLowerCase().trim();
 
-        // --- Custom Command: /serif ---
-        if (term === '/serif') {
+        // --- Custom Command: /typography ---
+        if (term === '/typography') {
             if (window.toggleSerifMode) {
                 window.toggleSerifMode();
+                e.target.value = '';
+                closeSearch();
+                return;
+            }
+        }
+
+        // --- Custom Command: /navbar ---
+        if (term === '/navbar') {
+            if (window.toggleFloatingNavbar) {
+                window.toggleFloatingNavbar();
                 e.target.value = '';
                 closeSearch();
                 return;
