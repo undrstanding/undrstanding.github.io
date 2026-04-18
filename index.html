@@ -4585,8 +4585,8 @@
                 }
             }
 
-            // --- Custom Command: Floating Navbar ---
-            if (query === '/floatingbar') {
+            // --- Custom Command: Bottom Navbar ---
+            if (query === '/navbar') {
                 if (window.toggleFloatingNavbar) {
                     window.toggleFloatingNavbar();
                     input.value = '';
@@ -4595,8 +4595,8 @@
                 }
             }
 
-            // --- Custom Command: Serif Mode ---
-            if (query === '/serif') {
+            // --- Custom Command: Typography ---
+            if (query === '/typography') {
                 if (window.toggleSerifMode) {
                     window.toggleSerifMode();
                     input.value = '';
@@ -4625,10 +4625,13 @@
 
             // COMMAND LAYER: If input starts with '/', insert command options
             if (query.startsWith('/')) {
+                const isSerif = localStorage.getItem('serif_mode') === 'true';
+                const isFloating = localStorage.getItem('floating_navbar') === 'true';
+
                 const availableCommands = [
                     { s: "CMD", t: "Night Light (Eye Care)", u: "#", k: "/eye night light tint dim toggle command", y: activeSection, cmd: "/eye" },
-                    { s: "CMD", t: "Serif Mode Toggle", u: "#", k: "/serif font family typography style command", y: activeSection, cmd: "/serif" },
-                    { s: "CMD", t: "Floating Navbar Toggle", u: "#", k: "/floatingbar sticky bottom nav command", y: activeSection, cmd: "/floatingbar" }
+                    { s: "CMD", t: isSerif ? "Switch to Sans-Serif Font" : "Switch to Serif Font", u: "#", k: `/typography font family ${isSerif ? 'sans-serif' : 'serif'} style command`, y: activeSection, cmd: "/typography" },
+                    { s: "CMD", t: isFloating ? "Disable Floating Navbar" : "Enable Floating Navbar", u: "#", k: `/navbar sticky ${isFloating ? 'static fixed' : 'floating bottom'} nav command`, y: activeSection, cmd: "/navbar" }
                 ];
                 // Filter commands based on current query
                 const filteredCmds = availableCommands.filter(c => c.k.includes(query) || c.t.toLowerCase().includes(query));
