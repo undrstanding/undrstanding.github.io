@@ -724,7 +724,6 @@
             max-width: 400px;
             text-align: center;
             border: 6px solid #000;
-            box-shadow: 12px 12px 0px var(--accent);
             transform: scale(0.8);
             transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
@@ -844,7 +843,6 @@
             border-radius: 32px;
             text-align: center;
             border: 8px solid #000;
-            box-shadow: 15px 15px 0px var(--accent);
             animation: checkmate-pop 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
             max-width: 400px;
             width: 90%;
@@ -942,6 +940,7 @@
 
                     <button class="btn-setting" id="setting-undo">Undo Move</button>
                     <button class="btn-setting" id="setting-flip">Flip View</button>
+                    <button class="btn-setting" id="setting-random">Chaos Start</button>
                     <button class="btn-setting" id="setting-reset-trigger">New Session</button>
                     <button class="btn-setting-close" id="setting-close">Return</button>
                 </div>
@@ -1028,6 +1027,90 @@
                 this.initBoard();
                 this.render();
                 this.setupEventListeners();
+            }
+
+            reset() {
+                this.board = Array(8).fill(null).map(() => Array(8).fill(null));
+                this.turn = 'w';
+                this.history = [];
+                this.selectedSquare = null;
+                this.validMoves = [];
+                this.lastMove = null;
+                this.enPassant = null;
+                this.gameOver = false;
+                this.captured = { w: [], b: [] };
+                this.castling = {
+                    w: { k: true, q: true },
+                    b: { k: true, q: true }
+                };
+                
+                // UI Cleanup
+                document.getElementById('board-slab').classList.remove('board-dead');
+                document.querySelectorAll('.checkmate-overlay').forEach(el => el.remove());
+                
+                this.initBoard();
+                this.render();
+                this.checkCpuMove();
+            }
+
+            chaosReset() {
+                 // Manual State Reset (Avoid calling this.reset() which calls its own render)
+                this.board = Array(8).fill(null).map(() => Array(8).fill(null));
+                this.turn = 'w';
+                this.history = [];
+                this.selectedSquare = null;
+                this.validMoves = [];
+                this.lastMove = null;
+                this.enPassant = null;
+                this.gameOver = false;
+                this.captured = { w: [], b: [] };
+                this.castling = {
+                    w: { k: false, q: false },
+                    b: { k: false, q: false }
+                };
+                
+                // UI Cleanup
+                document.getElementById('board-slab').classList.remove('board-dead');
+                document.querySelectorAll('.checkmate-overlay').forEach(el => el.remove());
+
+                const pieceList = [
+                    {type:'k', color:'w'}, {type:'k', color:'b'},
+                    {type:'q', color:'w'}, {type:'q', color:'b'},
+                    {type:'r', color:'w'}, {type:'r', color:'w'}, {type:'r', color:'b'}, {type:'r', color:'b'},
+                    {type:'b', color:'w'}, {type:'b', color:'w'}, {type:'b', color:'b'}, {type:'b', color:'b'},
+                    {type:'n', color:'w'}, {type:'n', color:'w'}, {type:'n', color:'b'}, {type:'n', color:'b'},
+                    {type:'p', color:'w'}, {type:'p', color:'w'}, {type:'p', color:'w'}, {type:'p', color:'w'}, 
+                    {type:'p', color:'w'}, {type:'p', color:'w'}, {type:'p', color:'w'}, {type:'p', color:'w'},
+                    {type:'p', color:'b'}, {type:'p', color:'b'}, {type:'p', color:'b'}, {type:'p', color:'b'}, 
+                    {type:'p', color:'b'}, {type:'p', color:'b'}, {type:'p', color:'b'}, {type:'p', color:'b'}
+                ];
+
+                const squares = [];
+                for(let r=0; r<8; r++) for(let c=0; c<8; c++) squares.push({r,c});
+                
+                // Shuffle Squares
+                for (let i = squares.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [squares[i], squares[j]] = [squares[j], squares[i]];
+                }
+
+                // Place each piece in a random square
+                pieceList.forEach((piece, index) => {
+                    const pos = squares[index];
+                    this.board[pos.r][pos.c] = { ...piece };
+                });
+
+                this.render();
+                this.checkCpuMove();
+            }
+
+            checkCpuMove() {
+                if (this.gameOver || this.isTwoPlayer) return;
+                const cpuColor = this.isFlipped ? 'w' : 'b';
+                if (this.turn === cpuColor) {
+                    if (this.aiTimeout) clearTimeout(this.aiTimeout);
+                    this.aiTimeout = setTimeout(() => this.makeAiMove(), 500);
+                }
             }
 
             initBoard() {
@@ -1129,9 +1212,16 @@
                 const settingsMain = document.getElementById('settings-main');
                 const settingsConfirm = document.getElementById('settings-confirm');
 
+                const updateMenuButtons = () => {
+                    const hasHistory = this.history.length > 0;
+                    document.getElementById('setting-undo').style.display = hasHistory ? 'block' : 'none';
+                    document.getElementById('setting-flip').style.display = hasHistory ? 'none' : 'block';
+                };
+
                 const showSettings = () => {
                     settingsMain.style.display = 'flex';
                     settingsConfirm.style.display = 'none';
+                    updateMenuButtons();
                     settingsMenu.classList.add('active');
                 };
                 const hideSettings = () => settingsMenu.classList.remove('active');
@@ -1151,7 +1241,12 @@
                 document.getElementById('setting-flip').onclick = () => {
                     this.isFlipped = !this.isFlipped;
                     this.render();
+                    this.checkCpuMove();
                     hideSettings();
+                };
+                document.getElementById('setting-random').onclick = () => {
+                   this.chaosReset();
+                   hideSettings();
                 };
 
                 // Inline Reset Confirmation
@@ -1159,7 +1254,10 @@
                     settingsMain.style.display = 'none';
                     settingsConfirm.style.display = 'flex';
                 };
-                document.getElementById('confirm-yes').onclick = () => location.reload();
+                document.getElementById('confirm-yes').onclick = () => {
+                    this.reset();
+                    hideSettings();
+                };
                 document.getElementById('confirm-no').onclick = () => {
                     settingsConfirm.style.display = 'none';
                     settingsMain.style.display = 'flex';
@@ -1168,15 +1266,28 @@
                 // Mode Selector Logic
                 document.querySelectorAll('.mode-option').forEach(opt => {
                     opt.onclick = () => {
-                        document.querySelectorAll('.mode-option').forEach(el => el.classList.remove('active'));
-                        opt.classList.add('active');
-                        this.isTwoPlayer = opt.dataset.mode === 'pvp';
-                        // Keep menu open as requested
+                        const newMode = opt.dataset.mode === 'pvp';
+                        if (this.isTwoPlayer !== newMode) {
+                            this.isTwoPlayer = newMode;
+                            document.querySelectorAll('.mode-option').forEach(el => el.classList.remove('active'));
+                            opt.classList.add('active');
+                            this.reset();
+                            updateMenuButtons();
+                            hideSettings();
+                        }
                     };
                 });
             }
 
             handleSquareClick(row, col) {
+                if (this.gameOver) return;
+
+                // Ensure player only moves their own pieces in CPU mode
+                if (!this.isTwoPlayer) {
+                    const playerColor = this.isFlipped ? 'b' : 'w';
+                    if (this.turn !== playerColor) return;
+                }
+
                 const piece = this.board[row][col];
 
                 // If clicking a valid move
@@ -1216,23 +1327,27 @@
                     const startRow = piece.color === 'w' ? 6 : 1;
 
                     // Forward
-                    if (!this.board[row + dir][col]) {
-                        moves.push({ row: row + dir, col });
-                        if (row === startRow && !this.board[row + 2 * dir][col]) {
-                            moves.push({ row: row + 2 * dir, col });
-                        }
-                    }
-                    // Captures
-                    for (let dc of [-1, 1]) {
-                        const nc = col + dc;
-                        if (nc >= 0 && nc < 8) {
-                            const target = this.board[row + dir][nc];
-                            if (target && target.color !== piece.color) {
-                                moves.push({ row: row + dir, col: nc, capture: true });
+                    const nr = row + dir;
+                    if (nr >= 0 && nr < 8) {
+                        if (!this.board[nr][col]) {
+                            moves.push({ row: nr, col });
+                            const nr2 = row + 2 * dir;
+                            if (row === startRow && nr2 >= 0 && nr2 < 8 && !this.board[nr2][col]) {
+                                moves.push({ row: nr2, col });
                             }
-                            // En Passant
-                            if (!target && this.enPassant && row + dir === this.enPassant.row && nc === this.enPassant.col) {
-                                moves.push({ row: row + dir, col: nc, capture: true, enPassant: true });
+                        }
+                        // Captures
+                        for (let dc of [-1, 1]) {
+                            const nc = col + dc;
+                            if (nc >= 0 && nc < 8) {
+                                const target = this.board[nr][nc];
+                                if (target && target.color !== piece.color) {
+                                    moves.push({ row: nr, col: nc, capture: true });
+                                }
+                                // En Passant
+                                if (!target && this.enPassant && nr === this.enPassant.row && nc === this.enPassant.col) {
+                                    moves.push({ row: nr, col: nc, capture: true, enPassant: true });
+                                }
                             }
                         }
                     }
@@ -1420,11 +1535,7 @@
                 }
 
                 this.render();
-
-                // Simple AI Turn
-                if (this.turn === 'b' && !this.gameOver && !this.isTwoPlayer) {
-                    setTimeout(() => this.makeAiMove(), 500);
-                }
+                this.checkCpuMove();
             }
 
             isGameOver() {
@@ -1501,6 +1612,7 @@
                 this.selectedSquare = null;
                 this.validMoves = [];
                 this.render();
+                this.checkCpuMove();
             }
 
             makeAiMove() {
@@ -1509,7 +1621,7 @@
                 for (let r = 0; r < 8; r++) {
                     for (let c = 0; c < 8; c++) {
                         const p = this.board[r][c];
-                        if (p && p.color === 'b') {
+                        if (p && p.color === this.turn) {
                             const moves = this.calculateValidMoves(r, c);
                             moves.forEach(m => allMoves.push({ from: { r, c }, to: m }));
                         }
