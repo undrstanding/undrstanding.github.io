@@ -3778,6 +3778,70 @@
                         </div>
                     </article>
                 </a>
+
+                <!-- Game 07: CHESS -->
+                <a href="games/chess" class="block group">
+                    <article
+                        class="card flex flex-col items-center justify-center p-8 md:p-12 relative overflow-hidden bg-[#00ADB5] border-4 border-black rounded-[12px] h-[340px] transition-transform duration-300">
+
+                        <!-- Dynamic Background Decoration (Synced with Game UI) -->
+                        <div class="absolute inset-0 opacity-10 pointer-events-none">
+                            <!-- Grid -->
+                            <div class="absolute inset-0"
+                                style="background-image: linear-gradient(rgba(255, 255, 255, 0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, 0.1) 1px, transparent 1px); background-size: 40px 40px;">
+                            </div>
+
+                            <!-- Ghost Pieces Deco -->
+                            <img src="https://upload.wikimedia.org/wikipedia/commons/4/42/Chess_klt45.svg"
+                                class="absolute -top-10 -left-10 w-32 h-32 opacity-20 rotate-[-15deg] brightness-[2] grayscale">
+                            <img src="https://upload.wikimedia.org/wikipedia/commons/7/70/Chess_nlt45.svg"
+                                class="absolute -bottom-8 -right-8 w-28 h-28 opacity-20 rotate-[15deg] brightness-[2] grayscale">
+                        </div>
+
+                        <!-- The Mini Slab (Game UI Mirror) -->
+                        <div
+                            class="relative z-10 w-40 h-40 bg-[#a8997a] border-[3px] border-black rounded-2xl p-1.5 shadow-[8px_8px_0px_#000] rotate-[-2deg] group-hover:rotate-0 group-hover:scale-105 transition-all duration-500 flex items-center justify-center">
+                            <!-- Mini Board 4x4 -->
+                            <div
+                                class="grid grid-cols-4 grid-rows-4 w-full h-full border-2 border-black/20 rounded-lg overflow-hidden bg-[#cbd5e1]">
+                                <!-- Patterning -->
+                                <div class="bg-[#f8fafc]"></div>
+                                <div></div>
+                                <div class="bg-[#f8fafc]"></div>
+                                <div></div>
+                                <div></div>
+                                <div class="bg-[#f8fafc]"></div>
+                                <div></div>
+                                <div class="bg-[#f8fafc]"></div>
+                                <div class="bg-[#f8fafc]"></div>
+                                <div></div>
+                                <div class="bg-[#f8fafc]"></div>
+                                <div></div>
+                                <div></div>
+                                <div class="bg-[#f8fafc]"></div>
+                                <div></div>
+                                <div class="bg-[#f8fafc]"></div>
+                            </div>
+
+                            <!-- Pieces SVGs (The actual game piece vectors) -->
+                            <img src="https://upload.wikimedia.org/wikipedia/commons/7/70/Chess_nlt45.svg"
+                                class="absolute top-[15%] left-[15%] w-14 h-14 z-20 drop-shadow-[4px_4px_0_rgba(0,0,0,0.1)] group-hover:-translate-y-2 group-hover:rotate-[-10deg] transition-all duration-500"
+                                alt="Knight">
+
+                            <img src="https://upload.wikimedia.org/wikipedia/commons/f/f0/Chess_kdt45.svg"
+                                class="absolute bottom-[10%] right-[10%] w-16 h-16 z-20 drop-shadow-[4px_4px_0_rgba(0,0,0,0.1)] group-hover:translate-x-2 group-hover:rotate-[10deg] transition-all duration-500"
+                                alt="King">
+                        </div>
+
+                        <!-- Game Labels -->
+                        <div class="mt-8 flex flex-col items-center z-20">
+                            <h3
+                                class="text-5xl md:text-7xl font-black outfit text-white uppercase tracking-tighter leading-none text-center transform group-hover:scale-110 transition-transform duration-500">
+                                CHESS
+                            </h3>
+                        </div>
+                    </article>
+                </a>
             </div>
         </div>
 
@@ -4488,6 +4552,7 @@
             { s: "GAME", t: "Wumpus World", u: "games/wumpus", k: "wumpus world archer quest roguelike strategy puzzle inference pits gold", y: "games" },
             { s: "GAME", t: "Monty Hall", u: "games/montyhall", k: "monty hall probability paradox goats car doors choice switch selection psychology", y: "games" },
             { s: "GAME", t: "Tower Stack", u: "games/towerstack", k: "tower stack knowledge physics architecture building blocks concepts oop abstraction polymorphism encapsulation inheritance osi sdlc os scheduling design dikw", y: "games" },
+            { s: "GAME", t: "Chess", u: "games/chess", k: "chess board game logic strategy tactics pieces checkmate", y: "games" },
 
             // Series 14: Prep
             { s: "PREP", t: "Placement Prep", u: "prep/CUTE", k: "placement preparation cute academic assessments aptitude combined undrstanding test evaluation", y: "prep" },
