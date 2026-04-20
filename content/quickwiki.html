@@ -1,0 +1,781 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quick Wiki | Undrstanding</title>
+    <meta name="description" content="Quick Wiki - Instant Wikipedia topic summaries in the Undrstanding format.">
+    <meta name="keywords" content="undrstanding, wiki, knowledge, learning, educational">
+    <link rel="canonical" href="https://undrstanding.github.io/content/quickwiki">
+    <link rel="icon" type="image/svg+xml" href="../assests/undrlogo.svg">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Roboto+Mono:wght@400;500&display=swap');
+
+        ::-webkit-scrollbar {
+            width: 1px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #000;
+        }
+
+        :root {
+            --bg-color: #fdfaf6;
+            --card-bg: #ffffff;
+            --text-main: #111111;
+            --text-muted: #737373;
+            --accent: #2563eb;
+            /* Blue-600 */
+            --border: #e5e5e5;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            -webkit-font-smoothing: antialiased;
+            line-height: 1.6;
+            overflow-x: hidden;
+            max-width: 100vw;
+        }
+
+        html {
+            overflow-x: hidden;
+            max-width: 100vw;
+        }
+
+        h1,
+        h2,
+        h3,
+        h4,
+        h5 {
+            font-weight: 600;
+            letter-spacing: -0.02em;
+            color: var(--text-main);
+        }
+
+        p {
+            color: #404040;
+        }
+
+        .mono {
+            font-family: 'Roboto Mono', monospace;
+        }
+
+        .rams-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            transition: all 0.3s ease;
+        }
+
+        .rams-card:hover {
+            border-color: #a3a3a3;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        }
+
+        @media (min-width: 768px) {
+            .rams-card {
+                padding: 2.5rem;
+            }
+        }
+
+        .rams-label {
+            font-family: 'Inter', sans-serif;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        /* Controls */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.5rem 1.25rem;
+            font-size: 0.85rem;
+            font-weight: 500;
+            border-radius: 2px;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            white-space: nowrap;
+        }
+
+        .btn-primary {
+            background-color: var(--accent);
+            color: white;
+            border: 1px solid var(--accent);
+        }
+
+        .btn-primary:hover {
+            opacity: 0.9;
+        }
+
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E");
+            pointer-events: none;
+            z-index: -1;
+            opacity: 0.4;
+        }
+
+        /* Content Protection */
+        body {
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+
+        #wiki-search-input {
+            -webkit-user-select: text;
+            -moz-user-select: text;
+            -ms-user-select: text;
+            user-select: text;
+        }
+
+        /* Deep cleaning Wikipedia HTML */
+        #result-content p {
+            margin-bottom: 1.5rem;
+        }
+
+        #result-content h2 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #111;
+            margin-top: 2.5rem;
+            margin-bottom: 1rem;
+            border-bottom: 1px solid #e5e5e5;
+            padding-bottom: 0.5rem;
+        }
+
+        #result-content h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #333;
+            margin-top: 1.5rem;
+            margin-bottom: 0.75rem;
+        }
+
+        #result-content a {
+            color: var(--accent);
+            text-decoration: none;
+            border-bottom: 1px dotted var(--accent);
+        }
+
+        #result-content a:hover {
+            border-bottom-style: solid;
+        }
+
+        #result-content ul,
+        #result-content ol {
+            margin-left: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        #result-content li {
+            margin-bottom: 0.5rem;
+            list-style-type: disc;
+        }
+
+        /* Hide Infoboxes and Tables from Wikipedia */
+        #result-content .infobox,
+        #result-content .navbox,
+        #result-content .metadata,
+        #result-content .mw-empty-elt,
+        #result-content table {
+            display: none !important;
+        }
+
+        /* Improved See Also specifically for mobile */
+        .see-also-list {
+            margin-left: 0.5rem;
+            padding-left: 1rem;
+            list-style-position: outside;
+        }
+
+        .see-also-list li {
+            word-break: break-word;
+            line-height: 1.5;
+        }
+
+        @keyframes fadeInSlideUp {
+            from {
+                opacity: 0;
+                transform: translateY(25px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate-reveal {
+            animation: fadeInSlideUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="flex min-h-screen flex-col lg:flex-row">
+
+        <!-- Mobile Header -->
+        <header
+            class="lg:hidden fixed top-0 w-full bg-[#f4f4f4] border-b border-[#e5e5e5] z-[100] px-6 py-4 flex justify-between items-center h-16">
+            <div>
+                <h1 class="text-sm font-semibold tracking-wide uppercase text-black leading-tight">Quick Wiki</h1>
+            </div>
+            <button onclick="toggleMobileMenu()" class="text-black focus:outline-none p-2 rounded">
+                <svg id="mobile-menu-icon" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none"
+                    viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+            </button>
+        </header>
+
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="fixed inset-0 bg-[#f4f4f4] z-[90] hidden flex-col pt-20 px-6 overflow-y-auto pb-8">
+            <div class="mb-4">
+                <a href="../"
+                    class="inline-flex items-center gap-2 px-4 py-2 mb-8 text-[10px] font-mono uppercase tracking-wider text-gray-600 border border-gray-300 hover:bg-black hover:text-white hover:border-black transition-all duration-200">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                    </svg>
+                    Back to Home
+                </a>
+
+                <div class="mt-2 pt-6 border-t border-gray-200">
+                    <h4 class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-4">Recent Searches</h4>
+                    <nav id="mobile-search-history" class="space-y-4 flex flex-col items-start min-h-[50px] w-full">
+                        <span class="text-xs text-gray-400 italic">No history yet.</span>
+                    </nav>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sidebar -->
+        <aside
+            class="hidden lg:block w-64 fixed h-screen bg-[#f4f4f4] border-r border-[#e5e5e5] z-50 overflow-y-auto thin-scrollbar">
+            <div class="p-8 h-full flex flex-col justify-between">
+                <div>
+                    <a href="../"
+                        class="inline-flex items-center gap-2 px-4 py-2 mb-8 text-[10px] font-mono uppercase tracking-wider text-gray-600 border border-gray-300 hover:bg-black hover:text-white hover:border-black transition-all duration-200">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                        </svg>
+                        Back to Home
+                    </a>
+                    <div class="mb-12">
+                        <h1 class="text-sm font-semibold tracking-wide uppercase text-black">Quick<br>Wiki</h1>
+                        <p class="text-[10px] text-gray-400 mt-1 uppercase tracking-wider font-bold">
+                            Knowledge Base</p>
+                    </div>
+                    <div class="mt-8 pt-8 border-t border-gray-200">
+                        <h4 class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-4">Recent Searches
+                        </h4>
+                        <nav id="search-history" class="space-y-3 flex flex-col items-start min-h-[50px]">
+                            <span class="text-xs text-gray-400 italic">No history yet.</span>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 lg:ml-64 bg-white w-full min-h-screen">
+            <div class="max-w-3xl mx-auto px-5 sm:px-8 py-20 lg:py-20 mt-16 lg:mt-0">
+
+                <!-- Hero -->
+                <section id="search" class="mb-16 md:mb-24 pt-8">
+                    <h2 class="text-4xl md:text-6xl font-bold mb-4 text-black tracking-tighter">Quick Wiki.</h2>
+                    <p class="text-lg md:text-xl text-gray-500 font-light mb-12 max-w-xl">
+                        Instant, distraction-free knowledge.
+                    </p>
+
+                    <div class="relative w-full max-w-xl group">
+                        <input type="text" id="wiki-search-input" placeholder="Search any topic..." autocomplete="off"
+                            class="block w-full py-4 pr-12 text-xl md:text-2xl text-black bg-transparent border-b-2 border-gray-300 focus:border-black outline-none transition-colors duration-300 font-medium placeholder-gray-400">
+                        <button onclick="searchWiki()" id="search-btn" title="Search"
+                            class="absolute right-0 bottom-4 text-black hover:opacity-70 transition-opacity duration-300 flex items-center justify-center p-2 z-10">
+                            <svg id="search-btn-icon" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 md:h-8 md:w-8"
+                                fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                            </svg>
+                        </button>
+                    </div>
+                    <div id="search-error" class="hidden text-red-500 text-sm mt-3 font-mono"></div>
+                </section>
+
+                <!-- Results Section -->
+                <section id="results" class="hidden mb-12 md:mb-24 pb-12">
+                    <div class="mb-8 md:mb-10 mt-10 md:mt-12">
+                        <span id="sourced-span"
+                            class="text-[10px] font-bold uppercase tracking-widest text-blue-600 mb-2 block">Sourced
+                            from Wikipedia</span>
+                        <h3 id="result-title"
+                            class="text-3xl md:text-5xl font-semibold text-black tracking-tight leading-tight mb-4 break-words">
+                        </h3>
+                        <p id="result-description"
+                            class="hidden text-sm font-mono text-gray-500 max-w-2xl border-l-2 border-gray-300 pl-3 py-1">
+                        </p>
+                    </div>
+
+                    <div>
+                        <div class="mb-8 md:mb-10">
+                            <img id="result-image"
+                                class="hidden w-full max-w-2xl object-cover md:object-contain max-h-[40vh] md:max-h-[60vh] rounded-xl bg-gray-50 border border-gray-100 p-1"
+                                src="" alt="Image">
+                        </div>
+                        <div id="result-content"
+                            class="text-base md:text-lg text-gray-700 font-light leading-relaxed max-w-2xl">
+                            <!-- Injected content -->
+                        </div>
+                        <div class="mt-8">
+                            <a id="result-source-link" href="#" target="_blank"
+                                class="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-blue-600 hover:text-blue-800 transition-colors">
+                                Read full article on Wikipedia
+                                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24"
+                                    stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                                </svg>
+                            </a>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Attribution & Footer -->
+                <div id="wiki-attribution" class="mt-20 text-[9px] font-mono uppercase text-gray-400 tracking-[0.1em] leading-relaxed max-w-md opacity-60">
+                    All encyclopedic content is sourced from <a href="https://wikipedia.org" target="_blank" class="underline hover:text-black transition-colors">Wikipedia</a> and is available under the <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" class="underline hover:text-black transition-colors">Creative Commons Attribution-ShareAlike 4.0</a> License.
+                </div>
+
+                <footer class="w-full mt-8 mb-20 opacity-60">
+                    <div class="border-t border-gray-200 pt-8 flex justify-between items-center">
+                        <span class="text-[10px] font-mono uppercase text-gray-400 tracking-[0.2em]">Undrstanding.</span>
+                        <span class="text-[10px] font-mono uppercase text-gray-400 tracking-[0.2em]">For Humans, From Humans</span>
+                    </div>
+                </footer>
+
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Disable Right Click, Copy, Paste
+        document.addEventListener('contextmenu', e => e.preventDefault());
+        document.addEventListener('copy', e => e.preventDefault());
+        document.addEventListener('cut', e => e.preventDefault());
+        document.addEventListener('paste', e => e.preventDefault());
+
+        let searchHistory = JSON.parse(localStorage.getItem('quickWikiHistory') || '[]');
+        let activeTypewriterId = 0;
+
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobile-menu');
+            const icon = document.getElementById('mobile-menu-icon');
+            if (menu.classList.contains('hidden')) {
+                menu.classList.remove('hidden');
+                menu.classList.add('flex');
+                icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />';
+            } else {
+                menu.classList.add('hidden');
+                menu.classList.remove('flex');
+                icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />';
+            }
+        }
+
+        function createHistoryItem(term, index) {
+            const itemDiv = document.createElement('div');
+            itemDiv.className = 'w-full flex items-center justify-between group py-1';
+
+            const btn = document.createElement('button');
+            btn.className = 'text-sm text-gray-600 hover:text-blue-600 text-left truncate flex-1 flex items-center gap-2 transition-colors font-medium';
+            btn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg> <span class="truncate block max-w-[200px] lg:max-w-[120px]">${term}</span>`;
+            btn.onclick = () => {
+                document.getElementById('wiki-search-input').value = term;
+                searchWiki();
+                if (window.innerWidth < 1024) toggleMobileMenu();
+            };
+
+            const removeBtn = document.createElement('button');
+            removeBtn.className = 'text-gray-400 hover:text-red-500 lg:opacity-0 group-hover:opacity-100 transition-opacity p-2 -mr-2 rounded flex-shrink-0 leading-none';
+            removeBtn.title = 'Remove search';
+            removeBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>`;
+            removeBtn.onclick = (e) => {
+                e.stopPropagation();
+                searchHistory.splice(index, 1);
+                localStorage.setItem('quickWikiHistory', JSON.stringify(searchHistory));
+                updateHistoryUI();
+            };
+
+            itemDiv.appendChild(btn);
+            itemDiv.appendChild(removeBtn);
+            return itemDiv;
+        }
+
+        function updateHistoryUI() {
+            const containers = [
+                document.getElementById('search-history'),
+                document.getElementById('mobile-search-history')
+            ];
+
+            containers.forEach(container => {
+                if (!container) return;
+
+                if (searchHistory.length === 0) {
+                    container.innerHTML = '<span class="text-xs text-gray-400 italic">No history yet.</span>';
+                    return;
+                }
+
+                container.innerHTML = '';
+                searchHistory.forEach((term, index) => {
+                    container.appendChild(createHistoryItem(term, index));
+                });
+            });
+        }
+
+        function addToHistory(title) {
+            if (!searchHistory.includes(title)) {
+                searchHistory.unshift(title);
+                if (searchHistory.length > 8) searchHistory.pop();
+                localStorage.setItem('quickWikiHistory', JSON.stringify(searchHistory));
+                updateHistoryUI();
+            } else {
+                // Move to top
+                searchHistory.splice(searchHistory.indexOf(title), 1);
+                searchHistory.unshift(title);
+                localStorage.setItem('quickWikiHistory', JSON.stringify(searchHistory));
+                updateHistoryUI();
+            }
+        }
+
+        document.addEventListener("DOMContentLoaded", updateHistoryUI);
+
+        async function searchWiki() {
+            const queryRaw = document.getElementById('wiki-search-input').value.trim();
+            const errorEl = document.getElementById('search-error');
+            const resultsSection = document.getElementById('results');
+            const btn = document.getElementById('search-btn');
+            const btnIcon = document.getElementById('search-btn-icon');
+
+            errorEl.classList.add('hidden');
+
+            if (!queryRaw) {
+                errorEl.textContent = "Please enter a topic to search.";
+                errorEl.classList.remove('hidden');
+                return;
+            }
+
+            const query = queryRaw.toLowerCase();
+            btn.disabled = true;
+            btnIcon.style.opacity = '0.5';
+
+            try {
+                // Check for custom "Undrstanding" result
+                if (query === 'undrstanding' || query === 'understanding') {
+                    const customPage = {
+                        title: "Undrstanding",
+                        description: "For Humans, From Humans.",
+                        extract: "<h2>The Vision</h2><p><b>Undrstanding</b> is built with a vision to make complex topics truly accessible through interactivity. We believe that learning shouldn't be a chore - it should be an adventure.</p><p>Our mission is to bridge the gap between complex technical concepts and the learners who seek to master them, providing tools that empower rather than overwhelm.</p><p>By removing the high-noise and high-friction barriers of traditional digital learning, we create a space where curiosity can thrive and understanding can truly bloom.</p><p>This project is built <b>For Humans, From Humans</b>. Every part of this platform is a testament to the power of open-source knowledge and the shared pursuit of growth.</p><h2>See also</h2><ul><li>Open Source</li><li>Interactive Learning</li><li>Computer Science</li></ul>",
+                        original: { source: "../assests/undrlogo.svg" },
+                        isInternal: true
+                    };
+                    renderWikiResult(customPage);
+                    return;
+                }
+
+                // Fetch structured content from Wikipedia API
+                const url = `https://en.wikipedia.org/w/api.php?action=query&redirects=1&prop=extracts|pageimages|description&piprop=original|thumbnail&pithumbsize=800&titles=${encodeURIComponent(queryRaw)}&format=json&origin=*`;
+                const response = await fetch(url);
+
+                if (!response.ok) {
+                    throw new Error("Failed to fetch data from Wikipedia API.");
+                }
+
+                const data = await response.json();
+
+                if (!data.query || !data.query.pages) {
+                    throw new Error("No data received from Wikipedia.");
+                }
+
+                const pages = data.query.pages;
+                const pageId = Object.keys(pages)[0];
+
+                if (pageId === "-1" || !pages[pageId].title) {
+                    throw new Error("Topic not found on Wikipedia. Try a different term.");
+                }
+
+                const page = pages[pageId];
+
+                // Handle Disambiguation
+                if (page.extract && page.extract.toLowerCase().includes('id="disambiguation"')) {
+                    throw new Error("Search term is too broad (Disambiguation page). Try being more specific (e.g., 'Apple (company)').");
+                }
+
+                renderWikiResult(page);
+
+            } catch (err) {
+                errorEl.textContent = err.message || "An unexpected error occurred.";
+                errorEl.classList.remove('hidden');
+                resultsSection.classList.add('hidden');
+            } finally {
+                btn.disabled = false;
+                btnIcon.style.opacity = '1';
+            }
+        }
+
+        function renderWikiResult(page) {
+            const resultsSection = document.getElementById('results');
+            const resultTitle = document.getElementById('result-title');
+            const resultContent = document.getElementById('result-content');
+            const resultImage = document.getElementById('result-image');
+            const resultSourceLink = document.getElementById('result-source-link');
+
+            // Update UI Title & Description
+            resultTitle.textContent = page.title;
+
+            const sourcedSpan = document.getElementById('sourced-span');
+            if (page.isInternal) {
+                if (sourcedSpan) sourcedSpan.classList.add('hidden');
+            } else {
+                if (sourcedSpan) sourcedSpan.classList.remove('hidden');
+            }
+
+            const resultDesc = document.getElementById('result-description');
+            if (page.description) {
+                resultDesc.textContent = page.description;
+                resultDesc.classList.remove('hidden');
+            } else {
+                resultDesc.classList.add('hidden');
+            }
+
+            // Compile structured content
+            let extractHtml = page.extract || "";
+
+            if (!extractHtml.trim()) {
+                throw new Error("Could not construct a comprehensive summary for this topic. Try checking your spelling or being more specific.");
+            }
+
+            // Preserve "See also" section if it exists within the un-truncated text
+            let seeAlsoHtml = '';
+            const seeAlsoMatch = extractHtml.match(/<h2[^>]*>.*?See also.*?<\/h2>\s*<ul[^>]*>([\s\S]*?)<\/ul>/i);
+            if (seeAlsoMatch) {
+                seeAlsoHtml = `<h2 class="see-also-heading border-none pb-0 mb-4 mt-8" style="border:none;">See also</h2><ul class="see-also-list" style="list-style-type:none; margin-left:0;">${seeAlsoMatch[1]}</ul>`;
+            }
+
+            // Limit content to only the Introduction and the first main section (2 h2 tags max)
+            const sections = extractHtml.split(/<h2[^>]*>/i);
+            if (sections.length > 2) {
+                extractHtml = sections.slice(0, 2).join('<h2>');
+            }
+
+            // Re-append See Also if it naturally fell off during truncation
+            if (seeAlsoHtml && !extractHtml.includes('>See also<')) {
+                extractHtml += seeAlsoHtml;
+            }
+
+            resultContent.innerHTML = extractHtml;
+
+            // Make "See also" items explicitly clickable to search Quick Wiki
+            const seeAlsoList = resultContent.querySelector('.see-also-list') ||
+                Array.from(resultContent.querySelectorAll('h2')).find(h => h.textContent.includes('See also'))?.nextElementSibling;
+
+            if (seeAlsoList && seeAlsoList.tagName === 'UL') {
+                const items = seeAlsoList.querySelectorAll('li');
+                items.forEach(li => {
+                    const term = li.textContent.trim();
+                    if (!term) return;
+
+                    const a = document.createElement('a');
+                    a.href = '#';
+                    a.textContent = term;
+                    a.className = 'text-blue-600 hover:text-blue-800 transition-colors duration-200 cursor-pointer font-medium hover:underline';
+                    a.style.textDecoration = 'none';
+                    a.style.borderBottom = 'none';
+
+                    a.onclick = (e) => {
+                        e.preventDefault();
+                        document.getElementById('wiki-search-input').value = term;
+                        searchWiki();
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                    };
+
+                    li.innerHTML = '';
+                    li.appendChild(a);
+                    li.className = 'see-also-item';
+                    li.style.marginBottom = '0.75rem';
+                });
+            }
+
+            // --- Typewriter Text Reveal Animation ---
+            const currentAnimId = ++activeTypewriterId;
+            const textNodes = [];
+
+            // 1. Hide all structural layout tags before text fills them
+            Array.from(resultContent.querySelectorAll('*')).forEach(el => {
+                el.style.opacity = '0';
+                el.style.transition = 'opacity 0.3s ease';
+            });
+
+            // Keep the structural integrity of See Also list items
+            resultContent.querySelectorAll('li').forEach(li => {
+                li.style.listStyleType = 'disc';
+            });
+
+            // Hide bottom source link as well
+            const sourceContainer = resultSourceLink.parentElement;
+            sourceContainer.style.opacity = '0';
+            sourceContainer.style.transition = 'opacity 0.6s ease';
+
+            function gatherTextNodes(node) {
+                if (node.nodeType === Node.TEXT_NODE) {
+                    if (node.nodeValue.trim() !== '') {
+                        textNodes.push({
+                            node: node,
+                            targetEl: node.parentElement,
+                            text: node.nodeValue,
+                            pos: 0
+                        });
+                        node.nodeValue = ''; // Suspend text securely
+                    }
+                } else if (node.nodeType === Node.ELEMENT_NODE) {
+                    for (let child of node.childNodes) {
+                        gatherTextNodes(child);
+                    }
+                }
+            }
+
+            // Process the DOM payload safely
+            gatherTextNodes(resultContent);
+
+            let nodeIdx = 0;
+            function typeFrame() {
+                // Abort silently if consecutive search overridden animation
+                if (currentAnimId !== activeTypewriterId) return;
+
+                if (nodeIdx >= textNodes.length) {
+                    // All typewriter sequences finished! Reveal the footer cleanly
+                    resultSourceLink.parentElement.style.opacity = '1';
+                    return;
+                }
+
+                const item = textNodes[nodeIdx];
+
+                // Cascade opacity back to 1 instantly for all active hierarchy structures
+                if (item.pos === 0 && item.targetEl) {
+                    let el = item.targetEl;
+                    while (el && el !== resultContent) {
+                        el.style.opacity = '1';
+                        el = el.parentElement;
+                    }
+                }
+
+                // Reveal speed: ~4 characters per frame (approx 240 chars per sec)
+                item.pos += 4;
+
+                if (item.pos > item.text.length) {
+                    item.pos = item.text.length;
+                }
+
+                // Push string chunk to node text interface
+                item.node.nodeValue = item.text.substring(0, item.pos);
+
+                if (item.pos >= item.text.length) {
+                    nodeIdx++;
+                }
+
+                requestAnimationFrame(typeFrame);
+            }
+
+            // Jumpstart type loop
+            requestAnimationFrame(typeFrame);
+
+            // Update Link & Attribution
+            const wikiAttribution = document.getElementById('wiki-attribution');
+            if (page.isInternal) {
+                resultSourceLink.parentElement.classList.add('hidden');
+                if (wikiAttribution) wikiAttribution.classList.add('hidden');
+            } else {
+                const articleUrl = `https://en.wikipedia.org/wiki/${encodeURIComponent(page.title)}`;
+                resultSourceLink.href = articleUrl;
+                resultSourceLink.parentElement.classList.remove('hidden');
+                if (wikiAttribution) wikiAttribution.classList.remove('hidden');
+            }
+
+            // Handle Image
+            let imgUrl = '';
+            if (page.original && page.original.source) {
+                imgUrl = page.original.source;
+            } else if (page.thumbnail && page.thumbnail.source) {
+                imgUrl = page.thumbnail.source;
+            }
+
+            if (imgUrl) {
+                resultImage.src = imgUrl;
+                resultImage.alt = page.title;
+                resultImage.classList.remove('hidden');
+            } else {
+                resultImage.classList.add('hidden');
+                resultImage.src = '';
+            }
+
+            resultsSection.classList.remove('hidden');
+
+            // Trigger animation
+            resultsSection.classList.remove('animate-reveal');
+            void resultsSection.offsetWidth; // trigger reflow to restart animation
+            resultsSection.classList.add('animate-reveal');
+
+            // Add to history
+            addToHistory(page.title);
+
+            // Scroll down automatically
+            setTimeout(() => {
+                resultsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }, 100);
+        }
+
+        // Let Enter key trigger search
+        document.getElementById('wiki-search-input').addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                searchWiki();
+            }
+        });
+        // Handle deep-linking via URL parameter (?q=term)
+        window.addEventListener('DOMContentLoaded', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const query = urlParams.get('q');
+            if (query) {
+                document.getElementById('wiki-search-input').value = query;
+                searchWiki();
+            }
+        });
+    </script>
+    <script src="js/script.js"></script>
+</body>
+
+</html>
