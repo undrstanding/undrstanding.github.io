@@ -2456,14 +2456,65 @@
                     </article>
                 </a>
 
-                <a href="#" id="random-card" onclick="event.preventDefault(); 
+                <!-- Quick Wiki -->
+                <a href="content/quickwiki"
+                    class="block group relative overflow-hidden bg-blue-800 text-white hover:scale-[1.02] transition-all duration-500 shadow-xl hover:shadow-2xl rounded-[12px]">
+
+                    <!-- Geometric Pattern Overlay (Dots) -->
+                    <div class="absolute inset-0 opacity-10 pointer-events-none"
+                        style="background-image: radial-gradient(circle, #ffffff 1px, transparent 1px); background-size: 20px 20px;">
+                    </div>
+
+                    <!-- Hover Effect: Large Badge Rotation -->
+                    <div
+                        class="absolute -right-12 -bottom-12 opacity-10 text-white group-hover:rotate-12 group-hover:scale-110 transition-all duration-700 pointer-events-none">
+                        <svg width="240" height="240" viewBox="0 0 24 24" fill="currentColor">
+                            <circle cx="11" cy="11" r="8" fill="none" stroke="currentColor" stroke-width="2"></circle>
+                            <line x1="21" y1="21" x2="16.65" y2="16.65" stroke="currentColor" stroke-width="2"></line>
+                        </svg>
+                    </div>
+
+                    <article
+                        class="card bg-transparent border-none h-full flex flex-col items-center justify-center py-12 relative z-10">
+                        <div
+                            class="card-header bg-transparent border-none p-0 mb-6 scale-110 group-hover:scale-125 transition-all duration-500 ease-out">
+                            <div
+                                class="icon-box text-white border-2 border-white/20 p-4 rounded-xl bg-blue-900/10 backdrop-blur-sm group-hover:border-white/50 transition-colors">
+                                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <circle cx="11" cy="11" r="8"></circle>
+                                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="card-body bg-transparent p-0 text-center">
+                            <div>
+                                <h3
+                                    class="text-3xl text-white font-bold font-mono tracking-widest uppercase mb-2 group-hover:tracking-[0.25em] transition-all">
+                                    Quick Wiki
+                                </h3>
+                                <p
+                                    class="text-xs text-blue-200 font-mono uppercase tracking-widest opacity-80 group-hover:opacity-100 transition-opacity">
+                                    Knowledge Search
+                                </p>
+                            </div>
+
+                            <!-- Simple Line Indicator -->
+                            <div
+                                class="w-12 h-1 bg-blue-500 mx-auto mt-6 rounded-full group-hover:w-24 group-hover:bg-white transition-all duration-500">
+                            </div>
+                        </div>
+                    </article>
+                </a>
+
+                <a href="#" id="random-card" onclick="event.preventDefault();
                          this.classList.add('random-card-pumping');
                          var overlay = document.getElementById('random-overlay');
                          overlay.classList.add('active');
                          var urls = ['content/crypto', 'content/linux', 'content/software', 'content/ai', 'content/ds', 'content/oops', 'content/pigeon', 'content/quanta', 'content/algo', 'content/dbms', 'content/design', 'content/git', 'content/system', 'content/computation', 'content/react', 'content/networks', 'content/uiux', 'content/android', 'content/bigdata', 'content/os', 'content/software'];
                          var target = urls[Math.floor(Math.random() * urls.length)];
                          setTimeout(() => { window.location.href = target; }, 800);"
-                    class="block group relative overflow-hidden bg-black text-white hover:scale-[1.02] transition-all duration-500 shadow-xl hover:shadow-2xl rounded-[12px]">
+                    class="block group relative overflow-hidden bg-black text-white hover:scale-[1.02] transition-all duration-500 shadow-xl hover:shadow-2xl rounded-[12px] md:[&:last-child:nth-child(even)]:col-span-2">
                     <!-- Simple Noise Texture Overlay -->
                     <div class="absolute inset-0 opacity-10 pointer-events-none"
                         style="background-image: url('data:image/svg+xml,%3Csvg viewBox=%220 0 200 200%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cfilter id=%22noise%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.65%22 numOctaves=%223%22 stitchTiles=%22stitch%22/%3E%3C/filter%3E%3Crect width=%22100%25%22 height=%22100%25%22 filter=%22url(%22noise)%22 opacity=%221%22/%3E%3C/svg%3E');">
@@ -3978,7 +4029,7 @@
 
                 <div class="minimal-support-text">
                     <b>Undrstanding</b> is built with a vision to make complex topics truly accessible through
-                    interactivity. We believe that learning shouldn't be a chore—it should be an adventure. <br><br>
+                    interactivity. We believe that learning shouldn't be a chore - it should be an adventure. <br><br>
                     This project is built <b>For Humans, From Humans</b>. While we strive for perfection, we aren't
                     immune to errors. If you spot a hiccup or find our work helpful, we would love to hear from you.
                     Your appreciation—whether through a share or a quick email—is exactly what keeps us building.
@@ -4611,6 +4662,21 @@
 
             // Features
             { s: "FEATURE", t: "Flash Cards", u: "content/flashcards", k: "flash cards memory learning quiz review undrstood lightning quick fire practice deck study active recall spaced repetition", y: "learning" },
+            { s: "WIKI", t: "Quick Wiki", u: "content/quickwiki", k: "wiki search knowledge discovery encyclopedia wikipedia research rapid information lookup dictionary", y: "learning" },
+
+            // External Knowledge (Quick Wiki Deep Links)
+            { s: "WIKI", t: "Quantum Computing (Wiki)", u: "content/quickwiki?q=Quantum Computing", k: "quantum mechanics qubits superposition entanglement computation future physics", y: "learning" },
+            { s: "WIKI", t: "Black Holes (Wiki)", u: "content/quickwiki?q=Black Hole", k: "space physics singularity gravity spacetime astrophysics hawking radiation", y: "learning" },
+            { s: "WIKI", t: "SpaceX (Wiki)", u: "content/quickwiki?q=SpaceX", k: "mars rockets elon musk aerospace exploration starship", y: "learning" },
+            { s: "WIKI", t: "Internet of Things (Wiki)", u: "content/quickwiki?q=Internet of Things", k: "iot smart home automation sensors connectivity networks", y: "learning" },
+            { s: "WIKI", t: "Blockchain (Wiki)", u: "content/quickwiki?q=Blockchain", k: "crypto bitcoin ethereum distributed ledger decentralization smart contracts", y: "learning" },
+            { s: "WIKI", t: "Machine Learning (Wiki)", u: "content/quickwiki?q=Machine Learning", k: "ml data patterns algorithms training models neural networks", y: "learning" },
+            { s: "WIKI", t: "Global Warming (Wiki)", u: "content/quickwiki?q=Global Warming", k: "climate change environment earth science sustainability green greenhouse effect", y: "learning" },
+            { s: "WIKI", t: "Steve Jobs (Wiki)", u: "content/quickwiki?q=Steve Jobs", k: "apple pixar design leadership innovation biography tech history", y: "learning" },
+            { s: "WIKI", t: "Nikola Tesla (Wiki)", u: "content/quickwiki?q=Nikola Tesla", k: "electricity towers ac dc coils energy science history biography", y: "learning" },
+            { s: "WIKI", t: "World Wide Web (Wiki)", u: "content/quickwiki?q=World Wide Web", k: "internet history tim berners lee www protocols web 1.0 2.0 3.0", y: "learning" },
+            { s: "WIKI", t: "Artificial Intelligence (Wiki)", u: "content/quickwiki?q=Artificial Intelligence", k: "ai robots singularity future machine intelligence deep learning", y: "learning" },
+            { s: "WIKI", t: "Undrstanding (Mission)", u: "content/quickwiki?q=Undrstanding", k: "about us mission project vision humans interactivity", y: "learning" },
 
             // --- Interactive Lab Environments (type: lab) ---
             { s: "VISUALAB", t: "Algorithm Visualiser", u: "labs/algo-visualiser", k: "algorithm visualiser simulator logic execution code tool", y: "lab" },
@@ -4760,7 +4826,8 @@
                     item.k.includes(query) ||
                     item.s.toLowerCase().includes(query);
 
-                const matchesContext = item.y === activeSection;
+                // Internal wiki terms and general features are global
+                const matchesContext = item.y === activeSection || item.s === 'WIKI' || item.s === 'FEATURE';
 
                 return matchesQuery && matchesContext;
             });
@@ -4783,7 +4850,7 @@
             if (results.length > 0) {
                 resultsBox.innerHTML = results.map((item, index) => `
                     <div class="result-item" data-url="${item.u}" data-index="${index}" ${item.cmd ? `data-cmd="${item.cmd}"` : ''}>
-                        ${item.s === 'CMD' ? '' : `<span class="result-series">Series: ${item.s}</span>`}
+                        ${item.s === 'CMD' ? '' : (item.s === 'WIKI' ? `<span class="result-series" style="background: #eef2ff; color: #4338ca; border-color: #c7d2fe;">KNOWLEDGE</span>` : `<span class="result-series">Series: ${item.s}</span>`)}
                          <div class="result-title">${item.t}</div>
                         ${item.k.includes(query) && item.s !== 'CMD' ? `<div class="result-context">Matches: "${query}"</div>` : ''}
                         ${item.cmd === '/eye' ? `<div class="result-context" style="color: #FF9F00; font-weight: 700; font-size: 8px; text-transform: uppercase;">Toggle: Click • Settings: Hold / Right-Click</div>` : ''}
