@@ -508,8 +508,8 @@
                     return;
                 }
 
-                // Fetch structured content from Wikipedia API
-                const url = `https://en.wikipedia.org/w/api.php?action=query&redirects=1&prop=extracts|pageimages|description&piprop=original|thumbnail&pithumbsize=800&titles=${encodeURIComponent(queryRaw)}&format=json&origin=*`;
+                // Fetch structured content from Wikipedia API using generator=search for case-insensitivity
+                const url = `https://en.wikipedia.org/w/api.php?action=query&generator=search&gsrsearch=${encodeURIComponent(queryRaw)}&gsrlimit=1&prop=extracts|pageimages|description&piprop=original|thumbnail&pithumbsize=800&format=json&origin=*`;
                 const response = await fetch(url);
 
                 if (!response.ok) {
@@ -519,7 +519,7 @@
                 const data = await response.json();
 
                 if (!data.query || !data.query.pages) {
-                    throw new Error("No data received from Wikipedia.");
+                    throw new Error("Topic not found on Wikipedia. Try a different term.");
                 }
 
                 const pages = data.query.pages;
