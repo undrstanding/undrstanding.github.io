@@ -1550,6 +1550,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (document.getElementById('site-search') ||
         window.location.pathname.includes('flashcards') ||
         window.location.pathname.includes('highlights') ||
+        window.location.pathname.includes('quickwiki') ||
         window.location.pathname.includes('/labs/')) return;
 
     // Re-enable text selection on content areas so the highlight tooltip can work.
