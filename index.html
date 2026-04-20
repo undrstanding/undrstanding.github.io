@@ -4664,20 +4664,6 @@
             { s: "FEATURE", t: "Flash Cards", u: "content/flashcards", k: "flash cards memory learning quiz review undrstood lightning quick fire practice deck study active recall spaced repetition", y: "learning" },
             { s: "WIKI", t: "Quick Wiki", u: "content/quickwiki", k: "wiki search knowledge discovery encyclopedia wikipedia research rapid information lookup dictionary", y: "learning" },
 
-            // External Knowledge (Quick Wiki Deep Links)
-            { s: "WIKI", t: "Quantum Computing (Wiki)", u: "content/quickwiki?q=Quantum Computing", k: "quantum mechanics qubits superposition entanglement computation future physics", y: "learning" },
-            { s: "WIKI", t: "Black Holes (Wiki)", u: "content/quickwiki?q=Black Hole", k: "space physics singularity gravity spacetime astrophysics hawking radiation", y: "learning" },
-            { s: "WIKI", t: "SpaceX (Wiki)", u: "content/quickwiki?q=SpaceX", k: "mars rockets elon musk aerospace exploration starship", y: "learning" },
-            { s: "WIKI", t: "Internet of Things (Wiki)", u: "content/quickwiki?q=Internet of Things", k: "iot smart home automation sensors connectivity networks", y: "learning" },
-            { s: "WIKI", t: "Blockchain (Wiki)", u: "content/quickwiki?q=Blockchain", k: "crypto bitcoin ethereum distributed ledger decentralization smart contracts", y: "learning" },
-            { s: "WIKI", t: "Machine Learning (Wiki)", u: "content/quickwiki?q=Machine Learning", k: "ml data patterns algorithms training models neural networks", y: "learning" },
-            { s: "WIKI", t: "Global Warming (Wiki)", u: "content/quickwiki?q=Global Warming", k: "climate change environment earth science sustainability green greenhouse effect", y: "learning" },
-            { s: "WIKI", t: "Steve Jobs (Wiki)", u: "content/quickwiki?q=Steve Jobs", k: "apple pixar design leadership innovation biography tech history", y: "learning" },
-            { s: "WIKI", t: "Nikola Tesla (Wiki)", u: "content/quickwiki?q=Nikola Tesla", k: "electricity towers ac dc coils energy science history biography", y: "learning" },
-            { s: "WIKI", t: "World Wide Web (Wiki)", u: "content/quickwiki?q=World Wide Web", k: "internet history tim berners lee www protocols web 1.0 2.0 3.0", y: "learning" },
-            { s: "WIKI", t: "Artificial Intelligence (Wiki)", u: "content/quickwiki?q=Artificial Intelligence", k: "ai robots singularity future machine intelligence deep learning", y: "learning" },
-            { s: "WIKI", t: "Undrstanding (Mission)", u: "content/quickwiki?q=Undrstanding", k: "about us mission project vision humans interactivity", y: "learning" },
-
             // --- Interactive Lab Environments (type: lab) ---
             { s: "VISUALAB", t: "Algorithm Visualiser", u: "labs/algo-visualiser", k: "algorithm visualiser simulator logic execution code tool", y: "lab" },
             { s: "VISUALAB", t: "Data Structure Visualiser", u: "labs/ds-visualiser", k: "data structures library visualiser simulator nodes pointers memory tool linked list tree graph queue stack bubble binary", y: "lab" },
@@ -4850,7 +4836,7 @@
             if (results.length > 0) {
                 resultsBox.innerHTML = results.map((item, index) => `
                     <div class="result-item" data-url="${item.u}" data-index="${index}" ${item.cmd ? `data-cmd="${item.cmd}"` : ''}>
-                        ${item.s === 'CMD' ? '' : (item.s === 'WIKI' ? `<span class="result-series" style="background: #eef2ff; color: #4338ca; border-color: #c7d2fe;">KNOWLEDGE</span>` : `<span class="result-series">Series: ${item.s}</span>`)}
+                        ${item.s === 'CMD' ? '' : `<span class="result-series">Series: ${item.s === 'WIKI' ? 'FEATURE' : item.s}</span>`}
                          <div class="result-title">${item.t}</div>
                         ${item.k.includes(query) && item.s !== 'CMD' ? `<div class="result-context">Matches: "${query}"</div>` : ''}
                         ${item.cmd === '/eye' ? `<div class="result-context" style="color: #FF9F00; font-weight: 700; font-size: 8px; text-transform: uppercase;">Toggle: Click • Settings: Hold / Right-Click</div>` : ''}
