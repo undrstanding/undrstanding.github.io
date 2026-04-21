@@ -281,6 +281,9 @@ if ('serviceWorker' in navigator) {
             serifActive = !serifActive;
             localStorage.setItem('serif_mode', serifActive);
             applySerif();
+            // Sync toggle UI if in settings section
+            const ts = document.getElementById('toggle-serif');
+            if (ts) ts.checked = serifActive;
 
             // Fade back in
             body.style.opacity = '1';
@@ -337,6 +340,11 @@ if ('serviceWorker' in navigator) {
         }
 
         applyFloating();
+
+        // Sync toggle UI if in settings section
+        const tn = document.getElementById('toggle-navbar');
+        if (tn) tn.checked = floatingActive;
+
         console.log(`[System] Floating Navbar: ${floatingActive ? 'ON' : 'OFF'}`);
         return floatingActive;
     };
