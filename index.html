@@ -4370,8 +4370,10 @@
                 // Sync Toggles
                 const ts = document.getElementById('toggle-serif');
                 const tn = document.getElementById('toggle-navbar');
+                const tg = document.getElementById('toggle-games-setting');
                 if (ts) ts.checked = localStorage.getItem('serif_mode') === 'true';
                 if (tn) tn.checked = localStorage.getItem('floating_navbar') === 'true';
+                if (tg) tg.checked = localStorage.getItem('games_enabled') !== 'false';
             }
 
             if (section !== 'games') {
