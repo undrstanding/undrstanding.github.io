@@ -135,6 +135,8 @@
             color: var(--text-main);
             -webkit-font-smoothing: antialiased;
             line-height: 1.5;
+            overflow-x: hidden;
+            overflow-y: scroll; /* Force scrollbar to prevent layout shifts */
             /* Technical Grid Background (using lines, not gradients) */
             background-image:
                 linear-gradient(to right, #e5e5e5 1px, transparent 1px),
@@ -633,7 +635,7 @@
                 display: grid;
                 grid-template-columns: repeat(5, 1fr);
                 padding: 4px;
-                gap: 2px;
+                gap: 0; /* Remove gap on mobile to ensure perfect alignment */
             }
 
             .pill-nav button {
@@ -4512,8 +4514,15 @@
                 // --- Games Visibility Control ---
                 window.applyGamesVisibility = function (isEnabled) {
                     const gamesBtn = document.getElementById('btn-games');
+                    const pillNav = document.querySelector('.pill-nav');
                     if (gamesBtn) {
                         gamesBtn.style.display = isEnabled ? '' : 'none';
+                        
+                        // Dynamically update grid layout on mobile
+                        if (pillNav && window.innerWidth <= 640) {
+                            pillNav.style.gridTemplateColumns = isEnabled ? 'repeat(5, 1fr)' : 'repeat(4, 1fr)';
+                        }
+                        
                         // Recalculate indicator position
                         setTimeout(() => {
                             const activeBtn = document.querySelector('.pill-nav button.active');
