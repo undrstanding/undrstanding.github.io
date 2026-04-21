@@ -5159,20 +5159,6 @@
                                 input.value = '';
                                 return;
                             }
-                        } else {
-                            // Check if current page has a card pointing to this URL
-                            const localLink = document.querySelector(`a[href="${url}"]`);
-                            if (localLink) {
-                                e.preventDefault();
-                                resultsBox.classList.remove('active');
-                                input.value = '';
-                                const card = localLink.closest('.card') || localLink;
-                                card.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                                // Visual pulse to indicate match
-                                card.classList.add('search-highlight');
-                                setTimeout(() => card.classList.remove('search-highlight'), 3000);
-                                return;
-                            }
                         }
                         window.location.href = url;
                     });
@@ -5253,22 +5239,10 @@
                             }, 300);
                             resultsBox.classList.remove('active');
                             input.value = '';
-                        }
-                    } else {
-                        const url = item.dataset.url;
-                        const localLink = document.querySelector(`a[href="${url}"]`);
-                        if (localLink) {
-                            resultsBox.classList.remove('active');
-                            input.value = '';
-                            const card = localLink.closest('.card') || localLink;
-                            card.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                            // Visual pulse feedback
-                            card.classList.add('search-highlight');
-                            setTimeout(() => card.classList.remove('search-highlight'), 3000);
-                        } else {
-                            window.location.href = url;
+                            return;
                         }
                     }
+                    window.location.href = item.dataset.url;
                 }
             } else if (e.key === 'Escape') {
                 resultsBox.classList.remove('active');
