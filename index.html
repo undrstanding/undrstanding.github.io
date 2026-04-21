@@ -631,7 +631,7 @@
             .pill-nav {
                 width: 100%;
                 display: grid;
-                grid-template-columns: repeat(4, 1fr);
+                grid-template-columns: repeat(5, 1fr);
                 padding: 4px;
                 gap: 2px;
             }
@@ -986,6 +986,76 @@
                 height: 16px;
             }
         }
+
+        /* Toggle Switch Styles */
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 52px;
+            height: 28px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            inset: 0;
+            background-color: #eee;
+            border: 2px solid #000;
+            transition: .3s cubic-bezier(0.4, 0, 0.2, 1);
+            border-radius: 9999px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background-color: #000;
+            transition: .3s cubic-bezier(0.4, 0, 0.2, 1);
+            border-radius: 50%;
+        }
+
+        input:checked+.slider {
+            background-color: #5E7AC4;
+        }
+
+        input:checked+.slider:before {
+            transform: translateX(24px);
+            background-color: #fff;
+        }
+
+        /* Search Highlight Pulse Animation */
+        @keyframes search-pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(0, 0, 0, 0.4);
+                transform: scale(1);
+            }
+
+            50% {
+                box-shadow: 0 0 0 25px rgba(0, 0, 0, 0);
+                transform: scale(1.015);
+            }
+
+            100% {
+                box-shadow: 0 0 0 0 rgba(0, 0, 0, 0);
+                transform: scale(1);
+            }
+        }
+
+        .search-highlight {
+            animation: search-pulse 1.2s cubic-bezier(0.4, 0, 0.2, 1) 2;
+            z-index: 50;
+            position: relative;
+            border-color: #000 !important;
+        }
     </style>
 
 </head>
@@ -1077,6 +1147,15 @@
                 </svg>
                 <span>Games</span>
             </button>
+            <button id="btn-settings" onclick="switchSection('settings')">
+                <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path
+                        d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z" />
+                    <circle cx="12" cy="12" r="3" />
+                </svg>
+                <span>Settings</span>
+            </button>
         </div>
     </nav>
     <script>
@@ -1087,6 +1166,7 @@
             if (savedSection === 'labs') btnId = 'btn-labs';
             else if (savedSection === 'prep') btnId = 'btn-prep';
             else if (savedSection === 'games') btnId = 'btn-games';
+            else if (savedSection === 'settings') btnId = 'btn-settings';
 
             const activeBtn = document.getElementById(btnId);
             const indicator = document.getElementById('nav-indicator');
@@ -4040,6 +4120,121 @@
                 </a>
             </div>
         </div>
+
+        <!-- Settings Section -->
+        <div id="settings-section" class="content-section hidden">
+            <div class="max-w-4xl mx-auto flex flex-col gap-5">
+                <!-- Navbar Module -->
+                <div id="settings-nav"
+                    class="card flex flex-col md:flex-row overflow-hidden border-black group transition-all duration-300">
+                    <div
+                        class="bg-black text-white p-5 md:p-6 md:w-1/3 flex flex-row md:flex-col justify-between items-center md:items-start border-b-2 md:border-b-0 md:border-r-2 border-black">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="shrink-0">
+                            <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+                            <polyline points="2 17 12 22 22 17"></polyline>
+                            <polyline points="2 12 12 17 22 12"></polyline>
+                        </svg>
+                        <h3 class="text-xl md:text-2xl font-black outfit uppercase tracking-tighter mt-0 md:mt-8">
+                            Floating Bar</h3>
+                    </div>
+                    <div class="bg-white p-5 md:p-6 md:flex-1 flex items-center justify-between gap-4">
+                        <div class="max-w-[200px] md:max-w-xs">
+                            <p class="text-xs md:text-sm font-bold text-black uppercase tracking-tight mb-1">Navigation
+                                Dock</p>
+                            <p class="text-[10px] md:text-[11px] text-gray-400 font-medium leading-relaxed">Dock the
+                                navigation bar to the bottom of the screen for modern, one-handed reachability.</p>
+                        </div>
+                        <label class="switch scale-110 md:scale-125">
+                            <input type="checkbox" id="toggle-navbar" onchange="toggleFloatingNavbar()">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Eye Care Module -->
+                <div id="settings-eye"
+                    class="card flex flex-col md:flex-row overflow-hidden border-black group transition-all duration-300">
+                    <div
+                        class="bg-[#8785A2] text-white p-5 md:p-6 md:w-1/3 flex flex-row md:flex-col justify-between items-center md:items-start border-b-2 md:border-b-0 md:border-r-2 border-black shadow-[inset_0_-4px_0_rgba(0,0,0,0.1)]">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="shrink-0">
+                            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                        </svg>
+                        <h3 class="text-xl md:text-2xl font-black outfit uppercase tracking-tighter mt-0 md:mt-8">Eye
+                            Care</h3>
+                    </div>
+                    <div class="bg-white p-5 md:p-6 md:flex-1 flex items-center justify-between gap-4">
+                        <div class="max-w-[200px] md:max-w-xs">
+                            <p class="text-xs md:text-sm font-bold text-black uppercase tracking-tight mb-1">Night Light
+                                Protocol</p>
+                            <p class="text-[10px] md:text-[11px] text-gray-400 font-medium leading-relaxed">Minimize eye
+                                strain by applying a warm tint and reducing blue light emission.</p>
+                        </div>
+                        <button onclick="toggleNightLight()"
+                            class="px-4 py-3 md:px-6 md:py-3 bg-black text-white font-bold text-[9px] md:text-[10px] uppercase tracking-widest rounded-xl hover:bg-[#8785A2] hover:text-white transition-all border-2 border-black shrink-0">
+                            Configure
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Typography Module -->
+                <div id="settings-typo"
+                    class="card flex flex-col md:flex-row overflow-hidden border-black group transition-all duration-300">
+                    <div
+                        class="bg-[#393E46] text-white p-5 md:p-6 md:w-1/3 flex flex-row md:flex-col justify-between items-center md:items-start border-b-2 md:border-b-0 md:border-r-2 border-black">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="shrink-0">
+                            <polyline points="4 7 4 4 20 4 20 7"></polyline>
+                            <line x1="9" y1="20" x2="15" y2="20"></line>
+                            <line x1="12" y1="4" x2="12" y2="20"></line>
+                        </svg>
+                        <h3 class="text-xl md:text-2xl font-black outfit uppercase tracking-tighter mt-0 md:mt-8">Serif
+                            Mode</h3>
+                    </div>
+                    <div class="bg-white p-5 md:p-6 md:flex-1 flex items-center justify-between gap-4">
+                        <div class="max-w-[200px] md:max-w-xs">
+                            <p class="text-xs md:text-sm font-bold text-black uppercase tracking-tight mb-1">Typography
+                                Style</p>
+                            <p class="text-[10px] md:text-[11px] text-gray-400 font-medium leading-relaxed">Toggle the
+                                premium Glilda Display serif font for a book-like reading experience.</p>
+                        </div>
+                        <label class="switch scale-110 md:scale-125">
+                            <input type="checkbox" id="toggle-serif" onchange="toggleSerifMode()">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Games Control Module -->
+                <div id="settings-games"
+                    class="card flex flex-col md:flex-row overflow-hidden border-black group transition-all duration-300">
+                    <div
+                        class="bg-[#6366F1] text-white p-5 md:p-6 md:w-1/3 flex flex-row md:flex-col justify-between items-center md:items-start border-b-2 md:border-b-0 md:border-r-2 border-black shadow-[inset_0_-4px_0_rgba(0,0,0,0.1)]">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="shrink-0">
+                            <rect x="2" y="6" width="20" height="12" rx="2" />
+                            <path d="M6 12h4m-2-2v4m7-2h.01m2.99-2h.01" />
+                        </svg>
+                        <h3 class="text-xl md:text-2xl font-black outfit uppercase tracking-tighter mt-0 md:mt-8">Games
+                            Access</h3>
+                    </div>
+                    <div class="bg-white p-5 md:p-6 md:flex-1 flex items-center justify-between gap-4">
+                        <div class="max-w-[200px] md:max-w-xs">
+                            <p class="text-xs md:text-sm font-bold text-black uppercase tracking-tight mb-1">Entertainment
+                                Switch</p>
+                            <p class="text-[10px] md:text-[11px] text-gray-400 font-medium leading-relaxed">Toggle the
+                                visibility of the Games section in the navigation bar.</p>
+                        </div>
+                        <label class="switch scale-110 md:scale-125">
+                            <input type="checkbox" id="toggle-games-setting" onchange="toggleGamesVisibility()">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        </div>
         </div>
     </main>
 
@@ -4109,13 +4304,15 @@
             const labs = document.getElementById('labs-section');
             const prep = document.getElementById('prep-section');
             const games = document.getElementById('games-section');
+            const settings = document.getElementById('settings-section');
             const btnLearning = document.getElementById('btn-learning');
             const btnLabs = document.getElementById('btn-labs');
             const btnPrep = document.getElementById('btn-prep');
             const btnGames = document.getElementById('btn-games');
+            const btnSettings = document.getElementById('btn-settings');
             const indicator = document.getElementById('nav-indicator');
 
-            if (!learning || !labs || !prep || !games || !btnLearning || !btnLabs || !btnPrep || !btnGames || !indicator) return;
+            if (!learning || !labs || !prep || !games || !settings || !btnLearning || !btnLabs || !btnPrep || !btnGames || !btnSettings || !indicator) return;
 
             // Persist state
             localStorage.setItem('activeSection', section);
@@ -4125,7 +4322,8 @@
             if (section === 'learning') activeBtn = btnLearning;
             else if (section === 'labs') activeBtn = btnLabs;
             else if (section === 'prep') activeBtn = btnPrep;
-            else activeBtn = btnGames;
+            else if (section === 'games') activeBtn = btnGames;
+            else activeBtn = btnSettings;
 
             indicator.style.width = `${activeBtn.offsetWidth}px`;
             indicator.style.left = `${activeBtn.offsetLeft}px`;
@@ -4134,41 +4332,39 @@
             if (sectionTransitionTimeout) clearTimeout(sectionTransitionTimeout);
             if (sectionTransitionTimeoutInner) clearTimeout(sectionTransitionTimeoutInner);
 
-            const allSections = [learning, labs, prep, games];
+            const allSections = [learning, labs, prep, games, settings];
+            const allButtons = [btnLearning, btnLabs, btnPrep, btnGames, btnSettings];
+
+            // Reset all buttons
+            allButtons.forEach(btn => btn.classList.remove('active'));
+            activeBtn.classList.add('active');
 
             if (section === 'learning') {
                 activeSection = 'learning';
                 input.placeholder = "Search topics...";
-                btnLearning.classList.add('active');
-                btnLabs.classList.remove('active');
-                btnPrep.classList.remove('active');
-                btnGames.classList.remove('active');
             } else if (section === 'labs') {
                 activeSection = 'lab';
                 input.placeholder = "Search labs...";
-                btnLabs.classList.add('active');
-                btnLearning.classList.remove('active');
-                btnPrep.classList.remove('active');
-                btnGames.classList.remove('active');
             } else if (section === 'prep') {
                 activeSection = 'prep';
                 input.placeholder = "Search materials...";
-                btnPrep.classList.add('active');
-                btnLearning.classList.remove('active');
-                btnLabs.classList.remove('active');
-                btnGames.classList.remove('active');
-            } else {
+            } else if (section === 'games') {
                 activeSection = 'games';
                 input.placeholder = "Search games...";
-                btnGames.classList.add('active');
-                btnLearning.classList.remove('active');
-                btnLabs.classList.remove('active');
-                btnPrep.classList.remove('active');
                 const tag = document.getElementById('games-tag');
                 if (tag) {
                     tag.classList.remove('tag-inactive');
                     tag.classList.add('tag-active');
                 }
+            } else {
+                activeSection = 'settings';
+                input.placeholder = "Search settings...";
+
+                // Sync Toggles
+                const ts = document.getElementById('toggle-serif');
+                const tn = document.getElementById('toggle-navbar');
+                if (ts) ts.checked = localStorage.getItem('serif_mode') === 'true';
+                if (tn) tn.checked = localStorage.getItem('floating_navbar') === 'true';
             }
 
             if (section !== 'games') {
@@ -4310,11 +4506,50 @@
                     // Initial check
                     window.adjustSupportBtn();
                 }
+
+                // --- Games Visibility Control ---
+                window.applyGamesVisibility = function(isEnabled) {
+                    const gamesBtn = document.getElementById('btn-games');
+                    if (gamesBtn) {
+                        gamesBtn.style.display = isEnabled ? '' : 'none';
+                        // Recalculate indicator position
+                        setTimeout(() => {
+                            const activeBtn = document.querySelector('.pill-nav button.active');
+                            const indicator = document.getElementById('nav-indicator');
+                            if (activeBtn && indicator) {
+                                indicator.style.width = `${activeBtn.offsetWidth}px`;
+                                indicator.style.left = `${activeBtn.offsetLeft}px`;
+                            }
+                        }, 50);
+                    }
+                    if (!isEnabled && activeSection === 'games') {
+                        switchSection('learning');
+                    }
+                };
+
+                window.toggleGamesVisibility = function() {
+                    const isEnabled = localStorage.getItem('games_enabled') !== 'false';
+                    const newState = !isEnabled;
+                    localStorage.setItem('games_enabled', newState);
+                    applyGamesVisibility(newState);
+                    if (document.getElementById('toggle-games-setting')) {
+                        document.getElementById('toggle-games-setting').checked = newState;
+                    }
+                };
+
             }
 
             // Initialize active section from localStorage
             const savedSection = localStorage.getItem('activeSection') || 'learning';
             switchSection(savedSection, true);
+
+            // Sync Settings Toggles
+            if (document.getElementById('toggle-serif')) {
+                document.getElementById('toggle-serif').checked = localStorage.getItem('serif_mode') === 'true';
+            }
+            if (document.getElementById('toggle-navbar')) {
+                document.getElementById('toggle-navbar').checked = localStorage.getItem('floating_navbar') === 'true';
+            }
         });
 
         // Initialize state from localStorage
@@ -4365,6 +4600,8 @@
                         switchSection('prep');
                     } else if (activeSection === 'prep') {
                         switchSection('games');
+                    } else if (activeSection === 'games') {
+                        switchSection('settings');
                     }
                 } else if (deltaX > 0) {
                     // Swipe right: Go backward
@@ -4374,10 +4611,22 @@
                         switchSection('labs');
                     } else if (activeSection === 'games') {
                         switchSection('prep');
+                    } else if (activeSection === 'settings') {
+                        const isGamesEnabled = localStorage.getItem('games_enabled') !== 'false';
+                        switchSection(isGamesEnabled ? 'games' : 'prep');
                     }
                 }
             }
         }
+        
+        // Final Page-Load Initialization
+        window.addEventListener('DOMContentLoaded', () => {
+            if (document.getElementById('toggle-games-setting')) {
+                const isEnabled = localStorage.getItem('games_enabled') !== 'false';
+                document.getElementById('toggle-games-setting').checked = isEnabled;
+                applyGamesVisibility(isEnabled);
+            }
+        });
     </script>
 
     <!-- Search Logic -->
@@ -4686,7 +4935,13 @@
             // Series 14: Prep
             { s: "PREP", t: "Placement Prep", u: "prep/CUTE", k: "placement preparation cute academic assessments aptitude combined undrstanding test evaluation", y: "prep" },
             { s: "PREP", t: "C.U.T.E Preparation", u: "prep/CUTE", k: "comprehensive guide cute placement assessments combined undrstanding test evaluation", y: "prep" },
-            { s: "PREP", t: "Verbal Communication", u: "prep/verbal", k: "verbal communication speech interview soft skills prep series articulation professional dialogue", y: "prep" }
+            { s: "PREP", t: "Verbal Communication", u: "prep/verbal", k: "verbal communication speech interview soft skills prep series articulation professional dialogue", y: "prep" },
+
+            // --- Settings (type: settings) ---
+            { s: "SETTINGS", t: "Typography: Serif Mode", u: "#settings-typo", k: "serif glilda display font typography switch", y: "settings" },
+            { s: "SETTINGS", t: "Navbar: Floating Bar", u: "#settings-nav", k: "floating static navbar bar position bottom dock", y: "settings" },
+            { s: "SETTINGS", t: "Eye Care: Night Light", u: "#settings-eye", k: "night light eye care brightness tint warm screen", y: "settings" },
+            { s: "SETTINGS", t: "Games: Disable/Enable", u: "#settings-games", k: "games disable enable toggle visibility hide show access entertainment", y: "settings" }
         ];
 
 
@@ -4799,6 +5054,16 @@
                 }
             }
 
+            // --- Custom Command: Games Access ---
+            if (query === '/games') {
+                if (window.toggleGamesVisibility) {
+                    window.toggleGamesVisibility();
+                    input.value = '';
+                    resultsBox.classList.remove('active');
+                    return;
+                }
+            }
+
             selectedIndex = -1;
 
             if (query.length < 1) {
@@ -4812,8 +5077,7 @@
                     item.k.includes(query) ||
                     item.s.toLowerCase().includes(query);
 
-                // Internal wiki terms and general features are global
-                const matchesContext = item.y === activeSection || item.s === 'WIKI' || item.s === 'FEATURE';
+                const matchesContext = item.y === activeSection;
 
                 return matchesQuery && matchesContext;
             });
@@ -4826,7 +5090,8 @@
                 const availableCommands = [
                     { s: "CMD", t: "Night Light (Eye Care)", u: "#", k: "/eye night light tint dim toggle command", y: activeSection, cmd: "/eye" },
                     { s: "CMD", t: isSerif ? "Switch to Sans-Serif Font" : "Switch to Serif Font", u: "#", k: `/typography font family ${isSerif ? 'sans-serif' : 'serif'} style command`, y: activeSection, cmd: "/typography" },
-                    { s: "CMD", t: isFloating ? "Disable Floating Navbar" : "Enable Floating Navbar", u: "#", k: `/navbar sticky ${isFloating ? 'static fixed' : 'floating bottom'} nav command`, y: activeSection, cmd: "/navbar" }
+                    { s: "CMD", t: isFloating ? "Disable Floating Navbar" : "Enable Floating Navbar", u: "#", k: `/navbar sticky ${isFloating ? 'static fixed' : 'floating bottom'} nav command`, y: activeSection, cmd: "/navbar" },
+                    { s: "CMD", t: "Toggle Games Visibility", u: "#", k: `/games entertainment toggle hide show command`, y: activeSection, cmd: "/games" }
                 ];
                 // Filter commands based on current query
                 const filteredCmds = availableCommands.filter(c => c.k.includes(query) || c.t.toLowerCase().includes(query));
@@ -4859,7 +5124,41 @@
                             performSearch(el.dataset.cmd);
                             return;
                         }
-                        window.location.href = el.dataset.url;
+
+                        const url = el.dataset.url;
+                        if (url.startsWith('#')) {
+                            const targetId = url.substring(1);
+                            // If it's a settings internal anchor
+                            if (targetId.startsWith('settings')) {
+                                switchSection('settings');
+                                setTimeout(() => {
+                                    const card = document.getElementById(targetId);
+                                    if (card) {
+                                        card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                                        card.classList.add('search-highlight');
+                                        setTimeout(() => card.classList.remove('search-highlight'), 3000);
+                                    }
+                                }, 300);
+                                resultsBox.classList.remove('active');
+                                input.value = '';
+                                return;
+                            }
+                        } else {
+                            // Check if current page has a card pointing to this URL
+                            const localLink = document.querySelector(`a[href="${url}"]`);
+                            if (localLink) {
+                                e.preventDefault();
+                                resultsBox.classList.remove('active');
+                                input.value = '';
+                                const card = localLink.closest('.card') || localLink;
+                                card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                                // Visual pulse to indicate match
+                                card.classList.add('search-highlight');
+                                setTimeout(() => card.classList.remove('search-highlight'), 3000);
+                                return;
+                            }
+                        }
+                        window.location.href = url;
                     });
 
                     // Add Context/Hold logic for commands
@@ -4924,8 +5223,35 @@
                 if (item) {
                     if (item.dataset.cmd) {
                         performSearch(item.dataset.cmd);
+                    } else if (item.dataset.url.startsWith('#')) {
+                        const targetId = item.dataset.url.substring(1);
+                        if (targetId.startsWith('settings')) {
+                            switchSection('settings');
+                            setTimeout(() => {
+                                const card = document.getElementById(targetId);
+                                if (card) {
+                                    card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                                    card.classList.add('search-highlight');
+                                    setTimeout(() => card.classList.remove('search-highlight'), 3000);
+                                }
+                            }, 300);
+                            resultsBox.classList.remove('active');
+                            input.value = '';
+                        }
                     } else {
-                        window.location.href = item.dataset.url;
+                        const url = item.dataset.url;
+                        const localLink = document.querySelector(`a[href="${url}"]`);
+                        if (localLink) {
+                            resultsBox.classList.remove('active');
+                            input.value = '';
+                            const card = localLink.closest('.card') || localLink;
+                            card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                            // Visual pulse feedback
+                            card.classList.add('search-highlight');
+                            setTimeout(() => card.classList.remove('search-highlight'), 3000);
+                        } else {
+                            window.location.href = url;
+                        }
                     }
                 }
             } else if (e.key === 'Escape') {
