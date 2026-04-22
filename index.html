@@ -74,6 +74,14 @@
         if (localStorage.getItem('serif_mode') === 'true') {
             document.documentElement.classList.add('serif-mode');
         }
+        // Critical: Handle games visibility early
+        const isGamesEnabled = localStorage.getItem('games_enabled') !== 'false';
+        if (!isGamesEnabled) {
+            document.documentElement.classList.add('games-disabled');
+            if (localStorage.getItem('activeSection') === 'games') {
+                localStorage.setItem('activeSection', 'learning');
+            }
+        }
     </script>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -156,6 +164,17 @@
 
         .outfit {
             font-family: 'Outfit', sans-serif;
+        }
+
+        /* Games Visibility Control */
+        .games-disabled #btn-games {
+            display: none !important;
+        }
+
+        @media (max-width: 640px) {
+            .games-disabled .pill-nav {
+                grid-template-columns: repeat(4, 1fr) !important;
+            }
         }
 
         /* GAMES Tag Animation */
@@ -3329,25 +3348,25 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8">
                     <!-- Quick Access Prep Buttons -->
                     <div class="md:col-span-2 grid grid-cols-3 gap-3 md:gap-4 mb-2">
-                        <a href="highlights.html" class="flex flex-col items-center justify-center py-5 bg-white border border-black rounded-[12px] hover:bg-amber-500 hover:text-white hover:border-amber-500 transition-all duration-300 group">
+                        <a href="highlights.html" class="flex flex-col items-center justify-center py-5 bg-white border border-black rounded-[12px] hover:bg-amber-500 hover:text-white transition-all duration-300 group">
                             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mb-2 text-amber-500 group-hover:text-white transition-colors">
                                 <path d="M12 20h9" />
                                 <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" />
                             </svg>
-                            <span class="mono text-[8px] md:text-[10px] font-bold uppercase tracking-widest">Highlights</span>
+                            <span class="outfit text-[8px] md:text-[10px] font-bold uppercase tracking-widest">Highlights</span>
                         </a>
-                        <a href="content/flashcards" class="flex flex-col items-center justify-center py-5 bg-white border border-black rounded-[12px] hover:bg-teal-500 hover:text-white hover:border-teal-500 transition-all duration-300 group">
+                        <a href="content/flashcards" class="flex flex-col items-center justify-center py-5 bg-white border border-black rounded-[12px] hover:bg-teal-500 hover:text-white transition-all duration-300 group">
                             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mb-2 text-teal-500 group-hover:text-white transition-colors">
                                 <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
                             </svg>
-                            <span class="mono text-[8px] md:text-[10px] font-bold uppercase tracking-widest">Flashcards</span>
+                            <span class="outfit text-[8px] md:text-[10px] font-bold uppercase tracking-widest">Flashcards</span>
                         </a>
-                        <a href="content/quickwiki" class="flex flex-col items-center justify-center py-5 bg-white border border-black rounded-[12px] hover:bg-blue-600 hover:text-white hover:border-blue-600 transition-all duration-300 group">
+                        <a href="content/quickwiki" class="flex flex-col items-center justify-center py-5 bg-white border border-black rounded-[12px] hover:bg-blue-600 hover:text-white transition-all duration-300 group">
                             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mb-2 text-blue-500 group-hover:text-white transition-colors">
                                 <circle cx="11" cy="11" r="8" />
                                 <line x1="21" y1="21" x2="16.65" y2="16.65" />
                             </svg>
-                            <span class="mono text-[8px] md:text-[10px] font-bold uppercase tracking-widest">Quick Wiki</span>
+                            <span class="outfit text-[8px] md:text-[10px] font-bold uppercase tracking-widest">Quick Wiki</span>
                         </a>
                     </div>
                     <!-- C.U.T.E Preparation Card -->
@@ -4549,8 +4568,15 @@
                 window.applyGamesVisibility = function (isEnabled) {
                     const gamesBtn = document.getElementById('btn-games');
                     const pillNav = document.querySelector('.pill-nav');
+                    
+                    if (isEnabled) {
+                        document.documentElement.classList.remove('games-disabled');
+                    } else {
+                        document.documentElement.classList.add('games-disabled');
+                    }
+
                     if (gamesBtn) {
-                        gamesBtn.style.display = isEnabled ? '' : 'none';
+                        // gamesBtn.style.display = isEnabled ? '' : 'none'; // Replaced by class logic
                         
                         // Dynamically update grid layout on mobile
                         if (pillNav && window.innerWidth <= 640) {
