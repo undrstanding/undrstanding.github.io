@@ -1000,6 +1000,116 @@
             outline-offset: 4px;
         }
 
+        /* Splash Screen */
+        #splash-screen {
+            position: fixed;
+            inset: 0;
+            background: #ffffff;
+            z-index: 20000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow: hidden;
+        }
+
+        .sketch-container {
+            position: relative;
+            width: 240px;
+            height: 180px;
+            margin-bottom: 30px;
+        }
+
+        .sketch-shape {
+            position: absolute;
+            fill: none;
+            stroke: #000;
+            stroke-width: 2.5;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            filter: drop-shadow(2px 2px 0px rgba(0, 0, 0, 0.05));
+        }
+
+        /* Animated Path Effect */
+        .sketch-path {
+            stroke-dasharray: 1000;
+            stroke-dashoffset: 1000;
+            animation: drawPath 3s ease-in-out infinite;
+        }
+
+        @keyframes drawPath {
+            0% {
+                stroke-dashoffset: 1000;
+            }
+
+            40% {
+                stroke-dashoffset: 0;
+            }
+
+            80% {
+                stroke-dashoffset: 0;
+                opacity: 1;
+            }
+
+            100% {
+                stroke-dashoffset: 0;
+                opacity: 0;
+            }
+        }
+
+        .floating-sticky {
+            width: 60px;
+            height: 60px;
+            background: #fef08a;
+            border: 2px solid #000;
+            position: absolute;
+            top: 20px;
+            left: 40px;
+            transform: rotate(-10deg);
+            box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.1);
+            animation: floatSticky 4s ease-in-out infinite;
+        }
+
+        @keyframes floatSticky {
+
+            0%,
+            100% {
+                transform: rotate(-10deg) translateY(0);
+            }
+
+            50% {
+                transform: rotate(-5deg) translateY(-10px);
+            }
+        }
+
+        #splash-screen .splash-hint {
+            font-family: 'Inter', sans-serif;
+            font-weight: 800;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            color: #000;
+            position: relative;
+        }
+
+        #splash-screen .splash-hint::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: #2563eb;
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+
+        #splash-screen:hover .splash-hint::after {
+            transform: scaleX(1);
+        }
+
         /* Responsive & Landscape Force */
         #orientation-overlay {
             position: fixed;
@@ -1023,16 +1133,25 @@
         }
 
         @keyframes rotatePhone {
-            0%, 100% { transform: rotate(0deg); }
-            50% { transform: rotate(90deg); }
+
+            0%,
+            100% {
+                transform: rotate(0deg);
+            }
+
+            50% {
+                transform: rotate(90deg);
+            }
         }
 
         @media (max-width: 768px) and (orientation: portrait) {
             #orientation-overlay {
                 display: flex;
             }
+
             body.loading-active #orientation-overlay {
-                display: none; /* Hide if preloader is active */
+                display: none;
+                /* Hide if preloader is active */
             }
         }
 
@@ -1059,7 +1178,8 @@
                 flex-shrink: 0;
             }
 
-            .properties-panel, .tool-options-modal {
+            .properties-panel,
+            .tool-options-modal {
                 width: calc(100vw - 32px);
                 right: 16px;
                 top: 16px;
@@ -1067,115 +1187,155 @@
             }
 
             .zoom-controls {
-                display: none; /* Hide zoom UI on small screens to save space */
+                display: none;
+                /* Hide zoom UI on small screens to save space */
             }
         }
     </style>
 </head>
 
 <body>
+    <!-- Splash / Fullscreen Trigger -->
+    <div id="splash-screen">
+        <div class="sketch-container">
+            <!-- Hand-drawn Circle -->
+            <svg class="sketch-shape" style="top: 10px; right: 20px; width: 100px; height: 100px;"
+                viewBox="0 0 100 100">
+                <path class="sketch-path" d="M50,10 A40,40 0 1,1 49.9,10" />
+            </svg>
+            <!-- Hand-drawn Line -->
+            <svg class="sketch-shape" style="bottom: 30px; left: 10px; width: 120px; height: 40px;"
+                viewBox="0 0 120 40">
+                <path class="sketch-path" d="M10,30 C40,10 80,50 110,10" />
+            </svg>
+            <!-- Floating Sticky -->
+            <div class="floating-sticky"></div>
+        </div>
+        <div class="splash-hint">Click to Launch</div>
+    </div>
+
     <!-- Split Preloader -->
     <script>
         (function () {
-            const style = document.createElement('style');
-            style.innerHTML = `
-                #global-loader {
-                    position: fixed;
-                    inset: 0;
-                    background: #ffffff;
-                    z-index: 10000;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    transition: opacity 0.6s ease-out, visibility 0.6s;
-                    overflow: hidden;
-                    pointer-events: all;
+            const startWhiteboard = () => {
+                // Trigger Fullscreen
+                if (!document.fullscreenElement) {
+                    document.documentElement.requestFullscreen().catch(e => console.log("Fullscreen blocked:", e));
                 }
-                #global-loader.fade-out {
-                    opacity: 0;
-                    visibility: hidden;
-                    pointer-events: none;
-                }
-                .loader-content {
-                    position: relative;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    width: 100%;
-                    height: 100%;
-                }
-                .loader-logo {
-                    width: 80px;
-                    height: 80px;
-                    z-index: 2;
-                    transition: transform 1s cubic-bezier(0.77, 0, 0.175, 1);
-                    border-radius: 50%;
-                }
-                .loader-text {
-                    position: absolute;
-                    font-family: 'Inter', sans-serif;
-                    font-size: 3rem;
-                    font-weight: 900;
-                    letter-spacing: -0.04em;
-                    color: #000;
-                    opacity: 0;
-                    white-space: nowrap;
-                    z-index: 1;
-                    transform: translateX(0);
-                    transition: all 1s cubic-bezier(0.77, 0, 0.175, 1);
-                }
-                #global-loader.animating .loader-logo {
-                    transform: translateX(-140px);
-                }
-                #global-loader.animating .loader-text {
-                    opacity: 1;
-                    transform: translateX(70px);
-                }
-                @media (max-width: 768px) {
-                    .loader-logo { width: 60px; height: 60px; }
-                    .loader-text { font-size: 1.5rem; }
-                    #global-loader.animating .loader-logo { transform: translateX(-85px); }
-                    #global-loader.animating .loader-text { transform: translateX(45px); }
-                }
-                body.loading-active { overflow: hidden !important; }
-            `;
-            document.head.appendChild(style);
 
-            const loader = document.createElement('div');
-            loader.id = 'global-loader';
-            const logoPath = '../assests/undrlogo.svg';
-            loader.innerHTML = `
-                <div class="loader-content">
-                    <img src="${logoPath}" class="loader-logo" alt="Logo">
-                    <span class="loader-text">Undrstanding</span>
-                </div>
-            `;
-            document.body.appendChild(loader);
-            document.body.classList.add('loading-active');
+                // Hide Splash
+                const splash = document.getElementById('splash-screen');
+                splash.style.opacity = '0';
+                setTimeout(() => splash.remove(), 500);
 
-            requestAnimationFrame(() => {
+                // Start Preloader logic
+                initPreloader();
+            };
+
+            document.getElementById('splash-screen').addEventListener('click', startWhiteboard);
+
+            function initPreloader() {
+                const style = document.createElement('style');
+                style.innerHTML = `
+                    #global-loader {
+                        position: fixed;
+                        inset: 0;
+                        background: #ffffff;
+                        z-index: 10000;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        transition: opacity 0.6s ease-out, visibility 0.6s;
+                        overflow: hidden;
+                        pointer-events: all;
+                    }
+                    #global-loader.fade-out {
+                        opacity: 0;
+                        visibility: hidden;
+                        pointer-events: none;
+                    }
+                    .loader-content {
+                        position: relative;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        width: 100%;
+                        height: 100%;
+                    }
+                    .loader-logo {
+                        width: 80px;
+                        height: 80px;
+                        z-index: 2;
+                        transition: transform 1s cubic-bezier(0.77, 0, 0.175, 1);
+                        border-radius: 50%;
+                    }
+                    .loader-text {
+                        position: absolute;
+                        font-family: 'Inter', sans-serif;
+                        font-size: 3rem;
+                        font-weight: 900;
+                        letter-spacing: -0.04em;
+                        color: #000;
+                        opacity: 0;
+                        white-space: nowrap;
+                        z-index: 1;
+                        transform: translateX(0);
+                        transition: all 1s cubic-bezier(0.77, 0, 0.175, 1);
+                    }
+                    #global-loader.animating .loader-logo {
+                        transform: translateX(-140px);
+                    }
+                    #global-loader.animating .loader-text {
+                        opacity: 1;
+                        transform: translateX(70px);
+                    }
+                    @media (max-width: 768px) {
+                        .loader-logo { width: 60px; height: 60px; }
+                        .loader-text { font-size: 1.5rem; }
+                        #global-loader.animating .loader-logo { transform: translateX(-85px); }
+                        #global-loader.animating .loader-text { transform: translateX(45px); }
+                    }
+                    body.loading-active { overflow: hidden !important; }
+                `;
+                document.head.appendChild(style);
+
+                const loader = document.createElement('div');
+                loader.id = 'global-loader';
+                const logoPath = '../assests/undrlogo.svg';
+                loader.innerHTML = `
+                    <div class="loader-content">
+                        <img src="${logoPath}" class="loader-logo" alt="Logo">
+                        <span class="loader-text">Undrstanding</span>
+                    </div>
+                `;
+                document.body.appendChild(loader);
+                document.body.classList.add('loading-active');
+
                 requestAnimationFrame(() => {
-                    loader.classList.add('animating');
+                    requestAnimationFrame(() => {
+                        loader.classList.add('animating');
+                    });
                 });
-            });
 
-            let hasHidden = false;
-            const startTime = Date.now();
+                let hasHidden = false;
+                const startTime = Date.now();
 
-            function hideLoader() {
-                if (hasHidden) return;
-                hasHidden = true;
-                const elapsed = Date.now() - startTime;
-                const remaining = Math.max(0, 1200 - elapsed);
-                setTimeout(() => {
-                    loader.classList.add('fade-out');
-                    document.body.classList.remove('loading-active');
-                    setTimeout(() => { loader.remove(); }, 800);
-                }, remaining);
+                function hideLoader() {
+                    if (hasHidden) return;
+                    hasHidden = true;
+                    const elapsed = Date.now() - startTime;
+                    const remaining = Math.max(0, 1200 - elapsed);
+                    setTimeout(() => {
+                        loader.classList.add('fade-out');
+                        document.body.classList.remove('loading-active');
+                        setTimeout(() => { loader.remove(); }, 800);
+                    }, remaining);
+                }
+
+                if (document.readyState === 'complete') hideLoader();
+                else window.addEventListener('load', hideLoader);
+                setTimeout(hideLoader, 4000); // Failsafe
             }
-
-            window.addEventListener('load', hideLoader);
-            setTimeout(hideLoader, 3000); // Failsafe
         })();
     </script>
 
@@ -1183,7 +1343,8 @@
         <!-- Orientation Alert -->
         <div id="orientation-overlay">
             <div class="phone-icon">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round">
                     <rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect>
                     <line x1="12" y1="18" x2="12.01" y2="18"></line>
                 </svg>
@@ -1547,6 +1708,19 @@
     <script>
         // --- Initialization ---
         lucide.createIcons();
+
+        const startApp = () => {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch(e => console.log("Fullscreen blocked:", e));
+            }
+            document.getElementById('splash-screen').style.opacity = '0';
+            setTimeout(() => {
+                document.getElementById('splash-screen').style.display = 'none';
+                document.body.classList.add('loading-active');
+            }, 500);
+        };
+
+        document.getElementById('splash-screen').addEventListener('click', startApp);
 
         function isDarkColor(color) {
             const hex = color.replace('#', '');
