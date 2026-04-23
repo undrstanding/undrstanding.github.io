@@ -1008,6 +1008,85 @@
             }
         }
 
+        /* Whiteboard Card Sketching Styles */
+        .sketch-container-card {
+            position: relative;
+            width: 140px;
+            height: 100px;
+            transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .group:hover .sketch-container-card {
+            transform: scale(1.1) rotate(2deg);
+        }
+
+        .sketch-shape-card {
+            position: absolute;
+            fill: none;
+            stroke: #000;
+            stroke-width: 2.5;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        .sketch-path-card {
+            stroke-dasharray: 1000;
+            stroke-dashoffset: 0; /* Fully drawn */
+        }
+
+        .floating-sticky-card {
+            width: 35px;
+            height: 35px;
+            background: #fef08a;
+            border: 2px solid #000;
+            position: absolute;
+            top: 15px;
+            left: 25px;
+            transform: rotate(-10deg);
+            box-shadow: 3px 3px 0 rgba(0, 0, 0, 0.1);
+            transition: transform 0.5s ease;
+        }
+
+        .group:hover .floating-sticky-card {
+            transform: rotate(-5deg) translateY(-5px);
+        }
+
+        /* Whiteboard Specific Card UI */
+        .whiteboard-surface {
+            background-color: #ffffff;
+            background-image: radial-gradient(#e5e5e5 1px, transparent 1px);
+            background-size: 20px 20px;
+            border: 3px solid #1a1a1a !important;
+            box-shadow: none !important;
+            position: relative;
+        }
+
+        .whiteboard-surface::before {
+            content: '';
+            position: absolute;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 6px;
+            background: #e2e8f0;
+            border: 2px solid #1a1a1a;
+            border-radius: 4px;
+            opacity: 0.8;
+        }
+
+        .marker-tag {
+            background: #1a1a1a;
+            color: #fff;
+            padding: 4px 12px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 10px;
+            font-weight: 900;
+            letter-spacing: 2px;
+            border-radius: 2px;
+            display: inline-block;
+        }
+
         /* Toggle Switch Styles */
         .switch {
             position: relative;
@@ -3579,6 +3658,41 @@
                                     &rarr;</span>
                             </div>
                         </article>
+                    <!-- Whiteboard Workspace Card -->
+                    <a href="prep/whiteboard.html" class="block group md:col-span-2">
+                        <article
+                            class="whiteboard-surface relative flex flex-col items-center justify-center h-full min-h-[240px] overflow-hidden rounded-[12px] transition-all duration-300 p-8">
+
+                            <!-- Floating Sketch Icons (Scattered in corners to avoid text overlap) -->
+                            <div class="absolute inset-0 pointer-events-none z-0">
+                                <div class="sketch-container-card" style="position: absolute; top: 10px; right: 15px; transform: scale(0.75);">
+                                    <svg class="sketch-shape-card" style="width: 60px; height: 60px;" viewBox="0 0 100 100">
+                                        <path class="sketch-path-card" d="M50,10 A40,40 0 1,1 49.9,10" />
+                                    </svg>
+                                </div>
+                                <div class="sketch-container-card" style="position: absolute; bottom: 15px; left: 15px; transform: scale(0.7) rotate(-15deg);">
+                                    <svg class="sketch-shape-card" style="width: 80px; height: 30px;" viewBox="0 0 120 40">
+                                        <path class="sketch-path-card" d="M10,30 C40,10 80,50 110,10" />
+                                    </svg>
+                                </div>
+                                <div class="floating-sticky-card" style="top: 15px; left: 15px; transform: rotate(-10deg) scale(0.85);"></div>
+                            </div>
+
+                            <!-- Centered Content -->
+                            <div class="relative z-10 text-center">
+                                <div class="flex flex-col items-center gap-4">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-6 h-[2px] bg-black"></div>
+                                        <span class="mono text-[10px] font-black uppercase tracking-[0.4em]">Creative Workspace</span>
+                                        <div class="w-6 h-[2px] bg-black"></div>
+                                    </div>
+
+                                    <h3 class="text-4xl md:text-5xl font-black outfit leading-none tracking-tighter text-black uppercase mb-2">
+                                        Whiteboard
+                                    </h3>
+                                </div>
+                            </div>
+                        </article>
                     </a>
 
                 </div>
@@ -5091,6 +5205,7 @@
             { s: "PREP", t: "Placement Prep", u: "prep/CUTE", k: "placement preparation cute academic assessments aptitude combined undrstanding test evaluation", y: "prep" },
             { s: "PREP", t: "C.U.T.E Preparation", u: "prep/CUTE", k: "comprehensive guide cute placement assessments combined undrstanding test evaluation", y: "prep" },
             { s: "PREP", t: "Verbal Communication", u: "prep/verbal", k: "verbal communication speech interview soft skills prep series articulation professional dialogue", y: "prep" },
+            { s: "PREP", t: "Whiteboard Workspace", u: "prep/whiteboard.html", k: "whiteboard drawing board brainstorming sketching tool notes sticky canvas creative", y: "prep" },
 
             // --- Settings (type: settings) ---
             { s: "SETTINGS", t: "Typography: Serif Mode", u: "#settings-typo", k: "serif glilda display font typography switch", y: "settings" },
