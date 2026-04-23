@@ -1110,12 +1110,12 @@
             transform: scaleX(1);
         }
 
-        /* Responsive & Landscape Force */
-        #orientation-overlay {
+        /* Desktop Only Restriction */
+        #desktop-only-overlay {
             position: fixed;
             inset: 0;
             background: #ffffff;
-            z-index: 11000;
+            z-index: 30000;
             display: none;
             flex-direction: column;
             align-items: center;
@@ -1125,70 +1125,32 @@
             font-family: 'Inter', sans-serif;
         }
 
-        .phone-icon {
-            width: 64px;
-            height: 64px;
-            margin-bottom: 24px;
-            animation: rotatePhone 2s ease-in-out infinite;
+        .back-home-btn {
+            margin-top: 40px;
+            padding: 14px 28px;
+            background: #000;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 9999px;
+            font-weight: 800;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
         }
 
-        @keyframes rotatePhone {
-
-            0%,
-            100% {
-                transform: rotate(0deg);
-            }
-
-            50% {
-                transform: rotate(90deg);
-            }
+        .back-home-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.15);
         }
 
-        @media (max-width: 768px) and (orientation: portrait) {
-            #orientation-overlay {
+        @media (max-width: 1023px) {
+            #desktop-only-overlay {
                 display: flex;
             }
-
-            body.loading-active #orientation-overlay {
-                display: none;
-                /* Hide if preloader is active */
-            }
-        }
-
-        @media (max-width: 768px) {
-            .header {
-                top: 12px;
-                left: 12px;
-                transform: scale(0.85);
-                transform-origin: top left;
-            }
-
-            .toolbar {
-                bottom: 12px;
-                width: 95%;
-                padding: 4px;
-                gap: 2px;
-                overflow-x: auto;
-                -webkit-overflow-scrolling: touch;
-            }
-
-            .tool-btn {
-                width: 38px;
-                height: 38px;
-                flex-shrink: 0;
-            }
-
-            .properties-panel,
-            .tool-options-modal {
-                width: calc(100vw - 32px);
-                right: 16px;
-                top: 16px;
-                max-height: calc(100vh - 80px);
-            }
-
-            .zoom-controls {
-                display: none;
-                /* Hide zoom UI on small screens to save space */
+            #splash-screen, #global-loader, .ui-layer, #main-canvas {
+                display: none !important;
             }
         }
     </style>
@@ -1340,17 +1302,20 @@
     </script>
 
     <div id="app">
-        <!-- Orientation Alert -->
-        <div id="orientation-overlay">
-            <div class="phone-icon">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                    stroke-linejoin="round">
-                    <rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect>
-                    <line x1="12" y1="18" x2="12.01" y2="18"></line>
+        <!-- Desktop Only Restriction -->
+        <div id="desktop-only-overlay">
+            <div class="sketch-container" style="transform: scale(0.8); margin-bottom: 10px;">
+                <svg class="sketch-shape" style="top: 10px; right: 20px; width: 100px; height: 100px;" viewBox="0 0 100 100">
+                    <path class="sketch-path" d="M50,10 A40,40 0 1,1 49.9,10" />
                 </svg>
+                <svg class="sketch-shape" style="bottom: 30px; left: 10px; width: 120px; height: 40px;" viewBox="0 0 120 40">
+                    <path class="sketch-path" d="M10,30 C40,10 80,50 110,10" />
+                </svg>
+                <div class="floating-sticky"></div>
             </div>
-            <h2 style="font-weight: 800; margin-bottom: 8px;">Please Rotate Your Device</h2>
-            <p style="color: #666; font-size: 0.9rem;">The Whiteboard is best experienced in landscape mode.</p>
+            <h2 style="font-weight: 900; margin-bottom: 12px; font-size: 1.8rem; letter-spacing: -1px; line-height: 1.1;">A Bigger Canvas<br>for Bigger Ideas</h2>
+            <p style="color: #666; font-size: 1rem; max-width: 320px; line-height: 1.6; margin: 0 auto;">The Whiteboard requires the precision and expansiveness of a desktop display. Join us on a larger screen to start creating.</p>
+            <a href="../" class="back-home-btn">Return to Home</a>
         </div>
 
         <canvas id="main-canvas"></canvas>
