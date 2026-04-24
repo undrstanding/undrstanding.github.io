@@ -144,7 +144,8 @@
             -webkit-font-smoothing: antialiased;
             line-height: 1.5;
             overflow-x: hidden;
-            overflow-y: scroll; /* Force scrollbar to prevent layout shifts */
+            overflow-y: scroll;
+            /* Force scrollbar to prevent layout shifts */
             /* Technical Grid Background (using lines, not gradients) */
             background-image:
                 linear-gradient(to right, #e5e5e5 1px, transparent 1px),
@@ -654,7 +655,8 @@
                 display: grid;
                 grid-template-columns: repeat(5, 1fr);
                 padding: 4px;
-                gap: 0; /* Remove gap on mobile to ensure perfect alignment */
+                gap: 0;
+                /* Remove gap on mobile to ensure perfect alignment */
             }
 
             .pill-nav button {
@@ -1031,7 +1033,8 @@
 
         .sketch-path-card {
             stroke-dasharray: 1000;
-            stroke-dashoffset: 0; /* Fully drawn */
+            stroke-dashoffset: 0;
+            /* Fully drawn */
         }
 
         .floating-sticky-card {
@@ -1298,20 +1301,27 @@
                     <div id="highlights-strip-wrapper" class="w-full">
                         <div class="card flex flex-col md:flex-row min-h-unset overflow-hidden !border-black">
                             <!-- Left Label -->
-                            <div class="flex items-center gap-3 px-5 py-4 border-b md:border-b-0 md:border-r border-black shrink-0 bg-black w-full md:w-auto md:min-w-[120px]">
-                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="text-yellow-400 shrink-0">
+                            <div
+                                class="flex items-center gap-3 px-5 py-4 border-b md:border-b-0 md:border-r border-black shrink-0 bg-black w-full md:w-auto md:min-w-[120px]">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"
+                                    class="text-yellow-400 shrink-0">
                                     <path d="M12 20h9" />
                                     <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" />
                                 </svg>
                                 <div class="leading-tight">
-                                    <p class="mono text-[9px] font-bold uppercase tracking-[0.2em] text-gray-500">Your</p>
+                                    <p class="mono text-[9px] font-bold uppercase tracking-[0.2em] text-gray-500">Your
+                                    </p>
                                     <p class="font-bold text-sm tracking-tight text-white">Highlights</p>
                                 </div>
                             </div>
                             <!-- Right: Scrollable highlights list -->
-                            <div id="highlights-list" class="flex items-center gap-3 px-4 py-3 overflow-x-auto flex-1 thin-scrollbar no-scrollbar" style="-ms-overflow-style: none; scrollbar-width: none;">
+                            <div id="highlights-list"
+                                class="flex items-center gap-3 px-4 py-3 overflow-x-auto flex-1 thin-scrollbar no-scrollbar"
+                                style="-ms-overflow-style: none; scrollbar-width: none;">
                                 <!-- populated by JS -->
-                                <p id="highlights-empty" class="text-xs text-gray-400 font-light italic">No highlights yet. Select any text on a content page to save it here.</p>
+                                <p id="highlights-empty" class="text-xs text-gray-400 font-light italic">No highlights
+                                    yet. Select any text on a content page to save it here.</p>
                             </div>
                         </div>
                     </div>
@@ -1319,25 +1329,37 @@
                     <!-- 2. Quick Tabs -->
                     <div id="quick-tabs-wrapper" class="w-full hidden">
                         <div class="grid grid-cols-3 gap-3 md:gap-4">
-                            <a href="highlights.html" class="flex flex-col items-center justify-center py-5 bg-white border border-black rounded-[12px] hover:bg-amber-500 hover:text-white transition-all duration-300 group">
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mb-2 text-amber-500 group-hover:text-white transition-colors">
+                            <a href="highlights.html"
+                                class="flex flex-col items-center justify-center py-5 bg-white border border-black rounded-[12px] hover:bg-amber-500 hover:text-white transition-all duration-300 group">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                                    class="mb-2 text-amber-500 group-hover:text-white transition-colors">
                                     <path d="M12 20h9" />
                                     <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" />
                                 </svg>
-                                <span class="outfit text-[8px] md:text-[10px] font-bold uppercase tracking-widest">Highlights</span>
+                                <span
+                                    class="outfit text-[8px] md:text-[10px] font-bold uppercase tracking-widest">Highlights</span>
                             </a>
-                            <a href="content/flashcards" class="flex flex-col items-center justify-center py-5 bg-white border border-black rounded-[12px] hover:bg-teal-500 hover:text-white transition-all duration-300 group">
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mb-2 text-teal-500 group-hover:text-white transition-colors">
+                            <a href="content/flashcards"
+                                class="flex flex-col items-center justify-center py-5 bg-white border border-black rounded-[12px] hover:bg-teal-500 hover:text-white transition-all duration-300 group">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                                    class="mb-2 text-teal-500 group-hover:text-white transition-colors">
                                     <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
                                 </svg>
-                                <span class="outfit text-[8px] md:text-[10px] font-bold uppercase tracking-widest">Flashcards</span>
+                                <span
+                                    class="outfit text-[8px] md:text-[10px] font-bold uppercase tracking-widest">Flashcards</span>
                             </a>
-                            <a href="content/quickwiki" class="flex flex-col items-center justify-center py-5 bg-white border border-black rounded-[12px] hover:bg-blue-600 hover:text-white transition-all duration-300 group">
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mb-2 text-blue-500 group-hover:text-white transition-colors">
+                            <a href="content/quickwiki"
+                                class="flex flex-col items-center justify-center py-5 bg-white border border-black rounded-[12px] hover:bg-blue-600 hover:text-white transition-all duration-300 group">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                                    class="mb-2 text-blue-500 group-hover:text-white transition-colors">
                                     <circle cx="11" cy="11" r="8" />
                                     <line x1="21" y1="21" x2="16.65" y2="16.65" />
                                 </svg>
-                                <span class="outfit text-[8px] md:text-[10px] font-bold uppercase tracking-widest">Quick Wiki</span>
+                                <span class="outfit text-[8px] md:text-[10px] font-bold uppercase tracking-widest">Quick
+                                    Wiki</span>
                             </a>
                         </div>
                     </div>
@@ -3032,60 +3054,16 @@
 
             <!-- SECTION 2: Guided Labs -->
             <div>
-            <!-- Header Area: Highlights or Quick Tabs -->
-            <div id="learning-header-container" class="md:col-span-2 mb-8">
-                <!-- 1. Highlights Strip -->
-                <div id="highlights-strip-wrapper" class="w-full">
-                    <div class="flex items-center justify-between mb-4">
-                        <div class="flex flex-col">
-                            <span class="mono text-[10px] font-black text-black/40 uppercase tracking-[0.3em] mb-1">Recent
-                                Activity</span>
-                            <h2 class="text-2xl font-black outfit uppercase tracking-tight text-black">High<span
-                                    class="text-gray-400">lights</span></h2>
-                        </div>
-                        <a href="highlights.html"
-                            class="mono text-[10px] font-bold text-black/40 hover:text-black uppercase tracking-widest transition-colors">View
-                            Archive &rarr;</a>
+                <div class="flex items-center gap-4 mb-6">
+                    <div class="flex flex-col">
+                        <span
+                            class="mono text-[10px] font-black text-black/40 uppercase tracking-[0.3em] mb-1">Practical Build
+                            Series</span>
+                        <h2 class="text-2xl font-black outfit uppercase tracking-tight text-black">Guided <span
+                                class="text-gray-400">Labs</span></h2>
                     </div>
-                    <div id="highlights-list" class="flex gap-4 overflow-x-auto pb-4 no-scrollbar -mx-2 px-2">
-                        <!-- Populated by JS -->
-                    </div>
+                    <div class="h-[2px] flex-grow bg-black/5"></div>
                 </div>
-
-                <!-- 2. Quick Tabs (Moved from Prep) -->
-                <div id="quick-tabs-wrapper" class="w-full hidden">
-                    <div class="flex items-center gap-4 mb-6">
-                        <div class="flex flex-col">
-                            <span class="mono text-[10px] font-black text-black/40 uppercase tracking-[0.3em] mb-1">Resources</span>
-                            <h2 class="text-2xl font-black outfit uppercase tracking-tight text-black">Quick <span
-                                    class="text-gray-400">Tabs</span></h2>
-                        </div>
-                        <div class="h-[2px] flex-grow bg-black/5"></div>
-                    </div>
-                    <div class="grid grid-cols-3 gap-3 md:gap-4">
-                        <a href="highlights.html" class="flex flex-col items-center justify-center py-5 bg-white border border-black rounded-[12px] hover:bg-amber-500 hover:text-white transition-all duration-300 group">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mb-2 text-amber-500 group-hover:text-white transition-colors">
-                                <path d="M12 20h9" />
-                                <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" />
-                            </svg>
-                            <span class="outfit text-[8px] md:text-[10px] font-bold uppercase tracking-widest">Highlights</span>
-                        </a>
-                        <a href="content/flashcards" class="flex flex-col items-center justify-center py-5 bg-white border border-black rounded-[12px] hover:bg-teal-500 hover:text-white transition-all duration-300 group">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mb-2 text-teal-500 group-hover:text-white transition-colors">
-                                <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
-                            </svg>
-                            <span class="outfit text-[8px] md:text-[10px] font-bold uppercase tracking-widest">Flashcards</span>
-                        </a>
-                        <a href="content/quickwiki" class="flex flex-col items-center justify-center py-5 bg-white border border-black rounded-[12px] hover:bg-blue-600 hover:text-white transition-all duration-300 group">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mb-2 text-blue-500 group-hover:text-white transition-colors">
-                                <circle cx="11" cy="11" r="8" />
-                                <line x1="21" y1="21" x2="16.65" y2="16.65" />
-                            </svg>
-                            <span class="outfit text-[8px] md:text-[10px] font-bold uppercase tracking-widest">Quick Wiki</span>
-                        </a>
-                    </div>
-                </div>
-            </div>
 
 
 
@@ -3457,12 +3435,56 @@
                         </article>
                     </a>
 
+                    <!-- Whiteboard Workspace Card -->
+                    <a href="labs/whiteboard" class="block group md:col-span-2">
+                        <article
+                            class="whiteboard-surface relative flex flex-col items-center justify-center h-full min-h-[240px] overflow-hidden rounded-[12px] transition-all duration-300 p-8">
+
+                            <!-- Floating Sketch Icons (Scattered in corners to avoid text overlap) -->
+                            <div class="absolute inset-0 pointer-events-none z-0">
+                                <div class="sketch-container-card"
+                                    style="position: absolute; top: 10px; right: 15px; transform: scale(0.75);">
+                                    <svg class="sketch-shape-card" style="width: 60px; height: 60px;"
+                                        viewBox="0 0 100 100">
+                                        <path class="sketch-path-card" d="M50,10 A40,40 0 1,1 49.9,10" />
+                                    </svg>
+                                </div>
+                                <div class="sketch-container-card"
+                                    style="position: absolute; bottom: 15px; left: 15px; transform: scale(0.7) rotate(-15deg);">
+                                    <svg class="sketch-shape-card" style="width: 80px; height: 30px;"
+                                        viewBox="0 0 120 40">
+                                        <path class="sketch-path-card" d="M10,30 C40,10 80,50 110,10" />
+                                    </svg>
+                                </div>
+                                <div class="floating-sticky-card"
+                                    style="top: 15px; left: 15px; transform: rotate(-10deg) scale(0.85);"></div>
+                            </div>
+
+                            <!-- Centered Content -->
+                            <div class="relative z-10 text-center">
+                                <div class="flex flex-col items-center gap-4">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-6 h-[2px] bg-black"></div>
+                                        <span class="mono text-[10px] font-black uppercase tracking-[0.4em]">Creative
+                                            Workspace</span>
+                                        <div class="w-6 h-[2px] bg-black"></div>
+                                    </div>
+
+                                    <h3
+                                        class="text-4xl md:text-5xl font-black outfit leading-none tracking-tighter text-black uppercase mb-2">
+                                        Whiteboard
+                                    </h3>
+                                </div>
+                            </div>
+                        </article>
+                    </a>
+
 
                     <a href="#" id="random-lab-card" onclick="event.preventDefault(); 
                          this.classList.add('random-card-pumping');
                          var overlay = document.getElementById('random-overlay');
                          overlay.classList.add('active');
-                         var urls = ['labs/ds-visualiser', 'labs/algo-visualiser', 'labs/web-visualiser', 'labs/budget-tracker', 'labs/quick-tab-closer', 'labs/weather-app', 'labs/git-essentials', 'labs/html-blog-article'];
+                         var urls = ['labs/ds-visualiser', 'labs/algo-visualiser', 'labs/web-visualiser', 'labs/budget-tracker', 'labs/quick-tab-closer', 'labs/weather-app', 'labs/git-essentials', 'labs/html-blog-article', 'labs/whiteboard.html'];
                          var target = urls[Math.floor(Math.random() * urls.length)];
                          setTimeout(() => { window.location.href = target; }, 800);"
                         class="block group relative overflow-hidden bg-black text-white hover:scale-[1.02] transition-all duration-500 shadow-xl border-black hover:shadow-2xl md:col-span-2 rounded-[12px]">
@@ -3658,42 +3680,6 @@
                                     &rarr;</span>
                             </div>
                         </article>
-                    <!-- Whiteboard Workspace Card -->
-                    <a href="prep/whiteboard.html" class="block group md:col-span-2">
-                        <article
-                            class="whiteboard-surface relative flex flex-col items-center justify-center h-full min-h-[240px] overflow-hidden rounded-[12px] transition-all duration-300 p-8">
-
-                            <!-- Floating Sketch Icons (Scattered in corners to avoid text overlap) -->
-                            <div class="absolute inset-0 pointer-events-none z-0">
-                                <div class="sketch-container-card" style="position: absolute; top: 10px; right: 15px; transform: scale(0.75);">
-                                    <svg class="sketch-shape-card" style="width: 60px; height: 60px;" viewBox="0 0 100 100">
-                                        <path class="sketch-path-card" d="M50,10 A40,40 0 1,1 49.9,10" />
-                                    </svg>
-                                </div>
-                                <div class="sketch-container-card" style="position: absolute; bottom: 15px; left: 15px; transform: scale(0.7) rotate(-15deg);">
-                                    <svg class="sketch-shape-card" style="width: 80px; height: 30px;" viewBox="0 0 120 40">
-                                        <path class="sketch-path-card" d="M10,30 C40,10 80,50 110,10" />
-                                    </svg>
-                                </div>
-                                <div class="floating-sticky-card" style="top: 15px; left: 15px; transform: rotate(-10deg) scale(0.85);"></div>
-                            </div>
-
-                            <!-- Centered Content -->
-                            <div class="relative z-10 text-center">
-                                <div class="flex flex-col items-center gap-4">
-                                    <div class="flex items-center gap-3">
-                                        <div class="w-6 h-[2px] bg-black"></div>
-                                        <span class="mono text-[10px] font-black uppercase tracking-[0.4em]">Creative Workspace</span>
-                                        <div class="w-6 h-[2px] bg-black"></div>
-                                    </div>
-
-                                    <h3 class="text-4xl md:text-5xl font-black outfit leading-none tracking-tighter text-black uppercase mb-2">
-                                        Whiteboard
-                                    </h3>
-                                </div>
-                            </div>
-                        </article>
-                    </a>
 
                 </div>
             </div>
@@ -4428,20 +4414,26 @@
                 </div>
 
                 <!-- Quick Tabs Module -->
-                <div id="settings-quicktabs" class="card flex flex-col md:flex-row overflow-hidden border-black group transition-all duration-300">
-                    <div class="bg-[#059669] text-white p-5 md:p-6 md:w-1/3 flex flex-row md:flex-col justify-between items-center md:items-start border-b-2 md:border-b-0 md:border-r-2 border-black">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="shrink-0">
+                <div id="settings-quicktabs"
+                    class="card flex flex-col md:flex-row overflow-hidden border-black group transition-all duration-300">
+                    <div
+                        class="bg-[#059669] text-white p-5 md:p-6 md:w-1/3 flex flex-row md:flex-col justify-between items-center md:items-start border-b-2 md:border-b-0 md:border-r-2 border-black">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="shrink-0">
                             <rect x="3" y="3" width="7" height="7"></rect>
                             <rect x="14" y="3" width="7" height="7"></rect>
                             <rect x="14" y="14" width="7" height="7"></rect>
                             <rect x="3" y="14" width="7" height="7"></rect>
                         </svg>
-                        <h3 class="text-xl md:text-2xl font-black outfit uppercase tracking-tighter mt-0 md:mt-8">Quick Tabs</h3>
+                        <h3 class="text-xl md:text-2xl font-black outfit uppercase tracking-tighter mt-0 md:mt-8">Quick
+                            Tabs</h3>
                     </div>
                     <div class="bg-white p-5 md:p-6 md:flex-1 flex items-center justify-between gap-4">
                         <div class="max-w-[200px] md:max-w-xs">
-                            <p class="text-xs md:text-sm font-bold text-black uppercase tracking-tight mb-1">Learning Header</p>
-                            <p class="text-[10px] md:text-[11px] text-gray-400 font-medium leading-relaxed">Switch between the Highlights strip and the Quick Tabs grid in your learning dashboard.</p>
+                            <p class="text-xs md:text-sm font-bold text-black uppercase tracking-tight mb-1">Learning
+                                Header</p>
+                            <p class="text-[10px] md:text-[11px] text-gray-400 font-medium leading-relaxed">Switch
+                                between the Highlights strip and the Quick Tabs grid in your learning dashboard.</p>
                         </div>
                         <label class="switch scale-110 md:scale-125">
                             <input type="checkbox" id="toggle-quicktabs" onchange="toggleQuickTabs()">
@@ -4767,7 +4759,7 @@
                 window.applyGamesVisibility = function (isEnabled) {
                     const gamesBtn = document.getElementById('btn-games');
                     const pillNav = document.querySelector('.pill-nav');
-                    
+
                     if (isEnabled) {
                         document.documentElement.classList.remove('games-disabled');
                     } else {
@@ -4776,12 +4768,12 @@
 
                     if (gamesBtn) {
                         // gamesBtn.style.display = isEnabled ? '' : 'none'; // Replaced by class logic
-                        
+
                         // Dynamically update grid layout on mobile
                         if (pillNav && window.innerWidth <= 640) {
                             pillNav.style.gridTemplateColumns = isEnabled ? 'repeat(5, 1fr)' : 'repeat(4, 1fr)';
                         }
-                        
+
                         // Recalculate indicator position
                         setTimeout(() => {
                             const activeBtn = document.querySelector('.pill-nav button.active');
@@ -5191,6 +5183,7 @@
             { s: "LAB", t: "Lab: Weather App", u: "labs/weather-app", k: "react.js rest api hooks openweather weather real-time dashboard web development series 15", y: "lab" },
             { s: "LAB", t: "Lab: Git Essentials", u: "labs/git-essentials", k: "version control git github terminal workflow forking setup installation branching configuration history", y: "lab" },
             { s: "LAB", t: "Lab: Semantic Blog", u: "labs/html-blog-article", k: "html5 semantic tags header footer article aside table web development series 22 structure", y: "lab" },
+            { s: "LAB", t: "Whiteboard Workspace", u: "labs/whiteboard.html", k: "whiteboard drawing board brainstorming sketching tool notes sticky canvas creative", y: "lab" },
 
             // --- Interactive Games (type: games) ---
             { s: "GAME", t: "Hangman", u: "games/hangman", k: "hangman", y: "games" },
@@ -5205,7 +5198,6 @@
             { s: "PREP", t: "Placement Prep", u: "prep/CUTE", k: "placement preparation cute academic assessments aptitude combined undrstanding test evaluation", y: "prep" },
             { s: "PREP", t: "C.U.T.E Preparation", u: "prep/CUTE", k: "comprehensive guide cute placement assessments combined undrstanding test evaluation", y: "prep" },
             { s: "PREP", t: "Verbal Communication", u: "prep/verbal", k: "verbal communication speech interview soft skills prep series articulation professional dialogue", y: "prep" },
-            { s: "PREP", t: "Whiteboard Workspace", u: "prep/whiteboard.html", k: "whiteboard drawing board brainstorming sketching tool notes sticky canvas creative", y: "prep" },
 
             // --- Settings (type: settings) ---
             { s: "SETTINGS", t: "Typography: Serif Mode", u: "#settings-typo", k: "serif glilda display font typography switch", y: "settings" },
@@ -5720,21 +5712,21 @@
         });
 
         // --- Quick Tabs Toggle Logic ---
-        window.toggleQuickTabs = function() {
+        window.toggleQuickTabs = function () {
             const toggle = document.getElementById('toggle-quicktabs');
             const current = localStorage.getItem('quick_tabs_enabled') === 'true';
-            
+
             // If the toggle element exists (it's in Settings), use its state if it was just clicked
             // But for the command, we always want to flip the current storage state
             const newState = !current;
-            
+
             localStorage.setItem('quick_tabs_enabled', newState);
-            
+
             // Update the UI
             window.updateQuickTabsVisibility();
         }
 
-        window.updateQuickTabsVisibility = function() {
+        window.updateQuickTabsVisibility = function () {
             const isEnabled = localStorage.getItem('quick_tabs_enabled') === 'true';
             const highlights = document.getElementById('highlights-strip-wrapper');
             const quickTabs = document.getElementById('quick-tabs-wrapper');
