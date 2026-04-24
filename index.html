@@ -1328,8 +1328,8 @@
 
                     <!-- 2. Quick Tabs -->
                     <div id="quick-tabs-wrapper" class="w-full hidden">
-                        <div class="grid grid-cols-3 gap-3 md:gap-4">
-                            <a href="highlights.html"
+                        <div class="grid grid-cols-3 md:grid-cols-4 gap-3 md:gap-4">
+                            <a href="highlights"
                                 class="flex flex-col items-center justify-center py-5 bg-white border border-black rounded-[12px] hover:bg-amber-500 hover:text-white transition-all duration-300 group">
                                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                                     stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
@@ -1360,6 +1360,18 @@
                                 </svg>
                                 <span class="outfit text-[8px] md:text-[10px] font-bold uppercase tracking-widest">Quick
                                     Wiki</span>
+                            </a>
+                            <a href="labs/whiteboard"
+                                class="hidden md:flex flex-col items-center justify-center py-5 bg-white border border-black rounded-[12px] hover:bg-black hover:text-white transition-all duration-300 group">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                                    class="mb-2 text-black group-hover:text-white transition-colors">
+                                    <rect x="3" y="3" width="18" height="15" rx="2" />
+                                    <path d="M8 21h8" />
+                                    <path d="M12 18v3" />
+                                </svg>
+                                <span
+                                    class="outfit text-[8px] md:text-[10px] font-bold uppercase tracking-widest">Whiteboard</span>
                             </a>
                         </div>
                     </div>
@@ -3057,7 +3069,8 @@
                 <div class="flex items-center gap-4 mb-6">
                     <div class="flex flex-col">
                         <span
-                            class="mono text-[10px] font-black text-black/40 uppercase tracking-[0.3em] mb-1">Practical Build
+                            class="mono text-[10px] font-black text-black/40 uppercase tracking-[0.3em] mb-1">Practical
+                            Build
                             Series</span>
                         <h2 class="text-2xl font-black outfit uppercase tracking-tight text-black">Guided <span
                                 class="text-gray-400">Labs</span></h2>
@@ -3484,7 +3497,7 @@
                          this.classList.add('random-card-pumping');
                          var overlay = document.getElementById('random-overlay');
                          overlay.classList.add('active');
-                         var urls = ['labs/ds-visualiser', 'labs/algo-visualiser', 'labs/web-visualiser', 'labs/budget-tracker', 'labs/quick-tab-closer', 'labs/weather-app', 'labs/git-essentials', 'labs/html-blog-article', 'labs/whiteboard.html'];
+                         var urls = ['labs/ds-visualiser', 'labs/algo-visualiser', 'labs/web-visualiser', 'labs/budget-tracker', 'labs/quick-tab-closer', 'labs/weather-app', 'labs/git-essentials', 'labs/html-blog-article'];
                          var target = urls[Math.floor(Math.random() * urls.length)];
                          setTimeout(() => { window.location.href = target; }, 800);"
                         class="block group relative overflow-hidden bg-black text-white hover:scale-[1.02] transition-all duration-500 shadow-xl border-black hover:shadow-2xl md:col-span-2 rounded-[12px]">
@@ -5183,7 +5196,7 @@
             { s: "LAB", t: "Lab: Weather App", u: "labs/weather-app", k: "react.js rest api hooks openweather weather real-time dashboard web development series 15", y: "lab" },
             { s: "LAB", t: "Lab: Git Essentials", u: "labs/git-essentials", k: "version control git github terminal workflow forking setup installation branching configuration history", y: "lab" },
             { s: "LAB", t: "Lab: Semantic Blog", u: "labs/html-blog-article", k: "html5 semantic tags header footer article aside table web development series 22 structure", y: "lab" },
-            { s: "LAB", t: "Whiteboard Workspace", u: "labs/whiteboard.html", k: "whiteboard drawing board brainstorming sketching tool notes sticky canvas creative", y: "lab" },
+            { s: "LAB", t: "Whiteboard Workspace", u: "labs/whiteboard", k: "whiteboard drawing board brainstorming sketching tool notes sticky canvas creative", y: "lab" },
 
             // --- Interactive Games (type: games) ---
             { s: "GAME", t: "Hangman", u: "games/hangman", k: "hangman", y: "games" },
