@@ -1,4 +1,4 @@
-const CACHE_NAME = 'undrstanding-offline';
+const CACHE_NAME = 'undrstanding-offline-v6';
 const OFFLINE_URL = 'offline';
 
 const CORE_ASSETS = [
@@ -10,44 +10,48 @@ const CORE_ASSETS = [
     'content/js/script.js',
     'content/js/mrstuck.js',
     'https://cdn.tailwindcss.com',
-    'https://fonts.googleapis.com/css2?family=Glilda+Display&display=swap',
+    'https://unpkg.com/lucide@latest',
     'https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css',
-    'https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Outfit:wght@400;700;900&display=swap',
+    'https://cdn.jsdelivr.net/npm/monaco-editor@0.45.0/min/vs/loader.js',
+    'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.46.0/min/vs/loader.min.js',
+    'https://cdn.jsdelivr.net/pyodide/v0.24.1/full/pyodide.js',
+    'https://fonts.googleapis.com/css2?family=Glilda+Display&display=swap',
+    'https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Outfit:wght@300;400;500;600;700;800;900&family=Fira+Code:wght@700&family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,700&family=Montserrat:wght@400;700&family=Pacifico&display=swap',
     // Content Pages
     'content/ai',
     'content/algo',
-    'content/android',
-    'content/bigdata',
-    'content/computation',
-    'content/crypto',
-    'content/dbms',
-    'content/design',
     'content/ds',
-    'content/flashcards',
-    'content/git',
-    'content/html',
-    'content/js',
-    'content/linux',
     'content/networks',
-    'content/oops',
+    'content/dbms',
     'content/os',
-    'content/pigeon',
-    'content/quanta',
-    'content/quickwiki',
-    'content/react',
     'content/software',
     'content/system',
+    'content/computation',
     'content/uiux',
+    'content/react',
+    'content/git',
+    'content/android',
+    'content/bigdata',
+    'content/crypto',
+    'content/linux',
+    'content/pigeon',
+    'content/quanta',
+    'content/oops',
+    'content/design',
+    'content/html',
+    'content/js',
+    'content/flashcards',
+    'content/quickwiki',
     // Labs
-    'labs/algo-visualiser',
-    'labs/budget-tracker',
+    'labs/whiteboard',
     'labs/ds-visualiser',
-    'labs/git-essentials',
-    'labs/html-blog-article',
+    'labs/algo-visualiser',
+    'labs/web-visualiser',
+    'labs/budget-tracker',
     'labs/quick-tab-closer',
     'labs/weather-app',
-    'labs/web-visualiser',
-    'labs/whiteboard',
+    'labs/git-essentials',
+    'labs/html-blog-article',
     // Prep
     'prep/CUTE',
     'prep/verbal',
@@ -120,8 +124,10 @@ self.addEventListener('fetch', (event) => {
                         return response;
                     }
 
-                    // If 404, try appending .html (for servers that don't support clean URLs)
-                    if (response.status === 404 && !url.pathname.includes('.')) {
+                    // If 404, try appending .html (for internal navigation only)
+                    if (response.status === 404 && 
+                        !url.pathname.includes('.') && 
+                        url.origin === self.location.origin) {
                         const htmlUrl = event.request.url + '.html';
                         return fetch(htmlUrl).then(htmlRes => {
                             if (htmlRes.ok) {
@@ -129,7 +135,7 @@ self.addEventListener('fetch', (event) => {
                                 caches.open(CACHE_NAME).then((cache) => cache.put(event.request, copy));
                                 return htmlRes;
                             }
-                            return response; // Return original 404 if .html also fails
+                            return response; 
                         });
                     }
                     return response;
