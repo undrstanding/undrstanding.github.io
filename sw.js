@@ -3,6 +3,7 @@ const OFFLINE_URL = 'offline';
 
 const CORE_ASSETS = [
     '/',
+    'index.html',
     'offline',
     'manifest.json',
     'highlights',
@@ -125,8 +126,8 @@ self.addEventListener('fetch', (event) => {
                     }
 
                     // If 404, try appending .html (for internal navigation only)
-                    if (response.status === 404 && 
-                        !url.pathname.includes('.') && 
+                    if (response.status === 404 &&
+                        !url.pathname.includes('.') &&
                         url.origin === self.location.origin) {
                         const htmlUrl = event.request.url + '.html';
                         return fetch(htmlUrl).then(htmlRes => {
@@ -135,7 +136,7 @@ self.addEventListener('fetch', (event) => {
                                 caches.open(CACHE_NAME).then((cache) => cache.put(event.request, copy));
                                 return htmlRes;
                             }
-                            return response; 
+                            return response;
                         });
                     }
                     return response;
