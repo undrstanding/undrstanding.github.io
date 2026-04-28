@@ -1,4 +1,4 @@
-const CACHE_NAME = 'undrstanding-offline-v6';
+const CACHE_NAME = 'undrstanding-offline';
 const OFFLINE_URL = 'offline';
 
 const CORE_ASSETS = [
