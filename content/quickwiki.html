@@ -594,7 +594,17 @@
                 renderWikiResult(page);
 
             } catch (err) {
-                errorEl.textContent = err.message || "An unexpected error occurred.";
+                if (!navigator.onLine || err.message.toLowerCase().includes('fetch') || err.name === 'TypeError') {
+                    errorEl.innerHTML = `
+                        <div class="flex items-center gap-3 p-4 bg-amber-50 border border-amber-200 text-amber-800 rounded-lg">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 5.636a9 9 0 010 12.728m0 0l-2.829-2.829m2.829 2.829L21 21M15.536 8.464a5 5 0 010 7.072m0 0l-2.829-2.829m-4.243 2.829a4.978 4.978 0 01-1.414-3.536 4.978 4.978 0 011.414-3.536m0 0L4.243 4.243M9.879 9.879a3 3 0 114.243 4.242" />
+                            </svg>
+                            <span class="font-medium">You are offline.</span> Quick Wiki requires an active connection to fetch new topics.
+                        </div>`;
+                } else {
+                    errorEl.textContent = err.message || "An unexpected error occurred.";
+                }
                 errorEl.classList.remove('hidden');
                 resultsSection.classList.add('hidden');
             } finally {
