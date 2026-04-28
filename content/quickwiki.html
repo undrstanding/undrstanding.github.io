@@ -231,6 +231,16 @@
         .animate-reveal {
             animation: fadeInSlideUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
+
+        /* Premium Offline Modal */
+        .glass-modal {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px) saturate(180%);
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            border-radius: 24px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
+        }
     </style>
 </head>
 
@@ -391,6 +401,37 @@
         </main>
     </div>
 
+    <!-- Premium Offline Modal -->
+    <div id="offline-modal" class="fixed inset-0 z-[1000] hidden items-center justify-center p-6 bg-black/60 backdrop-blur-sm">
+        <div class="glass-modal p-8 max-w-[340px] w-full text-center animate-reveal relative overflow-hidden">
+            <!-- Background Decorative Element -->
+            <div class="absolute -top-10 -right-10 w-32 h-32 bg-amber-100/50 rounded-full blur-3xl"></div>
+            
+            <div class="relative z-10">
+                <div class="w-16 h-16 bg-amber-50 rounded-2xl flex items-center justify-center mx-auto mb-6 border border-amber-100">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
+                        stroke-linecap="round" stroke-linejoin="round" class="text-amber-600">
+                        <path d="M16.72 11.06A10.94 10.94 0 0 1 19 12.55" />
+                        <path d="M5 12.55a10.94 10.94 0 0 1 5.17-2.39" />
+                        <path d="M10.71 5.05A16 16 0 0 1 22.58 9" />
+                        <path d="M1.42 9a15.91 15.91 0 0 1 4.7-2.88" />
+                        <path d="M8.53 16.11a6 6 0 0 1 6.95 0" />
+                        <line x1="1" y1="1" x2="23" y2="23" />
+                    </svg>
+                </div>
+                
+                <h3 class="text-xl font-bold text-black tracking-tight mb-3">You are Offline</h3>
+                <p class="text-sm text-gray-500 mb-8 leading-relaxed px-2">
+                    Quick Wiki needs an active connection to fetch new topics from Wikipedia. Check your network and try again.
+                </p>
+                
+                <button onclick="closeOfflineModal()" class="w-full py-4 bg-black text-white text-xs font-bold uppercase tracking-widest rounded-xl hover:bg-gray-900 transition-all active:scale-[0.98] shadow-lg shadow-black/10">
+                    Understood
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- Custom Confirmation Modal -->
     <div id="clear-history-modal" onclick="if(event.target === this) closeClearModal()"
         class="fixed inset-0 z-[1000] hidden items-center justify-center p-6 bg-black/40 backdrop-blur-sm">
@@ -409,6 +450,24 @@
     </div>
 
     <script>
+        function closeOfflineModal() {
+            const modal = document.getElementById('offline-modal');
+            modal.classList.add('opacity-0');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex', 'opacity-0');
+            }, 300);
+        }
+
+        function showOfflineModal() {
+            const modal = document.getElementById('offline-modal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            // Trigger reflow for animation
+            void modal.offsetWidth;
+            modal.classList.remove('opacity-0');
+        }
+
         // Disable Right Click, Copy, Paste
         document.addEventListener('contextmenu', e => e.preventDefault());
         document.addEventListener('copy', e => e.preventDefault());
@@ -595,17 +654,11 @@
 
             } catch (err) {
                 if (!navigator.onLine || err.message.toLowerCase().includes('fetch') || err.name === 'TypeError') {
-                    errorEl.innerHTML = `
-                        <div class="flex items-center gap-3 p-4 bg-amber-50 border border-amber-200 text-amber-800 rounded-lg">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 5.636a9 9 0 010 12.728m0 0l-2.829-2.829m2.829 2.829L21 21M15.536 8.464a5 5 0 010 7.072m0 0l-2.829-2.829m-4.243 2.829a4.978 4.978 0 01-1.414-3.536 4.978 4.978 0 011.414-3.536m0 0L4.243 4.243M9.879 9.879a3 3 0 114.243 4.242" />
-                            </svg>
-                            <span class="font-medium">You are offline.</span> Quick Wiki requires an active connection to fetch new topics.
-                        </div>`;
+                    showOfflineModal();
                 } else {
                     errorEl.textContent = err.message || "An unexpected error occurred.";
+                    errorEl.classList.remove('hidden');
                 }
-                errorEl.classList.remove('hidden');
                 resultsSection.classList.add('hidden');
             } finally {
                 btn.disabled = false;
