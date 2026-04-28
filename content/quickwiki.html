@@ -422,7 +422,7 @@
                 
                 <h3 class="text-xl font-bold text-black tracking-tight mb-3">You are Offline</h3>
                 <p class="text-sm text-gray-500 mb-8 leading-relaxed px-2">
-                    Quick Wiki needs an active connection to fetch new topics from Wikipedia. Check your network and try again.
+                    Quick Wiki needs an active connection to fetch new topics. However, <span class="text-black font-semibold">you can still access your recent searches</span> from the history sidebar while offline.
                 </p>
                 
                 <button onclick="closeOfflineModal()" class="w-full py-4 bg-black text-white text-xs font-bold uppercase tracking-widest rounded-xl hover:bg-gray-900 transition-all active:scale-[0.98] shadow-lg shadow-black/10">
@@ -605,6 +605,15 @@
             }
 
             const query = queryRaw.toLowerCase();
+            
+            // Immediate offline check
+            if (!navigator.onLine) {
+                showOfflineModal();
+                btn.disabled = false;
+                btnIcon.style.opacity = '1';
+                return;
+            }
+
             btn.disabled = true;
             btnIcon.style.opacity = '0.5';
 
@@ -622,9 +631,13 @@
                     return;
                 }
 
-                // Fetch structured content from Wikipedia API using generator=search for case-insensitivity
+                // Fetch structured content from Wikipedia API with 5s timeout
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 5000);
+
                 const url = `https://en.wikipedia.org/w/api.php?action=query&generator=search&gsrsearch=${encodeURIComponent(queryRaw)}&gsrlimit=1&prop=extracts|pageimages|description&piprop=original|thumbnail&pithumbsize=800&format=json&origin=*`;
-                const response = await fetch(url);
+                const response = await fetch(url, { signal: controller.signal });
+                clearTimeout(timeoutId);
 
                 if (!response.ok) {
                     throw new Error("Failed to fetch data from Wikipedia API.");
@@ -653,7 +666,7 @@
                 renderWikiResult(page);
 
             } catch (err) {
-                if (!navigator.onLine || err.message.toLowerCase().includes('fetch') || err.name === 'TypeError') {
+                if (!navigator.onLine || err.message.toLowerCase().includes('fetch') || err.name === 'TypeError' || err.name === 'AbortError') {
                     showOfflineModal();
                 } else {
                     errorEl.textContent = err.message || "An unexpected error occurred.";
