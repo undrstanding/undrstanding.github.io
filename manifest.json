@@ -2,7 +2,7 @@
   "name": "Undrstanding",
   "short_name": "Undrstanding",
   "description": "Redefine your understanding of computer science through interactive explorations.",
-  "start_url": "index.html",
+  "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#000000",
