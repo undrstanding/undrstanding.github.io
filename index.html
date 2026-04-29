@@ -6067,6 +6067,8 @@
             // Reset states for multiple triggers
             overlay.style.opacity = '1';
             overlay.classList.add('active');
+            document.body.style.overflow = 'hidden';
+            
             if (container) container.style.display = 'block';
             if (finalMsg) finalMsg.style.display = 'none';
             if (line1) line1.classList.remove('visible');
@@ -6086,28 +6088,23 @@
                         setTimeout(() => {
                             overlay.style.opacity = '0';
                             setTimeout(() => {
-                                overlay.classList.remove('active');
+                                window.closeCreditsEasterEgg();
                             }, 1500);
                         }, 6000);
                     } else {
-                        overlay.classList.remove('active');
+                        window.closeCreditsEasterEgg();
                     }
                 }, { once: true });
             }
+        }
 
-            // Optional: Close credits on ESC or click
-            const closeHandler = (e) => {
-                if (e.key === 'Escape' || e.type === 'click') {
-                    overlay.classList.remove('active');
-                    document.removeEventListener('keydown', closeHandler);
-                    overlay.removeEventListener('click', closeHandler);
-                }
-            };
-            document.addEventListener('keydown', closeHandler);
-            // Wait a bit before allowing click-to-close to prevent accidental closure
-            setTimeout(() => {
-                overlay.addEventListener('click', closeHandler);
-            }, 1000);
+        window.closeCreditsEasterEgg = function() {
+            const overlay = document.getElementById('credits-overlay');
+            if (overlay) {
+                overlay.classList.remove('active');
+                overlay.style.opacity = '1';
+            }
+            document.body.style.overflow = '';
         }
 
     </script>
@@ -6116,7 +6113,7 @@
     <div id="credits-overlay">
         <div class="credits-grain"></div>
         <div class="credits-vignette"></div>
-        <button class="credits-close" onclick="this.parentElement.classList.remove('active')">Close</button>
+        <button class="credits-close" onclick="window.closeCreditsEasterEgg()">Close</button>
 
         <div class="credits-container">
             <div class="credits-section" style="margin-top: 20vh;">
