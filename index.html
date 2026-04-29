@@ -282,48 +282,70 @@
             justify-content: center;
         }
 
-        /* "Resume Learning" tag */
+        /* "Resume Learning" tag - Upgraded UI */
         .continue-tag {
             position: absolute;
-            top: 10px;
-            right: 10px;
-            background: rgba(0, 0, 0, 0.55);
+            top: 15px;
+            right: 15px;
+            background: rgba(0, 0, 0, 0.4);
             color: #fff;
-            font-size: 0.55rem;
-            font-weight: 700;
+            font-size: 0.6rem;
+            font-weight: 800;
             text-transform: uppercase;
-            letter-spacing: 0.1em;
-            padding: 4px 10px 4px 7px;
-            border-radius: 6px;
+            letter-spacing: 0.15em;
+            padding: 6px 14px 6px 10px;
+            border-radius: 9999px;
             font-family: 'JetBrains Mono', monospace;
             pointer-events: none;
-            z-index: 20;
-            backdrop-filter: blur(4px);
+            z-index: 50;
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
             display: inline-flex;
             align-items: center;
-            gap: 6px;
+            gap: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            animation: tagSlideIn 0.8s cubic-bezier(0.23, 1, 0.32, 1) forwards;
+        }
+
+        @keyframes tagSlideIn {
+            from {
+                opacity: 0;
+                transform: translateX(30px) scale(0.9);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(0) scale(1);
+            }
         }
 
         .continue-tag-dot {
-            width: 6px;
-            height: 6px;
-            background: #ED2939;
+            width: 8px;
+            height: 8px;
+            background: #ff3e3e;
             border-radius: 50%;
             flex-shrink: 0;
-            animation: dotPulse 1.4s ease-in-out infinite;
+            position: relative;
         }
 
-        @keyframes dotPulse {
+        .continue-tag-dot::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 50%;
+            background: inherit;
+            animation: sonarRipple 2s ease-out infinite;
+        }
 
-            0%,
-            100% {
-                opacity: 1;
+        @keyframes sonarRipple {
+            0% {
                 transform: scale(1);
+                opacity: 0.8;
             }
 
-            50% {
-                opacity: 0.4;
-                transform: scale(1.4);
+            100% {
+                transform: scale(3.5);
+                opacity: 0;
             }
         }
 
@@ -5971,7 +5993,18 @@
 
             // Handle both absolute and relative paths from different hosting environments
             const normalized = lastPage.split('/').pop().replace('.html', '');
-            const links = document.querySelectorAll('a[href*="' + normalized + '.html"]');
+            // Look for links that contain the normalized filename (specifically in Learning Section)
+            const links = Array.from(document.querySelectorAll('#learning-section a')).filter(a => {
+                const href = a.getAttribute('href');
+                if (!href) return false;
+                
+                // Explicitly exclude non-curriculum cards
+                if (href.includes('quickwiki') || href.includes('flashcards') || a.id === 'random-card') {
+                    return false;
+                }
+
+                return href.includes(normalized);
+            });
 
             if (links.length === 0) return;
 
