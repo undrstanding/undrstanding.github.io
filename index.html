@@ -1161,6 +1161,260 @@
             position: relative;
             border-color: #000 !important;
         }
+
+        /* Credits Easter Egg */
+        #credits-overlay {
+            position: fixed;
+            inset: 0;
+            background: #050505;
+            z-index: 999999;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            overflow: hidden;
+            color: #e5e5e5;
+            font-family: 'Inter', sans-serif;
+            text-align: center;
+            transition: opacity 1.5s ease;
+        }
+
+        #credits-overlay.active {
+            display: flex;
+        }
+
+        .credits-container {
+            position: absolute;
+            top: 100%;
+            width: 100%;
+            animation: scroll-credits 18s linear forwards, credits-flicker 0.15s infinite;
+        }
+
+        @keyframes scroll-credits {
+            0% {
+                transform: translateY(0);
+            }
+
+            100% {
+                transform: translateY(-100%);
+            }
+        }
+
+        @keyframes credits-flicker {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.98;
+            }
+        }
+
+        .credits-section {
+            margin-bottom: 6rem;
+        }
+
+        .credits-role {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.6rem;
+            text-transform: uppercase;
+            letter-spacing: 0.6em;
+            color: #777;
+            margin-bottom: 0.75rem;
+        }
+
+        .credits-name {
+            font-family: 'Outfit', sans-serif;
+            font-size: 3rem;
+            font-weight: 800;
+            letter-spacing: 0.02em;
+            color: #ffffff;
+            text-transform: uppercase;
+            filter: drop-shadow(0 0 20px rgba(255, 255, 255, 0.05));
+        }
+
+        .credits-ego {
+            margin-top: 15rem;
+            padding-bottom: 40rem;
+            font-family: 'Glilda Display', serif;
+            font-size: 2rem;
+            font-style: italic;
+            opacity: 0.9;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+            line-height: 1.4;
+            color: #fff;
+            position: relative;
+        }
+
+        .credits-ego::before {
+            content: '';
+            display: block;
+            width: 40px;
+            height: 1px;
+            background: #333;
+            margin: 0 auto 3rem auto;
+        }
+
+        .credits-close {
+            position: fixed;
+            top: 40px;
+            right: 40px;
+            background: transparent;
+            color: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 10px 20px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.3em;
+            cursor: pointer;
+            z-index: 1000000;
+            backdrop-filter: blur(10px);
+            transition: all 0.4s ease;
+            border-radius: 2px;
+        }
+
+        .credits-close:hover {
+            color: #fff;
+            border-color: #fff;
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        #credits-overlay.active .credits-close {
+            display: block;
+        }
+
+        .credits-grain {
+            position: absolute;
+            inset: -50%;
+            width: 200%;
+            height: 200%;
+            background-image: url('data:image/svg+xml,%3Csvg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"%3E%3Cfilter id="noiseFilter"%3E%3CfeTurbulence type="fractalNoise" baseFrequency="0.65" numOctaves="3" stitchTiles="stitch"/%3E%3C/filter%3E%3Crect width="100%25" height="100%25" filter="url(%23noiseFilter)"/%3E%3C/svg%3E');
+            opacity: 0.04;
+            pointer-events: none;
+            z-index: 5;
+            animation: grain-animation 0.8s steps(10) infinite;
+        }
+
+        @keyframes grain-animation {
+
+            0%,
+            100% {
+                transform: translate(0, 0)
+            }
+
+            10% {
+                transform: translate(-5%, -10%)
+            }
+
+            20% {
+                transform: translate(-15%, 5%)
+            }
+
+            30% {
+                transform: translate(7%, -25%)
+            }
+
+            40% {
+                transform: translate(-5%, 25%)
+            }
+
+            50% {
+                transform: translate(-15%, 10%)
+            }
+
+            60% {
+                transform: translate(15%, 0%)
+            }
+
+            70% {
+                transform: translate(0%, 15%)
+            }
+
+            80% {
+                transform: translate(3%, 35%)
+            }
+
+            90% {
+                transform: translate(-10%, 10%)
+            }
+        }
+
+        .credits-vignette {
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at center, transparent 20%, rgba(0, 0, 0, 0.9) 100%);
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        #credits-final-message {
+            position: absolute;
+            inset: 0;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 20;
+            padding: 20px;
+        }
+
+        .final-quote-line {
+            font-family: 'Glilda Display', serif;
+            font-size: clamp(1.8rem, 6vw, 3.5rem);
+            color: #fff;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 1.2s cubic-bezier(0.23, 1, 0.32, 1);
+            margin-bottom: 0.5rem;
+            letter-spacing: -0.02em;
+        }
+
+        .final-quote-line.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Mobile Responsiveness for Credits */
+        @media (max-width: 768px) {
+            .credits-section {
+                margin-bottom: 4rem;
+            }
+
+            .credits-name {
+                font-size: 1.8rem;
+                letter-spacing: 0.05em;
+            }
+
+            .credits-role {
+                font-size: 0.5rem;
+                letter-spacing: 0.4em;
+                margin-bottom: 0.5rem;
+            }
+
+            .credits-ego {
+                margin-top: 8rem;
+                padding-bottom: 25rem;
+                font-size: 1.2rem;
+                max-width: 85%;
+            }
+
+            .final-quote-line {
+                font-size: 1.4rem;
+                line-height: 1.4;
+            }
+
+            .credits-close {
+                top: 20px;
+                right: 20px;
+                padding: 6px 12px;
+                font-size: 7px;
+            }
+        }
     </style>
 
 </head>
@@ -5331,6 +5585,13 @@
         function performSearch(rawQuery) {
             const query = rawQuery.toLowerCase().trim();
 
+            if (query === 'numan') {
+                triggerCreditsEasterEgg();
+                if (typeof input !== 'undefined') input.value = '';
+                resultsBox.classList.remove('active');
+                return;
+            }
+
             // --- Custom Command: Night Light ---
             if (query === '/eye') {
                 if (window.quickToggleNightLight) {
@@ -5793,7 +6054,109 @@
             updateQuickTabsVisibility();
         });
 
+        // --- Credits Easter Egg Trigger ---
+        function triggerCreditsEasterEgg() {
+            const overlay = document.getElementById('credits-overlay');
+            if (!overlay) return;
+
+            const container = overlay.querySelector('.credits-container');
+            const finalMsg = document.getElementById('credits-final-message');
+            const line1 = document.getElementById('quote-line-1');
+            const line2 = document.getElementById('quote-line-2');
+
+            // Reset states for multiple triggers
+            overlay.style.opacity = '1';
+            overlay.classList.add('active');
+            if (container) container.style.display = 'block';
+            if (finalMsg) finalMsg.style.display = 'none';
+            if (line1) line1.classList.remove('visible');
+            if (line2) line2.classList.remove('visible');
+
+            // Auto-close sequence
+            if (container) {
+                container.addEventListener('animationend', () => {
+                    // Start final message sequence
+                    container.style.display = 'none';
+                    if (finalMsg) {
+                        finalMsg.style.display = 'flex';
+                        setTimeout(() => line1.classList.add('visible'), 800);
+                        setTimeout(() => line2.classList.add('visible'), 2400);
+
+                        // Final fade out of entire overlay
+                        setTimeout(() => {
+                            overlay.style.opacity = '0';
+                            setTimeout(() => {
+                                overlay.classList.remove('active');
+                            }, 1500);
+                        }, 6000);
+                    } else {
+                        overlay.classList.remove('active');
+                    }
+                }, { once: true });
+            }
+
+            // Optional: Close credits on ESC or click
+            const closeHandler = (e) => {
+                if (e.key === 'Escape' || e.type === 'click') {
+                    overlay.classList.remove('active');
+                    document.removeEventListener('keydown', closeHandler);
+                    overlay.removeEventListener('click', closeHandler);
+                }
+            };
+            document.addEventListener('keydown', closeHandler);
+            // Wait a bit before allowing click-to-close to prevent accidental closure
+            setTimeout(() => {
+                overlay.addEventListener('click', closeHandler);
+            }, 1000);
+        }
+
     </script>
+
+    <!-- Credits Overlay (Easter Egg) -->
+    <div id="credits-overlay">
+        <div class="credits-grain"></div>
+        <div class="credits-vignette"></div>
+        <button class="credits-close" onclick="this.parentElement.classList.remove('active')">Close</button>
+
+        <div class="credits-container">
+            <div class="credits-section" style="margin-top: 20vh;">
+                <p class="credits-role">Developer</p>
+                <p class="credits-name">Numan Patil</p>
+            </div>
+            <div class="credits-section">
+                <p class="credits-role">Web Design</p>
+                <p class="credits-name">Numan Patil</p>
+            </div>
+            <div class="credits-section">
+                <p class="credits-role">Marketing</p>
+                <p class="credits-name">Numan Patil</p>
+            </div>
+            <div class="credits-section">
+                <p class="credits-role">Product Management</p>
+                <p class="credits-name">Numan Patil</p>
+            </div>
+            <div class="credits-section">
+                <p class="credits-role">UI/UX Strategy</p>
+                <p class="credits-name">Numan Patil</p>
+            </div>
+            <div class="credits-section">
+                <p class="credits-role">Content Curation</p>
+                <p class="credits-name">Numan Patil</p>
+            </div>
+            <div class="credits-section">
+                <p class="credits-role">System Architecture</p>
+                <p class="credits-name">Numan Patil</p>
+            </div>
+            <div class="credits-ego">
+                Ya! i'm egoistic, self obssesed and narcassist
+            </div>
+        </div>
+
+        <div id="credits-final-message">
+            <div class="final-quote-line" id="quote-line-1">This isn't the end ,</div>
+            <div class="final-quote-line" id="quote-line-2">Undrstanding continues with you.</div>
+        </div>
+    </div>
 
     <!-- Liquid Transition Overlay -->
     <div id="random-overlay"></div>
