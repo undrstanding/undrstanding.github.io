@@ -6059,6 +6059,10 @@
             const overlay = document.getElementById('credits-overlay');
             if (!overlay) return;
 
+            // Close mobile keyboard
+            const searchInput = document.getElementById('site-search');
+            if (searchInput) searchInput.blur();
+
             const container = overlay.querySelector('.credits-container');
             const finalMsg = document.getElementById('credits-final-message');
             const line1 = document.getElementById('quote-line-1');
@@ -6068,7 +6072,7 @@
             overlay.style.opacity = '1';
             overlay.classList.add('active');
             document.body.style.overflow = 'hidden';
-            
+
             if (container) container.style.display = 'block';
             if (finalMsg) finalMsg.style.display = 'none';
             if (line1) line1.classList.remove('visible');
@@ -6098,7 +6102,7 @@
             }
         }
 
-        window.closeCreditsEasterEgg = function() {
+        window.closeCreditsEasterEgg = function () {
             const overlay = document.getElementById('credits-overlay');
             if (overlay) {
                 overlay.classList.remove('active');
@@ -6145,7 +6149,7 @@
                 <p class="credits-name">Numan Patil</p>
             </div>
             <div class="credits-ego">
-                Ya! i'm egoistic, self obssesed and narcassist
+                Ya! I'm egoistic, self obssesed and narcassist
             </div>
         </div>
 
