@@ -3821,6 +3821,84 @@
             <!-- Learning Track -->
             <div class="mb-12">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8">
+                    <!-- Career Roadmap Card -->
+                    <a href="prep/roadmap" class="block group md:col-span-2">
+                        <article
+                            class="relative flex flex-col md:flex-row h-full min-h-[200px] bg-[#dbeafe] border border-black overflow-hidden rounded-[12px] transition-all duration-300">
+
+                            <!-- Left Content Pane -->
+                            <div class="flex-grow p-6 md:p-8 flex flex-col justify-between relative z-10 text-black">
+                                <div>
+                                    <div class="flex items-center gap-3 mb-4">
+                                        <div class="w-8 h-[1px] bg-black opacity-40"></div>
+                                        <span class="mono text-[9px] font-black uppercase tracking-[0.4em]">Prep
+                                            Series</span>
+                                    </div>
+
+                                    <h3
+                                        class="text-3xl md:text-4xl font-black outfit leading-[0.9] tracking-tighter mb-4 text-black">
+                                        Career Navigation <br>
+                                        & Roadmap
+                                    </h3>
+
+                                    <div class="flex items-center gap-6">
+                                        <div
+                                            class="px-3 py-1 bg-black text-[#dbeafe] border border-black font-black outfit text-xl tracking-tighter uppercase select-none">
+                                            GUIDE
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Right Decorative Pane (Map Decoration) -->
+                            <div
+                                class="hidden md:flex md:w-[30%] bg-black/5 relative overflow-hidden items-center justify-center p-8 border-l border-black">
+                                <div class="relative w-28 h-28">
+                                    <!-- Folded Map Layer 2 (Bottom) -->
+                                    <div class="absolute inset-0 bg-white border border-black rotate-6 translate-x-2 translate-y-2 opacity-50 group-hover:translate-x-3 group-hover:translate-y-3 transition-all duration-700"></div>
+                                    <!-- Folded Map Layer 1 (Top) -->
+                                    <div class="absolute inset-0 bg-white border border-black -rotate-3 flex flex-col p-2 overflow-hidden group-hover:-translate-y-2 group-hover:rotate-0 transition-all duration-500">
+                                        <!-- Grid Pattern -->
+                                        <div class="absolute inset-0 opacity-[0.05]" style="background-size: 15px 15px; background-image: linear-gradient(to right, black 1px, transparent 1px), linear-gradient(to bottom, black 1px, transparent 1px);"></div>
+                                        
+                                        <svg class="relative z-10 w-full h-full" viewBox="0 0 100 100">
+                                            <!-- Path Line -->
+                                            <path d="M20,80 Q40,30 80,20" fill="none" stroke="black" stroke-width="3" stroke-linecap="round" stroke-dasharray="0.1 7" />
+                                            <!-- Start Node -->
+                                            <circle cx="20" cy="80" r="5" fill="black" />
+                                            <!-- Middle Node -->
+                                            <circle cx="42" cy="45" r="5" fill="white" stroke="black" stroke-width="2" />
+                                            <!-- End Target -->
+                                            <g transform="translate(80,20)">
+                                                <circle cx="0" cy="0" r="6" fill="#dbeafe" stroke="black" stroke-width="1.5" />
+                                                <path d="M-3,-3 L3,3 M-3,3 L3,-3" stroke="black" stroke-width="1.5" stroke-linecap="round" />
+                                            </g>
+                                        </svg>
+                                    </div>
+                                    
+                                    <!-- Floating Compass -->
+                                    <div class="absolute -top-3 -right-3 w-10 h-10 bg-black text-white rounded-full flex items-center justify-center border border-black shadow-xl group-hover:-translate-y-2 group-hover:scale-110 group-hover:rotate-12 transition-all duration-500">
+                                        <i class="bi bi-compass-fill text-lg"></i>
+                                    </div>
+                                </div>
+
+                                <!-- Floating CTA -->
+                                <div
+                                    class="absolute bottom-6 right-6 flex items-center gap-3 text-black font-mono text-[9px] font-bold tracking-[0.3em] uppercase group-hover:translate-x-2 transition-transform">
+                                    <span>Proceed</span>
+                                    <span class="text-xl leading-none">&rarr;</span>
+                                </div>
+                            </div>
+
+                            <!-- Mobile CTA Overlay -->
+                            <div class="md:hidden p-8 pt-0 flex justify-end">
+                                <span
+                                    class="text-black font-mono text-[10px] font-bold tracking-[0.3em] uppercase">PROCEED
+                                    &rarr;</span>
+                            </div>
+                        </article>
+                    </a>
+
                     <!-- C.U.T.E Preparation Card -->
                     <a href="prep/CUTE" class="block group md:col-span-2">
                         <article
@@ -5515,6 +5593,7 @@
             { s: "GAME", t: "Chess", u: "games/chess", k: "chess board game logic strategy tactics pieces checkmate", y: "games" },
 
             // Series 14: Prep
+            { s: "PREP", t: "Career Roadmap", u: "prep/roadmap", k: "career roadmap navigation guide trajectory tech paths developer designer assessment diagnostic", y: "prep" },
             { s: "PREP", t: "Placement Prep", u: "prep/CUTE", k: "placement preparation cute academic assessments aptitude combined undrstanding test evaluation", y: "prep" },
             { s: "PREP", t: "C.U.T.E Preparation", u: "prep/CUTE", k: "comprehensive guide cute placement assessments combined undrstanding test evaluation", y: "prep" },
             { s: "PREP", t: "Verbal Communication", u: "prep/verbal", k: "verbal communication speech interview soft skills prep series articulation professional dialogue", y: "prep" },
