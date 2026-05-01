@@ -56,6 +56,7 @@ const CORE_ASSETS = [
     // Prep
     'prep/CUTE',
     'prep/verbal',
+    'prep/roadmap',
     // Games
     'games/hangman',
     'games/algocards',
