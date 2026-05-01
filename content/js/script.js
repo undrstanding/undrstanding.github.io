@@ -1282,6 +1282,7 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('stack-container') ||
         window.location.pathname.includes('highlights') ||
         window.location.pathname.includes('/labs/') ||
+        window.location.pathname.includes('roadmap') ||
         window.location.pathname.includes('/prep/')) return;
 
     // 1. Create Widget UI
@@ -1559,6 +1560,8 @@ document.addEventListener('DOMContentLoaded', () => {
         window.location.pathname.includes('flashcards') ||
         window.location.pathname.includes('highlights') ||
         window.location.pathname.includes('quickwiki') ||
+        window.location.pathname.includes('/prep/') ||
+        window.location.pathname.includes('roadmap') ||
         window.location.pathname.includes('/labs/')) return;
 
     // Re-enable text selection on content areas so the highlight tooltip can work.
