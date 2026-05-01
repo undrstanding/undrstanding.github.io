@@ -507,6 +507,7 @@
                 <a href="#diffusion" class="mobile-nav-link" onclick="toggleMobileMenu()">Generative Diffusion</a>
                 <a href="#rl" class="mobile-nav-link" onclick="toggleMobileMenu()">Reinforcement Learning</a>
                 <a href="#agi" class="mobile-nav-link" onclick="toggleMobileMenu()">What is AGI?</a>
+                <a href="#hallucination" class="mobile-nav-link" onclick="toggleMobileMenu()">Hallucinations</a>
                 <a href="#alignment" class="mobile-nav-link" onclick="toggleMobileMenu()">Alignment</a>
                 <a href="#glossary" class="mobile-nav-link" onclick="toggleMobileMenu()">Glossary</a>
                 <a href="#quiz" class="mobile-nav-link border-b-0" onclick="toggleMobileMenu()">Knowledge Check</a>
@@ -551,6 +552,7 @@
                         <a href="#diffusion" class="nav-link">Diffusion</a>
                         <a href="#rl" class="nav-link">Reinforcement Learning</a>
                         <a href="#agi" class="nav-link">What is AGI?</a>
+                        <a href="#hallucination" class="nav-link">Hallucinations</a>
                         <a href="#alignment" class="nav-link">Alignment</a>
                         <a href="#glossary" class="nav-link">Glossary</a>
                         <a href="#quiz" class="nav-link">Knowledge Check</a>
@@ -1852,9 +1854,157 @@
 
                 <div class="divider hidden md:block"></div>
 
-                <!-- 16. Alignment (Renumbered) -->
+                <!-- 16. Hallucination -->
+                <section id="hallucination" class="mb-20 md:mb-24">
+                    <span class="rams-label">06 / Safety & Reliability</span>
+                    <h3 class="text-xl font-medium mb-2">Model Hallucinations</h3>
+                    <p class="text-sm text-gray-600 mb-8 max-w-lg">Why statistical models confidently present falsehoods as facts.</p>
+
+                    <div class="space-y-6 mb-12">
+                        <p class="text-xs text-gray-500 leading-relaxed">
+                            A common misconception is that AI "lies." In reality, an LLM cannot lie because it has no concept of truth. It is a <strong>probabilistic engine</strong>. When it generates a response, it is simply selecting the most likely next token based on its training data.
+                        </p>
+                        <p class="text-xs text-gray-500 leading-relaxed">
+                            <strong>Hallucinations</strong> (or confabulations) occur when the statistical path of the most probable tokens diverges from factual reality. This happens for several reasons:
+                        </p>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-12">
+                        <div class="rams-card">
+                            <h4 class="text-[10px] uppercase font-bold text-gray-400 mb-4">Training Gaps</h4>
+                            <p class="text-[10px] text-gray-500 leading-relaxed">
+                                The model encounters a topic with sparse or conflicting data, forcing it to "guess" based on general patterns.
+                            </p>
+                        </div>
+                        <div class="rams-card">
+                            <h4 class="text-[10px] uppercase font-bold text-gray-400 mb-4">Compression Loss</h4>
+                            <p class="text-[10px] text-gray-500 leading-relaxed">
+                                Neural networks are lossy compression of the internet. Specific details (like dates or middle names) are often "blended" together.
+                            </p>
+                        </div>
+                        <div class="rams-card">
+                            <h4 class="text-[10px] uppercase font-bold text-gray-400 mb-4">Over-Optimization</h4>
+                            <p class="text-[10px] text-gray-500 leading-relaxed">
+                                The model is trained to be helpful and conversational, leading it to prioritize answering over admitting "I don't know."
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Interactive Hallucination Viz -->
+                    <div class="rams-card mb-12 overflow-hidden">
+                        <span class="rams-label">Interactive / Probability vs. Truth</span>
+                        <h4 class="text-sm font-bold text-black uppercase mb-6">The Hallucination Fork</h4>
+                        
+                        <div class="relative bg-gray-50 p-8 rounded-sm border border-gray-100 mb-6 min-h-[300px] flex flex-col justify-center">
+                            <div id="viz-stage-1" class="text-center transition-all duration-500">
+                                <span class="text-[10px] font-mono text-gray-400 uppercase block mb-2">Input Context</span>
+                                <p class="text-lg font-medium italic">"The capital of Australia is..."</p>
+                            </div>
+
+                            <div id="viz-stage-2" class="mt-8 flex flex-col md:flex-row gap-6 justify-center items-center opacity-0 transition-all duration-700 transform translate-y-4">
+                                <!-- Factual Path -->
+                                <div id="path-factual" class="w-full md:w-48 p-4 bg-white border border-gray-200 rounded-sm relative transition-all duration-500">
+                                    <div class="flex justify-between items-center mb-3">
+                                        <span class="text-[9px] font-bold text-gray-400 uppercase">Token: Canberra</span>
+                                        <span class="text-[9px] font-mono font-bold text-indigo-600">32%</span>
+                                    </div>
+                                    <div class="w-full h-1 bg-gray-100 rounded-full overflow-hidden">
+                                        <div class="bg-indigo-600 h-full transition-all duration-1000" style="width: 0%" id="bar-factual"></div>
+                                    </div>
+                                    <p class="text-[9px] text-gray-400 mt-3 italic">"Factually correct, but appears less frequently in colloquial datasets."</p>
+                                </div>
+
+                                <div class="text-gray-300 font-mono text-xl hidden md:block">VS</div>
+
+                                <!-- Hallucination Path -->
+                                <div id="path-hallucinated" class="w-full md:w-48 p-4 bg-white border border-gray-200 rounded-sm relative transition-all duration-500">
+                                    <div class="flex justify-between items-center mb-3">
+                                        <span class="text-[9px] font-bold text-gray-400 uppercase">Token: Sydney</span>
+                                        <span class="text-[9px] font-mono font-bold text-red-600">68%</span>
+                                    </div>
+                                    <div class="w-full h-1 bg-gray-100 rounded-full overflow-hidden">
+                                        <div class="bg-red-500 h-full transition-all duration-1000" style="width: 0%" id="bar-hallucinated"></div>
+                                    </div>
+                                    <p class="text-[9px] text-gray-400 mt-3 italic">"Highly frequent association. The model 'feels' this is the right answer."</p>
+                                </div>
+                            </div>
+
+                            <div id="viz-result" class="mt-8 text-center opacity-0 transition-all duration-500">
+                                <div class="inline-block px-4 py-2 bg-red-600 text-white text-[10px] font-bold uppercase tracking-widest mb-2">Hallucination Occurred</div>
+                                <p class="text-xs text-gray-500">The model followed the <strong>high-probability statistical path</strong> over the low-probability factual truth.</p>
+                            </div>
+                        </div>
+
+                        <div class="flex justify-center gap-4">
+                            <button id="run-viz-btn" class="btn btn-primary" onclick="runHallucinationViz()">Run Prediction</button>
+                            <button id="reset-viz-btn" class="btn btn-secondary hidden" onclick="resetHallucinationViz()">Reset</button>
+                        </div>
+                    </div>
+
+                    <div class="space-y-8">
+                        <div class="p-6 bg-amber-50 border border-amber-100 rounded-sm">
+                            <h4 class="text-sm font-bold text-amber-800 uppercase mb-4 flex items-center gap-2">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                                </svg>
+                                Deep Dive: The "Stochastic Parrot" Trap
+                            </h4>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                <div class="space-y-4">
+                                    <p class="text-xs text-amber-900 leading-relaxed">
+                                        The term <strong>"Stochastic Parrot"</strong> was famously coined by researchers (Bender, Gebru, et al.) to describe a fundamental limitation of Large Language Models. 
+                                    </p>
+                                    <p class="text-xs text-amber-800 leading-relaxed font-medium">
+                                        The Trap: We mistake <strong>Fluency</strong> for <strong>Understanding</strong>.
+                                    </p>
+                                    <p class="text-xs text-amber-700 leading-relaxed">
+                                        Because a parrot can repeat words with perfect pronunciation doesn't mean it understands the concepts of "liberty" or "taxation." Similarly, an AI predicts the next word based on statistical patterns (stochasticity) without having a physical or logical "grounding" in reality.
+                                    </p>
+                                </div>
+                                <div class="space-y-4">
+                                    <div class="bg-white/50 p-3 rounded-sm border border-amber-200">
+                                        <span class="text-[10px] font-bold text-amber-800 uppercase block mb-1">Anthropomorphism</span>
+                                        <p class="text-[10px] text-amber-700">Humans are evolutionarily hardwired to assume anything that speaks coherently must have a mind. This "Illusion of Intent" makes us trust AI outputs even when they are pure statistical noise.</p>
+                                    </div>
+                                    <div class="bg-white/50 p-3 rounded-sm border border-amber-200">
+                                        <span class="text-[10px] font-bold text-amber-800 uppercase block mb-1">Lack of Grounding</span>
+                                        <p class="text-[10px] text-amber-700">An LLM has only seen text. It has never felt heat, seen a color, or experienced gravity. Its world is composed entirely of mathematical relationships between tokens.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                            <div class="rams-card !bg-gray-900 !text-white border-none">
+                                <span class="text-[9px] uppercase text-gray-500 block mb-2">The "Room" Analogy</span>
+                                <p class="text-[10px] text-gray-300 leading-relaxed">
+                                    Imagine a person in a room with a rulebook for Chinese symbols. They can provide perfect answers in Chinese without understanding a single word. This is the <strong>Chinese Room Argument</strong>, and it's exactly how LLMs operate.
+                                </p>
+                            </div>
+                            <div class="rams-card">
+                                <span class="text-[9px] uppercase text-gray-400 block mb-2">Echo Chambers</span>
+                                <p class="text-[10px] text-gray-500 leading-relaxed">
+                                    If the training data contains a lie repeated 1,000 times, the model will "parrot" that lie as a high-probability truth. It cannot check the outside world to verify.
+                                </p>
+                            </div>
+                            <div class="rams-card">
+                                <span class="text-[9px] uppercase text-gray-400 block mb-2">Meaning vs. Form</span>
+                                <p class="text-[10px] text-gray-500 leading-relaxed">
+                                    AI is a master of <strong>Form</strong> (grammar, syntax, style) but is currently disconnected from <strong>Meaning</strong> (truth, intent, consequence).
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Inline Quiz: Hallucination -->
+                <div id="quiz-ai-hallucination" class="mb-20 md:mb-24"></div>
+
+                <div class="divider hidden md:block"></div>
+
+                <!-- 17. Alignment -->
                 <section id="alignment" class="mb-12">
-                    <span class="rams-label">06 / Safety</span>
+                    <span class="rams-label">07 / Safety</span>
                     <h3 class="text-xl font-medium mb-2">The Alignment Problem</h3>
                     <p class="text-sm text-gray-600 mb-4 max-w-lg">Ensuring AI goals match human values.</p>
                     <p class="text-xs text-gray-500 mb-8 max-w-xl leading-relaxed">
@@ -2098,6 +2248,13 @@
                             options: ["Being really good at Chess", "The ability to learn and perform any intellectual task that a human can", "Having a robotic body", "Processing speed"],
                             answer: 1,
                             explanation: "AGI refers to a machine with broad capabilities that can apply intelligence to any problem domain, much like a human."
+                        });
+
+                        new InlineQuiz('quiz-ai-hallucination', {
+                            question: "Why do Large Language Models hallucinate?",
+                            options: ["Because they are trying to trick the user", "Because they predict the most likely next token, which isn't always factual", "Because they have a sense of humor", "Because they run out of battery"],
+                            answer: 1,
+                            explanation: "LLMs are statistical engines, not truth databases. They prioritize probabilistic word sequences over factual verification."
                         });
 
                         new InlineQuiz('quiz-ai-alignment', {
@@ -2928,6 +3085,69 @@
             revealObserver.observe(section);
             navObserver.observe(section);
         });
+
+        // --- Hallucination Viz Logic ---
+        function runHallucinationViz() {
+            const btn = document.getElementById('run-viz-btn');
+            const resetBtn = document.getElementById('reset-viz-btn');
+            const stage2 = document.getElementById('viz-stage-2');
+            const barF = document.getElementById('bar-factual');
+            const barH = document.getElementById('bar-hallucinated');
+            const pathF = document.getElementById('path-factual');
+            const pathH = document.getElementById('path-hallucinated');
+            const result = document.getElementById('viz-result');
+
+            if (!btn) return;
+
+            btn.disabled = true;
+            btn.classList.add('opacity-50');
+
+            // 1. Reveal paths
+            if (stage2) stage2.classList.remove('opacity-0', 'translate-y-4');
+            
+            setTimeout(() => {
+                // 2. Grow bars
+                if (barF) barF.style.width = '32%';
+                if (barH) barH.style.width = '68%';
+            }, 500);
+
+            setTimeout(() => {
+                // 3. Highlight choice (Hallucination)
+                if (pathH) pathH.classList.add('border-red-500', 'bg-red-50', 'ring-2', 'ring-red-100');
+                if (pathF) pathF.classList.add('opacity-30', 'grayscale');
+            }, 1500);
+
+            setTimeout(() => {
+                // 4. Show result
+                if (result) result.classList.remove('opacity-0');
+                btn.classList.add('hidden');
+                if (resetBtn) resetBtn.classList.remove('hidden');
+            }, 2500);
+        }
+
+        function resetHallucinationViz() {
+            const btn = document.getElementById('run-viz-btn');
+            const resetBtn = document.getElementById('reset-viz-btn');
+            const stage2 = document.getElementById('viz-stage-2');
+            const barF = document.getElementById('bar-factual');
+            const barH = document.getElementById('bar-hallucinated');
+            const pathF = document.getElementById('path-factual');
+            const pathH = document.getElementById('path-hallucinated');
+            const result = document.getElementById('viz-result');
+
+            if (stage2) stage2.classList.add('opacity-0', 'translate-y-4');
+            if (barF) barF.style.width = '0%';
+            if (barH) barH.style.width = '0%';
+            if (pathH) pathH.classList.remove('border-red-500', 'bg-red-50', 'ring-2', 'ring-red-100');
+            if (pathF) pathF.classList.remove('opacity-30', 'grayscale');
+            if (result) result.classList.add('opacity-0');
+            
+            if (btn) {
+                btn.classList.remove('hidden', 'opacity-50');
+                btn.disabled = false;
+            }
+            if (resetBtn) resetBtn.classList.add('hidden');
+        }
 
     </script>
 
