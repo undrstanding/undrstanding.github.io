@@ -38,7 +38,7 @@
 
         :root {
             /* Rams Palette - Cyan/Teal Edition */
-            --bg-color: #f4f4f4;
+            --bg-color: #fdfaf6;
             --card-bg: #ffffff;
             --text-main: #111111;
             --text-muted: #737373;
@@ -251,6 +251,21 @@
             border: 1px solid var(--accent);
             animation: pulse-ring 2s infinite;
         }
+    
+        /* Paper Texture Overlay */
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E");
+            pointer-events: none;
+            z-index: -1;
+            opacity: 0.4;
+        }
+
     </style>
 </head>
 
@@ -1395,7 +1410,13 @@
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
                         <div class="rams-card bg-gray-50 border-0 p-6 mb-0">
-                            <h4 class="font-bold text-sm mb-2 text-cyan-900">HTTP/HTTPS</h4>
+                            <div class="flex justify-between items-start mb-2">
+                                <h4 class="font-bold text-sm text-cyan-900">HTTP / HTTPS</h4>
+                                <div class="flex gap-1">
+                                    <span class="text-[10px] font-mono bg-white px-2 py-1 rounded text-gray-600 border border-gray-100">80</span>
+                                    <span class="text-[10px] font-mono bg-cyan-600 px-2 py-1 rounded text-white">443</span>
+                                </div>
+                            </div>
                             <p class="text-xs text-gray-600 mb-2">HyperText Transfer Protocol. Application layer
                                 protocol for transmitting hypermedia documents (HTML).</p>
                             <div class="flex items-center gap-2 mt-3 mb-3">
@@ -1429,6 +1450,18 @@
                     </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
+                        <!-- Telnet -->
+                        <div class="rams-card mb-0 p-5 border-l-4 border-l-red-400">
+                            <div class="flex justify-between items-start mb-2">
+                                <h4 class="font-bold text-sm text-gray-900">Telnet</h4>
+                                <span class="text-[10px] font-mono bg-red-50 px-2 py-1 rounded text-red-600">Port
+                                    23</span>
+                            </div>
+                            <p class="text-xs text-gray-600 mb-2 leading-relaxed">
+                                <strong class="text-gray-800">Telecommunications Network.</strong> Older protocol for remote login. Unlike SSH, it is <strong>insecure</strong> (plaintext).
+                            </p>
+                        </div>
+
                         <!-- SSH -->
                         <div class="rams-card mb-0 p-5 border-l-4 border-l-gray-800">
                             <div class="flex justify-between items-start mb-2">
@@ -1495,6 +1528,82 @@
                                 <strong class="text-gray-800">Remote Desktop Protocol.</strong> Microsoft protocol that
                                 provides a graphical interface to connect to another computer.
                             </p>
+                        </div>
+                    </div>
+
+                    <!-- Port Directory Table -->
+                    <div class="rams-card mt-8 overflow-hidden !p-0">
+                        <div class="p-6 border-b border-gray-100 bg-gray-50/50">
+                            <h4 class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Cheat Sheet</h4>
+                            <h5 class="text-sm font-bold text-gray-900">Common Port Directory</h5>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left text-[11px]">
+                                <thead class="bg-gray-50 border-b border-gray-200 font-bold text-gray-500 uppercase tracking-tighter">
+                                    <tr>
+                                        <th class="p-4">Port</th>
+                                        <th class="p-4">Protocol</th>
+                                        <th class="p-4">Description</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-gray-100 font-mono text-gray-600">
+                                    <tr>
+                                        <td class="p-4 font-bold text-cyan-700">20, 21</td>
+                                        <td class="p-4 text-gray-900">FTP</td>
+                                        <td class="p-4 font-sans text-gray-500">File Transfer Protocol (Data/Control)</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="p-4 font-bold text-cyan-700">22</td>
+                                        <td class="p-4 text-gray-900">SSH</td>
+                                        <td class="p-4 font-sans text-gray-500">Secure Shell (Remote Management)</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="p-4 font-bold text-cyan-700">23</td>
+                                        <td class="p-4 text-gray-900">Telnet</td>
+                                        <td class="p-4 font-sans text-gray-500">Insecure Remote Login (Plaintext)</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="p-4 font-bold text-cyan-700">25</td>
+                                        <td class="p-4 text-gray-900">SMTP</td>
+                                        <td class="p-4 font-sans text-gray-500">Email Transmission (Outgoing)</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="p-4 font-bold text-cyan-700">53</td>
+                                        <td class="p-4 text-gray-900">DNS</td>
+                                        <td class="p-4 font-sans text-gray-500">Domain Name System (Lookups)</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="p-4 font-bold text-cyan-700">67, 68</td>
+                                        <td class="p-4 text-gray-900">DHCP</td>
+                                        <td class="p-4 font-sans text-gray-500">Automatic IP Assignment</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="p-4 font-bold text-cyan-700">80</td>
+                                        <td class="p-4 text-gray-900">HTTP</td>
+                                        <td class="p-4 font-sans text-gray-500">Unsecured Web Traffic</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="p-4 font-bold text-cyan-700">110</td>
+                                        <td class="p-4 text-gray-900">POP3</td>
+                                        <td class="p-4 font-sans text-gray-500">Post Office Protocol (Email)</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="p-4 font-bold text-cyan-700">143</td>
+                                        <td class="p-4 text-gray-900">IMAP</td>
+                                        <td class="p-4 font-sans text-gray-500">Modern Email Retrieval</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="p-4 font-bold text-cyan-700">443</td>
+                                        <td class="p-4 text-gray-900">HTTPS</td>
+                                        <td class="p-4 font-sans text-gray-500">Secure Web (Encrypted)</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="p-4 font-bold text-cyan-700">3389</td>
+                                        <td class="p-4 text-gray-900">RDP</td>
+                                        <td class="p-4 font-sans text-gray-500">Remote Desktop Protocol</td>
+                                    </tr>
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                 </section>
@@ -1776,6 +1885,7 @@
                         { q: "What is the primary difference between TCP and UDP?", o: ["UDP is reliable, TCP is fast", "TCP is connection-oriented/reliable, UDP is connectionless/fast", "TCP is for videos, UDP is for email", "There is no difference"], a: 1 },
                         { q: "Which DNS record type maps an alias to a canonical name?", o: ["A", "MX", "CNAME", "PTR"], a: 2 },
                         { q: "Which standard port is used for secure web traffic (HTTPS)?", o: ["80", "22", "443", "8080"], a: 2 },
+                        { q: "Which port is used by the insecure Telnet protocol?", o: ["21", "22", "23", "25"], a: 2 },
                         { q: "How many bits are in an IPv4 address?", o: ["32 bits", "128 bits", "64 bits", "48 bits"], a: 0 },
                         { q: "Which device primarily operates at Layer 2 (Data Link) and uses MAC addresses?", o: ["Hub", "Router", "Switch", "Repeater"], a: 2 },
                         { q: "In Encapsulation, what is the protocol data unit (PDU) at the Transport Layer called?", o: ["Frame", "Packet", "Segment", "Bit"], a: 2 },
