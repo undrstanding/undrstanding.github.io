@@ -1,0 +1,985 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Career Roadmap | Undrstanding</title>
+    <meta name="description"
+        content="Discover your ideal tech career path with Undrstanding's Career Roadmap. A personalized 10-step assessment to guide your learning journey.">
+    <meta name="keywords"
+        content="career roadmap, tech careers, frontend, backend, uiux, data science, coding assessment">
+    <link rel="icon" type="image/svg+xml" href="../assests/undrlogo.svg">
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=JetBrains+Mono:wght@500;800&family=Outfit:wght@400;700;900&display=swap');
+
+        :root {
+            --border: #000000;
+            --bg: #ffffff;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg);
+            color: var(--border);
+            overflow-x: hidden;
+            user-select: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+        }
+
+
+        .outfit {
+            font-family: 'Outfit', sans-serif;
+        }
+
+        .mono {
+            font-family: 'JetBrains+Mono', monospace;
+        }
+
+        .nb-card {
+            border: 2px solid var(--border);
+            box-shadow: 6px 6px 0px rgba(0, 0, 0, 0.1);
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            border-radius: 20px;
+        }
+
+
+        .nb-button {
+            border: 1.5px solid var(--border);
+            box-shadow: none;
+            transition: all 0.15s;
+            cursor: pointer;
+            font-family: 'Outfit', sans-serif;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            font-size: 11px;
+            border-radius: 8px;
+        }
+
+        .nb-button:active:not(:disabled) {
+            transform: translateY(1px);
+            background-color: #f1f5f9;
+        }
+
+
+        .option-btn {
+            width: 100%;
+            text-align: left;
+            padding: 1.25rem 1.5rem;
+            margin-bottom: 0.75rem;
+            border: 1.5px solid var(--border);
+            background: #fff;
+            border-radius: 12px;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 1.25rem;
+            font-size: 1rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .option-btn:hover {
+            border-color: #000;
+            background: #f8fafc;
+            transform: translateY(-2px);
+        }
+
+        .option-btn.selected {
+            border-color: #000;
+            background: #000;
+            color: #fff;
+            box-shadow: 6px 6px 0px rgba(0, 0, 0, 0.1);
+        }
+
+        .option-btn.selected .mono {
+            border-color: #fff;
+            color: #fff;
+        }
+
+        /* Split Screen Styles */
+        .hero-container {
+            min-height: 100vh;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+        }
+
+        @media (min-width: 768px) {
+            .hero-container {
+                flex-direction: row;
+                height: 100vh;
+                overflow: hidden;
+            }
+        }
+
+        .hero-left {
+            background-color: #dbeafe;
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            border-bottom: 1.5px solid var(--border);
+            position: relative;
+            overflow: hidden;
+            min-height: 40vh;
+        }
+
+        @media (min-width: 768px) {
+            .hero-left {
+                padding: 3rem;
+                justify-content: space-between;
+                border-bottom: none;
+                border-right: 1.5px solid var(--border);
+                min-height: auto;
+                width: 35%;
+            }
+        }
+
+        .hero-right {
+            flex: 1;
+            padding: 2rem;
+            background: white;
+            display: flex;
+            align-items: center;
+        }
+
+        @media (min-width: 768px) {
+            .hero-right {
+                padding: 4rem;
+                overflow-y: auto;
+            }
+        }
+
+        #questions-wrapper {
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+
+        .question-card {
+            animation: fadeInScale 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        }
+
+        @keyframes fadeInScale {
+            from {
+                opacity: 0;
+                transform: translateY(20px) scale(0.98);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .roadmap-node {
+            position: relative;
+            transition: all 0.2s;
+        }
+
+        .roadmap-node:hover {
+            transform: translateX(4px);
+        }
+
+
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+
+        /* Global scrollbar hiding */
+        * {
+            -ms-overflow-style: none;
+            /* IE and Edge */
+            scrollbar-width: none;
+            /* Firefox */
+        }
+
+        *::-webkit-scrollbar {
+            display: none;
+            /* Chrome, Safari and Opera */
+        }
+    </style>
+
+
+
+
+
+    </style>
+</head>
+
+<body>
+    <!-- Hero Section -->
+    <section id="hero" class="hero-container">
+        <div class="hero-left">
+            <!-- Background Decoration -->
+            <div class="absolute -right-10 -bottom-10 opacity-10 pointer-events-none">
+                <i class="bi bi-map text-[140px] md:text-[240px] leading-none"></i>
+            </div>
+            <div class="relative z-10">
+                <div class="flex items-center gap-3 mb-12">
+                    <div class="w-8 h-[1.5px] bg-black"></div>
+                    <span class="mono text-[10px] font-black uppercase tracking-[0.4em] opacity-80">Prep Series</span>
+                </div>
+                <h2 class="text-4xl md:text-5xl font-black outfit leading-[0.9] tracking-tight mb-6 md:mb-8">
+                    Career <br>Navigation <br>& Roadmap
+                </h2>
+                <div
+                    class="inline-block px-3 py-1 bg-black text-white border-[1.5px] border-black font-black outfit text-xl md:text-2xl tracking-tighter uppercase">
+                    GUIDE
+                </div>
+            </div>
+        </div>
+        </div>
+
+
+        <div class="hero-right">
+            <div class="max-w-xl">
+                <h3 class="text-3xl font-bold outfit uppercase mb-6 border-b border-slate-100 pb-3">Tool Overview</h3>
+                <p class="text-slate-500 mb-8 leading-relaxed">Discover your ideal trajectory in the technology
+                    landscape. Our assessment analyzes your logical patterns, creative interests, and technical
+                    curiosities to build a custom-tailored learning roadmap.</p>
+
+                <ul class="space-y-4 mb-12">
+                    <li class="flex gap-4">
+                        <div
+                            class="w-8 h-8 rounded bg-black text-white flex items-center justify-center shrink-0 outfit font-bold">
+                            1</div>
+                        <div>
+                            <h4 class="font-bold text-sm uppercase mono">Aptitude Profile</h4>
+                            <p class="text-xs text-slate-500 mt-1">Answer questions about your problem-solving style.
+                            </p>
+                        </div>
+                    </li>
+                    <li class="flex gap-4">
+                        <div
+                            class="w-8 h-8 rounded bg-black text-white flex items-center justify-center shrink-0 outfit font-bold">
+                            2</div>
+                        <div>
+                            <h4 class="font-bold text-sm uppercase mono">Pattern Analysis</h4>
+                            <p class="text-xs text-slate-500 mt-1">System identifies your strongest technical alignment.
+                            </p>
+                        </div>
+                    </li>
+                    <li class="flex gap-4">
+                        <div
+                            class="w-8 h-8 rounded bg-black text-white flex items-center justify-center shrink-0 outfit font-bold">
+                            3</div>
+                        <div>
+                            <h4 class="font-bold text-sm uppercase mono">Custom Roadmap</h4>
+                            <p class="text-xs text-slate-500 mt-1">Receive a phased learning plan with market metrics.
+                            </p>
+                        </div>
+                    </li>
+                </ul>
+
+                <button onclick="startQuiz()"
+                    class="nb-button px-10 py-4 bg-black text-white rounded-xl shadow-[6px_6px_0px_rgba(0,0,0,0.1)]">
+                    Begin Assessment
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Quiz Section -->
+    <main id="quiz-container" class="hidden h-screen w-screen flex flex-col bg-slate-50">
+        <header class="h-16 shrink-0 border-b border-slate-200 px-4 md:px-8 flex items-center justify-between bg-white">
+            <div class="flex items-center gap-2 md:gap-4">
+                <span class="text-[10px] md:text-xs font-bold tracking-widest uppercase hidden sm:inline">Roadmap
+                    Builder</span>
+                <span class="h-4 w-[1px] bg-slate-200 hidden sm:inline"></span>
+                <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest" id="step-counter">Step
+                    01/10</span>
+            </div>
+
+            <div class="flex items-center gap-3 md:gap-6">
+                <div class="flex items-center gap-2 md:gap-4">
+                    <span class="text-[9px] font-bold text-slate-400 uppercase tracking-widest hidden xs:inline"
+                        id="completion-pct">0% Complete</span>
+                    <div class="w-20 md:w-32 h-1.5 bg-slate-100 rounded-full overflow-hidden border border-slate-200">
+                        <div id="progress-fill" class="h-full bg-black transition-all" style="width: 0%"></div>
+                    </div>
+                </div>
+            </div>
+
+        </header>
+
+        <div class="flex-grow overflow-y-auto p-6 md:p-12 no-scrollbar">
+            <div class="max-w-3xl w-full mx-auto min-h-full flex flex-col justify-center py-8">
+                <div id="questions-wrapper">
+                    <!-- Questions injected here -->
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Result Section -->
+    <section id="result-container" class="hidden h-screen w-screen flex flex-col bg-white overflow-y-auto no-scrollbar">
+        <header
+            class="h-16 shrink-0 border-b border-slate-200 px-4 md:px-8 flex items-center justify-between bg-white sticky top-0 z-50">
+            <div class="flex items-center gap-2 md:gap-4">
+                <span class="text-[10px] md:text-xs font-bold tracking-widest uppercase hidden sm:inline">Career
+                    Report</span>
+                <span class="h-4 w-[1px] bg-slate-200 hidden sm:inline"></span>
+                <span class="text-[10px] font-bold text-indigo-600 uppercase tracking-widest">Finalized</span>
+            </div>
+
+            <div class="flex gap-2">
+                <a href="../index.html"
+                    class="nb-button px-5 py-2 bg-[#dbeafe] text-black text-[9px] md:text-[10px] rounded-lg flex items-center justify-center hover:bg-black hover:text-white transition-all">
+                    HOME
+                </a>
+                <button onclick="location.reload()"
+                    class="nb-button px-5 py-2 bg-black text-white text-[9px] md:text-[10px] rounded-lg">
+                    RETAKE
+                </button>
+            </div>
+
+
+
+        </header>
+
+        <div class="flex-grow max-w-5xl mx-auto w-full p-6 md:p-12">
+            <!-- Page 1: Overview -->
+            <div>
+                <div class="mb-12 flex flex-col md:flex-row md:items-end justify-between gap-8">
+
+
+
+                    <div class="text-center md:text-left">
+                        <div
+                            class="inline-flex items-center gap-2 px-3 py-1 bg-indigo-50 text-indigo-600 border border-indigo-100 font-bold outfit text-[10px] uppercase tracking-widest rounded-full mb-6">
+                            <span class="w-1.5 h-1.5 bg-indigo-600 rounded-full animate-pulse"></span>
+                            Optimal Career Match
+                        </div>
+                        <h2 id="career-title"
+                            class="outfit font-black text-5xl md:text-7xl mb-6 uppercase tracking-tight leading-[0.85]">
+                            UI/UX DESIGNER</h2>
+                        <p id="career-desc" class="text-slate-500 text-lg max-w-2xl leading-relaxed mx-auto md:mx-0">
+                        </p>
+
+                        <div
+                            class="mt-6 bg-slate-50 border border-slate-200 p-5 rounded-2xl text-left max-w-2xl mx-auto md:mx-0 shadow-sm">
+                            <div
+                                class="outfit font-black text-[10px] uppercase tracking-widest text-indigo-600 mb-2 flex items-center gap-2">
+                                <i class="bi bi-briefcase-fill"></i> About The Role</div>
+                            <p id="career-role" class="text-sm text-slate-700 leading-relaxed"></p>
+                        </div>
+                    </div>
+
+
+                    <div
+                        class="bg-white border-2 border-black p-6 rounded-[24px] shadow-[8px_8px_0px_rgba(0,0,0,0.05)] shrink-0 text-center md:text-left">
+                        <div class="mono text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3">Market
+                            Compatibility</div>
+                        <div class="flex items-end gap-1 mb-2">
+                            <span id="match-score" class="text-5xl font-black outfit leading-none">94</span>
+                            <span class="text-xl font-bold text-slate-400 outfit mb-1">%</span>
+                        </div>
+                        <div class="w-32 h-2 bg-slate-100 rounded-full overflow-hidden border border-slate-200">
+                            <div id="match-fill" class="h-full bg-black" style="width: 94%"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-16">
+                    <div class="p-5 nb-card bg-white">
+                        <div
+                            class="mono text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3 flex items-center gap-2">
+                            <i class="bi bi-graph-up-arrow"></i> Demand
+                        </div>
+                        <div id="demand-level"
+                            class="outfit font-black text-xl uppercase tracking-tighter text-indigo-600">HIGH</div>
+                    </div>
+                    <div class="p-5 nb-card bg-white">
+                        <div
+                            class="mono text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3 flex items-center gap-2">
+                            <i class="bi bi-currency-dollar"></i> Range
+                        </div>
+                        <div id="salary-range" class="outfit font-black text-xl uppercase tracking-tighter">$85K - $120K
+                        </div>
+                    </div>
+                    <div class="p-5 nb-card bg-white">
+                        <div
+                            class="mono text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3 flex items-center gap-2">
+                            <i class="bi bi-clock"></i> Timeline
+                        </div>
+                        <div id="learn-time" class="outfit font-black text-xl uppercase tracking-tighter">6-8 MO</div>
+                    </div>
+                    <div class="p-5 nb-card bg-white">
+                        <div
+                            class="mono text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3 flex items-center gap-2">
+                            <i class="bi bi-lightning-charge"></i> Difficulty
+                        </div>
+                        <div id="diff-level" class="outfit font-black text-xl uppercase tracking-tighter">MODERATE</div>
+                    </div>
+                </div>
+            </div> <!-- End Page 1 Overview -->
+
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-12">
+                <!-- Roadmap Column -->
+                <div class="md:col-span-2">
+                    <h3 class="outfit font-black text-xl uppercase mb-6 flex items-center gap-3">
+                        <span
+                            class="w-6 h-6 bg-black text-white flex items-center justify-center text-xs rounded">01</span>
+                        Implementation Roadmap
+                    </h3>
+                    <div id="roadmap-steps"></div>
+                </div>
+
+                <!-- Stack Column -->
+                <div>
+                    <h3 class="outfit font-black text-xl uppercase mb-6 flex items-center gap-3">
+
+
+
+                        <span
+                            class="w-8 h-8 bg-black text-white flex items-center justify-center text-sm rounded">02</span>
+                        Essential Stack
+                    </h3>
+                    <div id="skills-stack" class="space-y-3"></div>
+
+                    <div id="alternatives-container" class="mt-12 hidden">
+                        <h3 class="outfit font-black text-xl uppercase mb-6 flex items-center gap-3 text-slate-400">
+                            Other Recommendations
+                        </h3>
+                        <div id="alternatives-list" class="space-y-3">
+                            <!-- Alternatives injected here -->
+                        </div>
+                    </div>
+
+                    <div id="expert-insight-card"
+                        class="mt-12 p-6 bg-slate-900 text-white rounded-2xl relative overflow-hidden">
+
+                        <div class="absolute -right-4 -bottom-4 opacity-10">
+                            <i class="bi bi-rocket-takeoff text-8xl"></i>
+                        </div>
+                        <h4 class="outfit font-black text-lg uppercase mb-3">Expert Insight</h4>
+                        <p class="text-slate-400 text-xs leading-relaxed">The technology landscape moves fast. Focus on
+                            deep fundamentals before chasing frameworks. Consistency over intensity is your key to
+                            mastery.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Disclaimer -->
+            <div class="mt-16 pt-8 border-t border-slate-200 text-center">
+                <p class="text-[10px] text-slate-400 mono uppercase tracking-[0.2em] leading-relaxed max-w-2xl mx-auto">
+                    <i class="bi bi-info-circle mr-1"></i> Disclaimer: This roadmap is generated based on your selected
+                    options. It serves as an exploratory guide and cannot be considered a fully accurate professional
+                    directive.
+                </p>
+            </div>
+        </div>
+
+    </section>
+
+
+    <script>
+        const quizData = [
+            {
+                question: "What's your ideal way to solve a problem?",
+                options: [
+                    { text: "Sketching out a visual solution or layout.", score: { uiux: 3, frontend: 1, webdesign: 3 } },
+                    { text: "Writing logic and handling data efficiently.", score: { backend: 3, android: 1, fullstack: 2 } },
+                    { text: "Finding patterns in numbers and statistics.", score: { data: 3, ml: 2, ai: 1 } },
+                    { text: "Building models that learn from information.", score: { ai: 3, ml: 3 } },
+                    { text: "Finding bugs and ensuring everything works perfectly.", score: { testing: 3 } }
+                ],
+                type: "mcq"
+            },
+            {
+                question: "Which of these tasks sounds most exciting?",
+                options: [
+                    { text: "Designing a beautiful mobile app interface.", score: { uiux: 2, android: 3 } },
+                    { text: "Creating a predictive model for stock prices.", score: { data: 2, ml: 3 } },
+                    { text: "Building an intelligent chatbot that converses.", score: { ai: 3, ml: 2 } },
+                    { text: "Building a complex app from database to UI.", score: { backend: 2, frontend: 1, fullstack: 3 } },
+                    { text: "Creating stunning marketing sites rapidly.", score: { webdesign: 3, uiux: 1 } }
+                ],
+                type: "mcq"
+            },
+            {
+                question: "What's your preferred workspace environment?",
+                options: [
+                    { text: "Adobe Creative Cloud, Figma, or Webflow.", score: { uiux: 3, webdesign: 3 } },
+                    { text: "VS Code & Terminal across the entire stack.", score: { frontend: 2, backend: 2, fullstack: 3 } },
+                    { text: "Jupyter Notebooks & Python Editors.", score: { data: 2, ai: 3, ml: 3 } },
+                    { text: "Android Studio or Xcode.", score: { android: 3 } },
+                    { text: "Debugging consoles & Testing suites.", score: { testing: 3 } }
+                ],
+                type: "mcq"
+            },
+            {
+                question: "Select the areas that naturally interest you (Select all that apply):",
+                options: [
+                    { text: "Aesthetics, Layouts, and CMS", score: { uiux: 2, webdesign: 3 } },
+                    { text: "Client-side and Server-side Logic", score: { backend: 2, frontend: 2, fullstack: 3 } },
+                    { text: "Data Analysis and Insights", score: { data: 2, ml: 1 } },
+                    { text: "Artificial Intelligence and Chatbots", score: { ai: 2, ml: 1 } },
+                    { text: "Mobile Apps and Smartphones", score: { android: 2 } },
+                    { text: "Quality and Reliability", score: { testing: 2 } }
+                ],
+                type: "msq"
+            },
+            {
+                question: "How do you feel about working with code?",
+                options: [
+                    { text: "I love it, I want to control the entire system.", score: { fullstack: 3, backend: 2 } },
+                    { text: "I want to write algorithms that make machines smart.", score: { ai: 3, ml: 3, data: 1 } },
+                    { text: "I like code, but only if I'm making things look good.", score: { frontend: 3, webdesign: 1 } },
+                    { text: "I prefer visual No-Code tools over writing pure code.", score: { webdesign: 3, uiux: 2 } }
+                ],
+                type: "mcq"
+            },
+            {
+                question: "What's your priority when building a project?",
+                options: [
+                    { text: "Scalability across the entire architecture.", score: { fullstack: 3, backend: 2 } },
+                    { text: "Pixel-perfect accuracy and rapid launch speed.", score: { webdesign: 3, uiux: 2 } },
+                    { text: "Making it run perfectly on a mobile phone.", score: { android: 3 } },
+                    { text: "Making the system learn and adapt autonomously.", score: { ai: 3, ml: 3 } },
+                    { text: "Uncovering hidden insights and predicting trends.", score: { data: 3 } }
+                ],
+                type: "mcq"
+            },
+            {
+                question: "Pick your preferred 'Puzzle' to solve:",
+                options: [
+                    { text: "Connecting a frontend UI to a backend database.", score: { fullstack: 3, frontend: 1, backend: 1 } },
+                    { text: "Creating an engaging animation without writing code.", score: { webdesign: 3, uiux: 2 } },
+                    { text: "How to train a model to recognize images.", score: { ai: 2, ml: 3 } },
+                    { text: "How to build a native mobile app feature.", score: { android: 3 } },
+                    { text: "How to automate the detection of regressions.", score: { testing: 3 } }
+                ],
+                type: "mcq"
+            },
+            {
+                question: "Which role in a team sounds most like you?",
+                options: [
+                    { text: "The Artist: Making everything beautiful and intuitive.", score: { uiux: 3, webdesign: 2 } },
+                    { text: "The Generalist: Building features end-to-end.", score: { fullstack: 3 } },
+                    { text: "The Brain: Making the application smart and predictive.", score: { ai: 3, ml: 3 } },
+                    { text: "The Mobile Expert: Dominating the smartphone screen.", score: { android: 3 } },
+                    { text: "The Detective: Finding and fixing bugs before they hit.", score: { testing: 3 } }
+                ],
+                type: "mcq"
+            },
+            {
+                question: "What kind of projects do you naturally gravitate towards?",
+                options: [
+                    { text: "High-performance marketing sites or portfolios.", score: { webdesign: 3, frontend: 1 } },
+                    { text: "Complex SaaS applications from scratch.", score: { fullstack: 3, backend: 2 } },
+                    { text: "Generative AI models and neural networks.", score: { ai: 3, ml: 3 } },
+                    { text: "Internal APIs, and complex data pipelines.", score: { backend: 3, data: 1 } },
+                    { text: "Mobile applications available on the App Store.", score: { android: 3 } }
+                ],
+                type: "mcq"
+            },
+            {
+                question: "How do you handle a complex technical problem?",
+                options: [
+                    { text: "Connect the frontend and backend logic step-by-step.", score: { fullstack: 3 } },
+                    { text: "Use visual builders to bypass the code complexity.", score: { webdesign: 3, uiux: 1 } },
+                    { text: "Feed it huge amounts of data and train a model.", score: { ai: 3, ml: 3 } },
+                    { text: "Test different scenarios until I find the edge case.", score: { testing: 3 } },
+                    { text: "Look at the mobile ecosystem to find a native solution.", score: { android: 3 } }
+                ],
+                type: "mcq"
+            }
+
+        ];
+
+        let currentStep = 0;
+        let userScores = { uiux: 0, frontend: 0, backend: 0, testing: 0, data: 0, android: 0, ai: 0, ml: 0, fullstack: 0, webdesign: 0 };
+        let selectedOptions = Array(quizData.length).fill(null).map(() => []);
+        let isTransitioning = false;
+
+
+        function startQuiz() {
+            document.getElementById('hero').classList.add('hidden');
+            document.getElementById('quiz-container').classList.remove('hidden');
+            renderStep();
+        }
+
+        function renderStep() {
+            const container = document.getElementById('questions-wrapper');
+            const q = quizData[currentStep];
+            const qDiv = document.createElement('div');
+            qDiv.className = 'question-card active';
+
+            const title = document.createElement('h2');
+            title.className = 'outfit font-black text-2xl md:text-4xl mb-6 md:mb-10 tracking-tight leading-tight';
+            title.textContent = q.question;
+
+            if (q.type === 'msq') {
+                const badge = document.createElement('div');
+                badge.className = 'inline-flex px-2 py-0.5 bg-amber-50 text-amber-600 border border-amber-100 rounded text-[8px] uppercase font-black tracking-[0.15em] mt-3';
+                badge.textContent = 'Multi-Select Enabled';
+                title.appendChild(document.createElement('br'));
+                title.appendChild(badge);
+            }
+
+            qDiv.appendChild(title);
+
+            const grid = document.createElement('div');
+            grid.className = 'flex flex-col gap-3 md:gap-4';
+
+            q.options.forEach((opt, idx) => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn outfit font-bold';
+                btn.setAttribute('data-index', idx);
+                if (selectedOptions[currentStep].includes(idx)) btn.classList.add('selected');
+                btn.innerHTML = `<div class="w-8 h-8 border border-current rounded-lg flex items-center justify-center mono text-xs shrink-0">${String.fromCharCode(65 + idx)}</div><span class="flex-grow text-sm md:text-base">${opt.text}</span>`;
+                btn.onclick = () => selectOption(idx);
+                grid.appendChild(btn);
+            });
+
+            qDiv.appendChild(grid);
+
+            if (q.type === 'msq') {
+                const confirmBtn = document.createElement('button');
+                confirmBtn.className = 'nb-button mt-8 w-full py-4 bg-[#dbeafe] text-black rounded-xl text-xs uppercase font-black tracking-widest confirm-btn-msq';
+                confirmBtn.innerHTML = 'Confirm Choices <i class="bi bi-check-lg ml-2"></i>';
+                confirmBtn.onclick = nextQuestion;
+                if (selectedOptions[currentStep].length === 0) {
+                    confirmBtn.style.opacity = '0.3';
+                    confirmBtn.style.pointerEvents = 'none';
+                }
+                qDiv.appendChild(confirmBtn);
+            }
+
+
+            const wrapper = document.getElementById('questions-wrapper');
+            wrapper.style.opacity = '0';
+            wrapper.style.transform = 'translateY(10px)';
+            setTimeout(() => {
+                container.innerHTML = '';
+                container.appendChild(qDiv);
+                wrapper.style.opacity = '1';
+                wrapper.style.transform = 'translateY(0)';
+
+                // Auto-scroll to top for mobile focus
+                const mainScroll = document.querySelector('.overflow-y-auto');
+                if (mainScroll) mainScroll.scrollTo({ top: 0, behavior: 'smooth' });
+            }, 150);
+
+
+            updateProgress();
+        }
+
+        function selectOption(index) {
+            if (isTransitioning) return;
+
+            const q = quizData[currentStep];
+            const btns = document.querySelectorAll('.option-btn');
+
+            if (q.type === 'msq') {
+                const idx = selectedOptions[currentStep].indexOf(index);
+                if (idx > -1) {
+                    selectedOptions[currentStep].splice(idx, 1);
+                    btns[index].classList.remove('selected');
+                } else {
+                    selectedOptions[currentStep].push(index);
+                    btns[index].classList.add('selected');
+                }
+
+                const confirmBtn = document.querySelector('.confirm-btn-msq');
+                if (confirmBtn) {
+                    if (selectedOptions[currentStep].length > 0) {
+                        confirmBtn.style.opacity = '1';
+                        confirmBtn.style.pointerEvents = 'all';
+                    } else {
+                        confirmBtn.style.opacity = '0.3';
+                        confirmBtn.style.pointerEvents = 'none';
+                    }
+                }
+            } else {
+                isTransitioning = true;
+                // Clear previous selection UI
+                btns.forEach(b => b.classList.remove('selected'));
+                // Add new selection UI
+                btns[index].classList.add('selected');
+                selectedOptions[currentStep] = [index];
+
+                setTimeout(() => {
+                    nextQuestion();
+                    isTransitioning = false;
+                }, 400);
+            }
+        }
+
+
+
+        function updateProgress() {
+            const total = quizData.length;
+            const pct = Math.round((currentStep / total) * 100);
+            document.getElementById('progress-fill').style.width = pct + '%';
+            document.getElementById('step-counter').textContent = `Step ${String(currentStep + 1).padStart(2, '0')}/${String(total).padStart(2, '0')}`;
+            document.getElementById('completion-pct').textContent = `${pct}% Complete`;
+        }
+
+        function nextQuestion() {
+            if (currentStep < quizData.length - 1) {
+                currentStep++;
+                renderStep();
+            } else {
+                showResults();
+            }
+        }
+
+        function showResults() {
+            Object.keys(userScores).forEach(k => userScores[k] = 0);
+            selectedOptions.forEach((choices, qIdx) => {
+                choices.forEach(optIdx => {
+                    const scoreObj = quizData[qIdx].options[optIdx].score;
+                    for (const [key, val] of Object.entries(scoreObj)) userScores[key] += val;
+                });
+            });
+
+            const winner = Object.keys(userScores).reduce((a, b) => userScores[a] > userScores[b] ? a : b);
+            const careers = {
+                uiux: {
+                    title: "UI/UX Designer",
+                    desc: "You have a keen eye for aesthetics and a deep empathy for users. Your path lies in creating intuitive, beautiful digital experiences.",
+                    role: "Your day involves conducting user research, wireframing interfaces, and building interactive prototypes. You act as the bridge between user needs and technical feasibility, constantly refining designs to create frictionless digital experiences.",
+                    diff: "MODERATE", salary: "$85k - $145k", demand: "HIGH", time: "6-8 MONTHS", score: 94,
+                    skills: ["Figma", "Adobe XD", "Prototyping", "User Research", "Color Theory", "Micro-interactions"],
+                    roadmap: [
+                        { icon: "bi-palette", title: "Visual Foundation", body: "Master color theory, grids, and typography." },
+                        { icon: "bi-laptop", title: "Tool Mastery", body: "Become proficient in Figma and advanced prototyping." },
+                        { icon: "bi-people", title: "UX Psychology", body: "Understand user behavior and persona creation." },
+                        { icon: "bi-journal-check", title: "Case Studies", body: "Build a portfolio with 3 distinct projects." },
+                        { icon: "bi-send", title: "Job Readiness", body: "Prepare for whiteboard design challenges." }
+                    ]
+                },
+                frontend: {
+                    title: "Frontend Developer",
+                    desc: "You love bringing designs to life through code. You bridge the gap between visuals and technical implementation.",
+                    role: "You spend your time writing code that runs in the browser. You take static designs and turn them into interactive, highly responsive web applications. Performance optimization and cross-device compatibility are your daily challenges.",
+                    diff: "MODERATE", salary: "$90k - $165k", demand: "EXTREME", time: "8-10 MONTHS", score: 96,
+                    skills: ["React", "TypeScript", "Tailwind CSS", "Next.js", "Git", "REST APIs"],
+                    roadmap: [
+                        { icon: "bi-code-slash", title: "The Holy Trinity", body: "Deep dive into HTML, CSS Architecture, and Modern JS." },
+                        { icon: "bi-braces", title: "Logic & State", body: "Master JavaScript ES6+ and Asynchronous programming." },
+                        { icon: "bi-layers", title: "React Ecosystem", body: "Learn React, Hooks, and State Management." },
+                        { icon: "bi-lightning", title: "Advanced Styling", body: "Master Tailwind CSS and Framer Motion." },
+                        { icon: "bi-rocket", title: "Deployment", body: "Learn Vercel and CI/CD pipelines." }
+                    ]
+                },
+                backend: {
+                    title: "Backend Developer",
+                    desc: "You are a logical thinker who enjoys building the engine under the hood. You handle data and performance.",
+                    role: "You design the unseen architecture of applications. Your focus is on writing server-side logic, managing databases, building robust APIs, and ensuring the application is secure, scalable, and can handle massive amounts of data efficiently.",
+                    diff: "EXPERT", salary: "$100k - $190k", demand: "CRITICAL", time: "12-15 MONTHS", score: 91,
+                    skills: ["Node.js", "Python", "PostgreSQL", "Redis", "Docker", "AWS"],
+                    roadmap: [
+                        { icon: "bi-terminal", title: "Server Core", body: "Master a server-side language like Python deeply." },
+                        { icon: "bi-database", title: "Data Modeling", body: "Learn Relational and Non-relational database design." },
+                        { icon: "bi-shield-lock", title: "Security", body: "Implement JWT, OAuth, and learn security vulnerabilities." },
+                        { icon: "bi-cpu", title: "System Design", body: "Learn about caching and microservices architecture." },
+                        { icon: "bi-cloud", title: "DevOps", body: "Master Docker and cloud deployment on AWS." }
+                    ]
+                },
+                testing: {
+                    title: "QA Engineer",
+                    desc: "You are detail-oriented and value quality. You enjoy breaking things to make them stronger.",
+                    role: "Your role is to ensure software is bulletproof before it reaches the user. You write automated test scripts, perform exploratory manual testing, and design comprehensive test plans. You are the final gatekeeper for quality and user satisfaction.",
+                    diff: "MODERATE", salary: "$80k - $135k", demand: "STABLE", time: "5-7 MONTHS", score: 88,
+                    skills: ["Selenium", "Cypress", "Jest", "Postman", "Jenkins"],
+                    roadmap: [
+                        { icon: "bi-search", title: "QA Fundamentals", body: "Learn STLC and test plan creation." },
+                        { icon: "bi-bug", title: "Manual Mastery", body: "Understand exploratory and black-box testing." },
+                        { icon: "bi-robot", title: "Automation", body: "Learn JS/Python to write automated scripts." },
+                        { icon: "bi-gear", title: "Mastering Tools", body: "Master Cypress and Jest for testing." },
+                        { icon: "bi-infinity", title: "Pipeline", body: "Integrate tests into CI/CD pipelines." }
+                    ]
+                },
+                data: {
+                    title: "Data Scientist",
+                    desc: "You love patterns and storytelling through numbers. You use data to predict the future.",
+                    role: "You wrangle massive datasets to extract actionable business insights. Your day involves cleaning data, building complex machine learning models, and creating visualizations to explain statistical trends to stakeholders.",
+                    diff: "EXPERT", salary: "$110k - $210k", demand: "EXPLOSIVE", time: "18-24 MONTHS", score: 92,
+                    skills: ["Python", "SQL", "Pandas", "Scikit-Learn", "Tableau", "TensorFlow"],
+                    roadmap: [
+                        { icon: "bi-calculator", title: "Math Core", body: "Solid foundation in Linear Algebra and Probability." },
+                        { icon: "bi-filetype-py", title: "Wrangling", body: "Master Python libraries for cleaning messy data." },
+                        { icon: "bi-bar-chart", title: "Visualizing", body: "Communicate insights using Tableau or Seaborn." },
+                        { icon: "bi-brain", title: "Machine Learning", body: "Master Supervised and Deep Learning algorithms." },
+                        { icon: "bi-database-fill-check", title: "Big Data", body: "Learn Spark and SQL for massive datasets." }
+                    ]
+                },
+                android: {
+                    title: "Android Developer",
+                    desc: "You want to build applications that billions of people carry in their pockets every day.",
+                    role: "You build and maintain native applications for Android devices. You focus on mobile-specific UI/UX, device performance, memory management, and integrating with hardware sensors like GPS and cameras.",
+                    diff: "MODERATE", salary: "$95k - $160k", demand: "HIGH", time: "8-12 MONTHS", score: 93,
+                    skills: ["Kotlin", "Java", "Android Studio", "Jetpack Compose", "REST APIs", "SQLite"],
+                    roadmap: [
+                        { icon: "bi-code-square", title: "Language Core", body: "Master Kotlin, the modern language for Android." },
+                        { icon: "bi-phone", title: "UI Components", body: "Learn XML Layouts and modern Jetpack Compose." },
+                        { icon: "bi-hdd-network", title: "Networking", body: "Connect to APIs using Retrofit and handle JSON." },
+                        { icon: "bi-database", title: "Local Storage", body: "Learn Room Database for offline data caching." },
+                        { icon: "bi-google-play", title: "Publishing", body: "Deploy your app to the Google Play Store." }
+                    ]
+                },
+                ai: {
+                    title: "AI Engineer",
+                    desc: "You are fascinated by the frontier of technology and want to build systems that think and generate.",
+                    role: "You integrate and fine-tune large language models and generative AI into applications. You focus on prompt engineering, working with APIs (like OpenAI), and building architectures that support AI-driven features like chatbots or content generators.",
+                    diff: "EXPERT", salary: "$130k - $250k+", demand: "EXPLOSIVE", time: "12-18 MONTHS", score: 98,
+                    skills: ["Python", "LangChain", "OpenAI API", "Vector Databases", "Prompt Engineering"],
+                    roadmap: [
+                        { icon: "bi-terminal", title: "Python Mastery", body: "Deep dive into Python and API integrations." },
+                        { icon: "bi-chat-left-dots", title: "Prompt Eng", body: "Master the art of prompting LLMs efficiently." },
+                        { icon: "bi-layers", title: "Frameworks", body: "Learn LangChain or LlamaIndex for AI apps." },
+                        { icon: "bi-boxes", title: "Vector DBs", body: "Understand embeddings and Pinecone/Weaviate." },
+                        { icon: "bi-cpu", title: "Deployment", body: "Deploy scalable AI agents into production." }
+                    ]
+                },
+                ml: {
+                    title: "Machine Learning Engineer",
+                    desc: "You want to bridge the gap between data science and software engineering to deploy intelligent models.",
+                    role: "You take predictive models built by data scientists and engineer them into scalable, production-ready software systems. You deal with model training pipelines, MLOps, cloud deployments, and optimizing algorithms for speed and scale.",
+                    diff: "EXPERT", salary: "$120k - $220k", demand: "CRITICAL", time: "15-20 MONTHS", score: 95,
+                    skills: ["Python", "TensorFlow/PyTorch", "Docker", "AWS/GCP", "Kubernetes", "MLOps"],
+                    roadmap: [
+                        { icon: "bi-calculator-fill", title: "Fundamentals", body: "Strong grasp of algorithms and statistics." },
+                        { icon: "bi-diagram-3", title: "Model Building", body: "Build deep learning networks with PyTorch." },
+                        { icon: "bi-server", title: "Engineering", body: "Learn API creation using FastAPI or Flask." },
+                        { icon: "bi-box-seam", title: "Containerization", body: "Master Docker and Kubernetes for scaling." },
+                        { icon: "bi-cloud-arrow-up", title: "MLOps", body: "Automate model deployment pipelines." }
+                    ]
+                },
+                fullstack: {
+                    title: "Full Stack Developer",
+                    desc: "You are the ultimate generalist, comfortable building the entire application from database to user interface.",
+                    role: "You handle both the client-side and server-side of web applications. Your day involves designing databases, writing robust API endpoints, and building the interactive frontend that consumes them. You are the versatile problem solver who connects all the dots.",
+                    diff: "EXPERT", salary: "$105k - $185k", demand: "CRITICAL", time: "10-14 MONTHS", score: 97,
+                    skills: ["React/Next.js", "Node.js", "PostgreSQL/MongoDB", "TypeScript", "Tailwind CSS", "Git"],
+                    roadmap: [
+                        { icon: "bi-window-sidebar", title: "Frontend Core", body: "Master HTML, CSS, JavaScript, and React." },
+                        { icon: "bi-hdd-rack", title: "Backend Logic", body: "Learn Node.js, Express, and RESTful APIs." },
+                        { icon: "bi-database", title: "Databases", body: "Master relational (SQL) or NoSQL databases." },
+                        { icon: "bi-arrow-left-right", title: "Integration", body: "Connect your React frontend to your Node API." },
+                        { icon: "bi-rocket-takeoff", title: "Deployment", body: "Deploy full stack apps on Vercel or AWS." }
+                    ]
+                },
+                webdesign: {
+                    title: "Web Designer",
+                    desc: "You blend visual aesthetics with no-code tools to rapidly build and launch stunning websites.",
+                    role: "You focus on the visual design, layout, and user interactions of websites. Instead of writing complex application logic, you use tools like Webflow or Framer to build high-performance marketing sites that look incredible and rank well on search engines.",
+                    diff: "EASY", salary: "$70k - $120k", demand: "STABLE", time: "4-6 MONTHS", score: 85,
+                    skills: ["Framer", "Webflow", "Figma", "HTML/CSS Basics", "SEO", "Copywriting"],
+                    roadmap: [
+                        { icon: "bi-palette", title: "Design Basics", body: "Master UI design principles in Figma." },
+                        { icon: "bi-braces", title: "Web Core", body: "Learn the fundamentals of HTML and CSS." },
+                        { icon: "bi-brush", title: "No-Code Builder", body: "Become a master of Framer or Webflow." },
+                        { icon: "bi-magic", title: "Animations", body: "Create stunning scroll effects and interactions." },
+                        { icon: "bi-search", title: "SEO & Handoff", body: "Optimize for search engines and launch." }
+                    ]
+                }
+            };
+
+            const data = careers[winner] || careers['frontend'];
+            document.getElementById('career-title').textContent = data.title;
+            document.getElementById('career-desc').textContent = data.desc;
+            document.getElementById('career-role').textContent = data.role;
+            document.getElementById('diff-level').textContent = data.diff;
+            document.getElementById('salary-range').textContent = data.salary;
+            document.getElementById('demand-level').textContent = data.demand;
+            document.getElementById('learn-time').textContent = data.time;
+            document.getElementById('match-score').textContent = data.score;
+            document.getElementById('match-fill').style.width = data.score + '%';
+
+            const roadmapContainer = document.getElementById('roadmap-steps');
+            roadmapContainer.innerHTML = '';
+            data.roadmap.forEach((step, idx) => {
+                const node = document.createElement('div');
+                node.className = 'roadmap-node p-6 border-2 border-black rounded-2xl mb-6 bg-slate-50 shadow-[4px_4px_0px_rgba(0,0,0,0.05)]';
+                node.innerHTML = `<div class="node-icon bg-black text-white rounded-lg w-8 h-8 flex items-center justify-center mb-4"><i class="bi ${step.icon}"></i></div><div class="mono text-[10px] font-bold text-indigo-600 mb-1">PHASE 0${idx + 1}</div><h4 class="outfit font-bold text-xl mb-2">${step.title}</h4><p class="text-gray-600 text-sm">${step.body}</p>`;
+                roadmapContainer.appendChild(node);
+            });
+
+            const skillsContainer = document.getElementById('skills-stack');
+            skillsContainer.innerHTML = '';
+            data.skills.forEach(skill => {
+                const tag = document.createElement('div');
+                tag.className = 'px-4 py-3 bg-white border-2 border-black rounded-xl flex items-center justify-between group hover:bg-slate-50 transition-all cursor-default';
+                tag.innerHTML = `<span class="outfit font-bold text-sm uppercase">${skill}</span><i class="bi bi-check-circle-fill text-black"></i>`;
+                skillsContainer.appendChild(tag);
+            });
+
+
+            document.getElementById('quiz-container').classList.add('hidden');
+            document.getElementById('result-container').classList.remove('hidden');
+
+            // Calculate and Show Alternatives
+
+            const sorted = Object.keys(userScores)
+                .filter(k => k !== winner)
+                .sort((a, b) => userScores[b] - userScores[a]);
+
+            const altContainer = document.getElementById('alternatives-container');
+            const altList = document.getElementById('alternatives-list');
+            altList.innerHTML = '';
+
+            if (sorted.length > 0) {
+                altContainer.classList.remove('hidden');
+                sorted.slice(0, 3).forEach((key, idx) => {
+                    const career = careers[key];
+                    const winScore = userScores[winner] || 1;
+
+                    // Improved calculation: Base 40% + (Relative Score * 50) + (Career's Market Score variance)
+                    let matchPct = 40 + Math.round((userScores[key] / winScore) * 50);
+
+                    // Add subtle variance for ties based on career market position
+                    if (userScores[key] === 0) {
+                        matchPct = 35 + (career.score % 10) + (3 - idx); // 35-45% base range
+                    } else {
+                        // Ensure it's always less than the winner but unique
+                        matchPct = Math.min(92 - (idx * 3), matchPct + (idx * 1.5));
+                    }
+
+                    matchPct = Math.round(matchPct);
+
+                    const div = document.createElement('div');
+                    div.className = 'p-4 border-2 border-black rounded-xl bg-slate-50 flex items-center justify-between';
+                    div.innerHTML = `
+                        <div>
+                            <div class="outfit font-black text-sm uppercase">${career.title}</div>
+                            <div class="mono text-[9px] font-bold text-slate-400 mt-1">${matchPct}% MATCH</div>
+                        </div>
+                        <div class="w-10 h-1.5 bg-slate-200 rounded-full overflow-hidden">
+                            <div class="h-full bg-indigo-600" style="width: ${matchPct}%"></div>
+                        </div>
+                    `;
+                    altList.appendChild(div);
+                });
+
+            }
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Disable Copy-Paste & Right Click
+        document.addEventListener('contextmenu', e => e.preventDefault());
+        document.addEventListener('keydown', e => {
+            if (e.ctrlKey && (e.key === 'c' || e.key === 'v' || e.key === 'u' || e.key === 's')) {
+                e.preventDefault();
+            }
+        });
+
+
+    </script>
+    <script src="../content/js/script.js?v=2"></script>
+</body>
+
+</html>
