@@ -35,7 +35,7 @@
 
         :root {
             /* Rams Palette - Data Edition */
-            --bg-color: #f4f4f4;
+            --bg-color: #fdfaf6;
             --card-bg: #ffffff;
             --text-main: #111111;
             --text-muted: #737373;
@@ -296,6 +296,21 @@
             border-bottom: 1px solid #e5e5e5;
             display: block;
         }
+    
+        /* Paper Texture Overlay */
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E");
+            pointer-events: none;
+            z-index: -1;
+            opacity: 0.4;
+        }
+
     </style>
 </head>
 
@@ -329,8 +344,10 @@
                 <a href="#queues" class="mobile-nav-link" onclick="toggleMobileMenu()">Queues</a>
                 <a href="#trees" class="mobile-nav-link" onclick="toggleMobileMenu()">Binary Trees</a>
                 <a href="#graphs" class="mobile-nav-link" onclick="toggleMobileMenu()">Graphs</a>
+                <a href="#mst" class="mobile-nav-link" onclick="toggleMobileMenu()">Minimum Spanning Tree</a>
                 <a href="#hashmaps" class="mobile-nav-link" onclick="toggleMobileMenu()">Hash Maps (Dicts)</a>
                 <a href="#sets" class="mobile-nav-link" onclick="toggleMobileMenu()">Sets</a>
+                <a href="#usecases" class="mobile-nav-link" onclick="toggleMobileMenu()">Real-world Use Cases</a>
                 <a href="#complexity" class="mobile-nav-link" onclick="toggleMobileMenu()">Big O Notation</a>
                 <a href="#glossary" class="mobile-nav-link" onclick="toggleMobileMenu()">Glossary</a>
                 <a href="#quiz" class="mobile-nav-link border-b-0" onclick="toggleMobileMenu()">Knowledge Check</a>
@@ -366,8 +383,10 @@
                         <a href="#queues" class="nav-link">Queues (FIFO)</a>
                         <a href="#trees" class="nav-link">Binary Trees</a>
                         <a href="#graphs" class="nav-link">Graphs</a>
+                        <a href="#mst" class="nav-link">Minimum Spanning Tree</a>
                         <a href="#hashmaps" class="nav-link">Hash Maps (Dicts)</a>
                         <a href="#sets" class="nav-link">Sets</a>
+                        <a href="#usecases" class="nav-link">Real-world Use Cases</a>
                         <a href="#complexity" class="nav-link">Big O Notation</a>
                         <a href="#glossary" class="nav-link">Glossary</a>
                         <a href="#quiz" class="nav-link">Knowledge Check</a>
@@ -831,6 +850,98 @@
                 <!-- Inline Quiz: Graphs -->
                 <div id="quiz-ds-graphs" class="mb-20 md:mb-24"></div>
 
+                <!-- 07.1 Minimum Spanning Tree -->
+                <section id="mst" class="mb-20 md:mb-24">
+                    <span class="rams-label">07.1 / Optimization</span>
+                    <h3 class="text-xl font-medium mb-4">Minimum Spanning Tree (MST)</h3>
+                    <p class="text-sm text-gray-600 mb-4 max-w-xl">
+                        <strong>The Power Grid Analogy:</strong> Imagine you need to connect several houses to a power
+                        station using the least amount of cable.
+                        A <strong>Minimum Spanning Tree</strong> is a subset of the graph's edges that connects all
+                        vertices together,
+                        without any cycles, and with the <strong>minimum possible total edge weight</strong>.
+                    </p>
+
+                    <p class="text-sm text-gray-500 mb-8 max-w-xl leading-relaxed border-l-2 border-gray-200 pl-4">
+                        <strong>Structural Definition:</strong> For a graph with <span class="mono">V</span> vertices, an MST is a subgraph that
+                        has exactly <strong>V-1 edges</strong>. If it had fewer, it wouldn't be connected; if it had
+                        more, it would contain a cycle. It represents the "backbone" of a network—the most efficient way
+                        to ensure every point is reachable.
+                    </p>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+                        <div class="rams-card mb-0 p-5">
+                            <h4 class="text-[10px] uppercase font-bold text-gray-400 mb-2">Property: Connectivity</h4>
+                            <p class="text-[11px] text-gray-500 leading-relaxed">
+                                A spanning tree must provide a path between <strong>any two nodes</strong> in the graph. In
+                                an MST, this path is not necessarily the <em>shortest</em> path (that's Dijkstra's domain),
+                                but the <em>edges</em> used are the cheapest possible to maintain total connectivity.
+                            </p>
+                        </div>
+                        <div class="rams-card mb-0 p-5">
+                            <h4 class="text-[10px] uppercase font-bold text-gray-400 mb-2">Property: Uniqueness</h4>
+                            <p class="text-[11px] text-gray-500 leading-relaxed">
+                                If all edge weights in a graph are <strong>distinct</strong>, the graph has exactly one
+                                unique MST. If weights are shared (e.g., two edges both cost 5), there might be multiple
+                                valid trees with the same minimum total weight.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="rams-card mb-8 bg-gray-50 border-dashed">
+                        <h4 class="text-[10px] uppercase font-bold text-gray-400 mb-4">The Fundamental Laws of MST</h4>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                            <div>
+                                <h5 class="text-xs font-bold mb-1">1. The Cut Property</h5>
+                                <p class="text-[10px] text-gray-500 leading-relaxed">
+                                    For any "cut" (partitioning the nodes into two sets), the <strong>cheapest edge</strong>
+                                    crossing that cut must belong to the MST. This is the logic behind <em>Prim's
+                                        Algorithm</em>.
+                                </p>
+                            </div>
+                            <div>
+                                <h5 class="text-xs font-bold mb-1">2. The Cycle Property</h5>
+                                <p class="text-[10px] text-gray-500 leading-relaxed">
+                                    For any cycle in the graph, the <strong>most expensive edge</strong> in that cycle
+                                    cannot be part of the MST. This is the underlying logic behind <em>Kruskal's
+                                        Algorithm</em>.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- MST Construction Steps -->
+                    <div class="rams-card">
+                        <div class="flex flex-col gap-6">
+                            <div class="flex items-center justify-between">
+                                <span class="text-[10px] uppercase font-bold text-gray-400">MST Construction Steps</span>
+                                <div class="flex gap-2">
+                                    <button onclick="stepKruskal()" id="kruskal-btn" class="btn btn-primary text-[10px] py-1 px-3">Build Step</button>
+                                    <button onclick="resetKruskal()" class="btn btn-secondary text-[10px] py-1 px-3">Reset Graph</button>
+                                </div>
+                            </div>
+                            
+                            <div class="relative h-[250px] bg-gray-50 border border-gray-200 overflow-hidden" id="mst-canvas-container">
+                                <canvas id="mst-canvas" class="block w-full h-full"></canvas>
+                                <div id="mst-log" class="absolute top-2 right-2 text-[10px] font-mono text-gray-500 bg-white/90 p-2 border border-gray-100 max-w-[150px]">
+                                    Ready to assemble...
+                                </div>
+                            </div>
+
+                            <div class="flex justify-between items-center text-[10px] font-mono">
+                                <div class="flex gap-4">
+                                    <span>Cumulative Weight: <span id="mst-total-weight" class="text-black font-bold">0</span></span>
+                                    <span>Edges Added: <span id="mst-edge-count" class="text-black font-bold">0</span> / 5</span>
+                                </div>
+                                <div id="mst-status" class="text-gray-400 italic">Finding the minimum backbone...</div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Inline Quiz: MST -->
+                <div id="quiz-ds-mst" class="mb-20 md:mb-24"></div>
+
                 <!-- 08. Hash Maps -->
                 <section id="hashmaps" class="mb-20 md:mb-24">
                     <span class="rams-label">08 / Association</span>
@@ -939,7 +1050,135 @@
                 </section>
 
                 <!-- Inline Quiz: Sets -->
+                <!-- Inline Quiz: Sets -->
                 <div id="quiz-ds-sets" class="mb-20 md:mb-24"></div>
+
+                <!-- 09.1 Real-World Applications -->
+                <section id="usecases" class="mb-20 md:mb-24">
+                    <span class="rams-label">09.1 / Practicality</span>
+                    <h3 class="text-xl font-medium mb-4">Real-World Applications</h3>
+                    <p class="text-sm text-gray-600 mb-8 max-w-xl">
+                        Data structures aren't just academic concepts; they are the invisible gears powering your favorite
+                        apps.
+                        Here is how engineers choose the right tool for the job.
+                    </p>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <!-- Array/String -->
+                        <div class="rams-card mb-0 p-6 flex flex-col group hover:border-[#15803d] transition-colors duration-300">
+                            <h4 class="text-[10px] uppercase font-bold text-[#15803d] tracking-widest mb-3 flex items-center gap-2">
+                                <span class="w-1.5 h-1.5 bg-[#15803d] rounded-full"></span>
+                                Arrays & Strings
+                            </h4>
+                            <p class="text-[11px] text-gray-400 mb-5 italic">Sequential Memory Storage</p>
+                            <div class="space-y-4">
+                                <div class="border-t border-gray-100 pt-3">
+                                    <span class="text-[10px] font-bold text-gray-800 block mb-1">Pixels in an Image</span>
+                                    <p class="text-[10px] text-gray-500 leading-relaxed">Each color value is stored as an index in a massive 2D array for instant rendering.</p>
+                                </div>
+                                <div class="border-t border-gray-100 pt-3">
+                                    <span class="text-[10px] font-bold text-gray-800 block mb-1">Leaderboards</span>
+                                    <p class="text-[10px] text-gray-500 leading-relaxed">Fixed-size arrays maintain top-tier rankings with O(1) retrieval time.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Stack/Queue -->
+                        <div class="rams-card mb-0 p-6 flex flex-col group hover:border-[#15803d] transition-colors duration-300">
+                            <h4 class="text-[10px] uppercase font-bold text-[#15803d] tracking-widest mb-3 flex items-center gap-2">
+                                <span class="w-1.5 h-1.5 bg-[#15803d] rounded-full"></span>
+                                Stacks & Queues
+                            </h4>
+                            <p class="text-[11px] text-gray-400 mb-5 italic">Operational Flow Control</p>
+                            <div class="space-y-4">
+                                <div class="border-t border-gray-100 pt-3">
+                                    <span class="text-[10px] font-bold text-gray-800 block mb-1">Undo/Redo Actions</span>
+                                    <p class="text-[10px] text-gray-500 leading-relaxed">A LIFO stack stores user history; the most recent action is always retrieved first.</p>
+                                </div>
+                                <div class="border-t border-gray-100 pt-3">
+                                    <span class="text-[10px] font-bold text-gray-800 block mb-1">Task Scheduling</span>
+                                    <p class="text-[10px] text-gray-500 leading-relaxed">Cloud servers use FIFO queues to process incoming requests in the order they arrive.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Linked List -->
+                        <div class="rams-card mb-0 p-6 flex flex-col group hover:border-[#15803d] transition-colors duration-300">
+                            <h4 class="text-[10px] uppercase font-bold text-[#15803d] tracking-widest mb-3 flex items-center gap-2">
+                                <span class="w-1.5 h-1.5 bg-[#15803d] rounded-full"></span>
+                                Linked Lists
+                            </h4>
+                            <p class="text-[11px] text-gray-400 mb-5 italic">Dynamic Node Chains</p>
+                            <div class="space-y-4">
+                                <div class="border-t border-gray-100 pt-3">
+                                    <span class="text-[10px] font-bold text-gray-800 block mb-1">Media Playlists</span>
+                                    <p class="text-[10px] text-gray-500 leading-relaxed">Doubly linked lists allow seamless 'Next' and 'Previous' navigation without reindexing.</p>
+                                </div>
+                                <div class="border-t border-gray-100 pt-3">
+                                    <span class="text-[10px] font-bold text-gray-800 block mb-1">Blockchain Tech</span>
+                                    <p class="text-[10px] text-gray-500 leading-relaxed">Each transaction block points securely to the hash of the preceding block in the chain.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Trees -->
+                        <div class="rams-card mb-0 p-6 flex flex-col group hover:border-[#15803d] transition-colors duration-300">
+                            <h4 class="text-[10px] uppercase font-bold text-[#15803d] tracking-widest mb-3 flex items-center gap-2">
+                                <span class="w-1.5 h-1.5 bg-[#15803d] rounded-full"></span>
+                                Hierarchical Trees
+                            </h4>
+                            <p class="text-[11px] text-gray-400 mb-5 italic">Parent-Child Organizations</p>
+                            <div class="space-y-4">
+                                <div class="border-t border-gray-100 pt-3">
+                                    <span class="text-[10px] font-bold text-gray-800 block mb-1">OS File Systems</span>
+                                    <p class="text-[10px] text-gray-500 leading-relaxed">Hard drive directories use tree structures to manage nested folders and permissions.</p>
+                                </div>
+                                <div class="border-t border-gray-100 pt-3">
+                                    <span class="text-[10px] font-bold text-gray-800 block mb-1">Web Rendering (DOM)</span>
+                                    <p class="text-[10px] text-gray-500 leading-relaxed">Browsers parse HTML into a tree object (DOM) to determine layout and styling.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Graphs/MST -->
+                        <div class="rams-card mb-0 p-6 flex flex-col group hover:border-[#15803d] transition-colors duration-300">
+                            <h4 class="text-[10px] uppercase font-bold text-[#15803d] tracking-widest mb-3 flex items-center gap-2">
+                                <span class="w-1.5 h-1.5 bg-[#15803d] rounded-full"></span>
+                                Graphs & Network MST
+                            </h4>
+                            <p class="text-[11px] text-gray-400 mb-5 italic">Relational Connectivity</p>
+                            <div class="space-y-4">
+                                <div class="border-t border-gray-100 pt-3">
+                                    <span class="text-[10px] font-bold text-gray-800 block mb-1">GPS & Routing</span>
+                                    <p class="text-[10px] text-gray-500 leading-relaxed">Finding the shortest path between global coordinates using weighted graph edges.</p>
+                                </div>
+                                <div class="border-t border-gray-100 pt-3">
+                                    <span class="text-[10px] font-bold text-gray-800 block mb-1">Infrastructure Design</span>
+                                    <p class="text-[10px] text-gray-500 leading-relaxed">Connecting cities with fiber-optic cables at minimum possible cost (MST).</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Hash Maps/Sets -->
+                        <div class="rams-card mb-0 p-6 flex flex-col group hover:border-[#15803d] transition-colors duration-300">
+                            <h4 class="text-[10px] uppercase font-bold text-[#15803d] tracking-widest mb-3 flex items-center gap-2">
+                                <span class="w-1.5 h-1.5 bg-[#15803d] rounded-full"></span>
+                                Hash Maps & Sets
+                            </h4>
+                            <p class="text-[11px] text-gray-400 mb-5 italic">Key-Value Optimization</p>
+                            <div class="space-y-4">
+                                <div class="border-t border-gray-100 pt-3">
+                                    <span class="text-[10px] font-bold text-gray-800 block mb-1">Server Caching</span>
+                                    <p class="text-[10px] text-gray-500 leading-relaxed">Storing expensive database queries in memory for sub-millisecond retrieval.</p>
+                                </div>
+                                <div class="border-t border-gray-100 pt-3">
+                                    <span class="text-[10px] font-bold text-gray-800 block mb-1">Unique Analytics</span>
+                                    <p class="text-[11px] text-gray-500 leading-relaxed">Using Sets to track unique IP addresses and prevent duplicate view counting.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
 
                 <!-- 10. Big O -->
                 <section id="complexity" class="mb-12">
@@ -1156,6 +1395,13 @@
                             options: ["Because they are always blue", "They define how data physically sits in RAM for efficiency", "They are abstract concepts with no physical reality", "They are only used for printing"],
                             answer: 1,
                             explanation: "Data structures aren't just logic; they dictate how bits are arranged in hardware to optimize speed or space."
+                        });
+
+                        new InlineQuiz('quiz-ds-mst', {
+                            question: "Which algorithm is 'edge-centric' and sorts all edges before adding them?",
+                            options: ["Prim's Algorithm", "Dijkstra's Algorithm", "Kruskal's Algorithm", "Breadth-First Search"],
+                            answer: 2,
+                            explanation: "Kruskal's sorts all edges by weight and adds the cheapest ones that don't form a cycle."
                         });
 
                         new InlineQuiz('quiz-ds-arrays', {
@@ -2224,6 +2470,223 @@
             navObserver.observe(section);
         });
 
+        // --- 07.1 Minimum Spanning Tree (Kruskal's Logic) ---
+        const mstCanvas = document.getElementById('mst-canvas');
+        const mstCtx = mstCanvas ? mstCanvas.getContext('2d') : null;
+        const mstLog = document.getElementById('mst-log');
+        const mstTotalWeightEl = document.getElementById('mst-total-weight');
+        const mstEdgeCountEl = document.getElementById('mst-edge-count');
+        const mstStatusEl = document.getElementById('mst-status');
+
+        let mstNodes = [];
+        let mstEdges = [];
+        let mstSortedEdges = [];
+        let mstCurrentEdgeIdx = 0;
+        let mstResultEdges = [];
+        let mstSkippedEdges = [];
+        let mstTotalWeight = 0;
+        let dsuState = [];
+        let isConsidering = true;
+
+        function initMST() {
+            if (!mstCanvas) return;
+            
+            // Define nodes in relative coordinates (0 to 1) for responsiveness
+            mstNodes = [
+                { rx: 0.5, ry: 0.15, label: '1' }, // Top
+                { rx: 0.85, ry: 0.4, label: '2' }, // Top-Right
+                { rx: 0.75, ry: 0.8, label: '3' }, // Bottom-Right
+                { rx: 0.25, ry: 0.8, label: '4' }, // Bottom-Left
+                { rx: 0.15, ry: 0.4, label: '5' }  // Top-Left
+            ];
+
+            // User specified graph: 1->2[1], 2->3[4], 3->4[5], 4->5[2], 5->1[3]
+            mstEdges = [
+                [0, 1, 1], [1, 2, 4], [2, 3, 5], [3, 4, 2], [4, 0, 3]
+            ];
+
+            mstSortedEdges = [...mstEdges].sort((a, b) => a[2] - b[2]);
+            mstCurrentEdgeIdx = 0;
+            mstResultEdges = [];
+            mstSkippedEdges = [];
+            mstTotalWeight = 0;
+            dsuState = Array.from({length: mstNodes.length}, (_, i) => i);
+            isConsidering = true;
+            
+            if(mstTotalWeightEl) mstTotalWeightEl.textContent = "0";
+            if(mstEdgeCountEl) mstEdgeCountEl.textContent = "0";
+            if(mstLog) mstLog.textContent = "Cycle graph loaded. Goal: Connect all nodes with min weight.";
+            if(mstStatusEl) mstStatusEl.textContent = "Step 1: Consider the cheapest link.";
+            drawMST();
+        }
+
+        function findSet(i) {
+            if (dsuState[i] === i) return i;
+            return dsuState[i] = findSet(dsuState[i]);
+        }
+
+        function unionSets(i, j) {
+            let rootI = findSet(i);
+            let rootJ = findSet(j);
+            if (rootI != rootJ) {
+                dsuState[rootI] = rootJ;
+                return true;
+            }
+            return false;
+        }
+
+        function drawMST() {
+            if (!mstCtx) return;
+            const w = mstCanvas.width;
+            const h = mstCanvas.height;
+            mstCtx.clearRect(0, 0, w, h);
+            
+            const getX = (node) => node.rx * w;
+            const getY = (node) => node.ry * h;
+
+            // 1. DRAW ALL LINES (Background layer)
+            mstEdges.forEach(edge => {
+                const x1 = getX(mstNodes[edge[0]]), y1 = getY(mstNodes[edge[0]]);
+                const x2 = getX(mstNodes[edge[1]]), y2 = getY(mstNodes[edge[1]]);
+                mstCtx.strokeStyle = "#f3f4f6";
+                mstCtx.lineWidth = 1;
+                mstCtx.beginPath();
+                mstCtx.moveTo(x1, y1);
+                mstCtx.lineTo(x2, y2);
+                mstCtx.stroke();
+            });
+
+            // 2. DRAW SKIPPED EDGES (Subtle dashed red)
+            mstSkippedEdges.forEach(edge => {
+                mstCtx.strokeStyle = "#fee2e2";
+                mstCtx.setLineDash([4, 4]);
+                mstCtx.lineWidth = 2;
+                mstCtx.beginPath();
+                mstCtx.moveTo(getX(mstNodes[edge[0]]), getY(mstNodes[edge[0]]));
+                mstCtx.lineTo(getX(mstNodes[edge[1]]), getY(mstNodes[edge[1]]));
+                mstCtx.stroke();
+                mstCtx.setLineDash([]);
+            });
+
+            // 3. DRAW CURRENT CANDIDATE
+            if (mstCurrentEdgeIdx < mstSortedEdges.length && mstResultEdges.length < mstNodes.length - 1) {
+                const edge = mstSortedEdges[mstCurrentEdgeIdx];
+                mstCtx.strokeStyle = isConsidering ? "#ea580c" : "#000";
+                mstCtx.lineWidth = 4;
+                mstCtx.beginPath();
+                mstCtx.moveTo(getX(mstNodes[edge[0]]), getY(mstNodes[edge[0]]));
+                mstCtx.lineTo(getX(mstNodes[edge[1]]), getY(mstNodes[edge[1]]));
+                mstCtx.stroke();
+            }
+
+            // 4. DRAW MST EDGES (Thick Green)
+            mstResultEdges.forEach(edge => {
+                mstCtx.strokeStyle = "#15803d";
+                mstCtx.lineWidth = 4;
+                mstCtx.beginPath();
+                mstCtx.moveTo(getX(mstNodes[edge[0]]), getY(mstNodes[edge[0]]));
+                mstCtx.lineTo(getX(mstNodes[edge[1]]), getY(mstNodes[edge[1]]));
+                mstCtx.stroke();
+            });
+
+            // 5. DRAW ALL WEIGHTS (Foreground layer - Always visible)
+            mstEdges.forEach(edge => {
+                const tx = (getX(mstNodes[edge[0]]) + getX(mstNodes[edge[1]])) / 2;
+                const ty = (getY(mstNodes[edge[0]]) + getY(mstNodes[edge[1]])) / 2;
+                
+                mstCtx.beginPath();
+                mstCtx.arc(tx, ty, 9, 0, Math.PI * 2);
+                mstCtx.fillStyle = "#fff";
+                mstCtx.shadowColor = 'rgba(0,0,0,0.1)';
+                mstCtx.shadowBlur = 4;
+                mstCtx.fill();
+                mstCtx.shadowBlur = 0;
+
+                mstCtx.fillStyle = "#374151";
+                mstCtx.font = "bold 9px Roboto Mono";
+                mstCtx.textAlign = "center";
+                mstCtx.textBaseline = "middle";
+                mstCtx.fillText(edge[2], tx, ty);
+            });
+
+            // 6. DRAW NODES
+            mstNodes.forEach((node) => {
+                const nx = getX(node), ny = getY(node);
+                mstCtx.beginPath();
+                mstCtx.arc(nx, ny, 16, 0, Math.PI * 2);
+                mstCtx.fillStyle = "#fff";
+                mstCtx.strokeStyle = "#111";
+                mstCtx.lineWidth = 2;
+                mstCtx.fill();
+                mstCtx.stroke();
+                
+                mstCtx.fillStyle = "#111";
+                mstCtx.font = "bold 12px Inter";
+                mstCtx.textAlign = "center";
+                mstCtx.textBaseline = "middle";
+                mstCtx.fillText(node.label, nx, ny);
+            });
+        }
+
+        function stepKruskal() {
+            if (mstResultEdges.length >= mstNodes.length - 1) {
+                if(mstStatusEl) mstStatusEl.textContent = "Tree Complete. Backbone secured.";
+                return;
+            }
+
+            if (mstCurrentEdgeIdx >= mstSortedEdges.length) return;
+
+            const edge = mstSortedEdges[mstCurrentEdgeIdx];
+            const [u, v, w] = edge;
+
+            if (isConsidering) {
+                mstLog.textContent = `Evaluating ${mstNodes[u].label}-${mstNodes[v].label} (Weight ${w})`;
+                mstStatusEl.textContent = "Analyzing for cycles...";
+                isConsidering = false;
+            } else {
+                if (unionSets(u, v)) {
+                    mstResultEdges.push(edge);
+                    mstTotalWeight += w;
+                    if(mstTotalWeightEl) mstTotalWeightEl.textContent = mstTotalWeight;
+                    if(mstEdgeCountEl) mstEdgeCountEl.textContent = mstResultEdges.length;
+                    mstLog.textContent = `Added ${mstNodes[u].label}-${mstNodes[v].label}. Weight: ${w}`;
+                } else {
+                    mstSkippedEdges.push(edge);
+                    mstLog.textContent = `Rejected ${mstNodes[u].label}-${mstNodes[v].label} (Forms cycle).`;
+                }
+                mstCurrentEdgeIdx++;
+                isConsidering = true;
+                if(mstStatusEl && mstCurrentEdgeIdx < mstSortedEdges.length && mstResultEdges.length < mstNodes.length - 1) {
+                    mstStatusEl.textContent = "Checking next cheapest link...";
+                }
+            }
+            
+            drawMST();
+            
+            if (mstResultEdges.length === mstNodes.length - 1) {
+                if(mstStatusEl) mstStatusEl.textContent = "Success! MST Assembled.";
+                mstLog.textContent = `Final Backbone Weight: ${mstTotalWeight}`;
+                const btn = document.getElementById('kruskal-btn');
+                if(btn) btn.disabled = true;
+                // Final draw to clear candidate
+                drawMST();
+            }
+        }
+
+        function resetKruskal() {
+            const btn = document.getElementById('kruskal-btn');
+            if(btn) btn.disabled = false;
+            initMST();
+        }
+
+        function resizeMSTCanvas() {
+            if (!mstCanvas) return;
+            mstCanvas.width = mstCanvas.parentElement.offsetWidth;
+            mstCanvas.height = 250;
+            drawMST();
+        }
+        window.addEventListener('resize', resizeMSTCanvas);
+        setTimeout(() => { resizeMSTCanvas(); initMST(); }, 500);
     </script>
 
 
