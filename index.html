@@ -84,6 +84,33 @@
                 localStorage.setItem('activeSection', 'learning');
             }
         }
+
+        // --- Service Worker & Offline Robustness ---
+        if ('serviceWorker' in navigator) {
+            // Register early for faster activation
+            navigator.serviceWorker.register('/sw.js')
+                .then(reg => {
+                    reg.onupdatefound = () => {
+                        const installingWorker = reg.installing;
+                        installingWorker.onstatechange = () => {
+                            if (installingWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                                // New content available, but we'll let user refresh or handle it
+                                console.log('[SW] New version available');
+                            }
+                        };
+                    };
+                })
+                .catch(err => console.warn('[SW] Registration failed:', err));
+
+            // Failsafe: If we are offline and the page isn't controlled by a Service Worker, 
+            // the layout will be broken. We force a single refresh to allow the SW (if installed) to take over.
+            if (!navigator.serviceWorker.controller && !navigator.onLine) {
+                if (!sessionStorage.getItem('sw_offline_fix')) {
+                    sessionStorage.setItem('sw_offline_fix', 'true');
+                    location.reload();
+                }
+            }
+        }
     </script>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -3855,29 +3882,39 @@
                                 class="hidden md:flex md:w-[30%] bg-black/5 relative overflow-hidden items-center justify-center p-8 border-l border-black">
                                 <div class="relative w-28 h-28">
                                     <!-- Folded Map Layer 2 (Bottom) -->
-                                    <div class="absolute inset-0 bg-white border border-black rotate-6 translate-x-2 translate-y-2 opacity-50 group-hover:translate-x-3 group-hover:translate-y-3 transition-all duration-700"></div>
+                                    <div
+                                        class="absolute inset-0 bg-white border border-black rotate-6 translate-x-2 translate-y-2 opacity-50 group-hover:translate-x-3 group-hover:translate-y-3 transition-all duration-700">
+                                    </div>
                                     <!-- Folded Map Layer 1 (Top) -->
-                                    <div class="absolute inset-0 bg-white border border-black -rotate-3 flex flex-col p-2 overflow-hidden group-hover:-translate-y-2 group-hover:rotate-0 transition-all duration-500">
+                                    <div
+                                        class="absolute inset-0 bg-white border border-black -rotate-3 flex flex-col p-2 overflow-hidden group-hover:-translate-y-2 group-hover:rotate-0 transition-all duration-500">
                                         <!-- Grid Pattern -->
-                                        <div class="absolute inset-0 opacity-[0.05]" style="background-size: 15px 15px; background-image: linear-gradient(to right, black 1px, transparent 1px), linear-gradient(to bottom, black 1px, transparent 1px);"></div>
-                                        
+                                        <div class="absolute inset-0 opacity-[0.05]"
+                                            style="background-size: 15px 15px; background-image: linear-gradient(to right, black 1px, transparent 1px), linear-gradient(to bottom, black 1px, transparent 1px);">
+                                        </div>
+
                                         <svg class="relative z-10 w-full h-full" viewBox="0 0 100 100">
                                             <!-- Path Line -->
-                                            <path d="M20,80 Q40,30 80,20" fill="none" stroke="black" stroke-width="3" stroke-linecap="round" stroke-dasharray="0.1 7" />
+                                            <path d="M20,80 Q40,30 80,20" fill="none" stroke="black" stroke-width="3"
+                                                stroke-linecap="round" stroke-dasharray="0.1 7" />
                                             <!-- Start Node -->
                                             <circle cx="20" cy="80" r="5" fill="black" />
                                             <!-- Middle Node -->
-                                            <circle cx="42" cy="45" r="5" fill="white" stroke="black" stroke-width="2" />
+                                            <circle cx="42" cy="45" r="5" fill="white" stroke="black"
+                                                stroke-width="2" />
                                             <!-- End Target -->
                                             <g transform="translate(80,20)">
-                                                <circle cx="0" cy="0" r="6" fill="#dbeafe" stroke="black" stroke-width="1.5" />
-                                                <path d="M-3,-3 L3,3 M-3,3 L3,-3" stroke="black" stroke-width="1.5" stroke-linecap="round" />
+                                                <circle cx="0" cy="0" r="6" fill="#dbeafe" stroke="black"
+                                                    stroke-width="1.5" />
+                                                <path d="M-3,-3 L3,3 M-3,3 L3,-3" stroke="black" stroke-width="1.5"
+                                                    stroke-linecap="round" />
                                             </g>
                                         </svg>
                                     </div>
-                                    
+
                                     <!-- Floating Compass -->
-                                    <div class="absolute -top-3 -right-3 w-10 h-10 bg-black text-white rounded-full flex items-center justify-center border border-black shadow-xl group-hover:-translate-y-2 group-hover:scale-110 group-hover:rotate-12 transition-all duration-500">
+                                    <div
+                                        class="absolute -top-3 -right-3 w-10 h-10 bg-black text-white rounded-full flex items-center justify-center border border-black shadow-xl group-hover:-translate-y-2 group-hover:scale-110 group-hover:rotate-12 transition-all duration-500">
                                         <i class="bi bi-compass-fill text-lg"></i>
                                     </div>
                                 </div>
@@ -6076,7 +6113,7 @@
             const links = Array.from(document.querySelectorAll('#learning-section a')).filter(a => {
                 const href = a.getAttribute('href');
                 if (!href) return false;
-                
+
                 // Explicitly exclude non-curriculum cards
                 if (href.includes('quickwiki') || href.includes('flashcards') || a.id === 'random-card') {
                     return false;
