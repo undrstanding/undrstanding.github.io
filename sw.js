@@ -69,43 +69,47 @@ const CORE_ASSETS = [
 
 // Install: Pre-cache core assets
 self.addEventListener('install', (event) => {
+    self.skipWaiting();
     event.waitUntil(
         caches.open(CACHE_NAME).then((cache) => {
             console.log('[SW] Pre-caching core assets');
-            // We fetch the .html version but cache it under the extensionless URL
-            const cachePromises = CORE_ASSETS.map(url => {
-                let fetchUrl = url;
-                if (url !== '/' && !url.includes('.') && !url.startsWith('http')) {
-                    fetchUrl = url + '.html';
-                }
-                return fetch(fetchUrl).then(response => {
-                    if (response.ok) {
-                        return cache.put(url, response);
-                    }
-                    return Promise.reject(`Failed to fetch ${fetchUrl}`);
-                }).catch(err => console.warn(err));
-            });
-            return Promise.all(cachePromises);
-        })
-    );
-    self.skipWaiting();
-});
-
-// Activate: Clean up old caches
-self.addEventListener('activate', (event) => {
-    event.waitUntil(
-        caches.keys().then((cacheNames) => {
             return Promise.all(
-                cacheNames.map((cacheName) => {
-                    if (cacheName !== CACHE_NAME) {
-                        console.log('[SW] Deleting old cache:', cacheName);
-                        return caches.delete(cacheName);
+                CORE_ASSETS.map(url => {
+                    let fetchUrl = url;
+                    if (url !== '/' && !url.includes('.') && !url.startsWith('http')) {
+                        fetchUrl = url + '.html';
                     }
+                    return fetch(fetchUrl, { mode: url.startsWith('http') ? 'cors' : 'same-origin' })
+                        .then(response => {
+                            if (response.ok) {
+                                return cache.put(url, response);
+                            }
+                            console.warn(`[SW] Failed to cache: ${fetchUrl}`);
+                        })
+                        .catch(err => console.warn(`[SW] Cache error for ${fetchUrl}:`, err));
                 })
             );
         })
     );
-    self.clients.claim();
+});
+
+// Activate: Clean up old caches and claim clients
+self.addEventListener('activate', (event) => {
+    event.waitUntil(
+        Promise.all([
+            caches.keys().then((cacheNames) => {
+                return Promise.all(
+                    cacheNames.map((cacheName) => {
+                        if (cacheName !== CACHE_NAME) {
+                            console.log('[SW] Deleting old cache:', cacheName);
+                            return caches.delete(cacheName);
+                        }
+                    })
+                );
+            }),
+            self.clients.claim()
+        ])
+    );
 });
 
 // Fetch: Strategy based on request type
@@ -120,16 +124,13 @@ self.addEventListener('fetch', (event) => {
             fetch(event.request)
                 .then((response) => {
                     if (response.ok) {
-                        // Cache the latest version of the page
                         const copy = response.clone();
                         caches.open(CACHE_NAME).then((cache) => cache.put(event.request, copy));
                         return response;
                     }
 
-                    // If 404, try appending .html (for internal navigation only)
-                    if (response.status === 404 &&
-                        !url.pathname.includes('.') &&
-                        url.origin === self.location.origin) {
+                    // If 404, try .html version
+                    if (response.status === 404 && !url.pathname.includes('.') && url.origin === self.location.origin) {
                         const htmlUrl = event.request.url + '.html';
                         return fetch(htmlUrl).then(htmlRes => {
                             if (htmlRes.ok) {
@@ -147,17 +148,16 @@ self.addEventListener('fetch', (event) => {
                     return caches.match(event.request).then((cachedResponse) => {
                         if (cachedResponse) return cachedResponse;
 
-                        // Try extensionless variant or .html variant in cache
                         let path = url.pathname;
                         if (path.startsWith('/')) path = path.slice(1);
-                        if (!path) path = 'index'; // Default to index if empty
+                        if (!path) path = 'index';
 
                         const htmlPath = path.endsWith('.html') ? path : path + '.html';
                         const cleanPath = path.endsWith('.html') ? path.slice(0, -5) : path;
 
                         return caches.match(cleanPath).then(res => {
                             return res || caches.match(htmlPath).then(htmlRes => {
-                                return htmlRes || caches.match(OFFLINE_URL);
+                                return htmlRes || caches.match(OFFLINE_URL) || caches.match('/');
                             });
                         });
                     });
@@ -166,9 +166,9 @@ self.addEventListener('fetch', (event) => {
         return;
     }
 
-    // Assets (Images, Scripts, Styles): Cache First, then Network
+    // Assets: Cache First, then Network
     event.respondWith(
-        caches.match(event.request).then((cachedResponse) => {
+        caches.match(event.request, { ignoreSearch: true }).then((cachedResponse) => {
             if (cachedResponse) return cachedResponse;
 
             return fetch(event.request).then((response) => {
@@ -176,10 +176,16 @@ self.addEventListener('fetch', (event) => {
                     return response;
                 }
 
+                // Cache all successful GET requests for assets
                 const copy = response.clone();
                 caches.open(CACHE_NAME).then((cache) => cache.put(event.request, copy));
                 return response;
-            }).catch(() => null);
+            }).catch(() => {
+                // If offline and not in cache, and it's a critical asset, we might want to return a fallback
+                // But for now, returning null/fail is standard.
+                return null;
+            });
         })
     );
 });
+
