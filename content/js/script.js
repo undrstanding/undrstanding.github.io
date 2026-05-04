@@ -1,13 +1,6 @@
 /**
- * Service Worker Registration
+ * Service Worker registration moved to index.html head for faster initialization
  */
-if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/sw.js')
-            .then(reg => console.log('SW Registered'))
-            .catch(err => console.log('SW Registration Failed', err));
-    });
-}
 
 /**
  * Eye Care Settings Modal
