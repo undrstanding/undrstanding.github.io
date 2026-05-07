@@ -3,7 +3,7 @@ const OFFLINE_URL = 'offline';
 
 const CORE_ASSETS = [
     '/',
-    'index.html',
+    'index',
     'offline',
     'manifest.json',
     'highlights',
